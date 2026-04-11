@@ -16,7 +16,12 @@ export default {
 
     try {
       const response = await fetch(
-        `https://api.fxtwitter.com/status/${tweetId}`
+        `https://api.fxtwitter.com/status/${tweetId}`,
+        {
+          headers: {
+            "User-Agent": "Xtracticle/1.0 (https://xtracticle.ahmetdeveci3112.workers.dev)",
+          },
+        }
       );
 
       if (!response.ok) {
