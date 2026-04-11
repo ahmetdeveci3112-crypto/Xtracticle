@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@media print {
+  body {
+    background-color: white !important;
+  }
+  
+  @page {
+    margin: 2cm;
+  }
+}
