@@ -3,11 +3,326 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Xtracticle - Article Downloader</title>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- PRIMARY META TAGS                          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <title>Xtracticle — Download X Articles & Threads as Markdown, Text or PDF</title>
+    <meta name="title" content="Xtracticle — Download X Articles & Threads as Markdown, Text or PDF" />
+    <meta name="description" content="Free online tool to extract and download long-form articles, threads, and posts from X (formerly Twitter) as clean Markdown (.md), plain text (.txt), or PDF files. No login required. Supports dark mode, thread merging, and one-click export." />
+    <meta name="keywords" content="X article downloader, Twitter thread downloader, download X articles, tweet to markdown, tweet to PDF, X thread saver, Twitter article extractor, X post downloader, tweet thread to text, download twitter thread, X long-form article, twitter flood downloader, free tweet downloader" />
+    <meta name="author" content="Xtracticle" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <link rel="canonical" href="https://xtracticle.ahmetdeveci3112.workers.dev" />
+
+    <!-- Language alternates (hreflang for multi-language) -->
+    <link rel="alternate" hreflang="en" href="https://xtracticle.ahmetdeveci3112.workers.dev" />
+    <link rel="alternate" hreflang="tr" href="https://xtracticle.ahmetdeveci3112.workers.dev" />
+    <link rel="alternate" hreflang="x-default" href="https://xtracticle.ahmetdeveci3112.workers.dev" />
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- OPEN GRAPH / FACEBOOK                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://xtracticle.ahmetdeveci3112.workers.dev/" />
+    <meta property="og:title" content="Xtracticle — Download X Articles & Threads as Markdown, Text or PDF" />
+    <meta property="og:description" content="Free tool to extract and download long-form articles, threads, and posts from X as Markdown, Text, or PDF. No login required." />
+    <meta property="og:image" content="https://xtracticle.ahmetdeveci3112.workers.dev/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Xtracticle — X Article & Thread Downloader" />
+    <meta property="og:site_name" content="Xtracticle" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="tr_TR" />
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TWITTER CARD                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://xtracticle.ahmetdeveci3112.workers.dev/" />
+    <meta name="twitter:title" content="Xtracticle — Download X Articles & Threads" />
+    <meta name="twitter:description" content="Free tool to extract and download long-form articles, threads, and posts from X as Markdown, Text, or PDF. No login required." />
+    <meta name="twitter:image" content="https://xtracticle.ahmetdeveci3112.workers.dev/og-image.png" />
+    <meta name="twitter:image:alt" content="Xtracticle — X Article & Thread Downloader" />
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- THEME, ICONS & PWA                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Xtracticle" />
+    <meta name="application-name" content="Xtracticle" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- AI DISCOVERABILITY                         -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- llms.txt for AI agents/LLMs -->
+    <link rel="llms-txt" href="/llms.txt" />
+    <meta name="ai-content-declaration" content="This is a web application tool, not AI-generated content." />
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- FONT: INTER                                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- JSON-LD STRUCTURED DATA                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- WebApplication Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Xtracticle",
+      "alternateName": ["X Article Downloader", "Twitter Thread Downloader", "Tweet to Markdown"],
+      "url": "https://xtracticle.ahmetdeveci3112.workers.dev",
+      "description": "Free online tool to extract and download long-form articles, threads, and posts from X (formerly Twitter) as clean Markdown (.md), plain text (.txt), or PDF files. No login or API key required.",
+      "applicationCategory": "UtilitiesApplication",
+      "applicationSubCategory": "Content Extraction",
+      "operatingSystem": "Any",
+      "inLanguage": ["en", "tr"],
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      },
+      "featureList": [
+        "Download X articles as Markdown (.md)",
+        "Download X articles as plain text (.txt)",
+        "Save X articles as PDF",
+        "Thread/flood merging — combine multi-tweet threads into one document",
+        "Copy markdown to clipboard",
+        "Share via Web Share API",
+        "Dark mode / Light mode toggle",
+        "Extraction history (last 10 items)",
+        "Multi-language support (English and Turkish)",
+        "No login or API key required",
+        "Free and open source"
+      ],
+      "browserRequirements": "Requires JavaScript. Works on Chrome, Firefox, Safari, Edge.",
+      "softwareVersion": "2.0.0",
+      "image": "https://xtracticle.ahmetdeveci3112.workers.dev/og-image.png",
+      "screenshot": "https://xtracticle.ahmetdeveci3112.workers.dev/og-image.png",
+      "creator": {
+        "@type": "Organization",
+        "name": "Xtracticle",
+        "url": "https://github.com/ahmetdeveci3112-crypto/Xtracticle"
+      },
+      "sourceOrganization": {
+        "@type": "Organization",
+        "name": "Xtracticle",
+        "url": "https://github.com/ahmetdeveci3112-crypto/Xtracticle"
+      }
+    }
+    </script>
+
+    <!-- HowTo Schema for AI search engines -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to Download an X Article or Thread",
+      "description": "Step-by-step guide to downloading articles and threads from X (formerly Twitter) using Xtracticle.",
+      "totalTime": "PT30S",
+      "estimatedCost": {
+        "@type": "MonetaryAmount",
+        "currency": "USD",
+        "value": "0"
+      },
+      "tool": {
+        "@type": "HowToTool",
+        "name": "Xtracticle web application"
+      },
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Copy the X post URL",
+          "text": "Navigate to the X (Twitter) post containing the article or thread you want to download. Copy the URL from your browser's address bar."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Paste the URL into Xtracticle",
+          "text": "Open Xtracticle and paste the copied X post URL into the input field."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Click Extract",
+          "text": "Click the 'Extract' button. Xtracticle will fetch and parse the article content."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Download your preferred format",
+          "text": "Choose your preferred download format: Markdown (.md), plain text (.txt), or PDF. You can also copy the markdown to your clipboard or share the link."
+        }
+      ]
+    }
+    </script>
+
+    <!-- FAQ Schema for rich snippets & AI answers -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Xtracticle?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Xtracticle is a free, open-source web tool that extracts and downloads long-form articles, threads (floods), and posts from X (formerly Twitter) in clean Markdown, plain text, or PDF format. No login or API key is required."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I download an X article as Markdown?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Simply paste the X post URL into Xtracticle, click 'Extract', and then click the '.MD' download button. The article will be downloaded as a properly formatted Markdown file with images, links, and formatting preserved."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can Xtracticle download Twitter threads?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. When you extract a post that's part of a thread, Xtracticle detects it and offers a 'Load Full Thread' button. It will fetch and merge all posts in the thread into a single downloadable document."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Xtracticle free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Xtracticle is completely free and open source. There are no usage limits, no login requirements, and no API keys needed."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What formats does Xtracticle support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Xtracticle supports three download formats: Markdown (.md) with full formatting and images, plain text (.txt) for simple text, and PDF for print-ready documents. You can also copy the markdown content to your clipboard."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Xtracticle work with Twitter/X articles and long-form posts?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Xtracticle fully supports X's long-form article format (introduced in 2023), including headings, bold/italic text, links, images, blockquotes, and lists. It also works with regular tweets and multi-tweet threads."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- BreadcrumbList Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Xtracticle",
+          "item": "https://xtracticle.ahmetdeveci3112.workers.dev/"
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
+    <!-- Main App Mount Point -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- NOSCRIPT FALLBACK FOR CRAWLERS & SEO       -->
+    <!-- Static content that search engines and AI  -->
+    <!-- crawlers can read without JavaScript        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <noscript>
+      <main style="max-width:680px;margin:0 auto;padding:40px 20px;font-family:Inter,system-ui,sans-serif;color:#0a0a0a;">
+        <header>
+          <h1>Xtracticle — Download X Articles & Threads</h1>
+          <p>Free online tool to extract and download long-form articles, threads, and posts from X (formerly Twitter) as Markdown (.md), plain text (.txt), or PDF files.</p>
+        </header>
+
+        <section>
+          <h2>What is Xtracticle?</h2>
+          <p>Xtracticle is an open-source web application that lets you save content from X (formerly Twitter) in portable, offline formats. It supports X's long-form article format, regular tweets, and multi-tweet threads (floods).</p>
+        </section>
+
+        <section>
+          <h2>Features</h2>
+          <ul>
+            <li><strong>Download as Markdown (.md)</strong> — Perfect for Obsidian, Notion, and other note-taking apps</li>
+            <li><strong>Download as plain text (.txt)</strong> — Universal format readable everywhere</li>
+            <li><strong>Save as PDF</strong> — Print-ready document format</li>
+            <li><strong>Thread merging</strong> — Combine multi-tweet threads into a single document</li>
+            <li><strong>Copy to clipboard</strong> — One-click markdown copy</li>
+            <li><strong>Share</strong> — Share extracted content via Web Share API</li>
+            <li><strong>Dark mode</strong> — Automatic system detection with manual toggle</li>
+            <li><strong>Extraction history</strong> — Quick access to your last 10 extractions</li>
+            <li><strong>Multi-language</strong> — Available in English and Turkish</li>
+            <li><strong>No login required</strong> — Completely free, no API keys needed</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>How to Use Xtracticle</h2>
+          <ol>
+            <li>Copy the URL of any X (Twitter) post, article, or thread</li>
+            <li>Paste the URL into the input field on Xtracticle</li>
+            <li>Click "Extract" to fetch and parse the content</li>
+            <li>Download in your preferred format: Markdown, Text, or PDF</li>
+          </ol>
+        </section>
+
+        <section>
+          <h2>Supported Content Types</h2>
+          <ul>
+            <li>X Articles (long-form posts with rich formatting)</li>
+            <li>Regular tweets</li>
+            <li>Multi-tweet threads (Twitter floods)</li>
+            <li>Posts with images and media attachments</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Frequently Asked Questions</h2>
+          <h3>Is Xtracticle free?</h3>
+          <p>Yes, Xtracticle is completely free and open source. There are no usage limits, no login requirements, and no API keys needed.</p>
+          <h3>What formats can I download?</h3>
+          <p>You can download content as Markdown (.md), plain text (.txt), or PDF. You can also copy the markdown content to your clipboard.</p>
+          <h3>Can I download Twitter threads?</h3>
+          <p>Yes. Xtracticle automatically detects when a post is part of a thread and offers a "Load Full Thread" option to merge all posts into a single document.</p>
+          <h3>Does it work with X's long-form articles?</h3>
+          <p>Yes, Xtracticle fully supports X's article format including headings, bold/italic text, links, images, blockquotes, and lists.</p>
+        </section>
+
+        <footer>
+          <p>Xtracticle is open source. Visit our <a href="https://github.com/ahmetdeveci3112-crypto/Xtracticle">GitHub repository</a> to contribute or report issues.</p>
+          <p>JavaScript is required to use this application.</p>
+        </footer>
+      </main>
+    </noscript>
   </body>
 </html>
-

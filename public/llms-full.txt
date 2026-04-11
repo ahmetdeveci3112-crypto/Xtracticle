@@ -1,0 +1,161 @@
+# Xtracticle — Complete Documentation
+
+> Xtracticle is a free, open-source web application that extracts and downloads long-form articles, threads (floods), and posts from X (formerly Twitter) as clean Markdown (.md), plain text (.txt), or PDF files. No login, API key, or account is required.
+
+---
+
+## Overview
+
+Xtracticle solves the problem of saving content from X (formerly Twitter) in portable, offline-friendly formats. X's native platform does not offer easy export options for articles or threads. Xtracticle bridges this gap by fetching post data and converting it into well-structured documents.
+
+### Key Use Cases
+
+- **Researchers**: Save X articles and threads for offline reference and citation
+- **Writers**: Extract long-form content from X for editing in Markdown editors like Obsidian or Notion
+- **Archivists**: Preserve valuable X content before it gets deleted or accounts go private
+- **Students**: Download educational threads and articles for study materials
+- **Content Creators**: Repurpose X content into blog posts, newsletters, or documentation
+
+---
+
+## Features
+
+### Core Features
+1. **Download as Markdown (.md)**: Clean, formatted Markdown with headings, bold, italic, links, images, blockquotes, and lists preserved
+2. **Download as Plain Text (.txt)**: Universal format readable on any device
+3. **Save as PDF**: Print-ready document with embedded images and formatting
+4. **Copy to Clipboard**: One-click copy of the extracted Markdown content
+
+### Advanced Features
+5. **Thread/Flood Merging**: Automatically detects multi-tweet threads and merges them into a single, numbered document (supports up to 25 posts per thread)
+6. **Share**: Uses the Web Share API on mobile devices; falls back to URL copy on desktop
+7. **Extraction History**: Stores the last 10 extractions in localStorage for quick re-access
+8. **Dark Mode**: Automatic detection of system preference with manual toggle
+9. **Multi-Language**: Full support for English and Turkish interfaces
+
+### Supported Content Types
+- X Articles (long-form posts introduced in 2023, with rich formatting)
+- Regular tweets (text, images, links)
+- Multi-tweet threads (Twitter floods)
+- Posts with media attachments (photos displayed, video links preserved)
+
+---
+
+## How to Use
+
+### Step 1: Copy the X Post URL
+Navigate to any X post, article, or thread and copy the URL from your browser's address bar. The URL should look like: `https://x.com/username/status/1234567890`
+
+### Step 2: Paste into Xtracticle
+Open Xtracticle at https://xtracticle.ahmetdeveci3112.workers.dev/ and paste the URL into the input field.
+
+### Step 3: Click Extract
+Click the "Extract" button. Xtracticle will fetch and parse the content in a few seconds.
+
+### Step 4: Download or Copy
+Choose your preferred action:
+- Click **.MD** to download as Markdown
+- Click **.TXT** to download as plain text
+- Click **PDF** to save as PDF
+- Click **Copy** to copy the Markdown content to your clipboard
+- Click **Share** to share via your device's native share dialog
+
+### Thread Detection
+If the extracted post is part of a thread, a "Load Full Thread" button will appear. Click it to fetch and merge all posts in the thread chronologically.
+
+---
+
+## Technical Architecture
+
+### Frontend
+- **Framework**: React 19 with TypeScript
+- **Styling**: Tailwind CSS 4 with @tailwindcss/typography for prose rendering
+- **Markdown Rendering**: react-markdown with remark-gfm for GitHub Flavored Markdown
+- **PDF Generation**: html2pdf.js for client-side PDF creation
+- **Icons**: Lucide React
+
+### Backend
+- **Runtime**: Cloudflare Worker (edge-deployed globally)
+- **API Proxy**: Fetches tweet data from fxtwitter.com API
+- **Caching**: Edge caching with `s-maxage=300, stale-while-revalidate=600` (5-minute fresh, 10-minute stale)
+- **Zero cold start**: Cloudflare Workers have no cold start delays
+
+### Data Flow
+```
+User → Paste X URL → Extract tweet ID → Worker API (/api/tweet/:id)
+                                           ↓
+                                    fxtwitter.com API
+                                           ↓
+                                    Edge Cache (5 min)
+                                           ↓
+                                    JSON response → Frontend
+                                           ↓
+                                    Parse article blocks
+                                           ↓
+                                    Generate Markdown + Text
+                                           ↓
+                                    Download / Copy / Share
+```
+
+### Privacy & Data
+- No user accounts or authentication required
+- No personal data collected
+- No cookies (only localStorage for theme preference and history)
+- No analytics or tracking
+- All processing happens client-side except the API proxy
+- Extraction history stored only in the user's browser localStorage
+
+---
+
+## API
+
+Xtracticle exposes a single API endpoint:
+
+### GET /api/tweet/:id
+
+Fetches tweet data for the given tweet ID.
+
+**Parameters:**
+- `id` (path parameter): Numeric tweet/post ID
+
+**Response (200):**
+```json
+{
+  "text": "Tweet text content...",
+  "author": {
+    "name": "Display Name",
+    "screen_name": "username",
+    "avatar_url": "https://..."
+  },
+  "created_at": "2024-01-01T00:00:00Z",
+  "article": { ... },
+  "media": { ... }
+}
+```
+
+**Error Responses:**
+- `400`: Invalid tweet ID format
+- `404`: Tweet not found (deleted or private)
+- `500`: Internal server error
+
+---
+
+## Deployment
+
+Xtracticle is deployed on Cloudflare Workers with static assets served from Cloudflare's global CDN. The deployment is fully automated via GitHub integration — every push to the `main` branch triggers a new build and deploy.
+
+### Self-Hosting
+
+1. Clone the repository: `git clone https://github.com/ahmetdeveci3112-crypto/Xtracticle.git`
+2. Install dependencies: `npm install`
+3. Run locally: `npm run dev`
+4. Build for production: `npm run build`
+5. Deploy to Cloudflare: `npx wrangler deploy`
+
+---
+
+## License & Contributing
+
+Xtracticle is open source. Contributions are welcome via GitHub pull requests.
+
+Repository: https://github.com/ahmetdeveci3112-crypto/Xtracticle

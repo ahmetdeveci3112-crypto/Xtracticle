@@ -1,0 +1,40 @@
+# Xtracticle
+
+> Xtracticle is a free, open-source web tool that extracts and downloads long-form articles, threads, and posts from X (formerly Twitter) as Markdown, Text, or PDF. No login or API key required.
+
+## About
+
+- [Homepage](https://xtracticle.ahmetdeveci3112.workers.dev/): Main application — paste an X post URL and extract content
+- [GitHub Repository](https://github.com/ahmetdeveci3112-crypto/Xtracticle): Source code, documentation, and contribution guide
+
+## What Xtracticle Does
+
+- [Feature: Download as Markdown](https://xtracticle.ahmetdeveci3112.workers.dev/): Extract X articles and threads as clean Markdown (.md) files
+- [Feature: Download as Text](https://xtracticle.ahmetdeveci3112.workers.dev/): Extract X articles and threads as plain text (.txt) files
+- [Feature: Save as PDF](https://xtracticle.ahmetdeveci3112.workers.dev/): Save X articles as print-ready PDF documents
+- [Feature: Thread Merging](https://xtracticle.ahmetdeveci3112.workers.dev/): Automatically detect and merge multi-tweet threads into one document
+- [Feature: Copy to Clipboard](https://xtracticle.ahmetdeveci3112.workers.dev/): One-click copy of extracted markdown content
+- [Feature: Dark Mode](https://xtracticle.ahmetdeveci3112.workers.dev/): Automatic system detection with manual toggle
+
+## Supported Content
+
+- X Articles (long-form posts with rich formatting including headings, bold, italic, links, images, blockquotes, lists)
+- Regular tweets with text and media
+- Multi-tweet threads (Twitter floods) — up to 25 posts per thread
+- Posts with image attachments
+
+## How It Works
+
+1. User pastes an X post URL (e.g., https://x.com/username/status/123456789)
+2. Xtracticle extracts the tweet ID from the URL
+3. The backend Worker fetches the post data via the fxtwitter API
+4. Article content is parsed and converted to Markdown and plain text
+5. User can download as .md, .txt, or PDF, or copy to clipboard
+
+## Technical Details
+
+- Frontend: React + TypeScript + Tailwind CSS
+- Backend: Cloudflare Worker (edge-deployed, zero cold start)
+- API: Proxies to fxtwitter.com for tweet data extraction
+- Caching: 5-minute edge cache with stale-while-revalidate
+- No database, no authentication, no user data collection
