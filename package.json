@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "wrangler pages dev --compatibility-date=2024-01-01 -- vite --host",
+    "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit"
