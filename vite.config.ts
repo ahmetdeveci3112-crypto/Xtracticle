@@ -1,7 +1,47 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import {defineConfig} from 'vite';
+import fs from 'fs';
+import {defineConfig, type Plugin} from 'vite';
+
+/**
+ * Post-build plugin: inlines CSS into HTML <style> tags.
+ * Eliminates render-blocking CSS request and JS→CSS dependency chain.
+ * The CSS is ~6KB gzipped — fits within the 14KB initial TCP congestion window.
+ */
+function inlineCssPlugin(): Plugin {
+  return {
+    name: 'inline-css-to-html',
+    enforce: 'post',
+    apply: 'build',
+    closeBundle() {
+      const distDir = path.resolve(__dirname, 'dist');
+      const htmlPath = path.join(distDir, 'index.html');
+
+      if (!fs.existsSync(htmlPath)) return;
+
+      let html = fs.readFileSync(htmlPath, 'utf-8');
+
+      // Find all CSS <link> tags and inline them
+      const cssLinkRegex = /<link\s+rel="stylesheet"\s+crossorigin\s+href="(\/assets\/[^"]+\.css)"\s*\/?>/g;
+      let match;
+
+      while ((match = cssLinkRegex.exec(html)) !== null) {
+        const cssHref = match[1]; // e.g., /assets/index-JJhOtVz-.css
+        const cssFilePath = path.join(distDir, cssHref);
+
+        if (fs.existsSync(cssFilePath)) {
+          const cssContent = fs.readFileSync(cssFilePath, 'utf-8');
+          html = html.replace(match[0], `<style>${cssContent}</style>`);
+          // Remove the CSS file since it's now inlined
+          fs.unlinkSync(cssFilePath);
+        }
+      }
+
+      fs.writeFileSync(htmlPath, html, 'utf-8');
+    },
+  };
+}
 
 const USER_AGENT = 'Xtracticle/2.0 (https://xtracticle.com)';
 const MAX_THREAD_DEPTH = 25;
@@ -48,6 +88,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    inlineCssPlugin(),
     // Local dev API proxy — mimics Cloudflare Worker behavior
     {
       name: 'api-proxy',
