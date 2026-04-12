@@ -76,6 +76,7 @@ interface TweetData {
     avatar_url: string;
   };
   created_at: string;
+  replies?: number;
   replying_to_status?: string;
   media?: {
     photos?: { url: string }[];
@@ -204,23 +205,45 @@ export default function App() {
 
     setLoading(true);
     try {
-      const data = await fetchTweet(tweetId);
-      setTweetData(data);
-      generateMarkdown(data);
+      // Try thread endpoint first — it returns both single tweets and threads
+      const threadRes = await fetch(`/api/thread/${tweetId}`);
+      const threadData = await threadRes.json();
+
+      let mainTweetData: TweetData | null = null;
+
+      if (threadRes.ok && threadData.isThread && threadData.tweets?.length > 1) {
+        // Thread detected! Show merged thread
+        const tweets = threadData.tweets as TweetData[];
+        mainTweetData = tweets[0];
+        setTweetData(mainTweetData);
+        setThreadCount(tweets.length);
+        generateThreadMarkdown(tweets);
+      } else {
+        // Single tweet — use data from thread response (first tweet) or fetch fresh
+        if (threadRes.ok && threadData.tweets?.length === 1) {
+          mainTweetData = threadData.tweets[0] as TweetData;
+        } else {
+          mainTweetData = await fetchTweet(tweetId);
+        }
+        setTweetData(mainTweetData);
+        generateMarkdown(mainTweetData);
+      }
 
       // Save to history
-      const title = data.article?.title || data.text?.slice(0, 60) || '';
-      const item: HistoryItem = {
-        id: tweetId,
-        url: targetUrl,
-        authorName: data.author?.name || t.unknownAuthor,
-        authorHandle: data.author?.screen_name || t.unknown,
-        title,
-        timestamp: Date.now(),
-      };
-      const updated = [item, ...history.filter(h => h.id !== tweetId)].slice(0, MAX_HISTORY);
-      setHistory(updated);
-      saveHistory(updated);
+      if (mainTweetData) {
+        const title = mainTweetData.article?.title || mainTweetData.text?.slice(0, 60) || '';
+        const item: HistoryItem = {
+          id: tweetId,
+          url: targetUrl,
+          authorName: mainTweetData.author?.name || t.unknownAuthor,
+          authorHandle: mainTweetData.author?.screen_name || t.unknown,
+          title,
+          timestamp: Date.now(),
+        };
+        const updated = [item, ...history.filter(h => h.id !== tweetId)].slice(0, MAX_HISTORY);
+        setHistory(updated);
+        saveHistory(updated);
+      }
     } catch (err: any) {
       setError(err.message || t.errorOccurred);
     } finally {
@@ -228,24 +251,21 @@ export default function App() {
     }
   };
 
-  // Thread loading
+  // Thread loading — uses the Worker's /api/thread/:id endpoint
   const loadThread = async () => {
-    if (!tweetData?.replying_to_status) return;
+    if (!tweetData) return;
+    const tweetId = tweetData.url?.match(/status\/(\d+)/)?.[1] || extractTweetId(url);
+    if (!tweetId) return;
+
     setThreadLoading(true);
     try {
-      const tweets: TweetData[] = [tweetData];
-      let currentId = tweetData.replying_to_status;
-      let depth = 0;
+      const res = await fetch(`/api/thread/${tweetId}`);
+      const data = await res.json();
 
-      while (currentId && depth < MAX_THREAD_DEPTH) {
-        const parent = await fetchTweet(currentId);
-        tweets.unshift(parent);
-        currentId = parent.replying_to_status || '';
-        depth++;
+      if (res.ok && data.tweets?.length > 1) {
+        setThreadCount(data.tweets.length);
+        generateThreadMarkdown(data.tweets);
       }
-
-      setThreadCount(tweets.length);
-      generateThreadMarkdown(tweets);
     } catch {
       // If thread loading fails, keep the single tweet
     } finally {
@@ -728,8 +748,8 @@ export default function App() {
               </div>
             </div>
 
-            {/* Thread detection */}
-            {tweetData.replying_to_status && threadCount === 0 && (
+            {/* Thread detection — shows for replies OR tweets with replies (potential thread start) */}
+            {(tweetData.replying_to_status || (tweetData.replies && tweetData.replies > 0 && !tweetData.article)) && threadCount === 0 && (
               <div
                 className="mb-6 p-4 rounded-xl flex items-center justify-between gap-4"
                 style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
