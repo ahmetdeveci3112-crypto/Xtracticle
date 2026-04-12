@@ -140,8 +140,9 @@ Successful tweet fetches are cached at the edge for **5 minutes** (`s-maxage=300
 │  ┌───────────────────┐    ┌────────────────────────┐  │
 │  │    Static Assets   │    │   Worker (src/worker.ts)│  │
 │  │    (React SPA)     │    │   /api/tweet/:id       │  │
-│  │    dist/           │◀──│   Edge cache (5 min)   │  │
-│  └───────────────────┘    └──────────┬─────────────┘  │
+│  │    dist/           │◀──│   /api/thread/:id      │  │
+│  └───────────────────┘    │   Edge cache (5 min)   │  │
+│                            └──────────┬─────────────┘  │
 │                                       │                │
 └───────────────────────────────────────┼────────────────┘
                                         │
@@ -155,19 +156,17 @@ Successful tweet fetches are cached at the edge for **5 minutes** (`s-maxage=300
 ### Request Flow
 
 ```
-User → Paste X URL → Extract tweet ID → Worker: /api/tweet/:id
+User → Paste X URL → Extract tweet ID → Worker: /api/thread/:id
                                               ↓
-                                        fxtwitter API
+                                        fxtwitter API (per tweet)
                                               ↓
-                                        Edge Cache (5 min)
+                                        Traverse replying_to_status chain (up to 25)
                                               ↓
-                                        JSON → Frontend
+                                        Return { tweets[], isThread }
                                               ↓
-                                        Parse article blocks
+                                        Frontend: merge or single render
                                               ↓
-                                        Render Markdown preview
-                                              ↓
-                                     Download / Copy / Share
+                                        Download / Copy / Share
 ```
 
 ### Article Parsing
@@ -189,7 +188,14 @@ Inline styles (`Bold`, `Italic`, `CODE`) and entity ranges (`LINK`) are processe
 
 ### Thread Detection
 
-When a fetched tweet has a `replying_to_status` field, the app detects it as part of a thread and shows a "Load Full Thread" button. Clicking it fetches parent tweets recursively (up to 25 depth) and merges them chronologically into a single numbered document.
+Threads (floods) are handled via the `/api/thread/:id` Worker endpoint:
+
+1. **Auto-detection on extract:** Every fetch goes through `/api/thread/:id` first. If the tweet is part of a self-reply chain, the Worker traverses **upward** via `replying_to_status` (up to 25 depth), collecting all tweets by the same author.
+2. **Automatic merging:** If multiple tweets are found, they're merged into a single numbered document automatically — no button click needed.
+3. **Manual fallback:** If the initial fetch returns a reply tweet that wasn't auto-detected, a "Load Full Thread" button appears.
+4. **Thread tip:** When the first tweet of a thread is pasted (has replies but no `replying_to_status`), a helpful tip appears: *"To download a full thread, paste the link of the last tweet."*
+
+> **Best practice:** For threads/floods, paste the **last tweet's URL** for best results. The Worker will traverse upward and find all previous tweets in the chain.
 
 ## SEO & AI Discoverability
 
@@ -260,10 +266,11 @@ Xtracticle/
 
 ### Development Notes
 
-- **Local dev** uses a Vite middleware plugin to proxy `/api/tweet/:id` to fxtwitter — no wrangler needed
-- **Production** uses the Cloudflare Worker (`src/worker.ts`) which handles both API routing and static asset serving
+- **Local dev** uses a Vite middleware plugin to proxy `/api/tweet/:id` and `/api/thread/:id` to fxtwitter — no wrangler needed
+- **Production** uses the Cloudflare Worker (`src/worker.ts`) which handles API routing (single tweet + thread assembly) and static asset serving
 - The `wrangler.json` controls the Worker + Assets deployment — do not add a `functions/` directory
 - Dark mode uses CSS custom properties defined in `src/index.css`, toggled via the `.dark` class on `<html>`
+- Thread traversal only goes **upward** (via `replying_to_status`). Forward/downward traversal is not supported by the fxtwitter API
 
 ## License
 
