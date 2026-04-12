@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Download, FileText, AlertCircle, Loader2, FileDown, Moon, Sun, Copy, Check, Share2, Clock, X, ChevronDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
+
 
 /* ─── Translations ─── */
 const translations = {
@@ -486,7 +485,7 @@ export default function App() {
     } catch {}
   };
 
-  const handlePrintPDF = () => {
+  const handlePrintPDF = async () => {
     const element = document.getElementById('pdf-content');
     if (!element) return;
 
@@ -548,6 +547,8 @@ export default function App() {
 
     wrapper.appendChild(clone);
 
+    // @ts-ignore - dynamic import to avoid loading 275KB on page load
+    const html2pdf = (await import('html2pdf.js')).default;
     html2pdf().set({
       margin: 0.5,
       filename: `xtract-@${tweetData?.author?.screen_name || t.unknown}.pdf`,
