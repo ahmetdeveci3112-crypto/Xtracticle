@@ -771,6 +771,7 @@ export default function App() {
         {/* Footer */}
         <footer className="mt-16 text-center text-xs print:hidden" style={{ color: 'var(--text-tertiary)' }}>
           <p>Xtracticle — Free & open source. No login required.</p>
+          <p className="mt-1">Built by <a href="https://x.com/DvciAhmet" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'underline' }}>@DvciAhmet</a></p>
         </footer>
 
       </div>
