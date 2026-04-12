@@ -4,17 +4,17 @@
 
 ## About
 
-- [Homepage](https://xtracticle.ahmetdeveci3112.workers.dev/): Main application — paste an X post URL and extract content
+- [Homepage](https://xtracticle.com/): Main application — paste an X post URL and extract content
 - [GitHub Repository](https://github.com/ahmetdeveci3112-crypto/Xtracticle): Source code, documentation, and contribution guide
 
 ## What Xtracticle Does
 
-- [Feature: Download as Markdown](https://xtracticle.ahmetdeveci3112.workers.dev/): Extract X articles and threads as clean Markdown (.md) files
-- [Feature: Download as Text](https://xtracticle.ahmetdeveci3112.workers.dev/): Extract X articles and threads as plain text (.txt) files
-- [Feature: Save as PDF](https://xtracticle.ahmetdeveci3112.workers.dev/): Save X articles as print-ready PDF documents
-- [Feature: Thread Merging](https://xtracticle.ahmetdeveci3112.workers.dev/): Automatically detect and merge multi-tweet threads into one document
-- [Feature: Copy to Clipboard](https://xtracticle.ahmetdeveci3112.workers.dev/): One-click copy of extracted markdown content
-- [Feature: Dark Mode](https://xtracticle.ahmetdeveci3112.workers.dev/): Automatic system detection with manual toggle
+- [Feature: Download as Markdown](https://xtracticle.com/): Extract X articles and threads as clean Markdown (.md) files
+- [Feature: Download as Text](https://xtracticle.com/): Extract X articles and threads as plain text (.txt) files
+- [Feature: Save as PDF](https://xtracticle.com/): Save X articles as print-ready PDF documents
+- [Feature: Thread Merging](https://xtracticle.com/): Automatically detect and merge multi-tweet threads into one document
+- [Feature: Copy to Clipboard](https://xtracticle.com/): One-click copy of extracted markdown content
+- [Feature: Dark Mode](https://xtracticle.com/): Automatic system detection with manual toggle
 
 ## Supported Content
 

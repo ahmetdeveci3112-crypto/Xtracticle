@@ -49,7 +49,7 @@
 
 ## Demo
 
-**Live:** [xtracticle.ahmetdeveci3112.workers.dev](https://xtracticle.ahmetdeveci3112.workers.dev)
+**Live:** [xtracticle.com](https://xtracticle.com)
 
 ### How to use
 1. Copy any X post URL (e.g. `https://x.com/username/status/123456789`)

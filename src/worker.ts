@@ -49,7 +49,7 @@ export default {
         {
           headers: {
             "User-Agent":
-              "Xtracticle/2.0 (https://xtracticle.ahmetdeveci3112.workers.dev)",
+              "Xtracticle/2.0 (https://xtracticle.com)",
           },
         }
       );

@@ -47,7 +47,7 @@ Xtracticle solves the problem of saving content from X (formerly Twitter) in por
 Navigate to any X post, article, or thread and copy the URL from your browser's address bar. The URL should look like: `https://x.com/username/status/1234567890`
 
 ### Step 2: Paste into Xtracticle
-Open Xtracticle at https://xtracticle.ahmetdeveci3112.workers.dev/ and paste the URL into the input field.
+Open Xtracticle at https://xtracticle.com/ and paste the URL into the input field.
 
 ### Step 3: Click Extract
 Click the "Extract" button. Xtracticle will fetch and parse the content in a few seconds.

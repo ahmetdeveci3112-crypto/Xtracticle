@@ -1,5 +1,5 @@
 # Robots.txt for Xtracticle
-# https://xtracticle.ahmetdeveci3112.workers.dev
+# https://xtracticle.com
 
 User-agent: *
 Allow: /
@@ -7,9 +7,9 @@ Allow: /llms.txt
 Allow: /llms-full.txt
 
 # Sitemap
-Sitemap: https://xtracticle.ahmetdeveci3112.workers.dev/sitemap.xml
+Sitemap: https://xtracticle.com/sitemap.xml
 
 # AI Agents & LLMs
 # For AI-readable site documentation, see:
-# https://xtracticle.ahmetdeveci3112.workers.dev/llms.txt
-# https://xtracticle.ahmetdeveci3112.workers.dev/llms-full.txt
+# https://xtracticle.com/llms.txt
+# https://xtracticle.com/llms-full.txt
