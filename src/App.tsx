@@ -748,8 +748,8 @@ export default function App() {
               </div>
             </div>
 
-            {/* Thread detection — shows for replies OR tweets with replies (potential thread start) */}
-            {(tweetData.replying_to_status || (tweetData.replies && tweetData.replies > 0 && !tweetData.article)) && threadCount === 0 && (
+            {/* Thread detection — only show when we can actually traverse (reply chain exists) */}
+            {tweetData.replying_to_status && threadCount === 0 && (
               <div
                 className="mb-6 p-4 rounded-xl flex items-center justify-between gap-4"
                 style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
