@@ -35,6 +35,7 @@ const translations = {
     loadThread: "Load Full Thread",
     loadingThread: "Loading thread…",
     threadLoaded: "posts loaded",
+    threadTip: "💡 To download a full thread, paste the link of the last tweet in the thread.",
   },
   tr: {
     title: "Xtracticle",
@@ -64,6 +65,7 @@ const translations = {
     loadThread: "Tüm Flood'u Yükle",
     loadingThread: "Flood yükleniyor…",
     threadLoaded: "gönderi yüklendi",
+    threadTip: "💡 Bir flood'u indirmek için flood'un son tweetinin linkini yapıştırın.",
   }
 };
 
@@ -764,6 +766,16 @@ export default function App() {
                   {threadLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                   {threadLoading ? t.loadingThread : t.loadThread}
                 </button>
+              </div>
+            )}
+
+            {/* Thread tip — shown for potential thread-start tweets (has replies, no article, no thread loaded yet) */}
+            {!tweetData.replying_to_status && !tweetData.article && tweetData.replies && tweetData.replies > 0 && threadCount === 0 && (
+              <div
+                className="mb-6 p-3.5 rounded-xl flex items-start gap-3"
+                style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
+              >
+                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{t.threadTip}</p>
               </div>
             )}
 
