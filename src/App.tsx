@@ -1,7 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { Download, FileText, AlertCircle, Loader2, FileDown, Moon, Sun, Copy, Check, Share2, Clock, X, ChevronDown } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+
+// Lazy-load react-markdown + remark-gfm together (~165KB saved from initial bundle)
+const LazyMarkdown = lazy(() =>
+  Promise.all([import('react-markdown'), import('remark-gfm')]).then(
+    ([{ default: ReactMarkdown }, { default: remarkGfm }]) => ({
+      default: (props: any) => <ReactMarkdown remarkPlugins={[remarkGfm]} {...props} />,
+    })
+  )
+);
 
 
 /* ─── Translations ─── */
@@ -788,14 +795,15 @@ export default function App() {
 
             {/* Markdown Content */}
             <div id="pdf-content" className="prose prose-neutral max-w-none prose-img:rounded-2xl prose-img:border prose-a:text-blue-600 dark:prose-a:text-blue-400">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  img: ({ node, ...props }) => <img {...props} referrerPolicy="no-referrer" style={{ borderColor: 'var(--border)' }} />
-                }}
-              >
-                {markdownContent}
-              </ReactMarkdown>
+              <Suspense fallback={<div className="animate-pulse" style={{ color: 'var(--text-tertiary)' }}>Loading preview…</div>}>
+                <LazyMarkdown
+                  components={{
+                    img: ({ node, ...props }: any) => <img {...props} referrerPolicy="no-referrer" style={{ borderColor: 'var(--border)' }} />,
+                  }}
+                >
+                  {markdownContent}
+                </LazyMarkdown>
+              </Suspense>
             </div>
 
           </div>
