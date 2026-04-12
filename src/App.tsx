@@ -582,7 +582,7 @@ export default function App() {
         </button>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-16 md:py-24">
+      <main className="max-w-3xl mx-auto px-6 py-16 md:py-24">
 
         {/* Header */}
         <header className="mb-14 text-center print:hidden animate-fade-in">
@@ -806,7 +806,7 @@ export default function App() {
           <p className="mt-1">Built by <a href="https://x.com/DvciAhmet" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'underline' }}>@DvciAhmet</a> · <a href="https://github.com/ahmetdeveci3112-crypto/Xtracticle" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'underline' }}>GitHub</a></p>
         </footer>
 
-      </div>
+      </main>
     </div>
   );
 }

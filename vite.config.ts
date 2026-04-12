@@ -115,4 +115,17 @@ export default defineConfig({
       '@': path.resolve(__dirname, '.'),
     },
   },
+  build: {
+    target: 'es2020',
+    cssCodeSplit: false, // Inline CSS into JS to reduce render-blocking
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'markdown': ['react-markdown', 'remark-gfm'],
+          'pdf': ['html2pdf.js'],
+        },
+      },
+    },
+  },
 });
