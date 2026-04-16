@@ -9,6 +9,50 @@ Allow: /llms-full.txt
 # Sitemap
 Sitemap: https://xtracticle.com/sitemap.xml
 
+# ═══════════════════════════════════════════
+# AI Crawlers — Explicitly Allowed
+# ═══════════════════════════════════════════
+
+# OpenAI
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+# Google AI
+User-agent: Google-Extended
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+# Anthropic
+User-agent: ClaudeBot
+Allow: /
+User-agent: anthropic-ai
+Allow: /
+
+# Apple
+User-agent: Applebot-Extended
+Allow: /
+
+# Meta
+User-agent: FacebookBot
+Allow: /
+
+# Microsoft / Bing
+User-agent: Bingbot
+Allow: /
+
+# Common Crawl (used by many AI training sets)
+User-agent: CCBot
+Allow: /
+
 # AI Agents & LLMs
 # For AI-readable site documentation, see:
 # https://xtracticle.com/llms.txt
