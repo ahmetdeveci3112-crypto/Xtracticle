@@ -5,6 +5,10 @@
   <p>Free, open source, no login required.</p>
 
   <p>
+    <a href="https://www.producthunt.com/posts/xtracticle" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=xtracticle&theme=light" alt="Xtracticle - Download X articles & threads as Markdown, Text or PDF | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+  </p>
+
+  <p>
     <a href="#features">Features</a> •
     <a href="#demo">Demo</a> •
     <a href="#tech-stack">Tech Stack</a> •
