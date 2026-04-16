@@ -610,16 +610,18 @@ export default function App() {
           </p>
           <div className="mt-8 flex justify-center">
             <a
-              href="https://www.producthunt.com/posts/xtracticle"
+              href="https://www.producthunt.com/posts/xtracticle?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-xtracticle"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-transform hover:scale-105 active:scale-95"
-              style={{ backgroundColor: '#ff6154', color: '#ffffff', boxShadow: '0 4px 14px rgba(255, 97, 84, 0.3)' }}
+              className="transition-transform hover:scale-105 active:scale-95"
             >
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1 14.5v-3h-2v3h-1.5v-3h-1v-4h2.5c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5h-.5v2h-1.5zM12.5 11h-1.5v2h1.5c.55 0 1-.45 1-1s-.45-1-1-1z"/>
-              </svg>
-              Support us on Product Hunt
+              <img
+                src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=xtracticle&theme=${dark ? 'dark' : 'light'}`}
+                alt="Xtracticle - Download X articles & threads as Markdown, Text or PDF | Product Hunt"
+                style={{ width: '250px', height: '54px' }}
+                width="250"
+                height="54"
+              />
             </a>
           </div>
         </header>
