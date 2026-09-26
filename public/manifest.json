@@ -1,8 +1,9 @@
 {
   "name": "Xtracticle — X Article & Thread Downloader",
   "short_name": "Xtracticle",
-  "description": "Free tool to download X articles and threads as Markdown, Text, or PDF. No login required.",
-  "start_url": "/",
+  "description": "Download X (Twitter) articles, threads and posts as PDF, Markdown, EPUB/Kindle or text. Free, no login.",
+  "id": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",
@@ -12,6 +13,12 @@
   "dir": "ltr",
   "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
@@ -28,18 +35,46 @@
   "screenshots": [
     {
       "src": "/og-image.png",
-      "sizes": "1024x1024",
+      "sizes": "1200x630",
       "type": "image/png",
       "form_factor": "wide",
       "label": "Xtracticle — Download X Articles & Threads"
     }
   ],
-  "categories": ["utilities", "productivity", "social"],
+  "categories": [
+    "utilities",
+    "productivity",
+    "books"
+  ],
+  "shortcuts": [
+    {
+      "name": "X Article to PDF",
+      "url": "/x-article-to-pdf",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Thread to PDF",
+      "url": "/x-thread-to-pdf",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
   "share_target": {
     "action": "/",
     "method": "GET",
     "params": {
-      "url": "url"
+      "title": "title",
+      "text": "text",
+      "url": "link"
     }
   }
 }

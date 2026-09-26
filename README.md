@@ -1,7 +1,7 @@
 <div align="center">
-  <img width="80" height="80" src="public/icon-512.png" alt="Xtracticle Logo"/>
+  <img width="80" height="80" src="public/icon-192.png" alt="Xtracticle Logo"/>
   <h1>Xtracticle</h1>
-  <p><strong>Extract and download articles, threads & posts from X as Markdown, Text, or PDF.</strong></p>
+  <p><strong>Download X (Twitter) Articles, threads & posts as PDF, Markdown, EPUB/Kindle, text or a ZIP with images.</strong></p>
   <p>Free, open source, no login required.</p>
 
   <p>
@@ -10,12 +10,10 @@
 
   <p>
     <a href="#features">Features</a> •
-    <a href="#demo">Demo</a> •
-    <a href="#tech-stack">Tech Stack</a> •
     <a href="#getting-started">Getting Started</a> •
-    <a href="#deployment">Deployment</a> •
     <a href="#architecture">Architecture</a> •
     <a href="#seo--ai-discoverability">SEO & AI</a> •
+    <a href="#api">API</a> •
     <a href="#contributing">Contributing</a>
   </p>
 
@@ -28,59 +26,35 @@
 
 ---
 
+**Live:** [xtracticle.com](https://xtracticle.com) — or just change `x.com` to `xtracticle.com` in any post URL.
+
 ## Features
 
-### Core
-- 📥 **Three export formats** — Markdown (`.md`), Plain Text (`.txt`), and PDF
-- 📝 **Full X Article support** — Parses Draft.js-based articles with headings, bold, italic, links, images, blockquotes, and lists
-- 🧵 **Thread/Flood merging** — Detects multi-tweet threads and merges up to 25 posts into a single document
-- 📋 **Copy to clipboard** — One-click markdown copy with visual feedback
-- 🔗 **Share** — Native Web Share API on mobile, URL copy fallback on desktop
-- 📜 **Extraction history** — Last 10 extractions saved in localStorage for quick re-access
+### Export formats
+| Format | What you get |
+|--------|--------------|
+| **PDF** | A4, print-ready; title/author/date/source header, images, page numbers, clickable source link. Rendered page by page so long articles never produce blank PDFs and lines are never cut. |
+| **Markdown** | Headings, bold/italic/strikethrough, links, nested lists, quotes, code, dividers, images, video thumbnails. Optional YAML front-matter (Obsidian properties, Hugo/Jekyll/Astro). |
+| **EPUB 3** | Reflowable e-book with embedded images and metadata — Kindle (Send to Kindle), Kobo, Apple Books. |
+| **ZIP + images** | Markdown + every image stored locally — an offline archive that survives deleted posts. |
+| **Text** | Clean `.txt`. |
+| **Obsidian** | Copies the Markdown and opens a new note via `obsidian://new`. |
 
-### UI/UX
-- 🌙 **Dark mode** — Automatic system detection + manual toggle, persisted in localStorage
-- ✨ **Micro-animations** — Smooth fadeIn, slideUp, shake, pulse, and check-bounce effects
-- 🔤 **Inter font** — Premium typography via Google Fonts
-- 🌍 **Bilingual** — English and Turkish, auto-detected from browser language
+### Content
+- 📝 **X Articles** — full Draft.js conversion: cover, inline images, videos, captions, embedded posts
+- 🧵 **Threads from any post** — paste the first, a middle or the last post; the whole self-thread is assembled (other people's replies are excluded)
+- 💬 **Posts** — line breaks, photos, videos and quoted posts
+- 🔗 **Flexible input** — x.com, twitter.com, mobile, fxtwitter/vxtwitter/fixupx, nitter/xcancel links, `/i/web/status/`, bare IDs, links inside shared text
 
-### Infrastructure
-- ⚡ **Edge-deployed** — Cloudflare Worker with zero cold start, globally distributed
-- 🗄️ **Edge caching** — 5-minute cache + 10-minute stale-while-revalidate
-- 🔒 **No API keys** — Uses the public [fxtwitter](https://github.com/FixTweet/FxTwitter) API
-- 🔍 **SEO optimized** — JSON-LD structured data, Open Graph, Twitter Cards, noscript fallback
-- 🤖 **AI discoverable** — `llms.txt`, `llms-full.txt`, FAQ schema, HTTP headers for AI agents
-
-## Demo
-
-**Live:** [xtracticle.com](https://xtracticle.com)
-
-### How to use
-1. Copy any X post URL (e.g. `https://x.com/username/status/123456789`)
-2. Paste into Xtracticle → Click **Extract**
-3. Download as `.md`, `.txt`, or `PDF` — or copy/share
-
-## Tech Stack
-
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Frontend** | React 19 + TypeScript | UI components and state |
-| **Build** | Vite 6 | Dev server + production build |
-| **Styling** | TailwindCSS 4 + Typography Plugin | Design system with CSS custom properties |
-| **Markdown** | react-markdown + remark-gfm | Article preview rendering |
-| **PDF** | html2pdf.js | Client-side PDF generation |
-| **Icons** | lucide-react | UI icon set |
-| **Backend** | Cloudflare Worker | API proxy + static asset serving |
-| **Hosting** | Cloudflare Workers + Assets | Edge deployment with CDN |
+### Workflow
+- 🔁 **URL swap** — `xtracticle.com/{user}/status/{id}` opens a post directly, with rich link previews (Open Graph) when shared
+- 📚 **Batch mode** — up to 20 links → one ZIP of Markdown files
+- 🔖 **Bookmarklet** and **PWA share target** (share from the X app on Android)
+- 🔊 **Listen** — read aloud with the browser's text-to-speech
+- 📜 **History**, 🌙 **dark mode**, 🌍 **English / Turkish**
+- 📈 **Analytics events** — `extract`, `download` (format), `copy`, `share`, `listen`, `batch_extract`, errors — in GA4
 
 ## Getting Started
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) 18+
-- npm
-
-### Install & Run
 
 ```bash
 git clone https://github.com/ahmetdeveci3112-crypto/Xtracticle.git
@@ -89,193 +63,88 @@ npm install
 npm run dev
 ```
 
-The dev server starts at `http://localhost:5173`. The Vite config includes a local API proxy middleware that mimics the Worker behavior — no Cloudflare or wrangler needed for development.
-
-### Available Scripts
+The dev server runs at `http://localhost:5173`. `/api/*` is served by the **same handler as the Worker** (`src/shared/api.ts`), and every landing page is rendered on the fly — no wrangler needed.
 
 | Script | Description |
 |--------|-------------|
-| `npm run dev` | Start Vite dev server with API proxy |
-| `npm run build` | Production build → `dist/` |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | TypeScript type checking |
+| `npm run dev` | Vite dev server with the API |
+| `npm run build` | Production build → `dist/` (all landing pages, 404, sitemap) |
+| `npm run preview:worker` | Build and run the real Worker locally with `wrangler dev` (SSR status pages, 404s, `_headers`) |
+| `npm run lint` | Type-check the app and the Worker |
 
 ## Deployment
 
-Deployed on **Cloudflare Workers** with automatic GitHub integration.
+Cloudflare Workers + Static Assets, deployed automatically on push to `main` (build: `npm run build`, deploy: `npx wrangler deploy`). No environment variables.
 
-### Setup
-
-1. Connect your GitHub repo at [Cloudflare Dashboard → Workers & Pages](https://dash.cloudflare.com/)
-2. Configure build settings:
-
-| Setting | Value |
-|---------|-------|
-| **Build command** | `npm run build` |
-| **Deploy command** | `npx wrangler deploy` |
-
-3. Push to `main` — Cloudflare auto-builds and deploys.
-
-No environment variables needed. The `wrangler.json` in the repo configures everything:
-
-```json
-{
-  "name": "xtracticle",
-  "compatibility_date": "2024-01-01",
-  "main": "src/worker.ts",
-  "assets": {
-    "directory": "./dist",
-    "binding": "ASSETS",
-    "not_found_handling": "single-page-application"
-  }
-}
-```
-
-### Edge Caching
-
-Successful tweet fetches are cached at the edge for **5 minutes** (`s-maxage=300`) with a 10-minute stale-while-revalidate window. This protects the upstream API under heavy traffic.
+`wrangler.json`:
+- `run_worker_first` — only `/api/*` and `/*/status/*` hit the Worker; everything else is served straight from the CDN
+- `not_found_handling: "404-page"` — unknown URLs return a real `404` (no soft-404s)
+- `public/_headers` — security headers, `Link: </llms.txt>`, immutable caching for hashed assets
 
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────────┐
-│              Cloudflare Workers (Edge)                │
-│                                                       │
-│  ┌───────────────────┐    ┌────────────────────────┐  │
-│  │    Static Assets   │    │   Worker (src/worker.ts)│  │
-│  │    (React SPA)     │    │   /api/tweet/:id       │  │
-│  │    dist/           │◀──│   /api/thread/:id      │  │
-│  └───────────────────┘    │   Edge cache (5 min)   │  │
-│                            └──────────┬─────────────┘  │
-│                                       │                │
-└───────────────────────────────────────┼────────────────┘
-                                        │
-                                        ▼
-                              ┌──────────────────┐
-                              │  fxtwitter.com    │
-                              │  (Public API)     │
-                              └──────────────────┘
+Browser ──► Cloudflare
+             ├─ Static assets (dist/)          /, /x-article-to-pdf, /tr/, … , 404.html, sitemap.xml
+             └─ Worker (src/worker.ts)
+                 ├─ /api/thread/:id, /api/tweet/:id ──► src/shared/api.ts ──► FxTwitter API
+                 │                                        (edge cache, 5 min)
+                 └─ /{user}/status/{id} ──► app shell + per-post OG tags + preloaded JSON (noindex)
 ```
 
-### Request Flow
-
 ```
-User → Paste X URL → Extract tweet ID → Worker: /api/thread/:id
-                                              ↓
-                                        fxtwitter API (per tweet)
-                                              ↓
-                                        Traverse replying_to_status chain (up to 25)
-                                              ↓
-                                        Return { tweets[], isThread }
-                                              ↓
-                                        Frontend: merge or single render
-                                              ↓
-                                        Download / Copy / Share
+src/
+├── App.tsx              UI: extraction, exports, batch mode, deep links
+├── i18n.ts              EN / TR strings
+├── lib/convert.ts       Posts / threads / Draft.js articles → Markdown + text + metadata
+├── lib/export.ts        PDF (jsPDF + html2canvas-pro), EPUB, ZIP (fflate), Obsidian
+├── lib/url.ts           Input + path parsing
+├── lib/analytics.ts     GA4 event helper
+├── shared/fx.ts         FxTwitter client (v2 thread endpoint + v1 fallback), shared by Worker & dev server
+├── shared/api.ts        JSON API handler with edge caching
+├── shared/text.ts       Title extraction
+└── worker.ts            Cloudflare Worker (API + status-page SSR)
+site/
+├── pages.ts             Landing page content (one page per search intent)
+├── render.ts            Head/meta/JSON-LD/content/footer rendering
+└── plugin.ts            Vite plugin: emits every page, 404.html and sitemap.xml
 ```
 
-### Article Parsing
-
-X articles use a Draft.js block format. The app converts these blocks to Markdown:
-
-| Block Type | Markdown Output |
-|------------|----------------|
-| `header-two` | `### Heading` |
-| `header-three` | `#### Heading` |
-| `unstyled` | Paragraph text |
-| `unordered-list-item` | `- Item` |
-| `ordered-list-item` | `1. Item` |
-| `blockquote` | `> Quote` |
-| `atomic` (MEDIA) | `![caption](url)` |
-| `atomic` (DIVIDER) | `---` |
-
-Inline styles (`Bold`, `Italic`, `CODE`) and entity ranges (`LINK`) are processed character-by-character for precise formatting.
-
-### Thread Detection
-
-Threads (floods) are handled via the `/api/thread/:id` Worker endpoint:
-
-1. **Auto-detection on extract:** Every fetch goes through `/api/thread/:id` first. If the tweet is part of a self-reply chain, the Worker traverses **upward** via `replying_to_status` (up to 25 depth), collecting all tweets by the same author.
-2. **Automatic merging:** If multiple tweets are found, they're merged into a single numbered document automatically — no button click needed.
-3. **Manual fallback:** If the initial fetch returns a reply tweet that wasn't auto-detected, a "Load Full Thread" button appears.
-4. **Thread tip:** When the first tweet of a thread is pasted (has replies but no `replying_to_status`), a helpful tip appears: *"To download a full thread, paste the link of the last tweet."*
-
-> **Best practice:** For threads/floods, paste the **last tweet's URL** for best results. The Worker will traverse upward and find all previous tweets in the chain.
+Heavy export libraries are dynamically imported, so the initial page only loads React + the app.
 
 ## SEO & AI Discoverability
 
-This project is built with maximum discoverability in mind — for both traditional search engines and AI agents/browsers.
-
-### Search Engine Optimization
-
 | Layer | Implementation |
 |-------|---------------|
-| **Structured Data** | 4 JSON-LD schemas: `WebApplication`, `HowTo`, `FAQPage`, `BreadcrumbList` |
-| **Open Graph** | Full OG meta tags with `og:image` (1200×630) |
-| **Twitter Card** | `summary_large_image` card |
-| **Noscript Fallback** | Complete semantic HTML content for JS-disabled crawlers |
-| **Hreflang** | `en` / `tr` / `x-default` language alternates |
-| **Sitemap** | `sitemap.xml` with main page + AI documentation pages |
-| **Robots** | `robots.txt` with explicit allow directives |
+| **Intent pages** | `/x-article-to-pdf`, `/x-article-to-markdown`, `/x-thread-to-pdf`, `/x-article-to-epub`, `/save-x-articles-to-obsidian`, `/tr/` — each with unique, visible HTML content and FAQ |
+| **Crawlable content** | Content is static HTML outside the React root — no JS needed to index it |
+| **Structured data** | `WebApplication`, `FAQPage` (matches visible FAQ), `BreadcrumbList` |
+| **i18n** | Proper `hreflang` pair for `/` ↔ `/tr/` |
+| **Share pages** | `/{user}/status/{id}` get post-specific OG/Twitter tags; `noindex, follow` |
+| **Sitemap / 404** | Generated at build; real 404 status for unknown URLs |
+| **AI** | [`/llms.txt`](public/llms.txt), [`/llms-full.txt`](public/llms-full.txt), AI crawlers allowed in `robots.txt` |
 
-### AI Agent Discoverability
-
-| File | Purpose |
-|------|---------|
-| [`/llms.txt`](public/llms.txt) | Structured Markdown summary for AI agents ([llmstxt.org](https://llmstxt.org) standard) |
-| [`/llms-full.txt`](public/llms-full.txt) | Comprehensive documentation: features, API, architecture, privacy |
-| **HTTP Headers** | `Link: </llms.txt>; rel="llms-txt"` and `X-Llms-Txt: /llms.txt` on all HTML responses |
-| **FAQ Schema** | Question-answer pairs optimized for AI answer engines (Perplexity, ChatGPT Search, Google AI Overview) |
-| **HowTo Schema** | Step-by-step usage guide in structured data |
-
-### PWA
-
-| Feature | Implementation |
-|---------|---------------|
-| **Manifest** | `manifest.json` with app name, icons, theme, share target |
-| **Share Target** | Users can share X URLs directly to Xtracticle from mobile OS share sheets |
-| **Theme Color** | Adaptive light/dark theme-color meta tags |
-| **Apple Web App** | Full iOS home screen app support |
-
-## Project Structure
+## API
 
 ```
-Xtracticle/
-├── public/
-│   ├── icon-512.png          # App icon / favicon
-│   ├── og-image.png          # Open Graph social preview image
-│   ├── manifest.json         # PWA manifest with share_target
-│   ├── robots.txt            # Crawler directives
-│   ├── sitemap.xml           # Sitemap for search engines
-│   ├── llms.txt              # AI agent site map (llmstxt.org standard)
-│   └── llms-full.txt         # Comprehensive AI-readable documentation
-├── src/
-│   ├── App.tsx               # Main application (UI, state, logic)
-│   ├── index.css             # Design system (CSS properties, dark mode, animations)
-│   ├── main.tsx              # React entry point
-│   └── worker.ts             # Cloudflare Worker (API proxy + asset serving)
-├── index.html                # SPA entry (SEO meta tags, JSON-LD, noscript fallback)
-├── wrangler.json             # Cloudflare Worker + Assets configuration
-├── vite.config.ts            # Vite config with dev API proxy middleware
-├── tsconfig.json             # TypeScript configuration
-└── package.json              # Dependencies and scripts
+GET /api/thread/:id  → { tweets: Tweet[], count, isThread }   # self-thread containing :id
+GET /api/tweet/:id   → Tweet
 ```
+
+`Tweet` mirrors the FxTwitter status object (`text`, `author`, `media`, `quote`, `article`, …). Responses are edge-cached for 5 minutes — please be gentle.
 
 ## Contributing
 
 1. Fork the repo
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Commit your changes
+4. Open a Pull Request
 
-### Development Notes
-
-- **Local dev** uses a Vite middleware plugin to proxy `/api/tweet/:id` and `/api/thread/:id` to fxtwitter — no wrangler needed
-- **Production** uses the Cloudflare Worker (`src/worker.ts`) which handles API routing (single tweet + thread assembly) and static asset serving
-- The `wrangler.json` controls the Worker + Assets deployment — do not add a `functions/` directory
-- Dark mode uses CSS custom properties defined in `src/index.css`, toggled via the `.dark` class on `<html>`
-- Thread traversal only goes **upward** (via `replying_to_status`). Forward/downward traversal is not supported by the fxtwitter API
+Notes:
+- Landing page copy lives in `site/pages.ts`; run `npm run build` to see the generated HTML
+- Keep `src/shared/*` free of DOM/Node-only APIs — it runs in both the Worker and the dev server
+- Test Worker-only behavior (SSR, 404, headers) with `npm run preview:worker`
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+MIT

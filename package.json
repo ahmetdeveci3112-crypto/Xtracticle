@@ -1,19 +1,22 @@
 {
   "name": "xtracticle",
   "private": true,
-  "version": "1.0.0",
+  "version": "3.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit && tsc --noEmit -p tsconfig.worker.json",
+    "preview:worker": "npm run build && wrangler dev"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
-    "html2pdf.js": "^0.14.0",
+    "fflate": "^0.8.3",
+    "html2canvas-pro": "^2.4.5",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.546.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

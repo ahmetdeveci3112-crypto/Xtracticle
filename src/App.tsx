@@ -1,5 +1,13 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
-import { Download, FileText, AlertCircle, Loader2, FileDown, Moon, Sun, Copy, Check, Share2, Clock, X, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
+import {
+  Download, FileText, AlertCircle, Loader2, FileDown, Moon, Sun, Copy, Check, Share2, Clock, ChevronDown,
+  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages,
+} from 'lucide-react';
+import type { FxTweet } from './shared/fx';
+import { translations, type Lang } from './i18n';
+import { buildDoc, fileBaseName, frontMatter, type XDoc } from './lib/convert';
+import { parseInput, parsePath, shareUrl } from './lib/url';
+import { track } from './lib/analytics';
 
 // Lazy-load react-markdown + remark-gfm together (~165KB saved from initial bundle)
 const LazyMarkdown = lazy(() =>
@@ -10,828 +18,720 @@ const LazyMarkdown = lazy(() =>
   )
 );
 
-
-/* ─── Translations ─── */
-const translations = {
-  en: {
-    title: "Xtracticle",
-    description: "Download long-form articles and threads from X as Markdown, Text, or PDF.",
-    placeholder: "Paste an X post link here…",
-    fetch: "Extract",
-    invalidLink: "Please enter a valid X post link.",
-    fetchError: "Could not fetch the article.",
-    errorOccurred: "An error occurred.",
-    unknownAuthor: "Unknown Author",
-    unknown: "unknown",
-    articlePrefix: "Article: @",
-    author: "Author:",
-    date: "Date:",
-    downloadMd: ".MD",
-    downloadTxt: ".TXT",
-    savePdf: "PDF",
-    copyMd: "Copy",
-    copied: "Copied!",
-    share: "Share",
-    attachedImages: "Attached Images",
-    image: "Image",
-    history: "Recent",
-    clearHistory: "Clear",
-    noHistory: "No recent extractions",
-    threadDetected: "This post is part of a thread.",
-    loadThread: "Load Full Thread",
-    loadingThread: "Loading thread…",
-    threadLoaded: "posts loaded",
-    threadTip: "💡 To download a full thread, paste the link of the last tweet in the thread.",
-  },
-  tr: {
-    title: "Xtracticle",
-    description: "X'teki uzun makaleleri ve flood'ları Markdown, Metin veya PDF olarak indirin.",
-    placeholder: "Bir X gönderi linkini buraya yapıştırın…",
-    fetch: "Çıkar",
-    invalidLink: "Geçerli bir X gönderi linki giriniz.",
-    fetchError: "Makale alınamadı.",
-    errorOccurred: "Bir hata oluştu.",
-    unknownAuthor: "Bilinmeyen Yazar",
-    unknown: "bilinmeyen",
-    articlePrefix: "Makale: @",
-    author: "Yazar:",
-    date: "Tarih:",
-    downloadMd: ".MD",
-    downloadTxt: ".TXT",
-    savePdf: "PDF",
-    copyMd: "Kopyala",
-    copied: "Kopyalandı!",
-    share: "Paylaş",
-    attachedImages: "Ekli Görseller",
-    image: "Görsel",
-    history: "Son Çıkarımlar",
-    clearHistory: "Temizle",
-    noHistory: "Henüz çıkarım yapılmadı",
-    threadDetected: "Bu gönderi bir flood'un parçası.",
-    loadThread: "Tüm Flood'u Yükle",
-    loadingThread: "Flood yükleniyor…",
-    threadLoaded: "gönderi yüklendi",
-    threadTip: "💡 Bir flood'u indirmek için flood'un son tweetinin linkini yapıştırın.",
-  }
-};
-
-/* ─── Types ─── */
-interface TweetData {
-  text: string;
-  author: {
-    name: string;
-    screen_name: string;
-    avatar_url: string;
-  };
-  created_at: string;
-  replies?: number;
-  replying_to_status?: string;
-  media?: {
-    photos?: { url: string }[];
-    videos?: { url: string }[];
-  };
-  article?: {
-    title: string;
-    content: {
-      blocks: {
-        text: string;
-        type: string;
-        entityRanges?: { offset: number; length: number; key: number }[];
-        inlineStyleRanges?: { offset: number; length: number; style: string }[];
-      }[];
-      entityMap?: any;
-    };
-    media_entities?: {
-      media_id?: string;
-      media_info?: {
-        original_img_url?: string;
-        preview_image?: { original_img_url?: string };
-        variants?: any[];
-      };
-    }[];
-  };
+/* ─── Page config (injected per page by the build / Worker) ─── */
+type ExportKey = 'md' | 'pdf' | 'epub' | 'zip' | 'txt' | 'obsidian';
+interface PageConfig {
+  page?: string;
+  lang?: Lang | null;
+  h1?: string;
+  sub?: string;
+  primary?: ExportKey;
 }
+declare global {
+  interface Window {
+    __XT__?: PageConfig;
+    __XT_PRELOAD__?: { id: string; tweets: FxTweet[] };
+  }
+}
+const PAGE: PageConfig = (typeof window !== 'undefined' && window.__XT__) || {};
 
+/* ─── Persistence ─── */
 interface HistoryItem {
   id: string;
   url: string;
   authorName: string;
   authorHandle: string;
   title: string;
+  kind?: XDoc['kind'];
   timestamp: number;
 }
 
-/* ─── Helpers ─── */
 const HISTORY_KEY = 'xtracticle_history';
 const THEME_KEY = 'xtracticle_theme';
-const MAX_HISTORY = 10;
-const MAX_THREAD_DEPTH = 25;
+const LANG_KEY = 'xtracticle_lang';
+const FM_KEY = 'xtracticle_frontmatter';
+const MAX_HISTORY = 20;
+const MAX_BATCH = 20;
 
-function getStoredHistory(): HistoryItem[] {
+function load<T>(key: string, fallback: T): T {
   try {
-    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-  } catch { return []; }
+    const raw = localStorage.getItem(key);
+    return raw === null ? fallback : (JSON.parse(raw) as T);
+  } catch {
+    return fallback;
+  }
+}
+function store(key: string, value: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch { /* private mode */ }
 }
 
-function saveHistory(items: HistoryItem[]) {
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(0, MAX_HISTORY)));
+function initialLang(): Lang {
+  if (PAGE.lang) return PAGE.lang;
+  const saved = load<Lang | null>(LANG_KEY, null);
+  if (saved === 'en' || saved === 'tr') return saved;
+  return navigator.language?.toLowerCase().startsWith('tr') ? 'tr' : 'en';
 }
 
-function getStoredTheme(): 'dark' | 'light' | null {
+const isHomeLike = (path: string) => path === '/' || path === '/tr/' || !!parsePath(path);
+
+/* ─── API ─── */
+class ApiError extends Error {}
+
+async function fetchThread(id: string, fallbackMsg: string): Promise<FxTweet[]> {
+  const res = await fetch(`/api/thread/${id}`);
+  let data: any = null;
   try {
-    return localStorage.getItem(THEME_KEY) as any;
-  } catch { return null; }
+    data = await res.json();
+  } catch { /* non-JSON error page */ }
+  if (!res.ok || !data?.tweets?.length) throw new ApiError(fallbackMsg);
+  return data.tweets as FxTweet[];
 }
 
 /* ─── App ─── */
 export default function App() {
+  const [lang, setLang] = useState<Lang>(initialLang);
+  const t = translations[lang];
+  const locale = lang === 'tr' ? 'tr-TR' : 'en-US';
+
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [tweetData, setTweetData] = useState<TweetData | null>(null);
-  const [markdownContent, setMarkdownContent] = useState<string>('');
-  const [plainTextContent, setPlainTextContent] = useState<string>('');
-  const [lang, setLang] = useState<'en' | 'tr'>('en');
-  const [dark, setDark] = useState(false);
-  const [justCopied, setJustCopied] = useState(false);
-  const [history, setHistory] = useState<HistoryItem[]>(getStoredHistory());
+  const [tweets, setTweets] = useState<FxTweet[] | null>(null);
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
+  const [flash, setFlash] = useState<string | null>(null);
+  const [busy, setBusy] = useState<ExportKey | null>(null);
+  const [recent, setRecent] = useState<HistoryItem[]>(() => load(HISTORY_KEY, []));
   const [showHistory, setShowHistory] = useState(false);
-  const [threadLoading, setThreadLoading] = useState(false);
-  const [threadCount, setThreadCount] = useState(0);
+  const [withFrontMatter, setWithFrontMatter] = useState<boolean>(() => load(FM_KEY, true));
+  const [mode, setMode] = useState<'single' | 'batch'>('single');
+  const [speaking, setSpeaking] = useState(false);
+  const resultRef = useRef<HTMLDivElement>(null);
+  const scrollPending = useRef(false);
+  const requestRef = useRef(0);
 
-  // Language detection
-  useEffect(() => {
-    if (navigator.language.startsWith('tr')) setLang('tr');
-  }, []);
+  const doc = useMemo(() => (tweets?.length ? buildDoc(tweets, t.labels, locale) : null), [tweets, t, locale]);
+  const primary: ExportKey = PAGE.primary || 'md';
 
-  // Theme initialization
-  useEffect(() => {
-    const stored = getStoredTheme();
-    if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      setDark(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
+  /* ─── Theme ─── */
   const toggleTheme = () => {
     const next = !dark;
     setDark(next);
-    document.documentElement.classList.toggle('dark', next);
-    document.documentElement.classList.add('theme-transition');
-    localStorage.setItem(THEME_KEY, next ? 'dark' : 'light');
-    setTimeout(() => document.documentElement.classList.remove('theme-transition'), 400);
+    const root = document.documentElement;
+    root.classList.add('theme-transition');
+    root.classList.toggle('dark', next);
+    try { localStorage.setItem(THEME_KEY, next ? 'dark' : 'light'); } catch { /* ignore */ }
+    setTimeout(() => root.classList.remove('theme-transition'), 400);
   };
 
-  const t = translations[lang];
+  /* ─── Language ─── */
+  const toggleLang = () => {
+    const next: Lang = lang === 'en' ? 'tr' : 'en';
+    store(LANG_KEY, next);
+    // Home pages have dedicated localized URLs.
+    if (location.pathname === '/' && next === 'tr') return void (location.href = '/tr/');
+    if (location.pathname === '/tr/' && next === 'en') return void (location.href = '/');
+    setLang(next);
+  };
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
-  const extractTweetId = (inputUrl: string) => {
-    const match = inputUrl.match(/(?:x\.com|twitter\.com)\/(?:#!\/)?\w+\/status(?:es)?\/(\d+)/);
-    return match ? match[1] : null;
+  const showFlash = (msg: string) => {
+    setFlash(msg);
+    setTimeout(() => setFlash(f => (f === msg ? null : f)), 2000);
   };
 
-  const fetchTweet = async (tweetId: string): Promise<TweetData> => {
-    const res = await fetch(`/api/tweet/${tweetId}`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || t.fetchError);
-    return data;
-  };
+  /* ─── Extraction ─── */
+  const applyResult = useCallback((id: string, list: FxTweet[], sourceInput: string, pushUrl: boolean) => {
+    setTweets(list);
+    const first = list[0];
+    const kind: XDoc['kind'] = first.article ? 'article' : list.length > 1 ? 'thread' : 'post';
+    const item: HistoryItem = {
+      id,
+      url: sourceInput,
+      authorName: first.author?.name || '',
+      authorHandle: first.author?.screen_name || '',
+      title: first.article?.title || (first.text || '').slice(0, 80),
+      kind,
+      timestamp: Date.now(),
+    };
+    setRecent(prev => {
+      const next = [item, ...prev.filter(h => h.id !== id)].slice(0, MAX_HISTORY);
+      store(HISTORY_KEY, next);
+      return next;
+    });
+    if (pushUrl && isHomeLike(location.pathname) && first.author?.screen_name) {
+      const path = `/${first.author.screen_name}/status/${id}`;
+      if (location.pathname !== path) window.history.pushState({ id }, '', path);
+    }
+    scrollPending.current = true;
+  }, []);
 
-  const handleFetch = async (e?: React.FormEvent, overrideUrl?: string) => {
-    if (e) e.preventDefault();
+  const extract = useCallback(async (input: string, opts: { pushUrl?: boolean } = {}) => {
     setError(null);
-    setTweetData(null);
-    setMarkdownContent('');
-    setPlainTextContent('');
-    setThreadCount(0);
-
-    const targetUrl = overrideUrl || url;
-    const tweetId = extractTweetId(targetUrl);
-    if (!tweetId) {
+    const parsed = parseInput(input);
+    if (!parsed) {
       setError(t.invalidLink);
+      track('extract_error', { reason: 'invalid_link' });
       return;
     }
-
+    if (parsed.kind === 'article-link') {
+      setError(t.articleLink);
+      track('extract_error', { reason: 'article_link' });
+      return;
+    }
+    const reqId = ++requestRef.current;
     setLoading(true);
+    setTweets(null);
     try {
-      // Try thread endpoint first — it returns both single tweets and threads
-      const threadRes = await fetch(`/api/thread/${tweetId}`);
-      const threadData = await threadRes.json();
+      const list = await fetchThread(parsed.id, t.fetchError);
+      if (reqId !== requestRef.current) return;
+      applyResult(parsed.id, list, input, opts.pushUrl !== false);
+      const first = list[0];
+      track('extract', { kind: first.article ? 'article' : list.length > 1 ? 'thread' : 'post', posts: list.length, page: PAGE.page });
+    } catch (err) {
+      if (reqId !== requestRef.current) return;
+      setError(err instanceof ApiError ? err.message : t.networkError);
+      track('extract_error', { reason: err instanceof ApiError ? 'not_found' : 'network' });
+    } finally {
+      if (reqId === requestRef.current) setLoading(false);
+    }
+  }, [t, applyResult]);
 
-      let mainTweetData: TweetData | null = null;
-
-      if (threadRes.ok && threadData.isThread && threadData.tweets?.length > 1) {
-        // Thread detected! Show merged thread
-        const tweets = threadData.tweets as TweetData[];
-        mainTweetData = tweets[0];
-        setTweetData(mainTweetData);
-        setThreadCount(tweets.length);
-        generateThreadMarkdown(tweets);
+  // Deep links: /{user}/status/{id}, ?url= / ?link= / ?text= (PWA share target, bookmarklet)
+  useEffect(() => {
+    const fromPath = parsePath(location.pathname);
+    if (fromPath) {
+      const preload = window.__XT_PRELOAD__;
+      const input = `https://x.com/${fromPath.handle || 'i'}/status/${fromPath.id}`;
+      setUrl(input);
+      if (preload?.id === fromPath.id && preload.tweets?.length) {
+        applyResult(fromPath.id, preload.tweets, input, false);
+        track('extract', { kind: 'preloaded', posts: preload.tweets.length, page: 'status' });
       } else {
-        // Single tweet — use data from thread response (first tweet) or fetch fresh
-        if (threadRes.ok && threadData.tweets?.length === 1) {
-          mainTweetData = threadData.tweets[0] as TweetData;
-        } else {
-          mainTweetData = await fetchTweet(tweetId);
-        }
-        setTweetData(mainTweetData);
-        generateMarkdown(mainTweetData);
+        extract(input, { pushUrl: false });
       }
-
-      // Save to history
-      if (mainTweetData) {
-        const title = mainTweetData.article?.title || mainTweetData.text?.slice(0, 60) || '';
-        const item: HistoryItem = {
-          id: tweetId,
-          url: targetUrl,
-          authorName: mainTweetData.author?.name || t.unknownAuthor,
-          authorHandle: mainTweetData.author?.screen_name || t.unknown,
-          title,
-          timestamp: Date.now(),
-        };
-        const updated = [item, ...history.filter(h => h.id !== tweetId)].slice(0, MAX_HISTORY);
-        setHistory(updated);
-        saveHistory(updated);
-      }
-    } catch (err: any) {
-      setError(err.message || t.errorOccurred);
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
+    const params = new URLSearchParams(location.search);
+    // Share sheets put the link in different fields (often inside `text`) — search them all.
+    const shared = ['url', 'link', 'text', 'title'].map(k => params.get(k)).filter(Boolean).join(' ');
+    if (shared) {
+      const parsed = parseInput(shared);
+      const input = parsed?.kind === 'status' ? `https://x.com/${parsed.handle || 'i'}/status/${parsed.id}` : shared;
+      setUrl(input);
+      window.history.replaceState(null, '', location.pathname);
+      extract(input);
+      track('deep_link', { source: params.has('text') || params.has('link') ? 'share_target' : 'query' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Thread loading — uses the Worker's /api/thread/:id endpoint
-  const loadThread = async () => {
-    if (!tweetData) return;
-    const tweetId = tweetData.url?.match(/status\/(\d+)/)?.[1] || extractTweetId(url);
-    if (!tweetId) return;
+  // Back/forward between home and /{user}/status/{id}
+  useEffect(() => {
+    const onPop = () => {
+      const p = parsePath(location.pathname);
+      if (p) {
+        const input = `https://x.com/${p.handle || 'i'}/status/${p.id}`;
+        setUrl(input);
+        extract(input, { pushUrl: false });
+      } else {
+        requestRef.current++;
+        setTweets(null);
+        setLoading(false);
+        setError(null);
+        setUrl('');
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [extract]);
 
-    setThreadLoading(true);
+  useEffect(() => {
+    if (doc && parsePath(location.pathname)) document.title = `${doc.title} — Xtracticle`;
+  }, [doc]);
+
+  // Bring the result into view once the card has actually rendered.
+  useEffect(() => {
+    if (doc && !loading && scrollPending.current) {
+      scrollPending.current = false;
+      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [doc, loading]);
+
+  // Stop speech when the document changes
+  useEffect(() => () => { if ('speechSynthesis' in window) speechSynthesis.cancel(); }, [doc]);
+  useEffect(() => setSpeaking(false), [doc]);
+
+  /* ─── Exports ─── */
+  const markdownForFile = () => (doc ? (withFrontMatter ? frontMatter(doc) : '') + doc.md : '');
+  const previewEl = () => document.getElementById('xt-preview') as HTMLElement | null;
+
+  const runExport = async (key: ExportKey) => {
+    if (!doc || busy) return;
+    const base = fileBaseName(doc);
+    track('download', { format: key, kind: doc.kind, page: PAGE.page });
     try {
-      const res = await fetch(`/api/thread/${tweetId}`);
-      const data = await res.json();
-
-      if (res.ok && data.tweets?.length > 1) {
-        setThreadCount(data.tweets.length);
-        generateThreadMarkdown(data.tweets);
+      const ex = await import('./lib/export');
+      if (key === 'md') ex.saveText(markdownForFile(), `${base}.md`, 'text/markdown');
+      else if (key === 'txt') ex.saveText(doc.txt, `${base}.txt`);
+      else if (key === 'obsidian') await ex.openInObsidian(doc.title, markdownForFile());
+      else {
+        setBusy(key);
+        const el = previewEl();
+        if (key === 'zip') ex.saveBlob(await ex.buildZip(doc, markdownForFile(), base), `${base}.zip`);
+        else if (key === 'epub' && el) ex.saveBlob(await ex.buildEpub(doc, el, doc.lang || lang), `${base}.epub`);
+        else if (key === 'pdf' && el) ex.saveBlob(await ex.buildPdf(doc, el), `${base}.pdf`);
       }
-    } catch {
-      // If thread loading fails, keep the single tweet
+    } catch (err) {
+      console.error(err);
+      setError(t.exportFailed);
+      track('download_error', { format: key });
     } finally {
-      setThreadLoading(false);
+      setBusy(null);
     }
-  };
-
-  const generateThreadMarkdown = (tweets: TweetData[]) => {
-    const first = tweets[0];
-    const authorName = first.author?.name || t.unknownAuthor;
-    const authorHandle = first.author?.screen_name || t.unknown;
-
-    let md = `# Thread: @${authorHandle}\n\n`;
-    let txt = `Thread: @${authorHandle}\n\n`;
-    md += `**${t.author}** ${authorName} (@${authorHandle})\n`;
-    txt += `${t.author} ${authorName} (@${authorHandle})\n`;
-    md += `---\n\n`;
-    txt += `----------------------------------------\n\n`;
-
-    tweets.forEach((tweet, i) => {
-      md += `**${i + 1}/${tweets.length}**\n\n`;
-      txt += `${i + 1}/${tweets.length}\n\n`;
-      md += `${tweet.text}\n\n`;
-      txt += `${tweet.text}\n\n`;
-
-      if (tweet.media?.photos && tweet.media.photos.length > 0) {
-        tweet.media.photos.forEach((photo, j) => {
-          md += `![${t.image} ${j + 1}](${photo.url})\n\n`;
-          txt += `[${t.image} ${j + 1}: ${photo.url}]\n\n`;
-        });
-      }
-
-      if (i < tweets.length - 1) {
-        md += `---\n\n`;
-        txt += `----------------------------------------\n\n`;
-      }
-    });
-
-    setMarkdownContent(md);
-    setPlainTextContent(txt);
-  };
-
-  const generateMarkdown = useCallback((data: TweetData) => {
-    const authorName = data.author?.name || t.unknownAuthor;
-    const authorHandle = data.author?.screen_name || t.unknown;
-    const date = new Date(data.created_at).toLocaleDateString(lang === 'tr' ? 'tr-TR' : 'en-US', {
-      year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
-
-    let md = `# ${t.articlePrefix}${authorHandle}\n\n`;
-    let txt = `${t.articlePrefix}${authorHandle}\n\n`;
-    md += `**${t.author}** ${authorName} (@${authorHandle})\n`;
-    txt += `${t.author} ${authorName} (@${authorHandle})\n`;
-    md += `**${t.date}** ${date}\n\n`;
-    txt += `${t.date} ${date}\n\n`;
-    md += `---\n\n`;
-    txt += `----------------------------------------\n\n`;
-
-    if (data.article) {
-      if (data.article.title) {
-        md += `## ${data.article.title}\n\n`;
-        txt += `${data.article.title}\n\n`;
-      }
-
-      const blocks = data.article.content?.blocks || [];
-      const entityMap = data.article.content?.entityMap || [];
-      const mediaEntities = data.article.media_entities || [];
-
-      blocks.forEach(block => {
-        if (block.type === 'atomic') {
-          if (block.entityRanges && block.entityRanges.length > 0) {
-            const entityKey = block.entityRanges[0].key;
-            let entity;
-            if (Array.isArray(entityMap)) {
-              entity = entityMap.find((e: any) => e.key == entityKey)?.value;
-            } else {
-              entity = entityMap[entityKey];
-            }
-
-            if (entity) {
-              if (entity.type === 'DIVIDER') {
-                md += `---\n\n`;
-                txt += `----------------------------------------\n\n`;
-              } else if (entity.type === 'MEDIA') {
-                const mediaId = entity.data?.mediaItems?.[0]?.mediaId;
-                const caption = entity.data?.caption || '';
-                const mediaInfo = mediaEntities.find((m: any) => m.media_id === mediaId);
-
-                let imgUrl = '';
-                if (mediaInfo?.media_info?.original_img_url) {
-                  imgUrl = mediaInfo.media_info.original_img_url;
-                } else if (mediaInfo?.media_info?.variants) {
-                  imgUrl = mediaInfo.media_info.preview_image?.original_img_url || '';
-                }
-
-                if (imgUrl) {
-                  md += `![${caption}](${imgUrl})\n\n`;
-                  txt += `[${t.image}: ${imgUrl}]\n\n`;
-                }
-              }
-            }
-          }
-          return;
-        }
-
-        let chars = block.text.split('').map((c: string) => ({ char: c, prefixes: [] as string[], suffixes: [] as string[] }));
-
-        (block.inlineStyleRanges || []).forEach((style: any) => {
-          let tag = '';
-          if (style.style === 'Bold') tag = '**';
-          if (style.style === 'Italic') tag = '*';
-          if (style.style === 'CODE') tag = '`';
-
-          if (tag && style.length > 0 && style.offset < chars.length) {
-            chars[style.offset].prefixes.push(tag);
-            const endIndex = Math.min(style.offset + style.length - 1, chars.length - 1);
-            chars[endIndex].suffixes.unshift(tag);
-          }
-        });
-
-        (block.entityRanges || []).forEach((range: any) => {
-          let entity;
-          if (Array.isArray(entityMap)) {
-            entity = entityMap.find((e: any) => e.key == range.key)?.value;
-          } else {
-            entity = entityMap[range.key];
-          }
-
-          if (entity && entity.type === 'LINK' && range.length > 0 && range.offset < chars.length) {
-            chars[range.offset].prefixes.unshift('[');
-            const endIndex = Math.min(range.offset + range.length - 1, chars.length - 1);
-            chars[endIndex].suffixes.push(`](${entity.data.url})`);
-          }
-        });
-
-        let formattedText = '';
-        for (let i = 0; i < chars.length; i++) {
-          formattedText += chars[i].prefixes.join('');
-          formattedText += chars[i].char;
-          formattedText += chars[i].suffixes.join('');
-        }
-
-        if (block.type === 'header-two') {
-          md += `### ${formattedText}\n\n`;
-          txt += `${block.text}\n\n`;
-        } else if (block.type === 'header-three') {
-          md += `#### ${formattedText}\n\n`;
-          txt += `${block.text}\n\n`;
-        } else if (block.type === 'unordered-list-item') {
-          md += `- ${formattedText}\n`;
-          txt += `- ${block.text}\n`;
-        } else if (block.type === 'ordered-list-item') {
-          md += `1. ${formattedText}\n`;
-          txt += `1. ${block.text}\n`;
-        } else if (block.type === 'blockquote') {
-          md += `> ${formattedText}\n\n`;
-          txt += `> ${block.text}\n\n`;
-        } else {
-          md += `${formattedText}\n\n`;
-          txt += `${block.text}\n\n`;
-        }
-      });
-    } else {
-      md += `${data.text}\n\n`;
-      txt += `${data.text}\n\n`;
-
-      if (data.media?.photos && data.media.photos.length > 0) {
-        md += `---\n\n### ${t.attachedImages}\n\n`;
-        txt += `----------------------------------------\n\n${t.attachedImages}\n\n`;
-        data.media.photos.forEach((photo, index) => {
-          md += `![${t.image} ${index + 1}](${photo.url})\n\n`;
-          txt += `[${t.image} ${index + 1}: ${photo.url}]\n\n`;
-        });
-      }
-    }
-
-    setMarkdownContent(md);
-    setPlainTextContent(txt);
-  }, [t, lang]);
-
-  const downloadFile = (extension: 'md' | 'txt') => {
-    const content = extension === 'md' ? markdownContent : plainTextContent;
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const blobUrl = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = `xtract-@${tweetData?.author?.screen_name || t.unknown}.${extension}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(blobUrl);
   };
 
   const handleCopy = async () => {
+    if (!doc) return;
     try {
-      await navigator.clipboard.writeText(markdownContent);
-      setJustCopied(true);
-      setTimeout(() => setJustCopied(false), 2000);
-    } catch {}
+      await navigator.clipboard.writeText(markdownForFile());
+      showFlash('copy');
+      track('copy', { kind: doc.kind });
+    } catch { /* clipboard blocked */ }
   };
 
   const handleShare = async () => {
-    const shareData = {
-      title: `Xtracticle — @${tweetData?.author?.screen_name}`,
-      text: markdownContent.slice(0, 200),
-      url: url,
-    };
+    if (!doc) return;
+    const link = shareUrl(doc.author.handle, doc.id);
+    track('share', { kind: doc.kind });
     try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(url);
-        setJustCopied(true);
-        setTimeout(() => setJustCopied(false), 2000);
+      if (navigator.share) await navigator.share({ title: doc.title, text: `${doc.title} — @${doc.author.handle}`, url: link });
+      else {
+        await navigator.clipboard.writeText(link);
+        showFlash('share');
       }
-    } catch {}
+    } catch { /* cancelled */ }
   };
 
-  const handlePrintPDF = async () => {
-    const element = document.getElementById('pdf-content');
-    if (!element) return;
-
-    const clone = element.cloneNode(true) as HTMLElement;
-    const wrapper = document.createElement('div');
-    wrapper.style.padding = '20px';
-    wrapper.style.fontFamily = 'Inter, system-ui, -apple-system, sans-serif';
-    wrapper.style.color = '#000000';
-    wrapper.style.backgroundColor = '#ffffff';
-
-    const header = document.createElement('div');
-    header.innerHTML = `
-      <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 8px; color: #000000;">${t.articlePrefix}${tweetData?.author?.screen_name || t.unknown}</h1>
-      <p style="color: #555555; margin-bottom: 4px;"><strong>${t.author}</strong> ${tweetData?.author?.name || t.unknownAuthor} (@${tweetData?.author?.screen_name || t.unknown})</p>
-      <hr style="margin: 20px 0; border: none; border-top: 1px solid #cccccc;" />
-    `;
-
-    wrapper.appendChild(header);
-
-    clone.className = '';
-    const allElements = clone.querySelectorAll('*');
-    allElements.forEach((el: any) => {
-      el.className = '';
-      if (el.tagName === 'IMG') {
-        el.style.maxWidth = '100%';
-        el.style.height = 'auto';
-        el.style.borderRadius = '8px';
-        el.style.marginTop = '10px';
-        el.style.marginBottom = '10px';
-      } else if (['H1', 'H2', 'H3'].includes(el.tagName)) {
-        el.style.fontWeight = 'bold';
-        el.style.marginTop = '20px';
-        el.style.marginBottom = '10px';
-        el.style.color = '#000000';
-      } else if (el.tagName === 'P') {
-        el.style.marginBottom = '10px';
-        el.style.lineHeight = '1.6';
-        el.style.color = '#000000';
-      } else if (el.tagName === 'A') {
-        el.style.color = '#2563eb';
-        el.style.textDecoration = 'underline';
-      } else if (el.tagName === 'UL' || el.tagName === 'OL') {
-        el.style.paddingLeft = '20px';
-        el.style.marginBottom = '10px';
-      } else if (el.tagName === 'LI') {
-        el.style.marginBottom = '5px';
-      } else if (el.tagName === 'BLOCKQUOTE') {
-        el.style.borderLeft = '4px solid #cccccc';
-        el.style.paddingLeft = '10px';
-        el.style.color = '#555555';
-        el.style.fontStyle = 'italic';
-        el.style.margin = '10px 0';
-      } else if (el.tagName === 'HR') {
-        el.style.border = '0';
-        el.style.borderTop = '1px solid #cccccc';
-        el.style.margin = '20px 0';
-      }
+  const toggleSpeech = () => {
+    if (!doc || !('speechSynthesis' in window)) return;
+    if (speaking) {
+      speechSynthesis.cancel();
+      setSpeaking(false);
+      return;
+    }
+    // Speak paragraph by paragraph — long utterances get cut off in Chrome.
+    const body = doc.txt.split('\n').filter(l => l.trim() && !/^-{5,}$/.test(l) && !/^\[.*: https?:/.test(l));
+    const voiceLang = doc.lang === 'tr' ? 'tr-TR' : doc.lang && doc.lang !== 'zxx' ? doc.lang : locale;
+    speechSynthesis.cancel();
+    body.forEach((line, i) => {
+      const u = new SpeechSynthesisUtterance(line.replace(/https?:\/\/\S+/g, ''));
+      u.lang = voiceLang;
+      if (i === body.length - 1) u.onend = () => setSpeaking(false);
+      speechSynthesis.speak(u);
     });
-
-    wrapper.appendChild(clone);
-
-    // @ts-ignore - dynamic import to avoid loading 275KB on page load
-    const html2pdf = (await import('html2pdf.js')).default;
-    html2pdf().set({
-      margin: 0.5,
-      filename: `xtract-@${tweetData?.author?.screen_name || t.unknown}.pdf`,
-      image: { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' as const }
-    }).from(wrapper).save();
-  };
-
-  const handleHistoryClick = (item: HistoryItem) => {
-    setUrl(item.url);
-    setShowHistory(false);
-    handleFetch(undefined, item.url);
+    setSpeaking(true);
+    track('listen', { kind: doc.kind });
   };
 
   const clearHistory = () => {
-    setHistory([]);
-    localStorage.removeItem(HISTORY_KEY);
+    setRecent([]);
+    try { localStorage.removeItem(HISTORY_KEY); } catch { /* ignore */ }
   };
 
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    extract(url);
+  };
+
+  /* ─── Render helpers ─── */
+  const btnBase = 'inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium focus-ring disabled:opacity-60 disabled:cursor-wait';
+  const primaryStyle = { backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' };
+  const secondaryStyle = { backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' };
+
+  const exportButton = (k: ExportKey, icon: React.ReactNode, label: string, title?: string) => (
+    <button
+      key={k}
+      type="button"
+      onClick={() => runExport(k)}
+      disabled={!!busy}
+      title={title}
+      className={`${btnBase} ${k === primary ? 'btn-primary' : 'btn-secondary'}`}
+      style={k === primary ? primaryStyle : secondaryStyle}
+    >
+      {busy === k ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : icon}
+      {busy === k ? t.working : label}
+    </button>
+  );
+
+  const h1 = PAGE.h1 || t.h1;
+  const suggestTr = PAGE.page === 'home' && lang === 'en' && navigator.language?.toLowerCase().startsWith('tr');
+  const sub = PAGE.sub || t.sub;
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-      {/* Theme Toggle */}
-      <div className="fixed top-4 right-4 z-50 print:hidden">
+    <div className="relative" style={{ color: 'var(--text-primary)' }}>
+      {/* Top controls */}
+      <div className="absolute top-4 right-4 z-50 flex gap-2 print:hidden">
+        <button
+          onClick={toggleLang}
+          className="h-10 px-3 rounded-xl flex items-center gap-1.5 text-xs font-semibold btn-secondary focus-ring"
+          style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
+          aria-label={t.switchLang}
+        >
+          <Languages className="w-4 h-4" />
+          {lang === 'en' ? 'TR' : 'EN'}
+        </button>
         <button
           onClick={toggleTheme}
           className="w-10 h-10 rounded-xl flex items-center justify-center btn-secondary focus-ring"
           style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
-          aria-label="Toggle dark mode"
+          aria-label={t.toggleTheme}
         >
           {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
       </div>
 
-      <main className="max-w-3xl mx-auto px-6 py-16 md:py-24">
-
+      <main className="max-w-3xl mx-auto px-5 pt-16 pb-8 md:pt-24">
         {/* Header */}
-        <header className="mb-14 text-center print:hidden animate-fade-in">
-          <div
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6"
-            style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)', boxShadow: 'var(--shadow-xl)' }}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true" className="w-8 h-8" fill="currentColor">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.007 4.076H5.036z"></path>
-            </svg>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            {t.title}
-          </h1>
-          <p className="text-lg max-w-lg mx-auto" style={{ color: 'var(--text-secondary)' }}>
-            {t.description}
-          </p>
-          <div className="mt-8 flex justify-center">
-            <a
-              href="https://www.producthunt.com/posts/xtracticle?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-xtracticle"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-transform hover:scale-105 active:scale-95"
-            >
-              <img
-                src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=xtracticle&theme=${dark ? 'dark' : 'light'}`}
-                alt="Xtracticle - Download X articles & threads as Markdown, Text or PDF | Product Hunt"
-                style={{ width: '250px', height: '54px' }}
-                width="250"
-                height="54"
-              />
+        <header className="mb-10 text-center print:hidden">
+          <a href={lang === 'tr' ? '/tr/' : '/'} className="inline-flex flex-col items-center gap-3 mb-5" aria-label="Xtracticle home">
+            <span className="xt-logo">
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="w-7 h-7" width={28} height={28} fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.007 4.076H5.036z"></path>
+              </svg>
+            </span>
+            <span className="text-sm font-semibold tracking-wide" style={{ color: 'var(--text-secondary)' }}>Xtracticle</span>
+          </a>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{h1}</h1>
+          <p className="text-lg max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>{sub}</p>
+          {suggestTr && (
+            <a href="/tr/" hrefLang="tr" className="inline-block mt-3 text-sm underline underline-offset-2" style={{ color: 'var(--text-secondary)' }}>
+              🇹🇷 Türkçe sürüme geç →
             </a>
-          </div>
+          )}
         </header>
 
-        {/* Search Form */}
-        <form onSubmit={handleFetch} className="mb-6 print:hidden animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <div className="relative flex items-center max-w-2xl mx-auto">
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder={t.placeholder}
-              className="w-full pl-5 pr-28 py-4 rounded-2xl text-base input-glow focus-ring"
-              style={{
-                backgroundColor: 'var(--bg-secondary)',
-                border: '1px solid var(--border)',
-                color: 'var(--text-primary)',
-                boxShadow: 'var(--shadow-sm)',
-              }}
-              required
-            />
-            <button
-              type="submit"
-              disabled={loading}
-              className="absolute right-2 top-2 bottom-2 px-6 rounded-xl font-semibold text-sm btn-primary focus-ring disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
-            >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t.fetch}
-            </button>
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div
-              className="mt-4 p-4 rounded-xl flex items-start gap-3 max-w-2xl mx-auto animate-shake"
-              style={{ backgroundColor: 'var(--error-bg)', color: 'var(--error-text)', border: `1px solid var(--error-border)` }}
-            >
-              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-              <p className="text-sm font-medium">{error}</p>
-            </div>
-          )}
-        </form>
-
-        {/* History */}
-        {history.length > 0 && !tweetData && (
-          <div className="max-w-2xl mx-auto mb-12 print:hidden animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <button
-              onClick={() => setShowHistory(!showHistory)}
-              className="flex items-center gap-2 text-sm font-medium mb-3 btn-secondary px-3 py-1.5 rounded-lg"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              <Clock className="w-3.5 h-3.5" />
-              {t.history}
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showHistory ? 'rotate-180' : ''}`} />
-            </button>
-
-            {showHistory && (
-              <div className="rounded-xl overflow-hidden animate-slide-up" style={{ border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)' }}>
-                {history.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => handleHistoryClick(item)}
-                    className="w-full text-left px-4 py-3 flex items-center gap-3 history-item"
-                    style={{ borderBottom: '1px solid var(--border-subtle)' }}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">{item.title || `@${item.authorHandle}`}</p>
-                      <p className="text-xs truncate" style={{ color: 'var(--text-tertiary)' }}>
-                        @{item.authorHandle} · {new Date(item.timestamp).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </button>
-                ))}
-                <button
-                  onClick={clearHistory}
-                  className="w-full text-center px-4 py-2.5 text-xs font-medium history-item"
-                  style={{ color: 'var(--text-tertiary)' }}
-                >
-                  {t.clearHistory}
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Result Card */}
-        {tweetData && markdownContent && (
-          <div className="card rounded-3xl p-6 md:p-10 animate-slide-up print:shadow-none print:border-none print:p-0">
-
-            {/* Author + Actions */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 pb-6 print:hidden" style={{ borderBottom: '1px solid var(--border)' }}>
-              <div className="flex items-center gap-4">
-                {tweetData.author?.avatar_url && (
-                  <img
-                    src={tweetData.author.avatar_url.replace('_normal', '_bigger')}
-                    alt={tweetData.author.name}
-                    className="w-12 h-12 rounded-full"
-                    style={{ border: '1px solid var(--border)' }}
-                    referrerPolicy="no-referrer"
-                  />
-                )}
-                <div>
-                  <h3 className="font-semibold">{tweetData.author?.name}</h3>
-                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>@{tweetData.author?.screen_name}</p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                {/* Download buttons */}
-                <button
-                  onClick={() => downloadFile('md')}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium btn-primary"
-                  style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  {t.downloadMd}
-                </button>
-                <button
-                  onClick={() => downloadFile('txt')}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium btn-secondary"
-                  style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  {t.downloadTxt}
-                </button>
-                <button
-                  onClick={handlePrintPDF}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium btn-secondary"
-                  style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
-                >
-                  <FileDown className="w-3.5 h-3.5" />
-                  {t.savePdf}
-                </button>
-                <button
-                  onClick={handleCopy}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium btn-secondary"
-                  style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
-                >
-                  {justCopied ? <Check className="w-3.5 h-3.5 animate-check" /> : <Copy className="w-3.5 h-3.5" />}
-                  {justCopied ? t.copied : t.copyMd}
-                </button>
-                <button
-                  onClick={handleShare}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium btn-secondary"
-                  style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
-                >
-                  <Share2 className="w-3.5 h-3.5" />
-                  {t.share}
-                </button>
-              </div>
-            </div>
-
-            {/* Thread detection — only show when we can actually traverse (reply chain exists) */}
-            {tweetData.replying_to_status && threadCount === 0 && (
-              <div
-                className="mb-6 p-4 rounded-xl flex items-center justify-between gap-4"
-                style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
+        {/* Mode switch */}
+        <div className="flex justify-center mb-4 print:hidden">
+          <div className="inline-flex p-1 rounded-xl text-xs font-medium" style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}>
+            {(['single', 'batch'] as const).map(m => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMode(m)}
+                className="px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5"
+                style={mode === m ? { backgroundColor: 'var(--bg-secondary)', boxShadow: 'var(--shadow-sm)' } : { color: 'var(--text-secondary)' }}
+                aria-pressed={mode === m}
               >
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t.threadDetected}</p>
-                <button
-                  onClick={loadThread}
-                  disabled={threadLoading}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium btn-primary whitespace-nowrap"
-                  style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
-                >
-                  {threadLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                  {threadLoading ? t.loadingThread : t.loadThread}
-                </button>
-              </div>
-            )}
+                {m === 'single' ? <Link2 className="w-3.5 h-3.5" /> : <Layers className="w-3.5 h-3.5" />}
+                {m === 'single' ? t.single : t.batch}
+              </button>
+            ))}
+          </div>
+        </div>
 
-            {/* Thread tip — shown for potential thread-start tweets (has replies, no article, no thread loaded yet) */}
-            {!tweetData.replying_to_status && !tweetData.article && tweetData.replies && tweetData.replies > 0 && threadCount === 0 && (
-              <div
-                className="mb-6 p-3.5 rounded-xl flex items-start gap-3"
-                style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
-              >
-                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{t.threadTip}</p>
-              </div>
-            )}
-
-            {threadCount > 0 && (
-              <div className="mb-6 text-sm font-medium px-1" style={{ color: 'var(--text-secondary)' }}>
-                ✓ {threadCount} {t.threadLoaded}
-              </div>
-            )}
-
-            {/* Markdown Content */}
-            <div id="pdf-content" className="prose prose-neutral max-w-none prose-img:rounded-2xl prose-img:border prose-a:text-blue-600 dark:prose-a:text-blue-400">
-              <Suspense fallback={<div className="animate-pulse" style={{ color: 'var(--text-tertiary)' }}>Loading preview…</div>}>
-                <LazyMarkdown
-                  components={{
-                    img: ({ node, ...props }: any) => <img {...props} referrerPolicy="no-referrer" style={{ borderColor: 'var(--border)' }} />,
+        {mode === 'batch' ? (
+          <BatchPanel lang={lang} withFrontMatter={withFrontMatter} />
+        ) : (
+          <>
+            {/* Search Form */}
+            <form onSubmit={onSubmit} className="mb-3 print:hidden">
+              <div className="relative flex items-center max-w-2xl mx-auto">
+                <label htmlFor="xt-url" className="sr-only">{t.placeholder}</label>
+                <input
+                  id="xt-url"
+                  type="text"
+                  inputMode="url"
+                  autoComplete="off"
+                  value={url}
+                  onChange={e => setUrl(e.target.value)}
+                  onPaste={e => {
+                    const pasted = e.clipboardData.getData('text');
+                    if (parseInput(pasted)?.kind === 'status') {
+                      e.preventDefault();
+                      setUrl(pasted.trim());
+                      extract(pasted);
+                    }
                   }}
+                  placeholder={t.placeholder}
+                  className="w-full pl-5 pr-28 py-4 rounded-2xl text-base input-glow focus-ring"
+                  style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)', boxShadow: 'var(--shadow-sm)' }}
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="absolute right-2 top-2 bottom-2 px-6 rounded-xl font-semibold text-sm btn-primary focus-ring disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  style={primaryStyle}
                 >
-                  {markdownContent}
-                </LazyMarkdown>
-              </Suspense>
-            </div>
+                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t.extract}
+                </button>
+              </div>
+              {error && (
+                <div
+                  role="alert"
+                  className="mt-4 p-4 rounded-xl flex items-start gap-3 max-w-2xl mx-auto animate-shake"
+                  style={{ backgroundColor: 'var(--error-bg)', color: 'var(--error-text)', border: '1px solid var(--error-border)' }}
+                >
+                  <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+                  <p className="text-sm font-medium">{error}</p>
+                </div>
+              )}
+            </form>
+            <p className="text-center text-xs mb-8 print:hidden" style={{ color: 'var(--text-tertiary)' }}>{t.urlTip}</p>
 
-          </div>
+            {/* History */}
+            {recent.length > 0 && !doc && !loading && (
+              <div className="max-w-2xl mx-auto mb-10 print:hidden">
+                <button
+                  onClick={() => setShowHistory(!showHistory)}
+                  className="flex items-center gap-2 text-sm font-medium mb-3 btn-secondary px-3 py-1.5 rounded-lg"
+                  style={{ color: 'var(--text-secondary)' }}
+                  aria-expanded={showHistory}
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  {t.history}
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showHistory ? 'rotate-180' : ''}`} />
+                </button>
+                {showHistory && (
+                  <div className="rounded-xl overflow-hidden animate-slide-up" style={{ border: '1px solid var(--border)', backgroundColor: 'var(--bg-secondary)' }}>
+                    {recent.map(item => (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          setUrl(item.url);
+                          setShowHistory(false);
+                          extract(item.url);
+                        }}
+                        className="w-full text-left px-4 py-3 flex items-center gap-3 history-item"
+                        style={{ borderBottom: '1px solid var(--border-subtle)' }}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium truncate">{item.title || `@${item.authorHandle}`}</p>
+                          <p className="text-xs truncate" style={{ color: 'var(--text-tertiary)' }}>
+                            {item.kind ? `${t.kind[item.kind]} · ` : ''}@{item.authorHandle} · {new Date(item.timestamp).toLocaleDateString(locale)}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                    <button onClick={clearHistory} className="w-full text-center px-4 py-2.5 text-xs font-medium history-item" style={{ color: 'var(--text-tertiary)' }}>
+                      {t.clear}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Loading skeleton */}
+            {loading && (
+              <div className="card rounded-3xl p-6 md:p-10 mb-8" aria-busy="true">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-full animate-pulse-subtle" style={{ backgroundColor: 'var(--bg-tertiary)' }} />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 w-40 rounded animate-pulse-subtle" style={{ backgroundColor: 'var(--bg-tertiary)' }} />
+                    <div className="h-3 w-24 rounded animate-pulse-subtle" style={{ backgroundColor: 'var(--bg-tertiary)' }} />
+                  </div>
+                </div>
+                {[92, 100, 84, 96, 70].map((w, i) => (
+                  <div key={i} className="h-3 rounded mb-3 animate-pulse-subtle" style={{ width: `${w}%`, backgroundColor: 'var(--bg-tertiary)' }} />
+                ))}
+              </div>
+            )}
+
+            {/* Result */}
+            {doc && !loading && (
+              <div ref={resultRef} className="card rounded-3xl p-6 md:p-10 mb-8 animate-slide-up scroll-mt-6 print:shadow-none print:border-none print:p-0">
+                <div className="flex flex-col gap-5 mb-8 pb-6 print:hidden" style={{ borderBottom: '1px solid var(--border)' }}>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+                    {doc.author.avatar && (
+                      <img
+                        src={doc.author.avatar.replace('_normal', '_bigger')}
+                        alt=""
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 rounded-full"
+                        style={{ border: '1px solid var(--border)' }}
+                        referrerPolicy="no-referrer"
+                      />
+                    )}
+                    <div className="min-w-0">
+                      <p className="font-semibold truncate">{doc.author.name}</p>
+                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>@{doc.author.handle}</p>
+                    </div>
+                    <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap sm:justify-end gap-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
+                      <span className="xt-chip">{t.kind[doc.kind]}{doc.kind === 'thread' ? ` · ${doc.postCount} ${t.posts}` : ''}</span>
+                      <span className="xt-chip">{doc.readingMinutes} {t.minRead}</span>
+                      <span className="xt-chip hidden sm:inline-flex">{doc.wordCount.toLocaleString(locale)} {t.words}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>{t.downloads}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {exportButton('md', <Download className="w-3.5 h-3.5" />, t.md)}
+                      {exportButton('pdf', <FileDown className="w-3.5 h-3.5" />, t.pdf)}
+                      {exportButton('epub', <BookOpen className="w-3.5 h-3.5" />, t.epub)}
+                      {exportButton('zip', <Archive className="w-3.5 h-3.5" />, t.zip)}
+                      {exportButton('txt', <FileText className="w-3.5 h-3.5" />, t.txt)}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>{t.actions}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <button type="button" onClick={handleCopy} className={`${btnBase} btn-secondary`} style={secondaryStyle}>
+                        {flash === 'copy' ? <Check className="w-3.5 h-3.5 animate-check" /> : <Copy className="w-3.5 h-3.5" />}
+                        {flash === 'copy' ? t.copied : t.copy}
+                      </button>
+                      {exportButton('obsidian', <ObsidianIcon />, t.obsidian, t.obsidianTitle)}
+                      <button type="button" onClick={handleShare} className={`${btnBase} btn-secondary`} style={secondaryStyle}>
+                        {flash === 'share' ? <Check className="w-3.5 h-3.5 animate-check" /> : <Share2 className="w-3.5 h-3.5" />}
+                        {flash === 'share' ? t.linkCopied : t.share}
+                      </button>
+                      {'speechSynthesis' in window && (
+                        <button type="button" onClick={toggleSpeech} className={`${btnBase} btn-secondary`} style={secondaryStyle} aria-pressed={speaking}>
+                          {speaking ? <Square className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                          {speaking ? t.stop : t.listen}
+                        </button>
+                      )}
+                    </div>
+                    <label className="mt-3 inline-flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: 'var(--text-secondary)' }}>
+                      <input
+                        type="checkbox"
+                        checked={withFrontMatter}
+                        onChange={e => {
+                          setWithFrontMatter(e.target.checked);
+                          store(FM_KEY, e.target.checked);
+                        }}
+                      />
+                      {t.frontMatter}
+                    </label>
+                  </div>
+                </div>
+
+                <article
+                  id="xt-preview"
+                  lang={doc.lang && doc.lang !== 'zxx' ? doc.lang : undefined}
+                  className="prose prose-neutral max-w-none prose-img:rounded-2xl prose-img:border prose-headings:tracking-tight"
+                >
+                  <Suspense fallback={<p style={{ color: 'var(--text-tertiary)' }}>{t.loadingPreview}</p>}>
+                    <LazyMarkdown
+                      components={{
+                        img: ({ node, ...props }: any) => (
+                          <img {...props} loading="lazy" referrerPolicy="no-referrer" style={{ borderColor: 'var(--border)' }} />
+                        ),
+                        a: ({ node, ...props }: any) => <a {...props} target="_blank" rel="noopener noreferrer nofollow" />,
+                      }}
+                    >
+                      {doc.md}
+                    </LazyMarkdown>
+                  </Suspense>
+                </article>
+              </div>
+            )}
+          </>
         )}
-
-        {/* Footer */}
-        <footer className="mt-16 text-center text-xs print:hidden" style={{ color: 'var(--text-tertiary)' }}>
-          <p>Xtracticle — Free & open source. No login required.</p>
-          <p className="mt-1">Built by <a href="https://x.com/DvciAhmet" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'underline' }}>@DvciAhmet</a> · <a href="https://github.com/ahmetdeveci3112-crypto/Xtracticle" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'underline' }}>GitHub</a></p>
-        </footer>
-
       </main>
+    </div>
+  );
+}
+
+function ObsidianIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor" aria-hidden="true">
+      <path d="M8.4 2.3 5.2 8.9c-.3.6-.3 1.3 0 1.9l1.6 3.3c.5 1 .6 2.1.4 3.2l-.4 2.1c-.2 1 .8 1.8 1.8 1.4l5.7-2.6c.6-.3 1.1-.7 1.4-1.3l2.9-5.4c.4-.7.3-1.6-.2-2.2L12.6 2.2c-1.2-1.3-3.4-1.1-4.2.1Z" />
+    </svg>
+  );
+}
+
+/* ─── Batch mode ─── */
+function BatchPanel({ lang, withFrontMatter }: { lang: Lang; withFrontMatter: boolean }) {
+  const t = translations[lang];
+  const locale = lang === 'tr' ? 'tr-TR' : 'en-US';
+  const [text, setText] = useState('');
+  const [running, setRunning] = useState(false);
+  const [progress, setProgress] = useState<string | null>(null);
+  const [results, setResults] = useState<{ input: string; ok: boolean; title?: string }[]>([]);
+
+  const run = async () => {
+    const seen = new Set<string>();
+    const jobs = text
+      .split(/\s+/)
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(input => ({ input, parsed: parseInput(input) }))
+      .filter(j => j.parsed?.kind === 'status' && !seen.has(j.parsed.id) && !!seen.add(j.parsed.id))
+      .slice(0, MAX_BATCH);
+    if (!jobs.length) {
+      setProgress(t.invalidLink);
+      return;
+    }
+    setRunning(true);
+    setResults([]);
+    const out: { base: string; markdown: string }[] = [];
+    const res: { input: string; ok: boolean; title?: string }[] = [];
+    let done = 0;
+    let next = 0;
+    const worker = async () => {
+      while (next < jobs.length) {
+        const job = jobs[next++];
+        try {
+          const list = await fetchThread((job.parsed as { id: string }).id, t.fetchError);
+          const doc = buildDoc(list, t.labels, locale);
+          out.push({ base: fileBaseName(doc), markdown: (withFrontMatter ? frontMatter(doc) : '') + doc.md });
+          res.push({ input: job.input, ok: true, title: doc.title });
+        } catch {
+          res.push({ input: job.input, ok: false });
+        }
+        setProgress(t.batchProgress(++done, jobs.length));
+      }
+    };
+    await Promise.all([worker(), worker(), worker()]);
+    if (out.length) {
+      const ex = await import('./lib/export');
+      ex.saveBlob(await ex.buildBatchZip(out), `xtracticle-${new Date().toISOString().slice(0, 10)}.zip`);
+    }
+    setResults(res);
+    setProgress(t.batchDone(out.length, jobs.length - out.length));
+    setRunning(false);
+    track('batch_extract', { requested: jobs.length, ok: out.length });
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto mb-10 print:hidden">
+      <textarea
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder={t.batchPlaceholder}
+        aria-label={t.batchPlaceholder}
+        rows={6}
+        className="w-full p-4 rounded-2xl text-sm font-mono input-glow focus-ring resize-y"
+        style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+      />
+      <div className="mt-3 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={run}
+          disabled={running}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm btn-primary focus-ring disabled:opacity-60"
+          style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+        >
+          {running ? <Loader2 className="w-4 h-4 animate-spin" /> : <Archive className="w-4 h-4" />}
+          {t.batchRun}
+        </button>
+        {progress && <span className="text-sm" style={{ color: 'var(--text-secondary)' }} aria-live="polite">{progress}</span>}
+      </div>
+      {results.length > 0 && (
+        <ul className="mt-4 text-sm space-y-1">
+          {results.map(r => (
+            <li key={r.input} className="truncate" style={{ color: r.ok ? 'var(--text-secondary)' : 'var(--error-text)' }}>
+              {r.ok ? '✓' : '✗'} {r.title || r.input}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

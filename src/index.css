@@ -186,6 +186,170 @@ body {
   border-color: var(--border) !important;
 }
 
+/* ─── App bits ─── */
+.xt-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background-color: var(--accent);
+  color: var(--bg-primary);
+  box-shadow: var(--shadow-xl);
+}
+
+.xt-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+/* Long URLs in previews must wrap on phones */
+#xt-preview a {
+  overflow-wrap: anywhere;
+}
+
+/* ─── Static SEO content (rendered in HTML, outside React) ─── */
+.xt-content {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+  color: var(--text-primary);
+}
+.xt-content section {
+  margin-top: 3rem;
+}
+.xt-content section:first-child {
+  margin-top: 1rem;
+}
+.xt-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+}
+.xt-content h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.4rem;
+}
+.xt-content p,
+.xt-content li {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.xt-content p { margin: 0 0 0.9rem; }
+.xt-content strong { color: var(--text-primary); }
+.xt-content a { color: var(--text-primary); text-decoration: underline; text-underline-offset: 2px; }
+.xt-content ul, .xt-content ol { padding-left: 1.25rem; margin: 0 0 1rem; }
+.xt-content ul { list-style: disc; }
+.xt-content ol { list-style: decimal; }
+.xt-content li { margin-bottom: 0.4rem; }
+.xt-content code {
+  font-size: 0.85em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.35rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+}
+.xt-steps {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  list-style: none !important;
+  padding: 0 !important;
+  counter-reset: step;
+}
+.xt-steps li {
+  counter-increment: step;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.xt-steps li::before {
+  content: counter(step);
+  display: flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.xt-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+}
+.xt-grid > div {
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+}
+.xt-grid h3 { margin-top: 0; }
+.xt-grid p { margin: 0; font-size: 0.92rem; }
+.xt-table-wrap { overflow-x: auto; }
+.xt-content table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.xt-content th, .xt-content td { text-align: left; padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--border); }
+.xt-content th { color: var(--text-primary); font-weight: 600; }
+.xt-content td { color: var(--text-secondary); }
+.xt-content details {
+  border-bottom: 1px solid var(--border);
+  padding: 0.9rem 0;
+}
+.xt-content summary {
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.xt-content summary::-webkit-details-marker { display: none; }
+.xt-content summary::after { content: '+'; color: var(--text-tertiary); font-weight: 400; }
+.xt-content details[open] summary::after { content: '−'; }
+.xt-content details p { margin: 0.6rem 0 0; }
+.xt-bookmarklet {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.6rem;
+  background: var(--accent);
+  color: var(--bg-primary) !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: grab;
+}
+.xt-footer {
+  max-width: 48rem;
+  margin: 2rem auto 0;
+  padding: 2rem 1.25rem 3rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+.xt-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+  margin-bottom: 1rem;
+}
+.xt-footer a { color: var(--text-secondary); text-decoration: none; }
+.xt-footer a:hover { color: var(--text-primary); text-decoration: underline; }
+.xt-footer p { margin: 0.3rem 0; }
+
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar {
   width: 6px;
@@ -200,6 +364,7 @@ body {
 
 /* ─── Print ─── */
 @media print {
+  .xt-content, .xt-footer { display: none !important; }
   body {
     background-color: white !important;
     color: black !important;
