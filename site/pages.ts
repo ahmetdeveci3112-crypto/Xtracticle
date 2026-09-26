@@ -4,87 +4,20 @@
  * Rendered at build time by site/plugin.ts; nothing here ships to the client.
  */
 
-export type ExportKey = 'md' | 'pdf' | 'epub' | 'zip' | 'txt' | 'obsidian';
+import { EXAMPLE, GITHUB, SITE, privacy, shortcuts, steps, type SitePage } from './blocks';
+import { PAGES_TR } from './pages-tr';
+import { PAGES_ES } from './pages-es';
+import { PAGES_PT } from './pages-pt';
+import { PAGES_JA } from './pages-ja';
 
-export interface FAQ {
-  q: string;
-  a: string;
-}
-
-export interface SitePage {
-  id: string;
-  path: string;
-  file: string;
-  lang: 'en' | 'tr';
-  title: string;
-  description: string;
-  h1: string;
-  sub: string;
-  primary: ExportKey;
-  nav: string;
-  sections: string;
-  faq: FAQ[];
-  noindex?: boolean;
-  isHome?: boolean;
-}
-
-export const SITE = 'https://xtracticle.com';
-const GITHUB = 'https://github.com/ahmetdeveci3112-crypto/Xtracticle';
-const EXAMPLE = '/Write/status/1765884209527394325';
-
-const BOOKMARKLET =
-  "javascript:(function(){location.href='https://xtracticle.com/?url='+encodeURIComponent(location.href)})()";
-
-/* ─── Shared building blocks ─── */
-
-const steps = (items: string[]) => `<ol class="xt-steps">${items.map(i => `<li>${i}</li>`).join('')}</ol>`;
-
-const shortcutsEn = `
-<section>
-  <h2>Two shortcuts that save time</h2>
-  <h3>1. Swap the domain</h3>
-  <p>On any post, change <code>x.com</code> to <code>xtracticle.com</code> in the address bar and press Enter:
-  <code>x.com/user/status/123</code> → <code>xtracticle.com/user/status/123</code>. The post opens here, ready to download.</p>
-  <h3>2. One-click bookmarklet</h3>
-  <p>Drag this button to your bookmarks bar, then click it while reading any X post:
-  <a class="xt-bookmarklet" href="${BOOKMARKLET}" onclick="event.preventDefault();alert('Drag this button to your bookmarks bar.')">⬇ Xtracticle</a></p>
-  <p>On Android you can also install Xtracticle (Add to Home screen) and share posts to it straight from the X app.</p>
-</section>`;
-
-const shortcutsTr = `
-<section>
-  <h2>Zaman kazandıran iki kısayol</h2>
-  <h3>1. Alan adını değiştirin</h3>
-  <p>Herhangi bir gönderide adres çubuğundaki <code>x.com</code> kısmını <code>xtracticle.com</code> yapıp Enter'a basın:
-  <code>x.com/kullanici/status/123</code> → <code>xtracticle.com/kullanici/status/123</code>. Gönderi burada, indirmeye hazır açılır.</p>
-  <h3>2. Tek tıkla yer imi</h3>
-  <p>Bu butonu yer imleri çubuğunuza sürükleyin, sonra X'te bir gönderiyi okurken tıklayın:
-  <a class="xt-bookmarklet" href="${BOOKMARKLET}" onclick="event.preventDefault();alert('Bu butonu yer imleri çubuğuna sürükleyin.')">⬇ Xtracticle</a></p>
-  <p>Android'de Xtracticle'ı ana ekrana ekleyerek X uygulamasından gönderileri doğrudan paylaşabilirsiniz.</p>
-</section>`;
-
-const privacyEn = `
-<section>
-  <h2>Privacy</h2>
-  <p>No account, no login, no upload. Xtracticle fetches the public post on demand through the open-source
-  <a href="https://github.com/FixTweet/FxTwitter" rel="noopener">FxTwitter</a> API and builds your file in your browser.
-  We don't store the posts you extract. We use Google Analytics to count anonymous visits and downloads so we know which features matter.
-  The <a href="${GITHUB}" rel="noopener">source code is on GitHub</a>.</p>
-</section>`;
-
-const privacyTr = `
-<section>
-  <h2>Gizlilik</h2>
-  <p>Hesap yok, giriş yok, yükleme yok. Xtracticle herkese açık gönderiyi açık kaynak
-  <a href="https://github.com/FixTweet/FxTwitter" rel="noopener">FxTwitter</a> API'si üzerinden anlık olarak alır ve dosyanızı tarayıcınızda oluşturur.
-  Çıkardığınız gönderileri saklamayız. Hangi özelliklerin kullanıldığını anlamak için anonim ziyaret ve indirme sayılarını Google Analytics ile ölçeriz.
-  <a href="${GITHUB}" rel="noopener">Kaynak kodu GitHub'da</a>.</p>
-</section>`;
+export type { SitePage, FAQ, ExportKey, Lang } from './blocks';
+export { SITE };
 
 /* ─── Pages ─── */
 
 const home: SitePage = {
   id: 'home',
+  group: 'home',
   path: '/',
   file: 'index.html',
   lang: 'en',
@@ -130,24 +63,25 @@ const home: SitePage = {
   <em>Batch mode</em> and paste up to 20 links to get one ZIP.</p>
 </section>
 
-${shortcutsEn}
+${shortcuts('en')}
 
 <section>
   <h2>Xtracticle vs. other ways to save X posts</h2>
   <div class="xt-table-wrap"><table>
     <thead><tr><th></th><th>Xtracticle</th><th>Thread Reader App</th><th>Screenshots / copy-paste</th></tr></thead>
     <tbody>
-      <tr><td>X Articles (long-form)</td><td>✅ Full formatting</td><td>Threads focus</td><td>⚠️ Manual</td></tr>
-      <tr><td>Free PDF</td><td>✅</td><td>Premium</td><td>⚠️ Images only</td></tr>
+      <tr><td>X Articles (long-form)</td><td>✅ Full formatting</td><td>❌ Not supported</td><td>⚠️ Manual</td></tr>
+      <tr><td>Free PDF</td><td>✅</td><td>Premium ($3/mo)</td><td>⚠️ Images only</td></tr>
       <tr><td>Markdown / Obsidian</td><td>✅</td><td>❌</td><td>❌</td></tr>
       <tr><td>EPUB / Kindle</td><td>✅</td><td>❌</td><td>❌</td></tr>
       <tr><td>No mention or login</td><td>✅</td><td>Mention the bot or use the site</td><td>✅</td></tr>
       <tr><td>Open source</td><td>✅</td><td>❌</td><td>—</td></tr>
     </tbody>
   </table></div>
+  <p>Coming from Thread Reader App? See the <a href="/thread-reader-app-alternative">full comparison</a>.</p>
 </section>
 
-${privacyEn}`,
+${privacy('en')}`,
   faq: [
     { q: 'Is Xtracticle free?', a: 'Yes. It is free and open source, with no account, no login and no usage limits.' },
     { q: 'How do I download an X article as PDF?', a: 'Copy the post link, paste it into Xtracticle, and click PDF. The PDF includes the title, author, date, source link, all images and page numbers.' },
@@ -161,6 +95,7 @@ ${privacyEn}`,
 
 const pdf: SitePage = {
   id: 'pdf',
+  group: 'pdf',
   path: '/x-article-to-pdf',
   file: 'x-article-to-pdf.html',
   lang: 'en',
@@ -203,7 +138,7 @@ const pdf: SitePage = {
   <p>Tap PDF, then open the download from the Safari downloads list and use <em>Share → Save to Files</em> or send it to Books.</p>
 </section>
 
-${privacyEn}`,
+${privacy('en')}`,
   faq: [
     { q: 'Is the X to PDF converter free?', a: 'Yes, completely free with no watermark, no login and no limits.' },
     { q: 'Does the PDF include images?', a: 'Yes. The cover image and every inline image are included. Videos appear as a thumbnail linked to the video.' },
@@ -215,6 +150,7 @@ ${privacyEn}`,
 
 const markdown: SitePage = {
   id: 'markdown',
+  group: 'markdown',
   path: '/x-article-to-markdown',
   file: 'x-article-to-markdown.html',
   lang: 'en',
@@ -268,7 +204,7 @@ tags: [x, article]
   </ul>
 </section>
 
-${shortcutsEn}`,
+${shortcuts('en')}`,
   faq: [
     { q: 'How do I convert a tweet to Markdown?', a: 'Paste the post link into Xtracticle and click Markdown, or Copy to put the Markdown on your clipboard.' },
     { q: 'Are images included in the Markdown?', a: 'Yes, as image links. Choose ZIP + images to also download every image and have the Markdown point to the local copies.' },
@@ -279,6 +215,7 @@ ${shortcutsEn}`,
 
 const thread: SitePage = {
   id: 'thread',
+  group: 'thread',
   path: '/x-thread-to-pdf',
   file: 'x-thread-to-pdf.html',
   lang: 'en',
@@ -317,7 +254,7 @@ const thread: SitePage = {
   </ul>
 </section>
 
-${shortcutsEn}`,
+${shortcuts('en')}`,
   faq: [
     { q: 'Do I need the first tweet of the thread?', a: 'No. Paste any post of the thread and the entire thread is assembled.' },
     { q: 'Are replies from other people included?', a: 'No. Only the author’s own posts in the thread are included, in order.' },
@@ -328,6 +265,7 @@ ${shortcutsEn}`,
 
 const obsidian: SitePage = {
   id: 'obsidian',
+  group: 'obsidian',
   path: '/save-x-articles-to-obsidian',
   file: 'save-x-articles-to-obsidian.html',
   lang: 'en',
@@ -364,7 +302,7 @@ SORT saved DESC</code></pre>
   Xtracticle reads the post data directly, so X Articles keep their headings and lists and threads arrive as one note.</p>
 </section>
 
-${shortcutsEn}`,
+${shortcuts('en')}`,
   faq: [
     { q: 'Nothing happens when I click Obsidian.', a: 'Obsidian must be installed on this device. The Markdown is also copied to your clipboard, so you can paste it into any note.' },
     { q: 'Does it work with Obsidian on iPhone or Android?', a: 'Yes, if the Obsidian app is installed. Otherwise use Copy or download the .md file.' },
@@ -375,6 +313,7 @@ ${shortcutsEn}`,
 
 const epub: SitePage = {
   id: 'epub',
+  group: 'epub',
   path: '/x-article-to-epub',
   file: 'x-article-to-epub.html',
   lang: 'en',
@@ -411,7 +350,7 @@ const epub: SitePage = {
   distraction-free and works without a connection. Save a few before a flight, or build a reading list for the weekend.</p>
 </section>
 
-${privacyEn}`,
+${privacy('en')}`,
   faq: [
     { q: 'Does Kindle support EPUB?', a: 'Yes. Amazon’s Send to Kindle accepts EPUB files and converts them for your device automatically.' },
     { q: 'Can I read it in Apple Books?', a: 'Yes. Open the downloaded .epub on your iPhone, iPad or Mac and choose Books.' },
@@ -420,67 +359,85 @@ ${privacyEn}`,
   ],
 };
 
-const trHome: SitePage = {
-  id: 'tr-home',
-  path: '/tr/',
-  file: 'tr/index.html',
-  lang: 'tr',
-  isHome: true,
-  title: "X Makale İndir — X (Twitter) Makale ve Flood'larını PDF, Markdown Olarak Kaydet | Xtracticle",
+
+const alternative: SitePage = {
+  id: 'tra-alternative',
+  group: 'tra',
+  path: '/thread-reader-app-alternative',
+  file: 'thread-reader-app-alternative.html',
+  lang: 'en',
+  title: 'Free Thread Reader App Alternative — PDF, Markdown & X Articles | Xtracticle',
   description:
-    "X (Twitter) makalelerini, flood'larını ve gönderilerini PDF, Markdown, EPUB/Kindle veya metin olarak indirin. Link yapıştırın, görselli temiz dosyayı alın — ücretsiz, giriş yok.",
-  h1: 'X Makale İndirici',
-  sub: "X (Twitter) makalelerini, flood'larını ve gönderilerini PDF, Markdown, EPUB veya metin olarak indirin — ücretsiz, giriş gerektirmez.",
-  primary: 'md',
-  nav: 'Türkçe',
+    'Looking for a Thread Reader App alternative? Xtracticle unrolls X threads and saves X Articles as PDF, Markdown, EPUB or text for free — no bot mention, no ads, no login.',
+  h1: 'A Free Thread Reader App Alternative',
+  sub: 'Unroll X threads and save X Articles as PDF, Markdown, EPUB or text — free, no bot mention, no ads, no login.',
+  primary: 'pdf',
+  nav: 'Thread Reader App alternative',
   sections: `
 <section>
-  <h2>X makalesi nasıl indirilir?</h2>
+  <h2>Why people look for an alternative</h2>
+  <p><a href="https://threadreaderapp.com" rel="nofollow noopener">Thread Reader App</a> is a well-known way to unroll threads:
+  you mention <code>@threadreaderapp unroll</code> under a thread, or paste a link on its website. It works well for reading.
+  The friction starts when you want to <strong>keep</strong> what you read:</p>
+  <ul>
+    <li><strong>PDF export is a Premium feature</strong> ($3/month or $30/year at the time of writing).</li>
+    <li><strong>X Articles aren’t supported</strong> — their help page says the X API doesn’t provide access to Article content.</li>
+    <li><strong>The free version shows ads</strong>, and there’s no Markdown, EPUB or Obsidian export.</li>
+  </ul>
+  <p>Xtracticle focuses on exactly that part: turning threads and long-form X Articles into files you own — for free.</p>
+</section>
+
+<section>
+  <h2>Side-by-side comparison</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle</th><th>Thread Reader App</th></tr></thead>
+    <tbody>
+      <tr><td>Unroll threads</td><td>✅ Paste any post of the thread</td><td>✅ Mention the bot or paste a link</td></tr>
+      <tr><td>X Articles (long-form)</td><td>✅ Headings, lists, images, videos</td><td>❌ Not supported</td></tr>
+      <tr><td>PDF</td><td>✅ Free</td><td>Premium</td></tr>
+      <tr><td>Markdown / Obsidian</td><td>✅ Free, with YAML front-matter</td><td>❌</td></tr>
+      <tr><td>EPUB / Kindle</td><td>✅ Free</td><td>❌</td></tr>
+      <tr><td>ZIP with images (offline archive)</td><td>✅ Free</td><td>❌</td></tr>
+      <tr><td>Batch download</td><td>✅ Up to 20 links</td><td>❌</td></tr>
+      <tr><td>Ads</td><td>None</td><td>On the free plan</td></tr>
+      <tr><td>Posting in public / tagging a bot</td><td>Never needed</td><td>For the bot method</td></tr>
+      <tr><td>Author alerts & auto-archiving</td><td>❌ Not yet</td><td>✅ Premium</td></tr>
+      <tr><td>Open source</td><td>✅ MIT</td><td>❌</td></tr>
+    </tbody>
+  </table></div>
+  <p><small>Checked against Thread Reader App’s <a href="https://threadreaderapp.com/premium" rel="nofollow noopener">Premium</a> and
+  <a href="https://threadreaderapp.com/help" rel="nofollow noopener">Help</a> pages in September 2026. Features change — let us know on
+  <a href="${GITHUB}/issues" rel="noopener">GitHub</a> if something is out of date.</small></p>
+</section>
+
+<section>
+  <h2>Switching takes ten seconds</h2>
   ${steps([
-    '<strong>Gönderi linkini kopyalayın</strong> — X’te <em>Paylaş → Linki kopyala</em>. Flood’un herhangi bir tweeti olur.',
-    '<strong>Yukarıya yapıştırın</strong> — Xtracticle makaleyi, flood’u veya gönderiyi birkaç saniyede getirir.',
-    '<strong>Format seçin</strong> — PDF, Markdown, EPUB/Kindle, görselli ZIP veya düz metin.',
-    '<strong>Hepsi bu</strong> — isterseniz kopyalayın, Obsidian’a gönderin veya sesli dinleyin.',
+    '<strong>Copy the link</strong> of any post in the thread — no need to find the first one.',
+    '<strong>Paste it above</strong> and press Extract. The whole thread is merged and numbered.',
+    '<strong>Download</strong> as PDF, Markdown, EPUB or text — or send it to Obsidian.',
   ])}
 </section>
 
 <section>
-  <h2>İhtiyacınız olan her format</h2>
-  <div class="xt-grid">
-    <div><h3>PDF</h3><p>A4, yazdırmaya hazır; görseller, kaynak linki ve sayfa numaraları dahil.</p></div>
-    <div><h3>Markdown (.md)</h3><p>Başlıklar, kalın/italik, linkler, listeler, alıntılar ve görseller korunur. İsteğe bağlı YAML front-matter.</p></div>
-    <div><h3>EPUB / Kindle</h3><p>Uzun makaleleri Kindle, Kobo veya Apple Books’ta okuyun.</p></div>
-    <div><h3>Obsidian</h3><p>Tek tıkla kasanızda makalenin tamamını ve bilgilerini içeren yeni not açılır.</p></div>
-    <div><h3>ZIP + görseller</h3><p>Markdown ve tüm görseller yerel olarak — gönderi silinse bile kalıcı arşiv.</p></div>
-    <div><h3>Düz metin</h3><p>Her cihaz, betik veya yapay zekâ aracı için temiz .txt.</p></div>
-  </div>
+  <h2>When Thread Reader App is still the better choice</h2>
+  <p>If you want to <strong>unroll a thread for other people right inside X</strong> (replying with the bot so everyone in the conversation gets a
+  readable link), or you want <strong>automatic alerts and archives</strong> for your favorite authors, Thread Reader App does that and
+  Xtracticle doesn’t. Many people use both: Thread Reader App to read in the moment, Xtracticle to keep a copy.</p>
 </section>
 
-<section>
-  <h2>Makaleler, flood’lar ve tekil gönderiler</h2>
-  <p><strong>X Makaleleri</strong> (100.000 karaktere kadar uzun gönderiler) blok blok dönüştürülür: başlıklar, kalın, italik, üstü çizili,
-  linkler, madde ve numaralı listeler, alıntılar, kod, ayraçlar, kapak görseli, görseller, videolar ve gömülü gönderiler.</p>
-  <p><strong>Flood’lar</strong> otomatik birleştirilir. İlk, ortadaki ya da son tweeti yapıştırın — Xtracticle yazarın flood’unun tamamını bulur
-  ve numaralı tek bir belgeye dönüştürür.</p>
-  <p><strong>Tekil gönderiler</strong> metnini, satır sonlarını, fotoğraflarını, videolarını ve alıntıladığı gönderiyi korur. Çok sayıda gönderi mi var?
-  <em>Toplu mod</em>’a geçip 20 linke kadar yapıştırın, tek bir ZIP alın.</p>
-</section>
-
-${shortcutsTr}
-
-${privacyTr}`,
+${shortcuts('en')}`,
   faq: [
-    { q: 'Xtracticle ücretsiz mi?', a: 'Evet. Ücretsiz ve açık kaynak; hesap, giriş veya kullanım sınırı yok.' },
-    { q: 'X makalesi PDF olarak nasıl indirilir?', a: 'Gönderi linkini kopyalayıp Xtracticle’a yapıştırın ve PDF’e tıklayın. PDF; başlık, yazar, tarih, kaynak linki, tüm görseller ve sayfa numaralarını içerir.' },
-    { q: 'Flood’un tamamını indirebilir miyim?', a: 'Evet. Flood’un herhangi bir tweetinin linkini yapıştırın — ilk, orta veya son. Yazarın o flood’daki tüm tweetleri numaralı tek bir belgede birleştirilir.' },
-    { q: 'X makalelerini Obsidian’a veya Notion’a kaydedebilir miyim?', a: 'Evet. Markdown dosyasını indirin veya Obsidian butonuna tıklayın. Notion .md dosyalarını doğrudan içe aktarır.' },
-    { q: 'Neden “gönderi bulunamadı” diyor?', a: 'Gönderi silinmiş, gizli (korumalı) bir hesaba ait ya da yaş kısıtlamalı olabilir. Yalnızca herkese açık gönderiler indirilebilir.' },
-    { q: 'Elimde x.com/i/article/… linki var, ne yapmalıyım?', a: 'Bu makale okuyucu linkidir. Makaleyi X’te açıp Paylaş → Linki kopyala diyerek gönderi linkini (x.com/kullanici/status/…) alın ve onu yapıştırın.' },
+    { q: 'Is Xtracticle really free?', a: 'Yes. Every format — PDF, Markdown, EPUB, ZIP and text — is free, with no ads, no login and no usage limits. The code is open source.' },
+    { q: 'Can Xtracticle download X Articles?', a: 'Yes. Xtracticle converts X’s long-form Articles with their headings, lists, links, images and videos. This is one of the main differences from Thread Reader App.' },
+    { q: 'Do I need to tag a bot?', a: 'No. Paste the link on Xtracticle; nothing is posted on X.' },
+    { q: 'Can I import my Thread Reader App archive?', a: 'Not directly. You can paste the original X links (up to 20 at a time in Batch mode) to rebuild them as Markdown files.' },
   ],
 };
 
 const notFound: SitePage = {
   id: '404',
+  group: '404',
   path: '/404',
   file: '404.html',
   lang: 'en',
@@ -495,8 +452,10 @@ const notFound: SitePage = {
   faq: [],
 };
 
-/** Order = footer order. */
-export const PAGES: SitePage[] = [home, pdf, markdown, thread, epub, obsidian, trHome, notFound];
+const PAGES_EN: SitePage[] = [home, pdf, markdown, thread, epub, obsidian, alternative];
+
+/** Order = footer order within each language. */
+export const PAGES: SitePage[] = [...PAGES_EN, ...PAGES_ES, ...PAGES_PT, ...PAGES_JA, ...PAGES_TR, notFound];
 
 export function pageForPath(pathname: string): SitePage {
   const clean = pathname.split('?')[0].replace(/\.html$/, '');

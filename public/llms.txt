@@ -10,7 +10,11 @@
 - [Twitter Thread to PDF](https://xtracticle.com/x-thread-to-pdf): Unroll a whole thread from any of its posts into one document
 - [X Article to EPUB & Kindle](https://xtracticle.com/x-article-to-epub): EPUB 3 e-book for Kindle (Send to Kindle), Kobo, Apple Books
 - [Save X Articles to Obsidian](https://xtracticle.com/save-x-articles-to-obsidian): One-click Obsidian note with properties
-- [Türkçe / Turkish](https://xtracticle.com/tr/): X makale ve flood indirici
+- [Thread Reader App alternative](https://xtracticle.com/thread-reader-app-alternative): Free comparison — PDF, Markdown and X Articles support
+- [Español](https://xtracticle.com/es/): Descargar artículos e hilos de X
+- [Português](https://xtracticle.com/pt/): Baixar artigos e threads do X
+- [日本語](https://xtracticle.com/ja/): X記事・スレッドを保存
+- [Türkçe](https://xtracticle.com/tr/): X makale ve flood indirici
 
 ## Docs
 

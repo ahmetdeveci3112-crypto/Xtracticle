@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
 import {
   Download, FileText, AlertCircle, Loader2, FileDown, Moon, Sun, Copy, Check, Share2, Clock, ChevronDown,
-  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages,
+  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages, X,
 } from 'lucide-react';
 import type { FxTweet } from './shared/fx';
-import { translations, type Lang } from './i18n';
+import { translations, LANGS, langInfo, type Lang } from './i18n';
 import { buildDoc, fileBaseName, frontMatter, type XDoc } from './lib/convert';
 import { parseInput, parsePath, shareUrl } from './lib/url';
 import { track } from './lib/analytics';
@@ -26,6 +26,9 @@ interface PageConfig {
   h1?: string;
   sub?: string;
   primary?: ExportKey;
+  /** This page's own path, and its versions in other languages. */
+  path?: string;
+  alternates?: Partial<Record<Lang, string>>;
 }
 declare global {
   interface Window {
@@ -48,7 +51,9 @@ interface HistoryItem {
 
 const HISTORY_KEY = 'xtracticle_history';
 const THEME_KEY = 'xtracticle_theme';
+/** Explicit language choice (selector, banner or a language link) — drives redirects. */
 const LANG_KEY = 'xtracticle_lang';
+const BANNER_KEY = 'xtracticle_lang_banner_dismissed';
 const FM_KEY = 'xtracticle_frontmatter';
 const MAX_HISTORY = 20;
 const MAX_BATCH = 20;
@@ -67,14 +72,29 @@ function store(key: string, value: unknown) {
   } catch { /* private mode */ }
 }
 
+// Status pages (/{user}/status/{id}) reuse the English home shell, so they follow the
+// visitor's preference instead of the page's language.
+const ON_STATUS_PAGE = typeof window !== 'undefined' && !!parsePath(window.location.pathname);
+
 function initialLang(): Lang {
-  if (PAGE.lang) return PAGE.lang;
+  if (PAGE.lang && !ON_STATUS_PAGE) return PAGE.lang;
   const saved = load<Lang | null>(LANG_KEY, null);
-  if (saved === 'en' || saved === 'tr') return saved;
-  return navigator.language?.toLowerCase().startsWith('tr') ? 'tr' : 'en';
+  if (saved && LANGS.some(l => l.code === saved)) return saved;
+  return browserLang() || 'en';
 }
 
-const isHomeLike = (path: string) => path === '/' || path === '/tr/' || !!parsePath(path);
+/** The first browser/device language we support, if any. */
+function browserLang(): Lang | null {
+  const prefs = navigator.languages?.length ? navigator.languages : [navigator.language];
+  for (const p of prefs) {
+    const match = LANGS.find(l => l.code === p?.toLowerCase().slice(0, 2));
+    if (match) return match.code;
+  }
+  return null;
+}
+
+const isHomePath = (path: string) => LANGS.some(l => l.home === path);
+const isHomeLike = (path: string) => isHomePath(path) || !!parsePath(path);
 
 /* ─── API ─── */
 class ApiError extends Error {}
@@ -93,7 +113,7 @@ async function fetchThread(id: string, fallbackMsg: string): Promise<FxTweet[]> 
 export default function App() {
   const [lang, setLang] = useState<Lang>(initialLang);
   const t = translations[lang];
-  const locale = lang === 'tr' ? 'tr-TR' : 'en-US';
+  const locale = langInfo(lang).locale;
 
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -126,17 +146,16 @@ export default function App() {
   };
 
   /* ─── Language ─── */
-  const toggleLang = () => {
-    const next: Lang = lang === 'en' ? 'tr' : 'en';
+  const changeLang = (next: Lang) => {
     store(LANG_KEY, next);
-    // Home pages have dedicated localized URLs.
-    if (location.pathname === '/' && next === 'tr') return void (location.href = '/tr/');
-    if (location.pathname === '/tr/' && next === 'en') return void (location.href = '/');
+    // Go to this page's version in that language (status pages only switch the UI).
+    if (location.pathname === PAGE.path) return void (location.href = PAGE.alternates?.[next] || langInfo(next).home);
     setLang(next);
   };
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
+
 
   const showFlash = (msg: string) => {
     setFlash(msg);
@@ -367,23 +386,38 @@ export default function App() {
     </button>
   );
 
-  const h1 = PAGE.h1 || t.h1;
-  const suggestTr = PAGE.page === 'home' && lang === 'en' && navigator.language?.toLowerCase().startsWith('tr');
-  const sub = PAGE.sub || t.sub;
+  const h1 = (!ON_STATUS_PAGE && PAGE.h1) || t.h1;
+  // First visit, browser language differs and this page exists in it → offer to switch.
+  const [bannerLang, setBannerLang] = useState<Lang | null>(() => {
+    if (load(LANG_KEY, null) || load(BANNER_KEY, false) || location.pathname !== PAGE.path) return null;
+    const bl = browserLang();
+    return bl && bl !== PAGE.lang && PAGE.alternates?.[bl] ? bl : null;
+  });
+  const sub = (!ON_STATUS_PAGE && PAGE.sub) || t.sub;
 
   return (
     <div className="relative" style={{ color: 'var(--text-primary)' }}>
       {/* Top controls */}
       <div className="absolute top-4 right-4 z-50 flex gap-2 print:hidden">
-        <button
-          onClick={toggleLang}
-          className="h-10 px-3 rounded-xl flex items-center gap-1.5 text-xs font-semibold btn-secondary focus-ring"
+        <label
+          className="relative h-10 pl-3 pr-2 rounded-xl flex items-center gap-1.5 text-xs font-semibold btn-secondary focus-within:ring-2"
           style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
-          aria-label={t.switchLang}
         >
-          <Languages className="w-4 h-4" />
-          {lang === 'en' ? 'TR' : 'EN'}
-        </button>
+          <Languages className="w-4 h-4 shrink-0" aria-hidden="true" />
+          <span className="sr-only">{t.switchLang}</span>
+          <select
+            value={lang}
+            onChange={e => changeLang(e.target.value as Lang)}
+            className="bg-transparent outline-none cursor-pointer uppercase"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            {LANGS.map(l => (
+              <option key={l.code} value={l.code} style={{ color: '#0a0a0a' }}>
+                {l.code.toUpperCase()} · {l.name}
+              </option>
+            ))}
+          </select>
+        </label>
         <button
           onClick={toggleTheme}
           className="w-10 h-10 rounded-xl flex items-center justify-center btn-secondary focus-ring"
@@ -397,7 +431,7 @@ export default function App() {
       <main className="max-w-3xl mx-auto px-5 pt-16 pb-8 md:pt-24">
         {/* Header */}
         <header className="mb-10 text-center print:hidden">
-          <a href={lang === 'tr' ? '/tr/' : '/'} className="inline-flex flex-col items-center gap-3 mb-5" aria-label="Xtracticle home">
+          <a href={langInfo(lang).home} className="inline-flex flex-col items-center gap-3 mb-5" aria-label="Xtracticle home">
             <span className="xt-logo">
               <svg viewBox="0 0 24 24" aria-hidden="true" className="w-7 h-7" width={28} height={28} fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.007 4.076H5.036z"></path>
@@ -407,11 +441,6 @@ export default function App() {
           </a>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{h1}</h1>
           <p className="text-lg max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>{sub}</p>
-          {suggestTr && (
-            <a href="/tr/" hrefLang="tr" className="inline-block mt-3 text-sm underline underline-offset-2" style={{ color: 'var(--text-secondary)' }}>
-              🇹🇷 Türkçe sürüme geç →
-            </a>
-          )}
         </header>
 
         {/* Mode switch */}
@@ -634,6 +663,41 @@ export default function App() {
           </>
         )}
       </main>
+
+      {bannerLang && (
+        <div
+          role="dialog"
+          aria-live="polite"
+          lang={bannerLang}
+          className="fixed bottom-4 inset-x-4 z-50 mx-auto max-w-md p-4 rounded-2xl flex items-center gap-3 animate-slide-up print:hidden"
+          style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-xl)' }}
+        >
+          <Languages className="w-5 h-5 shrink-0" style={{ color: 'var(--text-secondary)' }} aria-hidden="true" />
+          <p className="text-sm flex-1">{translations[bannerLang].bannerText}</p>
+          <button
+            type="button"
+            onClick={() => {
+              track('language_switch', { from: PAGE.lang, to: bannerLang, via: 'banner' });
+              changeLang(bannerLang);
+            }}
+            className="px-3 py-2 rounded-lg text-sm font-semibold btn-primary whitespace-nowrap"
+            style={primaryStyle}
+          >
+            {translations[bannerLang].bannerCta}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              store(BANNER_KEY, true);
+              setBannerLang(null);
+            }}
+            className="p-1.5 rounded-lg btn-secondary"
+            aria-label={translations[bannerLang].bannerDismiss}
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -649,7 +713,7 @@ function ObsidianIcon() {
 /* ─── Batch mode ─── */
 function BatchPanel({ lang, withFrontMatter }: { lang: Lang; withFrontMatter: boolean }) {
   const t = translations[lang];
-  const locale = lang === 'tr' ? 'tr-TR' : 'en-US';
+  const locale = langInfo(lang).locale;
   const [text, setText] = useState('');
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState<string | null>(null);

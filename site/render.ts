@@ -1,4 +1,4 @@
-import { PAGES, SITE, GITHUB_URL, type SitePage } from './pages';
+import { PAGES, SITE, GITHUB_URL, type Lang, type SitePage } from './pages';
 
 /**
  * Fills the markers in index.html for one page:
@@ -15,6 +15,63 @@ const esc = (s: string) =>
 const inlineJson = (v: unknown) => JSON.stringify(v).replace(/</g, '\\u003c');
 
 const url = (p: SitePage) => SITE + p.path;
+
+/** Per-language strings used by the page chrome (not the page content). */
+const UI: Record<Lang, { locale: string; placeholder: string; button: string; faq: string; tagline: string; disclaimer: string; built: string }> = {
+  en: {
+    locale: 'en_US',
+    placeholder: 'Paste an X post link…',
+    button: 'Extract',
+    faq: 'Frequently asked questions',
+    tagline: 'Xtracticle — free & open-source downloader for X articles, threads and posts.',
+    disclaimer: 'Not affiliated with X Corp. Public content only — please respect authors’ rights.',
+    built: 'Built by',
+  },
+  tr: {
+    locale: 'tr_TR',
+    placeholder: 'Bir X gönderi linki yapıştırın…',
+    button: 'Çıkar',
+    faq: 'Sık sorulan sorular',
+    tagline: 'Xtracticle — ücretsiz ve açık kaynak X makale, flood ve gönderi indirici.',
+    disclaimer: 'X Corp. ile bağlantılı değildir. Yalnızca herkese açık içerik; lütfen yazarların haklarına saygı gösterin.',
+    built: 'Geliştiren:',
+  },
+  es: {
+    locale: 'es_ES',
+    placeholder: 'Pega el enlace de un post de X…',
+    button: 'Extraer',
+    faq: 'Preguntas frecuentes',
+    tagline: 'Xtracticle — descargador gratuito y de código abierto de artículos, hilos y posts de X.',
+    disclaimer: 'Sin relación con X Corp. Solo contenido público; respeta los derechos de los autores.',
+    built: 'Creado por',
+  },
+  pt: {
+    locale: 'pt_BR',
+    placeholder: 'Cole o link de um post do X…',
+    button: 'Extrair',
+    faq: 'Perguntas frequentes',
+    tagline: 'Xtracticle — baixador gratuito e de código aberto de artigos, threads e posts do X.',
+    disclaimer: 'Sem vínculo com a X Corp. Apenas conteúdo público; respeite os direitos dos autores.',
+    built: 'Criado por',
+  },
+  ja: {
+    locale: 'ja_JP',
+    placeholder: 'Xのポストのリンクを貼り付け…',
+    button: '取得',
+    faq: 'よくある質問',
+    tagline: 'Xtracticle — Xの記事・スレッド・ポストを保存できる無料のオープンソースツール。',
+    disclaimer: 'X Corp.とは提携していません。公開コンテンツのみ対象です。著者の権利を尊重してください。',
+    built: '開発：',
+  },
+};
+
+const LANG_NAMES: Record<Lang, string> = { en: 'English', es: 'Español', pt: 'Português', ja: '日本語', tr: 'Türkçe' };
+
+const HOMES = () => PAGES.filter(p => p.isHome && !p.noindex);
+const homeOf = (lang: Lang) => HOMES().find(h => h.lang === lang) || HOMES()[0];
+
+/** Language versions of a page (same translation group), in PAGES order. */
+const versions = (page: SitePage) => (page.noindex ? [] : PAGES.filter(p => p.group === page.group && !p.noindex));
 const OG_IMAGE = `${SITE}/og-image.png`;
 
 function jsonLd(page: SitePage): unknown[] {
@@ -24,7 +81,7 @@ function jsonLd(page: SitePage): unknown[] {
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Xtracticle',
-      alternateName: page.lang === 'tr' ? ['X Makale İndirici'] : ['X Article Downloader', 'X Thread to PDF', 'Tweet to Markdown'],
+      alternateName: page.lang === 'en' ? ['X Article Downloader', 'X Thread to PDF', 'Tweet to Markdown'] : [page.h1],
       url: url(page),
       description: page.description,
       applicationCategory: 'UtilitiesApplication',
@@ -51,7 +108,7 @@ function jsonLd(page: SitePage): unknown[] {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Xtracticle', item: `${SITE}/` },
+        { '@type': 'ListItem', position: 1, name: 'Xtracticle', item: url(homeOf(page.lang)) },
         { '@type': 'ListItem', position: 2, name: page.h1, item: url(page) },
       ],
     });
@@ -76,14 +133,12 @@ function head(page: SitePage): string {
   ];
   if (!page.noindex) {
     tags.push(`<link rel="canonical" href="${url(page)}" />`);
-    if (page.isHome) {
-      const en = PAGES.find(p => p.id === 'home')!;
-      const tr = PAGES.find(p => p.id === 'tr-home')!;
-      tags.push(
-        `<link rel="alternate" hreflang="en" href="${url(en)}" />`,
-        `<link rel="alternate" hreflang="tr" href="${url(tr)}" />`,
-        `<link rel="alternate" hreflang="x-default" href="${url(en)}" />`,
-      );
+    // Every language version lists all of them (hreflang must be reciprocal).
+    const vs = versions(page);
+    if (vs.length > 1) {
+      for (const v of vs) tags.push(`<link rel="alternate" hreflang="${v.lang}" href="${url(v)}" />`);
+      const def = vs.find(v => v.lang === 'en') || vs[0];
+      tags.push(`<link rel="alternate" hreflang="x-default" href="${url(def)}" />`);
     }
   }
   tags.push(
@@ -96,7 +151,7 @@ function head(page: SitePage): string {
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
     `<meta property="og:image:alt" content="Xtracticle — X Article Downloader" />`,
-    `<meta property="og:locale" content="${page.lang === 'tr' ? 'tr_TR' : 'en_US'}" />`,
+    `<meta property="og:locale" content="${UI[page.lang].locale}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(page.title)}" />`,
     `<meta name="twitter:description" content="${esc(page.description)}" />`,
@@ -108,11 +163,11 @@ function head(page: SitePage): string {
 
 /** Mirrors the React header markup/classes so hydration causes no layout shift. */
 function shell(page: SitePage): string {
-  const placeholder = page.lang === 'tr' ? 'Bir X gönderi linki yapıştırın…' : 'Paste an X post link…';
-  const button = page.lang === 'tr' ? 'Çıkar' : 'Extract';
+  const { placeholder, button } = UI[page.lang];
+  const home = homeOf(page.lang).path;
   return `<main class="max-w-3xl mx-auto px-5 pt-16 pb-8 md:pt-24">
         <header class="mb-10 text-center">
-          <a href="${page.lang === 'tr' ? '/tr/' : '/'}" class="inline-flex flex-col items-center gap-3 mb-5" aria-label="Xtracticle home">
+          <a href="${home}" class="inline-flex flex-col items-center gap-3 mb-5" aria-label="Xtracticle home">
             <span class="xt-logo"><svg viewBox="0 0 24 24" aria-hidden="true" class="w-7 h-7" width="28" height="28" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.007 4.076H5.036z"></path></svg></span>
             <span class="text-sm font-semibold tracking-wide" style="color:var(--text-secondary)">Xtracticle</span>
           </a>
@@ -129,7 +184,7 @@ function shell(page: SitePage): string {
 
 function faqHtml(page: SitePage): string {
   if (!page.faq.length) return '';
-  const title = page.lang === 'tr' ? 'Sık sorulan sorular' : 'Frequently asked questions';
+  const title = UI[page.lang].faq;
   return `<section>
   <h2>${title}</h2>
   ${page.faq.map(f => `<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('\n  ')}
@@ -137,19 +192,22 @@ function faqHtml(page: SitePage): string {
 }
 
 function footer(page: SitePage): string {
-  const links = PAGES.filter(p => p.nav && !p.noindex && p.lang === 'en')
-    .map(p => `<a href="${p.path}"${p.id === page.id ? ' aria-current="page"' : ''}>${esc(p.nav)}</a>`);
-  links.push(page.lang === 'tr' ? `<a href="/" hreflang="en">English</a>` : `<a href="/tr/" hreflang="tr">Türkçe</a>`);
-  const tagline = page.lang === 'tr'
-    ? 'Xtracticle — ücretsiz ve açık kaynak X makale, flood ve gönderi indirici.'
-    : 'Xtracticle — free & open-source downloader for X articles, threads and posts.';
-  const disclaimer = page.lang === 'tr'
-    ? 'X Corp. ile bağlantılı değildir. Yalnızca herkese açık içerik; lütfen yazarların haklarına saygı gösterin.'
-    : 'Not affiliated with X Corp. Public content only — please respect authors’ rights.';
+  const tools = PAGES.filter(p => p.lang === page.lang && p.nav && !p.noindex).map(
+    p => `<a href="${p.path}"${p.id === page.id ? ' aria-current="page"' : ''}>${esc(p.nav)}</a>`,
+  );
+  // Same page in other languages (falls back to each language's home).
+  const vs = versions(page);
+  const languages = HOMES().map(h => {
+    const target = vs.find(v => v.lang === h.lang) || h;
+    const current = target.id === page.id ? ' aria-current="page"' : '';
+    return `<a href="${target.path}" hreflang="${h.lang}" lang="${h.lang}" data-set-lang="${h.lang}"${current}>${LANG_NAMES[h.lang]}</a>`;
+  });
+  const { tagline, disclaimer, built } = UI[page.lang];
   return `<footer class="xt-footer">
-  <nav aria-label="Tools">${links.join('')}</nav>
+  <nav aria-label="Tools">${tools.join('')}</nav>
+  <nav aria-label="Languages">${languages.join('')}</nav>
   <p>${tagline}</p>
-  <p>Built by <a href="https://x.com/DvciAhmet" rel="noopener">@DvciAhmet</a> · <a href="${GITHUB_URL}" rel="noopener">GitHub</a> · <a href="https://www.producthunt.com/posts/xtracticle" rel="noopener">Product Hunt</a> · <a href="/llms.txt">llms.txt</a></p>
+  <p>${built} <a href="https://x.com/DvciAhmet" rel="noopener">@DvciAhmet</a> · <a href="${GITHUB_URL}" rel="noopener">GitHub</a> · <a href="https://www.producthunt.com/posts/xtracticle" rel="noopener">Product Hunt</a> · <a href="/llms.txt">llms.txt</a></p>
   <p>${disclaimer}</p>
 </footer>`;
 }
@@ -160,8 +218,13 @@ function content(page: SitePage): string {
 }
 
 function config(page: SitePage): string {
-  const cfg = { page: page.id, lang: page.lang, h1: page.h1, sub: page.sub, primary: page.primary };
-  return `<script>window.__XT__=${inlineJson(cfg)}</script>`;
+  const alternates = Object.fromEntries(versions(page).map(v => [v.lang, v.path]));
+  const cfg = { page: page.id, path: page.path, lang: page.lang, h1: page.h1, sub: page.sub, primary: page.primary, alternates };
+  // Runs before first paint:
+  //  1. a visitor who explicitly picked a language earlier is sent to this page's version in it
+  //     (never on first visit, never for crawlers, only on the page's own URL — not status pages);
+  //  2. clicks on language links count as an explicit pick.
+  return `<script>window.__XT__=${inlineJson(cfg)};(function(){var K='xtracticle_lang',c=window.__XT__;try{var p=JSON.parse(localStorage.getItem(K)||'null');if(p&&p!==c.lang&&c.alternates[p]&&location.pathname===c.path&&!/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent))location.replace(c.alternates[p]+location.search+location.hash)}catch(e){}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-set-lang]');if(a)try{localStorage.setItem(K,JSON.stringify(a.getAttribute('data-set-lang')))}catch(e){}})})()</script>`;
 }
 
 export function renderPage(template: string, page: SitePage): string {

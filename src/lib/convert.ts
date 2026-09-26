@@ -82,9 +82,17 @@ function quoteLines(text: string) {
     .join('\n');
 }
 
-function countWords(text: string) {
-  const m = text.replace(/!\[[^\]]*\]\([^)]*\)|\]\([^)]*\)|https?:\/\/\S+/g, ' ').match(/[\p{L}\p{N}]+/gu);
-  return m ? m.length : 0;
+const CJK = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gu;
+
+/** Word count + reading time. CJK text has no spaces, so it is measured in characters. */
+function measure(text: string) {
+  const clean = text.replace(/!\[[^\]]*\]\([^)]*\)|\]\([^)]*\)|https?:\/\/\S+/g, ' ');
+  const cjk = (clean.match(CJK) || []).length;
+  const words = (clean.replace(CJK, ' ').match(/[\p{L}\p{N}]+/gu) || []).length;
+  return {
+    wordCount: words + Math.round(cjk / 2),
+    readingMinutes: Math.max(1, Math.round(words / 230 + cjk / 500)),
+  };
 }
 
 /* ─── Draft.js (X Articles) ─── */
@@ -347,7 +355,7 @@ export function buildDoc(tweets: FxTweet[], L: Labels, locale: string): XDoc {
   ];
 
   const bodyMd = out.md.join('\n\n');
-  const wordCount = countWords(out.txt.join(' '));
+  const { wordCount, readingMinutes } = measure(out.txt.join(' '));
   return {
     kind,
     id: first.id,
@@ -362,7 +370,7 @@ export function buildDoc(tweets: FxTweet[], L: Labels, locale: string): XDoc {
     images: Array.from(new Set(out.images)),
     postCount: tweets.length,
     wordCount,
-    readingMinutes: Math.max(1, Math.round(wordCount / 230)),
+    readingMinutes,
   };
 }
 
