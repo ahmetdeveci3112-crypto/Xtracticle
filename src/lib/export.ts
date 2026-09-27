@@ -219,7 +219,11 @@ const MARGIN_MM = 14;
  * sliced. This avoids the single giant canvas that silently fails (blank PDF)
  * on long articles, especially on iOS Safari.
  */
-export async function buildPdf(doc: XDoc, contentEl: HTMLElement): Promise<Blob> {
+export async function buildPdf(
+  doc: XDoc,
+  contentEl: HTMLElement,
+  onProgress?: (done: number, total: number) => void,
+): Promise<Blob> {
   const [{ jsPDF }, { default: html2canvas }] = await Promise.all([import('jspdf'), import('html2canvas-pro')]);
 
   const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
@@ -279,14 +283,24 @@ export async function buildPdf(doc: XDoc, contentEl: HTMLElement): Promise<Blob>
     }
     if (current.length) groups.push(current);
 
+    // Phones (iOS Safari especially) have a small total canvas-memory budget: render at a
+    // lower resolution there and free every canvas as soon as it has been used.
+    const lowMemory =
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || ((navigator as any).deviceMemory ?? 8) <= 4;
+    const scale = lowMemory || groups.length > 40 ? 1.5 : 2;
+    const release = (c: HTMLCanvasElement) => {
+      c.width = 0;
+      c.height = 0;
+    };
+
     let pageIndex = 0;
-    for (const group of groups) {
+    for (const [groupIndex, group] of groups.entries()) {
+      onProgress?.(groupIndex + 1, groups.length);
       const page = document.createElement('div');
       page.style.cssText = `width:${PAGE_W_PX}px;background:#fff;color:#111;padding:0;`;
       group.forEach(el => page.appendChild(el));
       host.replaceChildren(page);
 
-      const scale = 2;
       const canvas = await html2canvas(page, { scale, useCORS: true, backgroundColor: '#ffffff', logging: false });
       const slicePx = pageHeightPx * scale;
       for (let y = 0; y < canvas.height; y += slicePx) {
@@ -296,9 +310,11 @@ export async function buildPdf(doc: XDoc, contentEl: HTMLElement): Promise<Blob>
         slice.height = h;
         slice.getContext('2d')!.drawImage(canvas, 0, y, canvas.width, h, 0, 0, canvas.width, h);
         if (pageIndex > 0) pdf.addPage();
-        pdf.addImage(slice.toDataURL('image/jpeg', 0.9), 'JPEG', MARGIN_MM, MARGIN_MM, contentW, (h / canvas.width) * contentW);
+        pdf.addImage(slice.toDataURL('image/jpeg', 0.85), 'JPEG', MARGIN_MM, MARGIN_MM, contentW, (h / canvas.width) * contentW);
+        release(slice);
         pageIndex++;
       }
+      release(canvas);
     }
 
     // Footer with source + page numbers (ASCII-only to stay within core fonts).

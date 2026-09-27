@@ -122,6 +122,7 @@ export default function App() {
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
   const [flash, setFlash] = useState<string | null>(null);
   const [busy, setBusy] = useState<ExportKey | null>(null);
+  const [progress, setProgress] = useState<string | null>(null);
   const [recent, setRecent] = useState<HistoryItem[]>(() => load(HISTORY_KEY, []));
   const [showHistory, setShowHistory] = useState(false);
   const [withFrontMatter, setWithFrontMatter] = useState<boolean>(() => load(FM_KEY, true));
@@ -302,14 +303,23 @@ export default function App() {
         const el = previewEl();
         if (key === 'zip') ex.saveBlob(await ex.buildZip(doc, markdownForFile(), base), `${base}.zip`);
         else if (key === 'epub' && el) ex.saveBlob(await ex.buildEpub(doc, el, doc.lang || lang), `${base}.epub`);
-        else if (key === 'pdf' && el) ex.saveBlob(await ex.buildPdf(doc, el), `${base}.pdf`);
+        else if (key === 'pdf' && el)
+          ex.saveBlob(await ex.buildPdf(doc, el, (done, total) => total > 2 && setProgress(`${done}/${total}`)), `${base}.pdf`);
       }
     } catch (err) {
       console.error(err);
-      setError(t.exportFailed);
-      track('download_error', { format: key });
+      const message = String((err as Error)?.message || err).slice(0, 100);
+      track('download_error', { format: key, message, words: doc.wordCount, images: doc.images.length });
+      if (key === 'pdf') {
+        // Never leave the user without a PDF: fall back to the browser's own "Save as PDF".
+        setError(t.pdfFallback);
+        setTimeout(() => window.print(), 400);
+      } else {
+        setError(t.exportFailed);
+      }
     } finally {
       setBusy(null);
+      setProgress(null);
     }
   };
 
@@ -382,7 +392,7 @@ export default function App() {
       style={k === primary ? primaryStyle : secondaryStyle}
     >
       {busy === k ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : icon}
-      {busy === k ? t.working : label}
+      {busy === k ? (progress ? `${label} ${progress}` : t.working) : label}
     </button>
   );
 
