@@ -1,0 +1,52 @@
+{
+  "week": "2026-W40",
+  "published": "2026-10-01",
+  "intro": "Five long reads people saved with Xtracticle this week — from an AI motion-design workflow to a first-principles take on parenting.",
+  "items": [
+    {
+      "id": "2104216919033192746",
+      "handle": "0xMovez",
+      "author": "Movez",
+      "title": "How to build motion design studio with Opus 5.5 (Full-course)",
+      "lang": "en",
+      "topic": "AI & design",
+      "summary": "A step-by-step course for getting real motion graphics out of an AI model: have it write a renderer instead of a video, feed it references and a precise spec, and make it review its own frames."
+    },
+    {
+      "id": "2104223930253021355",
+      "handle": "longhaiqwe123",
+      "author": "龙海",
+      "title": "万字长文（含配图），讲清楚育儿的第一性原理",
+      "lang": "zh",
+      "topic": "Parenting",
+      "summary": "A long, illustrated essay (in Chinese) that models a child’s growth as a tree — family climate as the roots, the parent–child relationship as the trunk, core skills as the branches — and uses it to explain teenage turbulence."
+    },
+    {
+      "id": "2104039563719262546",
+      "handle": "xaiwind",
+      "author": "想风",
+      "title": "万字长文 ｜超详细的 GitHub 教程，从入门到精通",
+      "lang": "zh",
+      "topic": "Developer tools",
+      "summary": "A thorough beginner-to-advanced GitHub guide (in Chinese): why Git and GitHub are different things, the four concepts you actually need, reading an open-source project, your first pull request, Actions and Pages."
+    },
+    {
+      "id": "2104335929293127851",
+      "handle": "joedaroo",
+      "author": "Joe",
+      "title": "Its not just the f*cking sandbox",
+      "lang": "en",
+      "topic": "AI security",
+      "summary": "A security engineer at an AI lab, writing in a personal capacity, describes what recent AI incidents look like from the inside and argues for a culture of reasonable paranoia over one-line fixes."
+    },
+    {
+      "id": "2100916797809545528",
+      "handle": "BuzzMalx",
+      "author": "Buzz",
+      "title": "How to Stop Procrastinating and Wasting Time",
+      "lang": "en",
+      "topic": "Productivity",
+      "summary": "Seven practical habits for getting started when you know what to do but don’t do it — find the discomfort, start small, decide in advance, act before motivation shows up and recover fast."
+    }
+  ]
+}

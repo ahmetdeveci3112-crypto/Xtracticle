@@ -28,6 +28,10 @@ export interface SitePage {
   faq: FAQ[];
   noindex?: boolean;
   isHome?: boolean;
+  /** Absolute canonical URL when it differs from the page's own URL. */
+  canonical?: string;
+  /** Extra JSON-LD blocks (e.g. ItemList). */
+  jsonLd?: unknown[];
 }
 
 export const SITE = 'https://xtracticle.com';

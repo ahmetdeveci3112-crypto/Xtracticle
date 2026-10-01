@@ -108,6 +108,7 @@ site/
 ├── blocks.ts            Types + localized shared blocks (shortcuts, privacy)
 ├── pages.ts             English pages (one per search intent) + page registry
 ├── pages-{es,pt,ja,zh,tr}.ts  The same pages, localized (linked by `group`)
+├── curated.ts           Weekly “Best X Articles” pages from site/curated/*.json
 ├── render.ts            Head/meta/JSON-LD/content/footer rendering
 └── plugin.ts            Vite plugin: emits every page, 404.html and sitemap.xml
 ```
@@ -135,6 +136,18 @@ GET /api/tweet/:id   → Tweet
 ```
 
 `Tweet` mirrors the FxTwitter status object (`text`, `author`, `media`, `quote`, `article`, …). Responses are edge-cached for 5 minutes — please be gentle.
+
+## Weekly “Best X Articles”
+
+`/best-x-articles` is a hand-reviewed weekly selection built from `site/curated/*.json` (title, author and a one-sentence summary in our own words — never the article text).
+
+```bash
+npm run curate -- 2026-W41 https://x.com/user/status/123 https://x.com/other/status/456
+# → site/curated/2026-w41.json with title/author/lang filled in; write "intro", "topic" and "summary"
+npm run build   # issues with an empty summary are skipped automatically
+```
+
+The newest issue is shown on `/best-x-articles` (its `/best-x-articles/<week>` page canonicals to the hub until the next issue); older issues stay at `/best-x-articles/<week>`.
 
 ## Contributing
 

@@ -232,6 +232,42 @@ body {
   background-color: var(--bg-tertiary);
 }
 
+.xt-curated {
+  list-style: none !important;
+  padding: 0 !important;
+  counter-reset: pick;
+  display: grid;
+  gap: 1rem;
+}
+.xt-curated li {
+  counter-increment: pick;
+  position: relative;
+  padding: 1.1rem 1.2rem 1rem 3.4rem;
+  border-radius: 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+}
+.xt-curated li::before {
+  content: counter(pick);
+  position: absolute;
+  left: 1.1rem;
+  top: 1.15rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text-tertiary);
+}
+.xt-curated h3 { margin: 0.4rem 0 0.2rem; font-size: 1.1rem; line-height: 1.4; }
+.xt-curated h3 a { text-decoration: none; }
+.xt-curated h3 a:hover { text-decoration: underline; }
+.xt-picks .xt-curated { gap: 0.6rem; }
+.xt-picks .xt-curated li { padding: 0.8rem 1rem 0.7rem 3rem; }
+.xt-picks .xt-curated li::before { top: 0.75rem; left: 1rem; font-size: 1.1rem; }
+.xt-picks .xt-curated h3 { margin-top: 0; font-size: 1rem; }
+.xt-picks .xt-curated-by { margin-bottom: 0 !important; }
+.xt-curated-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; font-size: 0.75rem; color: var(--text-secondary); }
+.xt-curated-by { font-size: 0.85rem; margin-bottom: 0.5rem !important; }
+.xt-curated-actions { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-size: 0.875rem; margin: 0.4rem 0 0 !important; }
+
 .xt-figure {
   margin: 1.5rem 0 0.5rem;
 }

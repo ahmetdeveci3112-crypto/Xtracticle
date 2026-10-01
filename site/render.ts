@@ -1,5 +1,6 @@
 import { PAGES, SITE, GITHUB_URL, type Lang, type SitePage } from './pages';
 import { langTag } from './blocks';
+import { latestPicks } from './curated';
 
 /**
  * Fills the markers in index.html for one page:
@@ -133,6 +134,7 @@ function jsonLd(page: SitePage): unknown[] {
       ],
     });
   }
+  if (page.jsonLd) blocks.push(...page.jsonLd);
   if (page.faq.length) {
     blocks.push({
       '@context': 'https://schema.org',
@@ -152,7 +154,7 @@ function head(page: SitePage): string {
       : `<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />`,
   ];
   if (!page.noindex) {
-    tags.push(`<link rel="canonical" href="${url(page)}" />`);
+    tags.push(`<link rel="canonical" href="${page.canonical || url(page)}" />`);
     // Every language version lists all of them (hreflang must be reciprocal).
     const vs = versions(page);
     if (vs.length > 1) {
@@ -216,6 +218,7 @@ function footer(page: SitePage): string {
   const tools = PAGES.filter(p => p.lang === page.lang && p.nav && !p.noindex).map(
     p => `<a href="${p.path}"${p.id === page.id ? ' aria-current="page"' : ''}>${esc(p.nav)}</a>`,
   );
+  if (page.lang !== 'en' && latestPicks()) tools.push(`<a href="/best-x-articles" hreflang="en">${esc(PICKS_COPY[page.lang].nav)}</a>`);
   // Same page in other languages (falls back to each language's home).
   const vs = versions(page);
   const languages = HOMES().map(h => {
@@ -233,8 +236,35 @@ function footer(page: SitePage): string {
 </footer>`;
 }
 
+const PICKS_COPY: Record<Lang, { h2: string; all: (n: number) => string; by: string; nav: string }> = {
+  en: { h2: 'This week’s best X Articles', all: n => `See all ${n} picks →`, by: 'by', nav: 'Best X Articles' },
+  tr: { h2: 'Bu haftanın en iyi X makaleleri', all: n => `${n} seçkinin tamamını gör →`, by: 'yazan:', nav: 'Haftanın X makaleleri' },
+  es: { h2: 'Los mejores artículos de X de la semana', all: n => `Ver las ${n} selecciones →`, by: 'por', nav: 'Mejores artículos de X' },
+  pt: { h2: 'Os melhores artigos do X da semana', all: n => `Ver as ${n} escolhas →`, by: 'por', nav: 'Melhores artigos do X' },
+  ja: { h2: '今週のおすすめ X 記事', all: n => `${n}本すべて見る →`, by: '著者:', nav: '今週のおすすめ X 記事' },
+  zh: { h2: '本周精选 X 文章', all: n => `查看全部 ${n} 篇 →`, by: '作者：', nav: '本周精选 X 文章' },
+};
+
+/** Teaser of the newest "Best X Articles" issue, placed after the first section of home pages. */
+function picksTeaser(page: SitePage): string {
+  const picks = page.isHome ? latestPicks(3) : null;
+  if (!picks) return '';
+  const c = PICKS_COPY[page.lang];
+  return `
+<section class="xt-picks">
+  <h2>${c.h2}</h2>
+  <ol class="xt-curated">${picks.items
+    .map(i => `<li><h3><a href="${i.local}">${esc(i.title)}</a></h3><p class="xt-curated-by">${c.by} ${esc(i.author)} · @${esc(i.handle)}</p></li>`)
+    .join('')}</ol>
+  <p><a href="/best-x-articles" hreflang="en">${c.all(picks.total)}</a></p>
+</section>`;
+}
+
 function content(page: SitePage): string {
-  const body = page.sections + faqHtml(page);
+  const teaser = picksTeaser(page);
+  const cut = teaser ? page.sections.indexOf('</section>') : -1;
+  const sections = cut >= 0 ? page.sections.slice(0, cut + 10) + teaser + page.sections.slice(cut + 10) : page.sections;
+  const body = sections + faqHtml(page);
   return (body.trim() ? `<div class="xt-content">${body}</div>\n` : '') + footer(page);
 }
 
@@ -259,7 +289,7 @@ export function renderPage(template: string, page: SitePage): string {
 
 export function renderSitemap(): string {
   const today = new Date().toISOString().slice(0, 10);
-  const urls = PAGES.filter(p => !p.noindex)
+  const urls = PAGES.filter(p => !p.noindex && !p.canonical)
     .map(p => `  <url>\n    <loc>${url(p)}</loc>\n    <lastmod>${today}</lastmod>\n    <priority>${p.isHome ? '1.0' : '0.8'}</priority>\n  </url>`)
     .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;

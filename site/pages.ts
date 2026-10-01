@@ -10,6 +10,7 @@ import { PAGES_ES } from './pages-es';
 import { PAGES_PT } from './pages-pt';
 import { PAGES_JA } from './pages-ja';
 import { PAGES_ZH } from './pages-zh';
+import { curatedPages } from './curated';
 
 export type { SitePage, FAQ, ExportKey, Lang } from './blocks';
 export { SITE };
@@ -497,7 +498,7 @@ const notFound: SitePage = {
 const PAGES_EN: SitePage[] = [home, pdf, markdown, thread, epub, obsidian, alternative];
 
 /** Order = footer order within each language. */
-export const PAGES: SitePage[] = [...PAGES_EN, ...PAGES_ES, ...PAGES_PT, ...PAGES_JA, ...PAGES_ZH, ...PAGES_TR, notFound];
+export const PAGES: SitePage[] = [...PAGES_EN, ...curatedPages(), ...PAGES_ES, ...PAGES_PT, ...PAGES_JA, ...PAGES_ZH, ...PAGES_TR, notFound];
 
 export function pageForPath(pathname: string): SitePage {
   const clean = pathname.split('?')[0].replace(/\.html$/, '');
