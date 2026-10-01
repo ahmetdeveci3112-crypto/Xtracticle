@@ -30,10 +30,10 @@ const home: SitePage = {
 <section>
   <h2>必要な形式がそろっています</h2>
   <div class="xt-grid">
-    <div><h3><a href="/ja/x-kiji-pdf">PDF</a></h3><p>A4サイズで印刷にも対応。画像、出典リンク、ページ番号付き。</p></div>
-    <div><h3><a href="/ja/x-kiji-markdown">Markdown（.md）</a></h3><p>見出し・太字・リンク・リスト・引用・画像をそのまま保持。YAMLフロントマターにも対応。</p></div>
-    <div><h3><a href="/ja/x-kiji-epub-kindle">EPUB / Kindle</a></h3><p>長い記事をKindle、Kobo、Apple Booksで。画像も電子書籍に埋め込まれます。</p></div>
-    <div><h3><a href="/ja/x-kiji-obsidian">Obsidian</a></h3><p>ワンクリックで、記事全文とメタデータ入りの新しいノートを作成。</p></div>
+    <div><h3><a href="/ja/x-kiji-pdf">X記事をPDFで保存</a></h3><p>A4サイズで印刷にも対応。画像、出典リンク、ページ番号付き。</p></div>
+    <div><h3><a href="/ja/x-kiji-markdown">X記事をMarkdownに変換</a></h3><p>見出し・太字・リンク・リスト・引用・画像をそのまま保持。YAMLフロントマターにも対応。</p></div>
+    <div><h3><a href="/ja/x-kiji-epub-kindle">X記事をEPUB / Kindleで読む</a></h3><p>長い記事をKindle、Kobo、Apple Booksで。画像も電子書籍に埋め込まれます。</p></div>
+    <div><h3><a href="/ja/x-kiji-obsidian">X記事をObsidianに保存</a></h3><p>ワンクリックで、記事全文とメタデータ入りの新しいノートを作成。</p></div>
     <div><h3>ZIP＋画像</h3><p>Markdownと全画像をローカルに保存。元のポストが削除されても残るアーカイブに。</p></div>
     <div><h3>テキスト</h3><p>どの端末・スクリプト・AIツールでも使えるシンプルな.txt。</p></div>
   </div>

@@ -12,6 +12,7 @@ const JSON_HEADERS = {
   'Access-Control-Allow-Origin': '*',
 };
 const CACHE_SECONDS = 300;
+const STALE_SECONDS = 7 * 24 * 3600;
 
 function json(body: unknown, status = 200, extra: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), { status, headers: { ...JSON_HEADERS, ...extra } });
@@ -39,30 +40,43 @@ export async function handleApi(request: Request, waitUntil?: (p: Promise<unknow
     if (hit) return hit;
   }
 
-  let response: Response;
+  let payload: unknown = null;
+  let upstreamError = false;
   try {
     if (kind === 'tweet') {
-      const tweet = await fetchTweet(id);
-      response = tweet
-        ? json(tweet, 200, { 'Cache-Control': `public, max-age=${CACHE_SECONDS}` })
-        : json({ error: 'Post not found. It may be deleted, age-restricted, or from a private account.' }, 404);
+      payload = await fetchTweet(id);
     } else {
       const tweets = await fetchThread(id);
-      response = tweets.length
-        ? json({ tweets, count: tweets.length, isThread: tweets.length > 1 }, 200, {
-            'Cache-Control': `public, max-age=${CACHE_SECONDS}`,
-          })
-        : json({ error: 'Post not found. It may be deleted, age-restricted, or from a private account.' }, 404);
+      payload = tweets.length ? { tweets, count: tweets.length, isThread: tweets.length > 1 } : null;
     }
   } catch (err) {
     console.error(`Error handling /api/${kind}/${id}:`, err);
-    return json({ error: 'Upstream service error. Please try again.' }, 502);
+    upstreamError = true;
   }
 
-  if (cache && response.status === 200) {
-    const put = cache.put(cacheKey, response.clone());
-    if (waitUntil) waitUntil(put);
-    else await put;
+  // A week-long "last known good" copy, served when the upstream fails or no longer
+  // returns the post — keeps the tool working through FxTwitter outages.
+  const staleKey = new Request(`${url.origin}/api/stale/${kind}/${id}`);
+
+  if (payload) {
+    const response = json(payload, 200, { 'Cache-Control': `public, max-age=${CACHE_SECONDS}` });
+    if (cache) {
+      const stale = json(payload, 200, { 'Cache-Control': `public, max-age=${STALE_SECONDS}` });
+      const puts = Promise.all([cache.put(cacheKey, response.clone()), cache.put(staleKey, stale)]);
+      if (waitUntil) waitUntil(puts);
+      else await puts;
+    }
+    return response;
   }
-  return response;
+
+  const stale = cache ? await cache.match(staleKey) : undefined;
+  if (stale) {
+    const headers = new Headers(stale.headers);
+    headers.set('Cache-Control', 'no-store');
+    headers.set('X-Xt-Stale', '1');
+    return new Response(stale.body, { status: 200, headers });
+  }
+  return upstreamError
+    ? json({ error: 'Upstream service error. Please try again.' }, 502)
+    : json({ error: 'Post not found. It may be deleted, age-restricted, or from a private account.' }, 404);
 }

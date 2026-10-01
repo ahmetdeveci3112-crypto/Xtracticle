@@ -44,10 +44,10 @@ const home: SitePage = {
 <section>
   <h2>Every format you need</h2>
   <div class="xt-grid">
-    <div><h3><a href="/x-article-to-pdf">PDF</a></h3><p>A4, print-ready, images inline, source link and page numbers on every page.</p></div>
-    <div><h3><a href="/x-article-to-markdown">Markdown (.md)</a></h3><p>Headings, bold, links, lists, quotes and images preserved. Optional YAML front-matter.</p></div>
-    <div><h3><a href="/x-article-to-epub">EPUB / Kindle</a></h3><p>Read long articles on Kindle, Kobo or Apple Books — images embedded.</p></div>
-    <div><h3><a href="/save-x-articles-to-obsidian">Obsidian</a></h3><p>One click opens a new note in your vault with the full article and metadata.</p></div>
+    <div><h3><a href="/x-article-to-pdf">X article to PDF</a></h3><p>A4, print-ready, images inline, source link and page numbers on every page.</p></div>
+    <div><h3><a href="/x-article-to-markdown">X article to Markdown</a></h3><p>Headings, bold, links, lists, quotes and images preserved. Optional YAML front-matter.</p></div>
+    <div><h3><a href="/x-article-to-epub">X article to EPUB / Kindle</a></h3><p>Read long articles on Kindle, Kobo or Apple Books — images embedded.</p></div>
+    <div><h3><a href="/save-x-articles-to-obsidian">Save X articles to Obsidian</a></h3><p>One click opens a new note in your vault with the full article and metadata.</p></div>
     <div><h3>ZIP + images</h3><p>Markdown plus every image saved locally — a real offline archive that survives deleted posts.</p></div>
     <div><h3>Plain text</h3><p>Clean .txt for any device, script or AI tool.</p></div>
   </div>
@@ -58,7 +58,7 @@ const home: SitePage = {
   <p><strong>X Articles</strong> (long-form posts up to 100,000 characters) are converted block by block: headings, bold, italic,
   strikethrough, links, bullet and numbered lists, quotes, code, dividers, cover image, inline images, videos and embedded posts.</p>
   <p><strong>Threads</strong> are unrolled automatically. Paste the first, a middle or the last post — Xtracticle finds the whole
-  self-thread and merges it into one numbered document. See <a href="/x-thread-to-pdf">thread to PDF</a>.</p>
+  self-thread and merges it into one numbered document. Try the <a href="/x-thread-to-pdf">X thread downloader</a>.</p>
   <p><strong>Single posts</strong> keep their text, line breaks, photos, videos and quoted posts. Need many at once? Switch to
   <em>Batch mode</em> and paste up to 20 links to get one ZIP.</p>
 </section>
@@ -219,13 +219,13 @@ const thread: SitePage = {
   path: '/x-thread-to-pdf',
   file: 'x-thread-to-pdf.html',
   lang: 'en',
-  title: 'Twitter Thread to PDF — Unroll & Save X Threads as PDF or Markdown | Xtracticle',
+  title: 'X Thread Downloader — Unroll & Save Twitter Threads as PDF or Markdown | Xtracticle',
   description:
-    'Unroll any X (Twitter) thread and save it as one PDF, Markdown, EPUB or text file. Paste any post of the thread — no bot mention, no login, free.',
-  h1: 'Twitter Thread to PDF',
-  sub: 'Unroll any X (Twitter) thread into one clean document — PDF, Markdown, EPUB or text. Paste any post of the thread.',
+    'Download and unroll any X (Twitter) thread as one PDF, Markdown, EPUB or text file. Paste any post of the thread — no bot mention, no login, free.',
+  h1: 'X Thread Downloader',
+  sub: 'Unroll any X (Twitter) thread and save it as one clean PDF, Markdown, EPUB or text file. Paste any post of the thread.',
   primary: 'pdf',
-  nav: 'Thread to PDF',
+  nav: 'X Thread Downloader',
   sections: `
 <section>
   <h2>Unroll a thread in seconds</h2>

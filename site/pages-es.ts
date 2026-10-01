@@ -30,10 +30,10 @@ const home: SitePage = {
 <section>
   <h2>Todos los formatos que necesitas</h2>
   <div class="xt-grid">
-    <div><h3><a href="/es/articulo-de-x-a-pdf">PDF</a></h3><p>Tamaño A4 y listo para imprimir: imágenes, enlace a la fuente y números de página.</p></div>
-    <div><h3><a href="/es/articulo-de-x-a-markdown">Markdown (.md)</a></h3><p>Conserva títulos, negritas, enlaces, listas, citas e imágenes. Front-matter YAML opcional.</p></div>
-    <div><h3><a href="/es/articulo-de-x-a-epub-kindle">EPUB / Kindle</a></h3><p>Lee artículos largos en Kindle, Kobo o Apple Books, con las imágenes incluidas.</p></div>
-    <div><h3><a href="/es/guardar-articulos-de-x-en-obsidian">Obsidian</a></h3><p>Con un clic se abre una nota nueva en tu bóveda con el artículo completo y sus metadatos.</p></div>
+    <div><h3><a href="/es/articulo-de-x-a-pdf">Artículo de X a PDF</a></h3><p>Tamaño A4 y listo para imprimir: imágenes, enlace a la fuente y números de página.</p></div>
+    <div><h3><a href="/es/articulo-de-x-a-markdown">Artículo de X a Markdown</a></h3><p>Conserva títulos, negritas, enlaces, listas, citas e imágenes. Front-matter YAML opcional.</p></div>
+    <div><h3><a href="/es/articulo-de-x-a-epub-kindle">Artículo de X a EPUB / Kindle</a></h3><p>Lee artículos largos en Kindle, Kobo o Apple Books, con las imágenes incluidas.</p></div>
+    <div><h3><a href="/es/guardar-articulos-de-x-en-obsidian">Guardar artículos de X en Obsidian</a></h3><p>Con un clic se abre una nota nueva en tu bóveda con el artículo completo y sus metadatos.</p></div>
     <div><h3>ZIP + imágenes</h3><p>Markdown y todas las imágenes en local: un archivo que sobrevive aunque borren el post.</p></div>
     <div><h3>Texto plano</h3><p>Un .txt limpio para cualquier dispositivo, script o herramienta de IA.</p></div>
   </div>

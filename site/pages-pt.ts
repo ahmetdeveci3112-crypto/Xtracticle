@@ -30,10 +30,10 @@ const home: SitePage = {
 <section>
   <h2>Todos os formatos que você precisa</h2>
   <div class="xt-grid">
-    <div><h3><a href="/pt/artigo-do-x-para-pdf">PDF</a></h3><p>Formato A4, pronto para imprimir: imagens, link da fonte e números de página.</p></div>
-    <div><h3><a href="/pt/artigo-do-x-para-markdown">Markdown (.md)</a></h3><p>Mantém títulos, negrito, links, listas, citações e imagens. Front-matter YAML opcional.</p></div>
-    <div><h3><a href="/pt/artigo-do-x-para-epub-kindle">EPUB / Kindle</a></h3><p>Leia artigos longos no Kindle, Kobo ou Apple Books, com as imagens incluídas.</p></div>
-    <div><h3><a href="/pt/salvar-artigos-do-x-no-obsidian">Obsidian</a></h3><p>Um clique abre uma nova nota no seu cofre com o artigo completo e os metadados.</p></div>
+    <div><h3><a href="/pt/artigo-do-x-para-pdf">Artigo do X para PDF</a></h3><p>Formato A4, pronto para imprimir: imagens, link da fonte e números de página.</p></div>
+    <div><h3><a href="/pt/artigo-do-x-para-markdown">Artigo do X para Markdown</a></h3><p>Mantém títulos, negrito, links, listas, citações e imagens. Front-matter YAML opcional.</p></div>
+    <div><h3><a href="/pt/artigo-do-x-para-epub-kindle">Artigo do X para EPUB / Kindle</a></h3><p>Leia artigos longos no Kindle, Kobo ou Apple Books, com as imagens incluídas.</p></div>
+    <div><h3><a href="/pt/salvar-artigos-do-x-no-obsidian">Salvar artigos do X no Obsidian</a></h3><p>Um clique abre uma nova nota no seu cofre com o artigo completo e os metadados.</p></div>
     <div><h3>ZIP + imagens</h3><p>Markdown e todas as imagens salvas localmente: um arquivo que continua existindo mesmo se o post for apagado.</p></div>
     <div><h3>Texto simples</h3><p>Um .txt limpo para qualquer dispositivo, script ou ferramenta de IA.</p></div>
   </div>

@@ -30,10 +30,10 @@ const home: SitePage = {
 <section>
   <h2>İhtiyacınız olan her format</h2>
   <div class="xt-grid">
-    <div><h3><a href="/tr/x-makale-pdf">PDF</a></h3><p>A4, yazdırmaya hazır; görseller, kaynak linki ve sayfa numaraları dahil.</p></div>
-    <div><h3><a href="/tr/x-makale-markdown">Markdown (.md)</a></h3><p>Başlıklar, kalın/italik, linkler, listeler, alıntılar ve görseller korunur. İsteğe bağlı YAML front-matter.</p></div>
-    <div><h3><a href="/tr/x-makale-epub-kindle">EPUB / Kindle</a></h3><p>Uzun makaleleri Kindle, Kobo veya Apple Books’ta okuyun.</p></div>
-    <div><h3><a href="/tr/x-makale-obsidian">Obsidian</a></h3><p>Tek tıkla kasanızda makalenin tamamını ve bilgilerini içeren yeni not açılır.</p></div>
+    <div><h3><a href="/tr/x-makale-pdf">X makalesini PDF olarak indir</a></h3><p>A4, yazdırmaya hazır; görseller, kaynak linki ve sayfa numaraları dahil.</p></div>
+    <div><h3><a href="/tr/x-makale-markdown">X makalesini Markdown'a çevir</a></h3><p>Başlıklar, kalın/italik, linkler, listeler, alıntılar ve görseller korunur. İsteğe bağlı YAML front-matter.</p></div>
+    <div><h3><a href="/tr/x-makale-epub-kindle">X makalesini EPUB / Kindle yap</a></h3><p>Uzun makaleleri Kindle, Kobo veya Apple Books’ta okuyun.</p></div>
+    <div><h3><a href="/tr/x-makale-obsidian">X makalelerini Obsidian'a kaydet</a></h3><p>Tek tıkla kasanızda makalenin tamamını ve bilgilerini içeren yeni not açılır.</p></div>
     <div><h3>ZIP + görseller</h3><p>Markdown ve tüm görseller yerel olarak — gönderi silinse bile kalıcı arşiv.</p></div>
     <div><h3>Düz metin</h3><p>Her cihaz, betik veya yapay zekâ aracı için temiz .txt.</p></div>
   </div>

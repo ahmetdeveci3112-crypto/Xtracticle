@@ -13,6 +13,7 @@ const en = {
     'That is an article-reader link (x.com/i/article/…). Open the article on X, tap Share → Copy link, and paste the post link (x.com/user/status/…).',
   fetchError: 'Could not fetch this post. It may be deleted, age-restricted, or from a private account.',
   networkError: 'Network error — please check your connection and try again.',
+  rateLimited: 'Too many requests in a short time — please wait a few seconds and try again.',
   unknownAuthor: 'Unknown author',
   labels: {
     author: 'Author:',
@@ -75,6 +76,7 @@ const tr: typeof en = {
     'Bu bir makale okuyucu linki (x.com/i/article/…). Makaleyi X’te açıp Paylaş → Linki kopyala deyin ve gönderi linkini (x.com/kullanici/status/…) yapıştırın.',
   fetchError: 'Gönderi alınamadı. Silinmiş, yaş kısıtlamalı veya gizli bir hesaba ait olabilir.',
   networkError: 'Ağ hatası — bağlantınızı kontrol edip tekrar deneyin.',
+  rateLimited: 'Kısa sürede çok fazla istek yapıldı — birkaç saniye bekleyip tekrar deneyin.',
   unknownAuthor: 'Bilinmeyen yazar',
   labels: {
     author: 'Yazar:',
@@ -137,6 +139,7 @@ const es: typeof en = {
     'Ese es un enlace del lector de artículos (x.com/i/article/…). Abre el artículo en X, toca Compartir → Copiar enlace y pega el enlace del post (x.com/usuario/status/…).',
   fetchError: 'No se pudo obtener el post. Puede estar eliminado, tener restricción de edad o ser de una cuenta privada.',
   networkError: 'Error de red: revisa tu conexión e inténtalo de nuevo.',
+  rateLimited: 'Demasiadas solicitudes en poco tiempo: espera unos segundos e inténtalo de nuevo.',
   unknownAuthor: 'Autor desconocido',
   labels: {
     author: 'Autor:',
@@ -199,6 +202,7 @@ const pt: typeof en = {
     'Esse é um link do leitor de artigos (x.com/i/article/…). Abra o artigo no X, toque em Compartilhar → Copiar link e cole o link do post (x.com/usuario/status/…).',
   fetchError: 'Não foi possível obter o post. Ele pode ter sido apagado, ter restrição de idade ou ser de uma conta privada.',
   networkError: 'Erro de rede — verifique sua conexão e tente novamente.',
+  rateLimited: 'Muitas solicitações em pouco tempo — aguarde alguns segundos e tente novamente.',
   unknownAuthor: 'Autor desconhecido',
   labels: {
     author: 'Autor:',
@@ -261,6 +265,7 @@ const ja: typeof en = {
     'これは記事リーダーのリンク（x.com/i/article/…）です。Xで記事を開き、「共有 → リンクをコピー」でポストのリンク（x.com/user/status/…）を取得して貼り付けてください。',
   fetchError: 'ポストを取得できませんでした。削除済み、年齢制限付き、または非公開アカウントの可能性があります。',
   networkError: 'ネットワークエラーです。接続を確認して、もう一度お試しください。',
+  rateLimited: '短時間にリクエストが集中しました。数秒待ってから、もう一度お試しください。',
   unknownAuthor: '不明な著者',
   labels: {
     author: '著者:',

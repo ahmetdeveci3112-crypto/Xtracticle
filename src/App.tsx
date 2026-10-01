@@ -99,8 +99,9 @@ const isHomeLike = (path: string) => isHomePath(path) || !!parsePath(path);
 /* ─── API ─── */
 class ApiError extends Error {}
 
-async function fetchThread(id: string, fallbackMsg: string): Promise<FxTweet[]> {
+async function fetchThread(id: string, fallbackMsg: string, rateLimitedMsg?: string): Promise<FxTweet[]> {
   const res = await fetch(`/api/thread/${id}`);
+  if (res.status === 429) throw new ApiError(rateLimitedMsg || fallbackMsg);
   let data: any = null;
   try {
     data = await res.json();
@@ -206,7 +207,7 @@ export default function App() {
     setLoading(true);
     setTweets(null);
     try {
-      const list = await fetchThread(parsed.id, t.fetchError);
+      const list = await fetchThread(parsed.id, t.fetchError, t.rateLimited);
       if (reqId !== requestRef.current) return;
       applyResult(parsed.id, list, input, opts.pushUrl !== false);
       const first = list[0];
@@ -293,6 +294,7 @@ export default function App() {
     if (!doc || busy) return;
     const base = fileBaseName(doc);
     track('download', { format: key, kind: doc.kind, page: PAGE.page });
+    const started = performance.now();
     try {
       const ex = await import('./lib/export');
       if (key === 'md') ex.saveText(markdownForFile(), `${base}.md`, 'text/markdown');
@@ -306,6 +308,7 @@ export default function App() {
         else if (key === 'pdf' && el)
           ex.saveBlob(await ex.buildPdf(doc, el, (done, total) => total > 2 && setProgress(`${done}/${total}`)), `${base}.pdf`);
       }
+      track('download_done', { format: key, kind: doc.kind, ms: Math.round(performance.now() - started) });
     } catch (err) {
       console.error(err);
       const message = String((err as Error)?.message || err).slice(0, 100);
@@ -752,7 +755,7 @@ function BatchPanel({ lang, withFrontMatter }: { lang: Lang; withFrontMatter: bo
       while (next < jobs.length) {
         const job = jobs[next++];
         try {
-          const list = await fetchThread((job.parsed as { id: string }).id, t.fetchError);
+          const list = await fetchThread((job.parsed as { id: string }).id, t.fetchError, t.rateLimited);
           const doc = buildDoc(list, t.labels, locale);
           out.push({ base: fileBaseName(doc), markdown: (withFrontMatter ? frontMatter(doc) : '') + doc.md });
           res.push({ input: job.input, ok: true, title: doc.title });

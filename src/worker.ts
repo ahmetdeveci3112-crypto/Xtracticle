@@ -4,6 +4,8 @@ import { titleFromText } from './shared/text';
 
 export interface Env {
   ASSETS: Fetcher;
+  /** 40 requests / 10 s per client IP on /api/* (wrangler.json `ratelimits`). */
+  API_LIMITER?: RateLimit;
 }
 
 /**
@@ -23,6 +25,16 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname.startsWith('/api/')) {
+      if (env.API_LIMITER) {
+        const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+        const { success } = await env.API_LIMITER.limit({ key: ip });
+        if (!success) {
+          return new Response(JSON.stringify({ error: 'Too many requests. Please wait a few seconds and try again.' }), {
+            status: 429,
+            headers: { 'Content-Type': 'application/json; charset=utf-8', 'Retry-After': '10' },
+          });
+        }
+      }
       const res = await handleApi(request, p => ctx.waitUntil(p));
       return (
         res ??
