@@ -4,6 +4,3 @@
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Link: </llms.txt>; rel="llms-txt"
-
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
