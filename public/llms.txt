@@ -14,6 +14,7 @@
 - [Español](https://xtracticle.com/es/): Descargar artículos e hilos de X
 - [Português](https://xtracticle.com/pt/): Baixar artigos e threads do X
 - [日本語](https://xtracticle.com/ja/): X記事・スレッドを保存
+- [简体中文](https://xtracticle.com/zh/): X 文章、推文串下载
 - [Türkçe](https://xtracticle.com/tr/): X makale ve flood indirici
 
 ## Docs

@@ -1,5 +1,5 @@
 /** Turkish pages. */
-import { EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
+import { samplePdfFigure, EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
 
 const home: SitePage = {
   id: 'tr-home',
@@ -84,6 +84,10 @@ const pdf: SitePage = {
     '<strong>Yukarıya yapıştırın</strong> ve <em>Çıkar</em>’a basın.',
     '<strong>PDF’e tıklayın</strong> — dosya anında iner.',
   ])}
+</section>
+
+<section>
+  ${samplePdfFigure('tr')}
 </section>
 
 <section>

@@ -1,5 +1,5 @@
 /** Brazilian Portuguese pages. */
-import { EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
+import { samplePdfFigure, EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
 
 const home: SitePage = {
   id: 'pt-home',
@@ -85,6 +85,10 @@ const pdf: SitePage = {
     '<strong>Cole aqui em cima</strong> e clique em Extrair.',
     '<strong>Clique em PDF</strong> — o download começa na hora.',
   ])}
+</section>
+
+<section>
+  ${samplePdfFigure('pt')}
 </section>
 
 <section>

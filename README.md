@@ -51,7 +51,7 @@
 - 📚 **Batch mode** — up to 20 links → one ZIP of Markdown files
 - 🔖 **Bookmarklet** and **PWA share target** (share from the X app on Android)
 - 🔊 **Listen** — read aloud with the browser's text-to-speech
-- 📜 **History**, 🌙 **dark mode**, 🌍 **English, Español, Português, 日本語, Türkçe**
+- 📜 **History**, 🌙 **dark mode**, 🌍 **English, Español, Português, 日本語, 简体中文, Türkçe**
 - 📈 **Analytics events** — `extract`, `download` (format), `copy`, `share`, `listen`, `batch_extract`, errors — in GA4
 
 ## Getting Started
@@ -95,7 +95,7 @@ Browser ──► Cloudflare
 ```
 src/
 ├── App.tsx              UI: extraction, exports, batch mode, deep links
-├── i18n.ts              UI strings (en, tr, es, pt, ja)
+├── i18n.ts              UI strings (en, tr, es, pt, ja, zh)
 ├── lib/convert.ts       Posts / threads / Draft.js articles → Markdown + text + metadata
 ├── lib/export.ts        PDF (jsPDF + html2canvas-pro), EPUB, ZIP (fflate), Obsidian
 ├── lib/url.ts           Input + path parsing
@@ -107,7 +107,7 @@ src/
 site/
 ├── blocks.ts            Types + localized shared blocks (shortcuts, privacy)
 ├── pages.ts             English pages (one per search intent) + page registry
-├── pages-{es,pt,ja,tr}.ts  The same pages, localized (linked by `group`)
+├── pages-{es,pt,ja,zh,tr}.ts  The same pages, localized (linked by `group`)
 ├── render.ts            Head/meta/JSON-LD/content/footer rendering
 └── plugin.ts            Vite plugin: emits every page, 404.html and sitemap.xml
 ```
@@ -119,7 +119,7 @@ Heavy export libraries are dynamically imported, so the initial page only loads 
 | Layer | Implementation |
 |-------|---------------|
 | **Intent pages** | `/x-article-to-pdf`, `/x-article-to-markdown`, `/x-thread-to-pdf`, `/x-article-to-epub`, `/save-x-articles-to-obsidian`, `/thread-reader-app-alternative` — each with unique, visible HTML content and FAQ |
-| **Languages** | Every page in 5 languages (`/`, `/es/…`, `/pt/…`, `/ja/…`, `/tr/…`) + UI in 5 languages; first-visit language banner, remembered choice redirects (never for crawlers) |
+| **Languages** | Every page in 6 languages (`/`, `/es/…`, `/pt/…`, `/ja/…`, `/zh/…`, `/tr/…`) + UI in 6 languages; first-visit language banner, remembered choice redirects (never for crawlers) |
 | **Crawlable content** | Content is static HTML outside the React root — no JS needed to index it |
 | **Structured data** | `WebApplication`, `FAQPage` (matches visible FAQ), `BreadcrumbList` |
 | **i18n** | Reciprocal `hreflang` for every translation group + `x-default` |

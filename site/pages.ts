@@ -4,11 +4,12 @@
  * Rendered at build time by site/plugin.ts; nothing here ships to the client.
  */
 
-import { EXAMPLE, GITHUB, SITE, privacy, shortcuts, steps, type SitePage } from './blocks';
+import { EXAMPLE, GITHUB, SITE, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from './blocks';
 import { PAGES_TR } from './pages-tr';
 import { PAGES_ES } from './pages-es';
 import { PAGES_PT } from './pages-pt';
 import { PAGES_JA } from './pages-ja';
+import { PAGES_ZH } from './pages-zh';
 
 export type { SitePage, FAQ, ExportKey, Lang } from './blocks';
 export { SITE };
@@ -108,6 +109,8 @@ const pdf: SitePage = {
   nav: 'X Article to PDF',
   sections: `
 <section>
+  <p><strong>Xtracticle is a free X article to PDF converter:</strong> paste the link of any X (Twitter) article, thread or post and
+  download a clean A4 PDF with the title, author, date, source link and every image — no account, no watermark.</p>
   <h2>Convert an X article to PDF in three steps</h2>
   ${steps([
     '<strong>Copy the link</strong> of the X article (Share → Copy link).',
@@ -125,6 +128,20 @@ const pdf: SitePage = {
     <li><strong>Page numbers</strong> and a clickable link back to the original post in the footer.</li>
     <li><strong>No cut-off lines</strong> — pages break between paragraphs, not through them, even for very long articles.</li>
   </ul>
+  ${samplePdfFigure('en')}
+</section>
+
+<section>
+  <h2>Tweet to PDF, thread to PDF or article to PDF</h2>
+  <h3>X (Twitter) article to PDF</h3>
+  <p>Long-form X Articles keep their structure: headings, bold and italic text, bullet and numbered lists, quotes, code blocks,
+  dividers, the cover image and every inline image. Embedded posts become links, videos become a thumbnail linked to the video.</p>
+  <h3>Tweet to PDF</h3>
+  <p>A single post keeps its text and line breaks, its photos and video thumbnails, and the post it quotes — handy for saving
+  receipts, announcements or anything you may need to cite later.</p>
+  <h3>Thread to PDF</h3>
+  <p>Paste any post of a thread — not just the first — and every post the author wrote in it is merged into one numbered PDF.
+  Replies from other people are left out. See the <a href="/x-thread-to-pdf">X thread downloader</a>.</p>
 </section>
 
 <section>
@@ -136,6 +153,11 @@ const pdf: SitePage = {
   <p>Paste any post of a thread and the whole thread becomes one PDF. More on <a href="/x-thread-to-pdf">thread to PDF</a>.</p>
   <h3>On iPhone</h3>
   <p>Tap PDF, then open the download from the Safari downloads list and use <em>Share → Save to Files</em> or send it to Books.</p>
+  <h3>On Android</h3>
+  <p>Tap PDF; the file goes to your Downloads folder and opens in any PDF viewer, Google Drive or your e-mail app.</p>
+  <h3>Very long or image-heavy articles</h3>
+  <p>The PDF is built page by page in your browser and the button shows progress (for example “PDF 12/26”). A 20-image article
+  takes a few seconds on a laptop and a little longer on a phone.</p>
 </section>
 
 ${privacy('en')}`,
@@ -145,6 +167,8 @@ ${privacy('en')}`,
     { q: 'Can I convert a Twitter thread to PDF?', a: 'Yes. Paste the link of any post in the thread and Xtracticle merges the whole thread into a single PDF.' },
     { q: 'Does it work on mobile?', a: 'Yes. It runs in any modern browser on iPhone, Android, Mac, Windows and Linux.' },
     { q: 'Can I convert private or deleted posts?', a: 'No. Only public posts that are still online can be converted — which is exactly why saving a PDF copy is useful.' },
+    { q: 'How do I save a tweet as a PDF?', a: 'Copy the post link (Share → Copy link), paste it into Xtracticle and click PDF. Photos, quoted posts and the source link are included.' },
+    { q: 'How big are the PDF files?', a: 'It depends on the images. A text-focused article is usually a few hundred KB; a long article with around 20 large images can be several MB.' },
   ],
 };
 
@@ -228,6 +252,8 @@ const thread: SitePage = {
   nav: 'X Thread Downloader',
   sections: `
 <section>
+  <p><strong>Xtracticle is a free X thread downloader and thread unroller:</strong> paste the link of any post in a thread and get the
+  whole thread as one clean, numbered document — PDF, Markdown, EPUB or text. No bot to tag, no account, no ads.</p>
   <h2>Unroll a thread in seconds</h2>
   ${steps([
     '<strong>Copy the link</strong> of any post in the thread — the first, one in the middle, or the last.',
@@ -242,6 +268,20 @@ const thread: SitePage = {
   posts, in order — replies from other people are left out. Each post is numbered (<code>1/12</code>, <code>2/12</code>…) and keeps its
   line breaks, photos, videos and quoted posts.</p>
   <p>No need to mention a bot under the thread or wait for a reply: it happens right here, privately.</p>
+</section>
+
+<section>
+  <h2>A thread unroller that keeps the formatting</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th>Format</th><th>What you get</th><th>Best for</th></tr></thead>
+    <tbody>
+      <tr><td>PDF</td><td>Numbered posts, photos, source link, page numbers</td><td>Reading, printing, sharing</td></tr>
+      <tr><td><a href="/x-article-to-markdown">Markdown</a></td><td>Line breaks, links, image links, optional YAML front-matter</td><td>Obsidian, Notion, AI assistants</td></tr>
+      <tr><td><a href="/x-article-to-epub">EPUB</a></td><td>Reflowable e-book with images</td><td>Kindle, Kobo, Apple Books</td></tr>
+      <tr><td>ZIP + images</td><td>Markdown plus every image saved locally</td><td>Archiving before a thread disappears</td></tr>
+    </tbody>
+  </table></div>
+  <p>Coming from Thread Reader App? Here is an <a href="/thread-reader-app-alternative">honest comparison</a>.</p>
 </section>
 
 <section>
@@ -260,6 +300,8 @@ ${shortcuts('en')}`,
     { q: 'Are replies from other people included?', a: 'No. Only the author’s own posts in the thread are included, in order.' },
     { q: 'Do I need to tag a bot like @threadreaderapp?', a: 'No. There is nothing to post or tag — paste the link and download.' },
     { q: 'Can I unroll a thread from a private account?', a: 'No. Only public threads are accessible.' },
+    { q: 'How do I download a Twitter thread as PDF?', a: 'Copy the link of any post in the thread, paste it into Xtracticle and click PDF. All of the author’s posts are merged into one numbered PDF.' },
+    { q: 'Can I download several threads at once?', a: 'Yes. Switch to Batch mode and paste up to 20 links; you get one ZIP of Markdown files.' },
   ],
 };
 
@@ -455,7 +497,7 @@ const notFound: SitePage = {
 const PAGES_EN: SitePage[] = [home, pdf, markdown, thread, epub, obsidian, alternative];
 
 /** Order = footer order within each language. */
-export const PAGES: SitePage[] = [...PAGES_EN, ...PAGES_ES, ...PAGES_PT, ...PAGES_JA, ...PAGES_TR, notFound];
+export const PAGES: SitePage[] = [...PAGES_EN, ...PAGES_ES, ...PAGES_PT, ...PAGES_JA, ...PAGES_ZH, ...PAGES_TR, notFound];
 
 export function pageForPath(pathname: string): SitePage {
   const clean = pathname.split('?')[0].replace(/\.html$/, '');

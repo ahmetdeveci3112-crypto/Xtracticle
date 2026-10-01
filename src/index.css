@@ -209,6 +209,47 @@ body {
   white-space: nowrap;
 }
 
+.xt-demo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1.1rem;
+  padding: 0.4rem 0.6rem 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+.xt-demo-len {
+  font-size: 0.75rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  background-color: var(--bg-tertiary);
+}
+
+.xt-figure {
+  margin: 1.5rem 0 0.5rem;
+}
+.xt-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+.xt-figure figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
 /* Long URLs in previews must wrap on phones */
 #xt-preview a {
   overflow-wrap: anywhere;

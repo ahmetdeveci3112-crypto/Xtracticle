@@ -1,4 +1,5 @@
 import { PAGES, SITE, GITHUB_URL, type Lang, type SitePage } from './pages';
+import { langTag } from './blocks';
 
 /**
  * Fills the markers in index.html for one page:
@@ -63,9 +64,28 @@ const UI: Record<Lang, { locale: string; placeholder: string; button: string; fa
     disclaimer: 'X Corp.とは提携していません。公開コンテンツのみ対象です。著者の権利を尊重してください。',
     built: '開発：',
   },
+  zh: {
+    locale: 'zh_CN',
+    placeholder: '粘贴 X 帖子链接…',
+    button: '提取',
+    faq: '常见问题',
+    tagline: 'Xtracticle — 免费开源的 X 文章、长推和帖子下载工具。',
+    disclaimer: '与 X Corp. 无关联。仅支持公开内容，请尊重作者的权利。',
+    built: '开发者：',
+  },
 };
 
-const LANG_NAMES: Record<Lang, string> = { en: 'English', es: 'Español', pt: 'Português', ja: '日本語', tr: 'Türkçe' };
+/** Mirrors `watchDemo` in src/i18n.ts so the static shell matches the hydrated header. */
+const WATCH_DEMO: Record<Lang, string> = {
+  en: 'Watch the 30-second demo',
+  tr: '30 saniyelik tanıtımı izle',
+  es: 'Mira la demo de 30 segundos',
+  pt: 'Veja a demo de 30 segundos',
+  ja: '30秒のデモを見る',
+  zh: '观看 30 秒演示',
+};
+
+const LANG_NAMES: Record<Lang, string> = { en: 'English', es: 'Español', pt: 'Português', ja: '日本語', zh: '简体中文', tr: 'Türkçe' };
 
 const HOMES = () => PAGES.filter(p => p.isHome && !p.noindex);
 const homeOf = (lang: Lang) => HOMES().find(h => h.lang === lang) || HOMES()[0];
@@ -136,7 +156,7 @@ function head(page: SitePage): string {
     // Every language version lists all of them (hreflang must be reciprocal).
     const vs = versions(page);
     if (vs.length > 1) {
-      for (const v of vs) tags.push(`<link rel="alternate" hreflang="${v.lang}" href="${url(v)}" />`);
+      for (const v of vs) tags.push(`<link rel="alternate" hreflang="${langTag(v.lang)}" href="${url(v)}" />`);
       const def = vs.find(v => v.lang === 'en') || vs[0];
       tags.push(`<link rel="alternate" hreflang="x-default" href="${url(def)}" />`);
     }
@@ -173,6 +193,7 @@ function shell(page: SitePage): string {
           </a>
           <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">${esc(page.h1)}</h1>
           <p class="text-lg max-w-xl mx-auto" style="color:var(--text-secondary)">${esc(page.sub)}</p>
+          <span class="xt-demo-btn" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m10 8 6 4-6 4Z"/></svg>${esc(WATCH_DEMO[page.lang])}<span class="xt-demo-len">0:34</span></span>
         </header>
         <div class="flex justify-center mb-4"><div class="inline-flex p-1 rounded-xl text-xs font-medium" style="background-color:var(--bg-tertiary);border:1px solid var(--border);height:2.25rem;width:13rem"></div></div>
         <div class="relative flex items-center max-w-2xl mx-auto mb-3">
@@ -200,7 +221,7 @@ function footer(page: SitePage): string {
   const languages = HOMES().map(h => {
     const target = vs.find(v => v.lang === h.lang) || h;
     const current = target.id === page.id ? ' aria-current="page"' : '';
-    return `<a href="${target.path}" hreflang="${h.lang}" lang="${h.lang}" data-set-lang="${h.lang}"${current}>${LANG_NAMES[h.lang]}</a>`;
+    return `<a href="${target.path}" hreflang="${langTag(h.lang)}" lang="${langTag(h.lang)}" data-set-lang="${h.lang}"${current}>${LANG_NAMES[h.lang]}</a>`;
   });
   const { tagline, disclaimer, built } = UI[page.lang];
   return `<footer class="xt-footer">
@@ -229,7 +250,7 @@ function config(page: SitePage): string {
 
 export function renderPage(template: string, page: SitePage): string {
   return template
-    .replace('<html lang="en">', `<html lang="${page.lang}">`)
+    .replace('<html lang="en">', `<html lang="${langTag(page.lang)}">`)
     .replace('<!--xt:head-->', head(page))
     .replace('<!--xt:shell-->', shell(page))
     .replace('<!--xt:content-->', content(page))

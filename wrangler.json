@@ -10,7 +10,8 @@
     "run_worker_first": [
       "/api/*",
       "/*/status/*",
-      "/i/web/status/*"
+      "/i/web/status/*",
+      "/video/*"
     ]
   },
   "observability": {

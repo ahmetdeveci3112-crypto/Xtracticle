@@ -1,6 +1,9 @@
 /** Types and reusable, localized HTML blocks for the static landing pages. */
 
-export type Lang = 'en' | 'tr' | 'es' | 'pt' | 'ja';
+export type Lang = 'en' | 'tr' | 'es' | 'pt' | 'ja' | 'zh';
+
+/** BCP 47 tag used in hreflang / html lang (Simplified Chinese gets an explicit script). */
+export const langTag = (lang: Lang) => (lang === 'zh' ? 'zh-Hans' : lang);
 export type ExportKey = 'md' | 'pdf' | 'epub' | 'zip' | 'txt' | 'obsidian';
 
 export interface FAQ {
@@ -33,6 +36,19 @@ export const EXAMPLE = '/Write/status/1765884209527394325';
 
 const BOOKMARKLET =
   "javascript:(function(){location.href='https://xtracticle.com/?url='+encodeURIComponent(location.href)})()";
+
+/** Real export of an X Article (page 1), shown on the PDF pages. */
+const SAMPLE_PDF: Record<Lang, { alt: string; caption: string }> = {
+  en: { alt: 'Example: an X article converted to PDF with Xtracticle', caption: 'A real X Article converted with Xtracticle — title, author, date and source link on top, images in place.' },
+  es: { alt: 'Ejemplo: un artículo de X convertido a PDF con Xtracticle', caption: 'Un artículo real de X convertido con Xtracticle: título, autor, fecha y enlace a la fuente arriba, con las imágenes en su sitio.' },
+  pt: { alt: 'Exemplo: um artigo do X convertido em PDF com o Xtracticle', caption: 'Um artigo real do X convertido com o Xtracticle — título, autor, data e link da fonte no topo, com as imagens no lugar.' },
+  ja: { alt: '例：Xtracticle で PDF に変換した X 記事', caption: 'Xtracticle で変換した実際の X 記事。冒頭にタイトル・著者・日付・出典リンク、画像もそのまま入ります。' },
+  zh: { alt: '示例：用 Xtracticle 转换为 PDF 的 X 文章', caption: '用 Xtracticle 转换的真实 X 文章——顶部包含标题、作者、日期和来源链接，图片保留在原位。' },
+  tr: { alt: "Örnek: Xtracticle ile PDF'e çevrilmiş bir X makalesi", caption: 'Xtracticle ile dönüştürülmüş gerçek bir X makalesi — en üstte başlık, yazar, tarih ve kaynak linki, görseller yerinde.' },
+};
+
+export const samplePdfFigure = (lang: Lang) =>
+  `<figure class="xt-figure"><img src="/img/sample-pdf.webp" width="900" height="789" loading="lazy" decoding="async" alt="${SAMPLE_PDF[lang].alt}" /><figcaption>${SAMPLE_PDF[lang].caption}</figcaption></figure>`;
 
 export const steps = (items: string[]) => `<ol class="xt-steps">${items.map(i => `<li>${i}</li>`).join('')}</ol>`;
 
@@ -85,6 +101,15 @@ const SHORTCUTS: Record<Lang, { h2: string; swapH: string; swap: string; bmH: st
     drag: 'このボタンをブックマークバーにドラッグしてください。',
     android: 'Androidでは「ホーム画面に追加」でXtracticleをインストールすると、Xアプリから直接ポストを共有できます。',
   },
+  zh: {
+    h2: '两个省时的小技巧',
+    swapH: '1. 替换域名',
+    swap: '在任意帖子页面，把地址栏里的 <code>x.com</code> 改成 <code>xtracticle.com</code> 后回车：<code>x.com/user/status/123</code> → <code>xtracticle.com/user/status/123</code>。帖子会直接在这里打开，随时可以下载。',
+    bmH: '2. 一键书签工具',
+    bm: '把这个按钮拖到书签栏，浏览任意 X 帖子时点击它即可：',
+    drag: '请把这个按钮拖到书签栏。',
+    android: '在 Android 上，你还可以把 Xtracticle 添加到主屏幕，然后直接从 X 应用分享帖子到这里。',
+  },
 };
 
 export function shortcuts(lang: Lang): string {
@@ -122,6 +147,10 @@ const PRIVACY: Record<Lang, { h2: string; p: string }> = {
   ja: {
     h2: 'プライバシー',
     p: `アカウント登録・ログイン・アップロードは不要です。Xtracticleはオープンソースの${FX} APIを通じて公開ポストをその都度取得し、ファイルはお使いのブラウザ内で作成されます。取得したポストを保存することはありません。どの機能が使われているかを把握するため、Google Analyticsで匿名の訪問数とダウンロード数のみ計測しています。<a href="${GITHUB}" rel="noopener">ソースコードはGitHubで公開</a>しています。`,
+  },
+  zh: {
+    h2: '隐私',
+    p: `无需注册、无需登录、无需上传。Xtracticle 通过开源的 ${FX} API 按需获取公开帖子，文件在你的浏览器中生成。我们不会保存你提取的帖子。我们使用 Google Analytics 统计匿名访问和下载次数，以了解哪些功能最有用。<a href="${GITHUB}" rel="noopener">源代码已在 GitHub 公开</a>。`,
   },
 };
 

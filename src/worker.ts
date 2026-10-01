@@ -45,6 +45,8 @@ export default {
       );
     }
 
+    if (url.pathname.startsWith('/video/')) return serveVideo(request, env);
+
     const match = url.pathname.match(STATUS_PATH);
     if (match && (request.method === 'GET' || request.method === 'HEAD')) {
       return renderStatusPage(request, env, ctx, match[2]);
@@ -53,6 +55,44 @@ export default {
     return env.ASSETS.fetch(request);
   },
 } satisfies ExportedHandler<Env>;
+
+/* ─── /video/* with byte-range support ─── */
+
+/**
+ * Static assets are always served whole (200), but Safari/iOS only plays <video>
+ * when the server answers Range requests with 206. Videos are small (~1.6 MB) and
+ * only requested on click, so slicing the asset here is cheap.
+ */
+async function serveVideo(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const asset = await env.ASSETS.fetch(new Request(`${url.origin}${url.pathname}`));
+  if (asset.status !== 200) return asset;
+
+  const headers = new Headers(asset.headers);
+  headers.set('Accept-Ranges', 'bytes');
+  headers.set('Cache-Control', 'public, max-age=86400');
+  const range = request.headers.get('Range');
+  if (!range) return new Response(request.method === 'HEAD' ? null : asset.body, { status: 200, headers });
+
+  const body = await asset.arrayBuffer();
+  const size = body.byteLength;
+  const m = /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+  let start = m && m[1] !== '' ? Number(m[1]) : NaN;
+  let end = m && m[2] !== '' ? Number(m[2]) : size - 1;
+  if (m && m[1] === '' && m[2] !== '') {
+    // Suffix range: the last N bytes.
+    start = Math.max(0, size - Number(m[2]));
+    end = size - 1;
+  }
+  end = Math.min(end, size - 1);
+  if (!m || Number.isNaN(start) || start > end || start >= size) {
+    headers.set('Content-Range', `bytes */${size}`);
+    return new Response(null, { status: 416, headers });
+  }
+  headers.set('Content-Range', `bytes ${start}-${end}/${size}`);
+  headers.set('Content-Length', String(end - start + 1));
+  return new Response(request.method === 'HEAD' ? null : body.slice(start, end + 1), { status: 206, headers });
+}
 
 /* ─── /{user}/status/{id} ─── */
 

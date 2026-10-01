@@ -1,6 +1,6 @@
 import type { Labels } from './lib/convert';
 
-export type Lang = 'en' | 'tr' | 'es' | 'pt' | 'ja';
+export type Lang = 'en' | 'tr' | 'es' | 'pt' | 'ja' | 'zh';
 
 const en = {
   brand: 'Xtracticle',
@@ -61,6 +61,8 @@ const en = {
   bannerText: 'This page is available in English.',
   bannerCta: 'Switch to English',
   bannerDismiss: 'Close',
+  watchDemo: 'Watch the 30-second demo',
+  closeDemo: 'Close video',
   downloads: 'Download',
   actions: 'More',
 };
@@ -124,6 +126,8 @@ const tr: typeof en = {
   bannerText: 'Bu sayfa Türkçe olarak da mevcut.',
   bannerCta: 'Türkçe’ye geç',
   bannerDismiss: 'Kapat',
+  watchDemo: '30 saniyelik tanıtımı izle',
+  closeDemo: 'Videoyu kapat',
   downloads: 'İndir',
   actions: 'Diğer',
 };
@@ -187,6 +191,8 @@ const es: typeof en = {
   bannerText: 'Esta página está disponible en español.',
   bannerCta: 'Ver en español',
   bannerDismiss: 'Cerrar',
+  watchDemo: 'Mira la demo de 30 segundos',
+  closeDemo: 'Cerrar vídeo',
   downloads: 'Descargar',
   actions: 'Más',
 };
@@ -250,6 +256,8 @@ const pt: typeof en = {
   bannerText: 'Esta página está disponível em português.',
   bannerCta: 'Ver em português',
   bannerDismiss: 'Fechar',
+  watchDemo: 'Veja a demo de 30 segundos',
+  closeDemo: 'Fechar vídeo',
   downloads: 'Baixar',
   actions: 'Mais',
 };
@@ -313,11 +321,78 @@ const ja: typeof en = {
   bannerText: 'このページは日本語でもご覧いただけます。',
   bannerCta: '日本語で表示',
   bannerDismiss: '閉じる',
+  watchDemo: '30秒のデモを見る',
+  closeDemo: '動画を閉じる',
   downloads: 'ダウンロード',
   actions: 'その他',
 };
 
-export const translations = { en, tr, es, pt, ja };
+const zh: typeof en = {
+  brand: 'Xtracticle',
+  h1: 'X 文章下载器',
+  sub: '下载 X（推特）文章、推文串和帖子，支持 PDF、Markdown、EPUB 和纯文本——免费，无需登录。',
+  placeholder: '粘贴 X 帖子链接…',
+  extract: '提取',
+  invalidLink: '请输入有效的 X 帖子链接，例如 https://x.com/user/status/123…',
+  articleLink:
+    '这是文章阅读器链接（x.com/i/article/…）。请在 X 上打开该文章，点击“分享 → 复制链接”，然后粘贴帖子链接（x.com/user/status/…）。',
+  fetchError: '无法获取该帖子。它可能已被删除、有年龄限制，或来自私密账号。',
+  networkError: '网络错误——请检查网络连接后重试。',
+  rateLimited: '请求过于频繁——请等待几秒后重试。',
+  unknownAuthor: '未知作者',
+  labels: {
+    author: '作者：',
+    date: '日期：',
+    source: '来源：',
+    image: '图片',
+    video: '视频',
+    embeddedPost: '嵌入的帖子',
+    quoting: '引用：',
+  },
+  md: 'Markdown',
+  txt: '文本',
+  pdf: 'PDF',
+  epub: 'EPUB / Kindle',
+  zip: 'ZIP + 图片',
+  copy: '复制',
+  copied: '已复制！',
+  share: '分享',
+  linkCopied: '链接已复制！',
+  obsidian: 'Obsidian',
+  obsidianTitle: '复制 Markdown，并在 Obsidian 中新建笔记',
+  listen: '朗读',
+  stop: '停止',
+  frontMatter: '在 .md 中添加 YAML front-matter',
+  history: '最近提取',
+  clear: '清除历史记录',
+  kind: { article: '文章', thread: '推文串', post: '帖子' },
+  posts: '条',
+  minRead: '分钟阅读',
+  words: '字',
+  working: '处理中…',
+  urlTip: '提示：把任意帖子链接中的 x.com 改成 xtracticle.com，即可在这里直接打开。',
+  bookmarklet: '或者把这个按钮拖到书签栏，在任意 X 帖子上点击它：',
+  batch: '批量模式',
+  single: '单个链接',
+  batchPlaceholder: '粘贴多个 X 帖子链接——每行一个（最多 20 个）',
+  batchRun: '全部提取为 ZIP',
+  batchProgress: (done, total) => `正在提取 ${done}/${total}…`,
+  batchDone: (ok, failed) => `完成：已保存 ${ok} 个${failed ? `，${failed} 个失败` : ''}。`,
+  loadingPreview: '正在加载预览…',
+  exportFailed: '导出失败——请重试。',
+  pdfFallback: '此设备无法在这里生成 PDF——将改为打开浏览器的“另存为 PDF”。',
+  toggleTheme: '切换深色模式',
+  switchLang: '语言',
+  bannerText: '本页面也提供简体中文版。',
+  bannerCta: '切换到中文',
+  bannerDismiss: '关闭',
+  watchDemo: '观看 30 秒演示',
+  closeDemo: '关闭视频',
+  downloads: '下载',
+  actions: '更多',
+};
+
+export const translations = { en, tr, es, pt, ja, zh };
 export type Strings = typeof en;
 
 export const LANGS: { code: Lang; name: string; home: string; locale: string }[] = [
@@ -325,6 +400,7 @@ export const LANGS: { code: Lang; name: string; home: string; locale: string }[]
   { code: 'es', name: 'Español', home: '/es/', locale: 'es-ES' },
   { code: 'pt', name: 'Português', home: '/pt/', locale: 'pt-BR' },
   { code: 'ja', name: '日本語', home: '/ja/', locale: 'ja-JP' },
+  { code: 'zh', name: '简体中文', home: '/zh/', locale: 'zh-CN' },
   { code: 'tr', name: 'Türkçe', home: '/tr/', locale: 'tr-TR' },
 ];
 export const langInfo = (code: Lang) => LANGS.find(l => l.code === code)!;

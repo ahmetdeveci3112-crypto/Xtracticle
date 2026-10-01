@@ -1,5 +1,5 @@
 /** Japanese pages. */
-import { EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
+import { samplePdfFigure, EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
 
 const home: SitePage = {
   id: 'ja-home',
@@ -84,6 +84,10 @@ const pdf: SitePage = {
     '<strong>上の欄に貼り付けて</strong>「取得」を押します。',
     '<strong>「PDF」をクリック</strong>すると、すぐにダウンロードが始まります。',
   ])}
+</section>
+
+<section>
+  ${samplePdfFigure('ja')}
 </section>
 
 <section>

@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
 import {
   Download, FileText, AlertCircle, Loader2, FileDown, Moon, Sun, Copy, Check, Share2, Clock, ChevronDown,
-  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages, X,
+  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages, X, CirclePlay,
 } from 'lucide-react';
 import type { FxTweet } from './shared/fx';
 import { translations, LANGS, langInfo, type Lang } from './i18n';
 import { buildDoc, fileBaseName, frontMatter, type XDoc } from './lib/convert';
 import { parseInput, parsePath, shareUrl } from './lib/url';
 import { track } from './lib/analytics';
+import { demoVideo } from './shared/demo';
 
 // Lazy-load react-markdown + remark-gfm together (~165KB saved from initial bundle)
 const LazyMarkdown = lazy(() =>
@@ -129,6 +130,7 @@ export default function App() {
   const [withFrontMatter, setWithFrontMatter] = useState<boolean>(() => load(FM_KEY, true));
   const [mode, setMode] = useState<'single' | 'batch'>('single');
   const [speaking, setSpeaking] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const scrollPending = useRef(false);
   const requestRef = useRef(0);
@@ -454,6 +456,18 @@ export default function App() {
           </a>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{h1}</h1>
           <p className="text-lg max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>{sub}</p>
+          <button
+            type="button"
+            onClick={() => {
+              setDemoOpen(true);
+              track('demo_open', { lang, page: PAGE.page });
+            }}
+            className="xt-demo-btn btn-secondary focus-ring"
+          >
+            <CirclePlay className="w-4 h-4" aria-hidden="true" />
+            {t.watchDemo}
+            <span className="xt-demo-len">0:34</span>
+          </button>
         </header>
 
         {/* Mode switch */}
@@ -677,6 +691,8 @@ export default function App() {
         )}
       </main>
 
+      {demoOpen && <DemoModal lang={lang} closeLabel={t.closeDemo} onClose={() => setDemoOpen(false)} />}
+
       {bannerLang && (
         <div
           role="dialog"
@@ -711,6 +727,57 @@ export default function App() {
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+/* ─── Demo video (loads only when opened) ─── */
+function DemoModal({ lang, closeLabel, onClose }: { lang: Lang; closeLabel: string; onClose: () => void }) {
+  const v = demoVideo(lang);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    closeRef.current?.focus();
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Xtracticle demo"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 animate-fade-in"
+      style={{ backgroundColor: 'rgba(0,0,0,0.82)' }}
+      onClick={onClose}
+    >
+      <div className="relative w-full max-w-4xl" onClick={e => e.stopPropagation()}>
+        <button
+          ref={closeRef}
+          type="button"
+          onClick={onClose}
+          aria-label={closeLabel}
+          className="absolute -top-11 right-0 p-2 rounded-lg text-white/90 hover:text-white focus-ring"
+        >
+          <X className="w-6 h-6" />
+        </button>
+        <video
+          src={v.src}
+          poster={v.poster}
+          controls
+          autoPlay
+          playsInline
+          className="w-full rounded-2xl"
+          style={{ aspectRatio: '16 / 9', backgroundColor: '#000' }}
+          onEnded={() => track('demo_complete', { lang })}
+        >
+          <track kind="captions" src={v.track.src} srcLang={v.track.srclang} label={v.track.label} default />
+        </video>
+      </div>
     </div>
   );
 }
