@@ -21,20 +21,18 @@ function inlineCssPlugin(): Plugin {
         .filter(f => f.endsWith('.html'))
         .map(f => path.join(distDir, f));
       const cssLinkRegex = /<link\s+rel="stylesheet"\s+crossorigin\s+href="(\/assets\/[^"]+\.css)"\s*\/?>/g;
-      const inlined = new Set<string>();
 
       for (const htmlPath of htmlFiles) {
         let html = fs.readFileSync(htmlPath, 'utf-8');
         html = html.replace(cssLinkRegex, (tag, href: string) => {
           const cssPath = path.join(distDir, href);
           if (!fs.existsSync(cssPath)) return tag;
-          inlined.add(cssPath);
           return `<style>${fs.readFileSync(cssPath, 'utf-8')}</style>`;
         });
         fs.writeFileSync(htmlPath, html, 'utf-8');
       }
-      // Remove CSS files now that every page carries them inline
-      inlined.forEach(f => fs.unlinkSync(f));
+      // Keep the CSS files: lazy chunks (jspdf, export…) list them as preload
+      // dependencies, and a missing file makes those dynamic imports fail.
     },
   };
 }
