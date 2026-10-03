@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.xtracticle/xtracticle",
+  "title": "Xtracticle",
+  "description": "Read public X (Twitter) posts, threads and X Articles as clean Markdown. Read-only, no auth.",
+  "version": "3.1.0",
+  "websiteUrl": "https://xtracticle.com/mcp-server",
+  "repository": {
+    "url": "https://github.com/ahmetdeveci3112-crypto/Xtracticle",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://xtracticle.com/mcp"
+    }
+  ]
+}

@@ -9,3 +9,7 @@
   Content-Type: application/octet-stream
   Content-Disposition: attachment; filename="Xtracticle.shortcut"
   Cache-Control: public, max-age=86400
+
+/.well-known/*
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=300
