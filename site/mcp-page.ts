@@ -72,7 +72,8 @@ export const mcpPage: SitePage = {
     </tbody>
   </table></div>
   <p>The result is the Markdown — title, author, date and source link first — plus metadata: kind (article, thread or post),
-  word count, reading time, image URLs and the original link. Things to ask your assistant:</p>
+  word count, reading time, image URLs, the original link and a download link where the user can save the post as PDF, EPUB
+  or Markdown. Things to ask your assistant:</p>
   <ul>
     <li>“Summarize this X article in five bullet points: https://x.com/…/status/…”</li>
     <li>“Read this thread and list every tool it recommends, with links.”</li>

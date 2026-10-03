@@ -92,7 +92,7 @@ The public JSON API used by the web app (please be gentle; responses are cached 
 ### MCP server
 
 - Endpoint: `https://xtracticle.com/mcp` — remote MCP over Streamable HTTP (stateless JSON, no SSE), no authentication
-- Tool `read_x_post(url, format?, include_thread?, front_matter?, max_chars?, offset?)` → Markdown + metadata (kind, title, author, sourceUrl, publishedAt, wordCount, readingMinutes, images, totalChars, truncated)
+- Tool `read_x_post(url, format?, include_thread?, front_matter?, max_chars?, offset?)` → Markdown + metadata (kind, title, author, sourceUrl, publishedAt, wordCount, readingMinutes, images, totalChars, truncated, downloadUrl — a page to save the post as PDF/EPUB/Markdown)
 - Long documents are paginated: call again with `offset` = previous `end`
 - Setup for Claude, ChatGPT, Cursor and VS Code: https://xtracticle.com/mcp-server
 
