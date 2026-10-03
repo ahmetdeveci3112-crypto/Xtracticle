@@ -1,6 +1,6 @@
-import type { Labels } from './lib/convert';
+import type { Labels } from './shared/convert';
 
-export type Lang = 'en' | 'tr' | 'es' | 'pt' | 'ja' | 'zh';
+export type Lang = 'en' | 'tr' | 'es' | 'pt' | 'ja' | 'zh' | 'ar';
 
 const en = {
   brand: 'Xtracticle',
@@ -392,7 +392,72 @@ const zh: typeof en = {
   actions: '更多',
 };
 
-export const translations = { en, tr, es, pt, ja, zh };
+const ar: typeof en = {
+  brand: 'Xtracticle',
+  h1: 'تحميل مقالات X',
+  sub: 'حمّل مقالات X (تويتر) والثريدات والمنشورات بصيغة PDF أو Markdown أو EPUB أو نص، مجانًا ودون تسجيل دخول.',
+  placeholder: 'الصق رابط منشور من X…',
+  extract: 'استخراج',
+  invalidLink: 'يرجى إدخال رابط منشور صالح من X، مثل https://x.com/user/status/123…',
+  articleLink:
+    'هذا رابط قارئ المقالات (x.com/i/article/…). افتح المقالة في X، واضغط «مشاركة ← نسخ الرابط»، ثم الصق رابط المنشور (x.com/user/status/…).',
+  fetchError: 'تعذّر جلب هذا المنشور. ربما حُذف، أو عليه قيد عمري، أو هو من حساب خاص.',
+  networkError: 'خطأ في الشبكة. تحقق من اتصالك وحاول مرة أخرى.',
+  rateLimited: 'طلبات كثيرة في وقت قصير. انتظر بضع ثوانٍ ثم حاول مرة أخرى.',
+  unknownAuthor: 'كاتب غير معروف',
+  labels: {
+    author: 'الكاتب:',
+    date: 'التاريخ:',
+    source: 'المصدر:',
+    image: 'صورة',
+    video: 'فيديو',
+    embeddedPost: 'منشور مضمّن',
+    quoting: 'اقتباس:',
+  },
+  md: 'Markdown',
+  txt: 'نص',
+  pdf: 'PDF',
+  epub: 'EPUB / Kindle',
+  zip: 'ZIP + صور',
+  copy: 'نسخ',
+  copied: 'تم النسخ!',
+  share: 'مشاركة',
+  linkCopied: 'تم نسخ الرابط!',
+  obsidian: 'Obsidian',
+  obsidianTitle: 'ينسخ Markdown ويفتح ملاحظة جديدة في Obsidian',
+  listen: 'استماع',
+  stop: 'إيقاف',
+  frontMatter: 'إضافة YAML front-matter إلى .md',
+  history: 'الأخيرة',
+  clear: 'مسح السجل',
+  kind: { article: 'مقالة', thread: 'ثريد', post: 'منشور' },
+  posts: 'منشورات',
+  minRead: 'دقيقة قراءة',
+  words: 'كلمة',
+  working: 'جارٍ العمل…',
+  urlTip: 'نصيحة: غيّر x.com إلى xtracticle.com في أي رابط منشور لفتحه هنا.',
+  bookmarklet: 'أو اسحب هذا الزر إلى شريط الإشارات المرجعية واضغط عليه في أي منشور على X:',
+  batch: 'الوضع المجمّع',
+  single: 'رابط واحد',
+  batchPlaceholder: 'الصق عدة روابط لمنشورات X، رابطًا في كل سطر (20 كحد أقصى)',
+  batchRun: 'استخراج الكل في ZIP',
+  batchProgress: (done, total) => `جارٍ الاستخراج ${done}/${total}…`,
+  batchDone: (ok, failed) => `تم: حُفظ ${ok}${failed ? `، وفشل ${failed}` : ''}.`,
+  loadingPreview: 'جارٍ تحميل المعاينة…',
+  exportFailed: 'فشل التصدير. حاول مرة أخرى.',
+  pdfFallback: 'تعذّر على هذا الجهاز إنشاء PDF هنا، وسيُفتح بدلًا من ذلك خيار «حفظ بصيغة PDF» في متصفحك.',
+  toggleTheme: 'تبديل الوضع الداكن',
+  switchLang: 'اللغة',
+  bannerText: 'هذه الصفحة متاحة أيضًا بالعربية.',
+  bannerCta: 'التبديل إلى العربية',
+  bannerDismiss: 'إغلاق',
+  watchDemo: 'شاهد العرض التوضيحي (30 ثانية)',
+  closeDemo: 'إغلاق الفيديو',
+  downloads: 'تنزيل',
+  actions: 'المزيد',
+};
+
+export const translations = { en, tr, es, pt, ja, zh, ar };
 export type Strings = typeof en;
 
 export const LANGS: { code: Lang; name: string; home: string; locale: string }[] = [
@@ -401,6 +466,7 @@ export const LANGS: { code: Lang; name: string; home: string; locale: string }[]
   { code: 'pt', name: 'Português', home: '/pt/', locale: 'pt-BR' },
   { code: 'ja', name: '日本語', home: '/ja/', locale: 'ja-JP' },
   { code: 'zh', name: '简体中文', home: '/zh/', locale: 'zh-CN' },
+  { code: 'ar', name: 'العربية', home: '/ar/', locale: 'ar' },
   { code: 'tr', name: 'Türkçe', home: '/tr/', locale: 'tr-TR' },
 ];
 export const langInfo = (code: Lang) => LANGS.find(l => l.code === code)!;

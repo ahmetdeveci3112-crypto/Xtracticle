@@ -3,7 +3,7 @@
  * language gets the English video with captions in that language.
  */
 
-export type DemoLang = 'en' | 'tr' | 'es' | 'pt' | 'ja' | 'zh';
+export type DemoLang = 'en' | 'tr' | 'es' | 'pt' | 'ja' | 'zh' | 'ar';
 
 const CAPTION_LABEL: Record<DemoLang, string> = {
   en: 'English',
@@ -12,6 +12,7 @@ const CAPTION_LABEL: Record<DemoLang, string> = {
   pt: 'Português',
   ja: '日本語',
   zh: '简体中文',
+  ar: 'العربية',
 };
 
 export function demoVideo(lang: DemoLang) {

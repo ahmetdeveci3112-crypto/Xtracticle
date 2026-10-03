@@ -4,6 +4,8 @@ import path from 'path';
 import fs from 'fs';
 import { defineConfig, type Plugin } from 'vite';
 import { handleApi } from './src/shared/api';
+import { handleMarkdown } from './src/shared/markdown';
+import { handleMcp } from './src/shared/mcp';
 import { sitePages } from './site/plugin';
 
 /**
@@ -43,9 +45,21 @@ function devApi(): Plugin {
     name: 'dev-api',
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
-        if (!req.url?.startsWith('/api/')) return next();
+        const isMcp = req.url === '/mcp' || req.url?.startsWith('/mcp?');
+        if (!req.url?.startsWith('/api/') && !isMcp) return next();
         try {
-          const response = await handleApi(new Request(`http://localhost${req.url}`, { method: req.method }));
+          const chunks: Buffer[] = [];
+          if (req.method === 'POST') for await (const c of req) chunks.push(c as Buffer);
+          const headers = new Headers();
+          for (const [k, v] of Object.entries(req.headers)) if (typeof v === 'string') headers.set(k, v);
+          const request = new Request(`http://localhost${req.url}`, {
+            method: req.method,
+            headers,
+            body: chunks.length ? Buffer.concat(chunks) : undefined,
+          });
+          const response = isMcp
+            ? await handleMcp(request)
+            : ((await handleMarkdown(request)) ?? (await handleApi(request)));
           if (!response) return next();
           res.statusCode = response.status;
           response.headers.forEach((value, key) => res.setHeader(key, value));

@@ -2,6 +2,7 @@
   "name": "xtracticle",
   "compatibility_date": "2025-09-01",
   "main": "src/worker.ts",
+  "keep_vars": true,
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
@@ -9,6 +10,8 @@
     "not_found_handling": "404-page",
     "run_worker_first": [
       "/api/*",
+      "/mcp",
+      "/mcp/",
       "/*/status/*",
       "/i/web/status/*",
       "/video/*"
@@ -24,6 +27,22 @@
       "simple": {
         "limit": 40,
         "period": 10
+      }
+    },
+    {
+      "name": "AGENT_IP_LIMITER",
+      "namespace_id": "1002",
+      "simple": {
+        "limit": 20,
+        "period": 60
+      }
+    },
+    {
+      "name": "AGENT_GLOBAL_LIMITER",
+      "namespace_id": "1003",
+      "simple": {
+        "limit": 40,
+        "period": 60
       }
     }
   ]

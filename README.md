@@ -51,7 +51,9 @@
 - 📚 **Batch mode** — up to 20 links → one ZIP of Markdown files
 - 🔖 **Bookmarklet** and **PWA share target** (share from the X app on Android)
 - 🔊 **Listen** — read aloud with the browser's text-to-speech
-- 📜 **History**, 🌙 **dark mode**, 🌍 **English, Español, Português, 日本語, 简体中文, Türkçe**
+- 📱 **iPhone/iPad Shortcut** — share a post from the X app straight to Xtracticle (`public/shortcuts/`)
+- 🤖 **MCP server + Markdown API** — AI assistants read X posts as Markdown (`/mcp`, `/api/markdown/:id`)
+- 📜 **History**, 🌙 **dark mode**, 🌍 **English, Español, Português, 日本語, 简体中文, العربية, Türkçe** (Arabic is right-to-left)
 - 📈 **Analytics events** — `extract`, `download` (format), `copy`, `share`, `listen`, `batch_extract`, errors — in GA4
 
 ## Getting Started
@@ -77,9 +79,9 @@ The dev server runs at `http://localhost:5173`. `/api/*` is served by the **same
 Cloudflare Workers + Static Assets, deployed automatically on push to `main` (build: `npm run build`, deploy: `npx wrangler deploy`). No environment variables.
 
 `wrangler.json`:
-- `run_worker_first` — only `/api/*` and `/*/status/*` hit the Worker; everything else is served straight from the CDN
+- `run_worker_first` — only `/api/*`, `/mcp`, `/video/*` and `/*/status/*` hit the Worker; everything else is served straight from the CDN
 - `not_found_handling: "404-page"` — unknown URLs return a real `404` (no soft-404s)
-- `public/_headers` — security headers, `Link: </llms.txt>`, immutable caching for hashed assets
+- `public/_headers` — security headers, `Link: </llms.txt>`, download headers for the iOS Shortcut
 
 ## Architecture
 
@@ -96,19 +98,23 @@ Browser ──► Cloudflare
 src/
 ├── App.tsx              UI: extraction, exports, batch mode, deep links
 ├── i18n.ts              UI strings (en, tr, es, pt, ja, zh)
-├── lib/convert.ts       Posts / threads / Draft.js articles → Markdown + text + metadata
 ├── lib/export.ts        PDF (jsPDF + html2canvas-pro), EPUB, ZIP (fflate), Obsidian
 ├── lib/url.ts           Input + path parsing
 ├── lib/analytics.ts     GA4 event helper
 ├── shared/fx.ts         FxTwitter client (v2 thread endpoint + v1 fallback), shared by Worker & dev server
 ├── shared/api.ts        JSON API handler with edge caching
+├── shared/convert.ts    Posts / threads / Draft.js articles → Markdown + text + metadata (app + Worker)
+├── shared/markdown.ts   GET /api/markdown/:id
+├── shared/mcp.ts        Remote MCP server (POST /mcp)
 ├── shared/text.ts       Title extraction
 └── worker.ts            Cloudflare Worker (API + status-page SSR)
 site/
 ├── blocks.ts            Types + localized shared blocks (shortcuts, privacy)
 ├── pages.ts             English pages (one per search intent) + page registry
-├── pages-{es,pt,ja,zh,tr}.ts  The same pages, localized (linked by `group`)
+├── pages-{es,pt,ja,zh,ar,tr}.ts  The same pages, localized (linked by `group`)
 ├── curated.ts           Weekly “Best X Articles” pages from site/curated/*.json
+├── guides.ts            /guides — informational guides
+├── mcp-page.ts          /mcp-server — MCP setup docs
 ├── render.ts            Head/meta/JSON-LD/content/footer rendering
 └── plugin.ts            Vite plugin: emits every page, 404.html and sitemap.xml
 ```
@@ -120,7 +126,7 @@ Heavy export libraries are dynamically imported, so the initial page only loads 
 | Layer | Implementation |
 |-------|---------------|
 | **Intent pages** | `/x-article-to-pdf`, `/x-article-to-markdown`, `/x-thread-to-pdf`, `/x-article-to-epub`, `/save-x-articles-to-obsidian`, `/thread-reader-app-alternative` — each with unique, visible HTML content and FAQ |
-| **Languages** | Every page in 6 languages (`/`, `/es/…`, `/pt/…`, `/ja/…`, `/zh/…`, `/tr/…`) + UI in 6 languages; first-visit language banner, remembered choice redirects (never for crawlers) |
+| **Languages** | Every page in 7 languages (`/`, `/es/…`, `/pt/…`, `/ja/…`, `/zh/…`, `/ar/…`, `/tr/…`) + UI in 7 languages; first-visit language banner, remembered choice redirects (never for crawlers) |
 | **Crawlable content** | Content is static HTML outside the React root — no JS needed to index it |
 | **Structured data** | `WebApplication`, `FAQPage` (matches visible FAQ), `BreadcrumbList` |
 | **i18n** | Reciprocal `hreflang` for every translation group + `x-default` |
@@ -133,6 +139,8 @@ Heavy export libraries are dynamically imported, so the initial page only loads 
 ```
 GET /api/thread/:id  → { tweets: Tweet[], count, isThread }   # self-thread containing :id
 GET /api/tweet/:id   → Tweet
+GET /api/markdown/:id → text/markdown  # ?format=markdown|text&thread=0|1&front_matter=0|1
+POST /mcp            → MCP (Streamable HTTP, stateless), tool read_x_post
 ```
 
 `Tweet` mirrors the FxTwitter status object (`text`, `author`, `media`, `quote`, `article`, …). Responses are edge-cached for 5 minutes — please be gentle.

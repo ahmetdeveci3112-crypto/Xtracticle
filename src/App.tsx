@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import type { FxTweet } from './shared/fx';
 import { translations, LANGS, langInfo, type Lang } from './i18n';
-import { buildDoc, fileBaseName, frontMatter, type XDoc } from './lib/convert';
+import { buildDoc, fileBaseName, frontMatter, type XDoc } from './shared/convert';
 import { parseInput, parsePath, shareUrl } from './lib/url';
 import { track } from './lib/analytics';
 import { demoVideo } from './shared/demo';
@@ -158,6 +158,7 @@ export default function App() {
   };
   useEffect(() => {
     document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   }, [lang]);
 
 
@@ -413,9 +414,9 @@ export default function App() {
   return (
     <div className="relative" style={{ color: 'var(--text-primary)' }}>
       {/* Top controls */}
-      <div className="absolute top-4 right-4 z-50 flex gap-2 print:hidden">
+      <div className="absolute top-4 end-4 z-50 flex gap-2 print:hidden">
         <label
-          className="relative h-10 pl-3 pr-2 rounded-xl flex items-center gap-1.5 text-xs font-semibold btn-secondary focus-within:ring-2"
+          className="relative h-10 ps-3 pe-2 rounded-xl flex items-center gap-1.5 text-xs font-semibold btn-secondary focus-within:ring-2"
           style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
         >
           <Languages className="w-4 h-4 shrink-0" aria-hidden="true" />
@@ -513,13 +514,13 @@ export default function App() {
                     }
                   }}
                   placeholder={t.placeholder}
-                  className="w-full pl-5 pr-28 py-4 rounded-2xl text-base input-glow focus-ring"
+                  className="w-full ps-5 pe-28 py-4 rounded-2xl text-base input-glow focus-ring"
                   style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)', boxShadow: 'var(--shadow-sm)' }}
                 />
                 <button
                   type="submit"
                   disabled={loading}
-                  className="absolute right-2 top-2 bottom-2 px-6 rounded-xl font-semibold text-sm btn-primary focus-ring disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="absolute end-2 top-2 bottom-2 px-6 rounded-xl font-semibold text-sm btn-primary focus-ring disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   style={primaryStyle}
                 >
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t.extract}
@@ -616,7 +617,7 @@ export default function App() {
                       <p className="font-semibold truncate">{doc.author.name}</p>
                       <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>@{doc.author.handle}</p>
                     </div>
-                    <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap sm:justify-end gap-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
+                    <div className="w-full sm:w-auto sm:ms-auto flex flex-wrap sm:justify-end gap-1.5 text-xs" style={{ color: 'var(--text-secondary)' }}>
                       <span className="xt-chip">{t.kind[doc.kind]}{doc.kind === 'thread' ? ` · ${doc.postCount} ${t.posts}` : ''}</span>
                       <span className="xt-chip">{doc.readingMinutes} {t.minRead}</span>
                       <span className="xt-chip hidden sm:inline-flex">{doc.wordCount.toLocaleString(locale)} {t.words}</span>
@@ -669,6 +670,7 @@ export default function App() {
 
                 <article
                   id="xt-preview"
+                  dir="auto"
                   lang={doc.lang && doc.lang !== 'zxx' ? doc.lang : undefined}
                   className="prose prose-neutral max-w-none prose-img:rounded-2xl prose-img:border prose-headings:tracking-tight"
                 >
@@ -761,7 +763,7 @@ function DemoModal({ lang, closeLabel, onClose }: { lang: Lang; closeLabel: stri
           type="button"
           onClick={onClose}
           aria-label={closeLabel}
-          className="absolute -top-11 right-0 p-2 rounded-lg text-white/90 hover:text-white focus-ring"
+          className="absolute -top-11 end-0 p-2 rounded-lg text-white/90 hover:text-white focus-ring"
         >
           <X className="w-6 h-6" />
         </button>

@@ -11,10 +11,13 @@
 - [X Article to EPUB & Kindle](https://xtracticle.com/x-article-to-epub): EPUB 3 e-book for Kindle (Send to Kindle), Kobo, Apple Books
 - [Save X Articles to Obsidian](https://xtracticle.com/save-x-articles-to-obsidian): One-click Obsidian note with properties
 - [Thread Reader App alternative](https://xtracticle.com/thread-reader-app-alternative): Free comparison — PDF, Markdown and X Articles support
+- [MCP server](https://xtracticle.com/mcp-server): Let Claude, ChatGPT, Cursor and other AI assistants read X posts, threads and Articles as Markdown
+- [Guides](https://xtracticle.com/guides): What X Articles are, reading without an account, recovering deleted posts, backing up your writing
 - [Español](https://xtracticle.com/es/): Descargar artículos e hilos de X
 - [Português](https://xtracticle.com/pt/): Baixar artigos e threads do X
 - [日本語](https://xtracticle.com/ja/): X記事・スレッドを保存
 - [简体中文](https://xtracticle.com/zh/): X 文章、推文串下载
+- [العربية](https://xtracticle.com/ar/): تحميل مقالات وثريدات X
 - [Türkçe](https://xtracticle.com/tr/): X makale ve flood indirici
 
 ## Docs
@@ -27,6 +30,8 @@
 - Direct link trick: replace `x.com` with `xtracticle.com` in any post URL, e.g. https://xtracticle.com/{user}/status/{id}
 - Threads: paste the first, a middle or the last post — the full self-thread is assembled automatically
 - Batch mode: up to 20 links at once, downloaded as one ZIP of Markdown files
+- MCP endpoint for AI assistants: `https://xtracticle.com/mcp` (Streamable HTTP, no auth), tool `read_x_post`
+- Markdown API: `GET https://xtracticle.com/api/markdown/{post ID}` (`?format=markdown|text&thread=0|1&front_matter=0|1`)
 - Works only with public posts; private, deleted or age-restricted posts cannot be fetched
 - Posts are fetched on demand via the open-source FxTwitter API and not stored; anonymous usage is measured with Google Analytics
 

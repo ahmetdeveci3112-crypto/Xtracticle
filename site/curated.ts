@@ -31,7 +31,7 @@ const HUB = '/best-x-articles';
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-const LANG_BADGE: Record<string, string> = { zh: '中文', ja: '日本語', es: 'Español', pt: 'Português', tr: 'Türkçe' };
+const LANG_BADGE: Record<string, string> = { zh: '中文', ar: 'العربية', ja: '日本語', es: 'Español', pt: 'Português', tr: 'Türkçe' };
 
 function loadIssues(): Issue[] {
   if (!fs.existsSync(DIR)) return [];

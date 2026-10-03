@@ -74,6 +74,15 @@ const UI: Record<Lang, { locale: string; placeholder: string; button: string; fa
     disclaimer: '与 X Corp. 无关联。仅支持公开内容，请尊重作者的权利。',
     built: '开发者：',
   },
+  ar: {
+    locale: 'ar_AR',
+    placeholder: 'الصق رابط منشور من X…',
+    button: 'استخراج',
+    faq: 'الأسئلة الشائعة',
+    tagline: 'Xtracticle — أداة مجانية ومفتوحة المصدر لتحميل مقالات X وثريداتها ومنشوراتها.',
+    disclaimer: 'غير تابع لشركة X Corp. المحتوى العام فقط، يرجى احترام حقوق الكتّاب.',
+    built: 'تطوير:',
+  },
 };
 
 /** Mirrors `watchDemo` in src/i18n.ts so the static shell matches the hydrated header. */
@@ -84,9 +93,10 @@ const WATCH_DEMO: Record<Lang, string> = {
   pt: 'Veja a demo de 30 segundos',
   ja: '30秒のデモを見る',
   zh: '观看 30 秒演示',
+  ar: 'شاهد العرض التوضيحي (30 ثانية)',
 };
 
-const LANG_NAMES: Record<Lang, string> = { en: 'English', es: 'Español', pt: 'Português', ja: '日本語', zh: '简体中文', tr: 'Türkçe' };
+const LANG_NAMES: Record<Lang, string> = { en: 'English', es: 'Español', pt: 'Português', ja: '日本語', zh: '简体中文', ar: 'العربية', tr: 'Türkçe' };
 
 const HOMES = () => PAGES.filter(p => p.isHome && !p.noindex);
 const homeOf = (lang: Lang) => HOMES().find(h => h.lang === lang) || HOMES()[0];
@@ -243,6 +253,7 @@ const PICKS_COPY: Record<Lang, { h2: string; all: (n: number) => string; by: str
   pt: { h2: 'Os melhores artigos do X da semana', all: n => `Ver as ${n} escolhas →`, by: 'por', nav: 'Melhores artigos do X' },
   ja: { h2: '今週のおすすめ X 記事', all: n => `${n}本すべて見る →`, by: '著者:', nav: '今週のおすすめ X 記事' },
   zh: { h2: '本周精选 X 文章', all: n => `查看全部 ${n} 篇 →`, by: '作者：', nav: '本周精选 X 文章' },
+  ar: { h2: 'أفضل مقالات X هذا الأسبوع', all: n => `عرض كل الاختيارات (${n}) ←`, by: 'بقلم', nav: 'أفضل مقالات X' },
 };
 
 /** Teaser of the newest "Best X Articles" issue, placed after the first section of home pages. */
@@ -280,7 +291,7 @@ function config(page: SitePage): string {
 
 export function renderPage(template: string, page: SitePage): string {
   return template
-    .replace('<html lang="en">', `<html lang="${langTag(page.lang)}">`)
+    .replace('<html lang="en">', `<html lang="${langTag(page.lang)}"${page.lang === 'ar' ? ' dir="rtl"' : ''}>`)
     .replace('<!--xt:head-->', head(page))
     .replace('<!--xt:shell-->', shell(page))
     .replace('<!--xt:content-->', content(page))

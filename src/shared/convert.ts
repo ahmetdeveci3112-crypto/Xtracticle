@@ -1,5 +1,5 @@
-import type { FxTweet } from '../shared/fx';
-import { titleFromText } from '../shared/text';
+import type { FxTweet } from './fx';
+import { titleFromText } from './text';
 
 /**
  * Converts fxtwitter posts (single post, self-thread, or X Article) into a

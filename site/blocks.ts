@@ -1,6 +1,6 @@
 /** Types and reusable, localized HTML blocks for the static landing pages. */
 
-export type Lang = 'en' | 'tr' | 'es' | 'pt' | 'ja' | 'zh';
+export type Lang = 'en' | 'tr' | 'es' | 'pt' | 'ja' | 'zh' | 'ar';
 
 /** BCP 47 tag used in hreflang / html lang (Simplified Chinese gets an explicit script). */
 export const langTag = (lang: Lang) => (lang === 'zh' ? 'zh-Hans' : lang);
@@ -48,6 +48,7 @@ const SAMPLE_PDF: Record<Lang, { alt: string; caption: string }> = {
   pt: { alt: 'Exemplo: um artigo do X convertido em PDF com o Xtracticle', caption: 'Um artigo real do X convertido com o Xtracticle — título, autor, data e link da fonte no topo, com as imagens no lugar.' },
   ja: { alt: '例：Xtracticle で PDF に変換した X 記事', caption: 'Xtracticle で変換した実際の X 記事。冒頭にタイトル・著者・日付・出典リンク、画像もそのまま入ります。' },
   zh: { alt: '示例：用 Xtracticle 转换为 PDF 的 X 文章', caption: '用 Xtracticle 转换的真实 X 文章——顶部包含标题、作者、日期和来源链接，图片保留在原位。' },
+  ar: { alt: 'مثال: مقالة من X محوّلة إلى PDF باستخدام Xtracticle', caption: 'مقالة حقيقية من X حُوّلت باستخدام Xtracticle: العنوان والكاتب والتاريخ ورابط المصدر في الأعلى، والصور في أماكنها.' },
   tr: { alt: "Örnek: Xtracticle ile PDF'e çevrilmiş bir X makalesi", caption: 'Xtracticle ile dönüştürülmüş gerçek bir X makalesi — en üstte başlık, yazar, tarih ve kaynak linki, görseller yerinde.' },
 };
 
@@ -59,9 +60,11 @@ export const steps = (items: string[]) => `<ol class="xt-steps">${items.map(i =>
 const bookmarkletLink = (dragHint: string) =>
   `<a class="xt-bookmarklet" href="${BOOKMARKLET}" onclick="event.preventDefault();alert('${dragHint}')">⬇ Xtracticle</a>`;
 
-const SHORTCUTS: Record<Lang, { h2: string; swapH: string; swap: string; bmH: string; bm: string; drag: string; android: string }> = {
+const SHORTCUTS: Record<Lang, { h2: string; iosH: string; ios: string; swapH: string; swap: string; bmH: string; bm: string; drag: string; android: string }> = {
   en: {
-    h2: 'Two shortcuts that save time',
+    h2: 'Three shortcuts that save time',
+    iosH: '3. iPhone & iPad share sheet',
+    ios: '<a href="/shortcuts/Xtracticle.shortcut" download>Add the Xtracticle shortcut</a> to the Shortcuts app, then in the X app tap <em>Share → Xtracticle</em>. Run from the Home Screen, it opens the link on your clipboard.',
     swapH: '1. Swap the domain',
     swap: 'On any post, change <code>x.com</code> to <code>xtracticle.com</code> in the address bar and press Enter: <code>x.com/user/status/123</code> → <code>xtracticle.com/user/status/123</code>. The post opens here, ready to download.',
     bmH: '2. One-click bookmarklet',
@@ -70,7 +73,9 @@ const SHORTCUTS: Record<Lang, { h2: string; swapH: string; swap: string; bmH: st
     android: 'On Android you can also install Xtracticle (Add to Home screen) and share posts to it straight from the X app.',
   },
   tr: {
-    h2: 'Zaman kazandıran iki kısayol',
+    h2: 'Zaman kazandıran üç kısayol',
+    iosH: '3. iPhone ve iPad paylaş menüsü',
+    ios: '<a href="/shortcuts/Xtracticle.shortcut" download>Xtracticle kestirmesini</a> Kestirmeler uygulamasına ekleyin, sonra X uygulamasında <em>Paylaş → Xtracticle</em>\'a dokunun. Ana ekrandan çalıştırırsanız panodaki bağlantıyı açar.',
     swapH: '1. Alan adını değiştirin',
     swap: "Herhangi bir gönderide adres çubuğundaki <code>x.com</code> kısmını <code>xtracticle.com</code> yapıp Enter'a basın: <code>x.com/kullanici/status/123</code> → <code>xtracticle.com/kullanici/status/123</code>. Gönderi burada, indirmeye hazır açılır.",
     bmH: '2. Tek tıkla yer imi',
@@ -79,7 +84,9 @@ const SHORTCUTS: Record<Lang, { h2: string; swapH: string; swap: string; bmH: st
     android: "Android'de Xtracticle'ı ana ekrana ekleyerek X uygulamasından gönderileri doğrudan paylaşabilirsiniz.",
   },
   es: {
-    h2: 'Dos atajos que ahorran tiempo',
+    h2: 'Tres atajos que ahorran tiempo',
+    iosH: '3. Menú Compartir de iPhone y iPad',
+    ios: '<a href="/shortcuts/Xtracticle.shortcut" download>Añade el atajo de Xtracticle</a> a la app Atajos y, en la app de X, toca <em>Compartir → Xtracticle</em>. Si lo ejecutas desde la pantalla de inicio, abre el enlace que tengas copiado.',
     swapH: '1. Cambia el dominio',
     swap: 'En cualquier post, cambia <code>x.com</code> por <code>xtracticle.com</code> en la barra de direcciones y pulsa Intro: <code>x.com/usuario/status/123</code> → <code>xtracticle.com/usuario/status/123</code>. El post se abre aquí, listo para descargar.',
     bmH: '2. Marcador de un clic',
@@ -88,7 +95,9 @@ const SHORTCUTS: Record<Lang, { h2: string; swapH: string; swap: string; bmH: st
     android: 'En Android también puedes instalar Xtracticle (Añadir a pantalla de inicio) y compartir posts directamente desde la app de X.',
   },
   pt: {
-    h2: 'Dois atalhos que economizam tempo',
+    h2: 'Três atalhos que economizam tempo',
+    iosH: '3. Menu Compartilhar do iPhone e iPad',
+    ios: '<a href="/shortcuts/Xtracticle.shortcut" download>Adicione o atalho do Xtracticle</a> ao app Atalhos e, no app do X, toque em <em>Compartilhar → Xtracticle</em>. Executado da tela inicial, ele abre o link que estiver copiado.',
     swapH: '1. Troque o domínio',
     swap: 'Em qualquer post, troque <code>x.com</code> por <code>xtracticle.com</code> na barra de endereços e aperte Enter: <code>x.com/usuario/status/123</code> → <code>xtracticle.com/usuario/status/123</code>. O post abre aqui, pronto para baixar.',
     bmH: '2. Favorito de um clique',
@@ -97,7 +106,9 @@ const SHORTCUTS: Record<Lang, { h2: string; swapH: string; swap: string; bmH: st
     android: 'No Android você também pode instalar o Xtracticle (Adicionar à tela inicial) e compartilhar posts direto do app do X.',
   },
   ja: {
-    h2: '時間を節約する2つのショートカット',
+    h2: '時間を節約する3つのショートカット',
+    iosH: '3. iPhone・iPadの共有メニュー',
+    ios: '<a href="/shortcuts/Xtracticle.shortcut" download>Xtracticleショートカット</a>を「ショートカット」アプリに追加し、Xアプリで<em>共有 → Xtracticle</em>をタップします。ホーム画面から実行すると、クリップボードのリンクを開きます。',
     swapH: '1. ドメインを置き換える',
     swap: 'ポストを開いたら、アドレスバーの <code>x.com</code> を <code>xtracticle.com</code> に書き換えてEnter：<code>x.com/user/status/123</code> → <code>xtracticle.com/user/status/123</code>。そのままここで開き、すぐにダウンロードできます。',
     bmH: '2. ワンクリックのブックマークレット',
@@ -106,13 +117,26 @@ const SHORTCUTS: Record<Lang, { h2: string; swapH: string; swap: string; bmH: st
     android: 'Androidでは「ホーム画面に追加」でXtracticleをインストールすると、Xアプリから直接ポストを共有できます。',
   },
   zh: {
-    h2: '两个省时的小技巧',
+    h2: '三个省时的小技巧',
+    iosH: '3. iPhone 和 iPad 分享菜单',
+    ios: '把 <a href="/shortcuts/Xtracticle.shortcut" download>Xtracticle 快捷指令</a>添加到「快捷指令」App，然后在 X App 中点按<em>分享 → Xtracticle</em>。从主屏幕运行时，会打开剪贴板中的链接。',
     swapH: '1. 替换域名',
     swap: '在任意帖子页面，把地址栏里的 <code>x.com</code> 改成 <code>xtracticle.com</code> 后回车：<code>x.com/user/status/123</code> → <code>xtracticle.com/user/status/123</code>。帖子会直接在这里打开，随时可以下载。',
     bmH: '2. 一键书签工具',
     bm: '把这个按钮拖到书签栏，浏览任意 X 帖子时点击它即可：',
     drag: '请把这个按钮拖到书签栏。',
     android: '在 Android 上，你还可以把 Xtracticle 添加到主屏幕，然后直接从 X 应用分享帖子到这里。',
+  },
+  ar: {
+    h2: 'ثلاثة اختصارات توفّر الوقت',
+    iosH: '3. قائمة المشاركة على iPhone وiPad',
+    ios: '<a href="/shortcuts/Xtracticle.shortcut" download>أضِف اختصار Xtracticle</a> إلى تطبيق الاختصارات، ثم اضغط في تطبيق X على <em>مشاركة ← Xtracticle</em>. وعند تشغيله من الشاشة الرئيسية يفتح الرابط المنسوخ في الحافظة.',
+    swapH: '1. بدّل النطاق',
+    swap: 'في أي منشور، غيّر <code>x.com</code> إلى <code>xtracticle.com</code> في شريط العنوان واضغط Enter: <code>x.com/user/status/123</code> → <code>xtracticle.com/user/status/123</code>. يُفتح المنشور هنا جاهزًا للتنزيل.',
+    bmH: '2. إشارة مرجعية بنقرة واحدة',
+    bm: 'اسحب هذا الزر إلى شريط الإشارات المرجعية، ثم اضغط عليه أثناء قراءة أي منشور على X:',
+    drag: 'اسحب هذا الزر إلى شريط الإشارات المرجعية.',
+    android: 'على Android يمكنك أيضًا تثبيت Xtracticle (إضافة إلى الشاشة الرئيسية) ومشاركة المنشورات إليه مباشرة من تطبيق X.',
   },
 };
 
@@ -126,6 +150,8 @@ export function shortcuts(lang: Lang): string {
   <h3>${c.bmH}</h3>
   <p>${c.bm} ${bookmarkletLink(c.drag)}</p>
   <p>${c.android}</p>
+  <h3>${c.iosH}</h3>
+  <p>${c.ios}</p>
 </section>`;
 }
 
@@ -155,6 +181,10 @@ const PRIVACY: Record<Lang, { h2: string; p: string }> = {
   zh: {
     h2: '隐私',
     p: `无需注册、无需登录、无需上传。Xtracticle 通过开源的 ${FX} API 按需获取公开帖子，文件在你的浏览器中生成。我们不会保存你提取的帖子。我们使用 Google Analytics 统计匿名访问和下载次数，以了解哪些功能最有用。<a href="${GITHUB}" rel="noopener">源代码已在 GitHub 公开</a>。`,
+  },
+  ar: {
+    h2: 'الخصوصية',
+    p: `بلا حساب ولا تسجيل دخول ولا رفع ملفات. يجلب Xtracticle المنشور العام عند الطلب عبر واجهة ${FX} مفتوحة المصدر، ويُنشئ ملفك داخل متصفحك. لا نخزّن المنشورات التي تستخرجها. نستخدم Google Analytics لإحصاء الزيارات والتنزيلات بشكل مجهول الهوية لنعرف أي الميزات مهمة. <a href="${GITHUB}" rel="noopener">الشيفرة المصدرية متاحة على GitHub</a>.`,
   },
 };
 

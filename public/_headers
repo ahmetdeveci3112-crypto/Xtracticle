@@ -4,3 +4,8 @@
   X-Frame-Options: SAMEORIGIN
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Link: </llms.txt>; rel="llms-txt"
+
+/shortcuts/*
+  Content-Type: application/octet-stream
+  Content-Disposition: attachment; filename="Xtracticle.shortcut"
+  Cache-Control: public, max-age=86400

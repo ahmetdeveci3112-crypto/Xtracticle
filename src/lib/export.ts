@@ -1,4 +1,4 @@
-import type { XDoc } from './convert';
+import type { XDoc } from '../shared/convert';
 
 /**
  * Client-side exporters. Heavy libraries (jspdf, html2canvas, fflate) are
@@ -103,7 +103,22 @@ img{max-width:100%;height:auto;display:block;margin:1em auto}
 blockquote{margin:1em 0;padding-left:1em;border-left:3px solid #999;color:#444;font-style:italic}
 pre{white-space:pre-wrap;font-size:0.85em;background:#f4f4f4;padding:0.6em}
 hr{border:0;border-top:1px solid #ccc;margin:1.5em 0}
-a{color:#1d4ed8}`;
+a{color:#1d4ed8}
+.colophon{font-size:0.8em;color:#666;text-align:center}`;
+
+/** Link back to the site from exported files, tagged so GA shows which format brought the visit. */
+const creditUrl = (format: 'pdf' | 'epub') =>
+  `https://xtracticle.com/?utm_source=${format}&utm_medium=export&utm_campaign=credit`;
+
+const EPUB_CREDIT: Record<string, string> = {
+  en: 'Saved with',
+  tr: 'Kaydeden:',
+  es: 'Guardado con',
+  pt: 'Salvo com',
+  ja: '保存:',
+  zh: '保存工具：',
+  ar: 'حُفظ باستخدام',
+};
 
 export async function buildEpub(doc: XDoc, contentEl: HTMLElement, lang: string): Promise<Blob> {
   const [{ zipSync, strToU8 }, images] = await Promise.all([import('fflate'), fetchImages(doc.images)]);
@@ -123,9 +138,22 @@ export async function buildEpub(doc: XDoc, contentEl: HTMLElement, lang: string)
     else img.replaceWith(document.createTextNode(`[${img.getAttribute('alt') || 'image'}]`));
   });
 
+  const language = (lang || 'en').slice(0, 2);
+  const colophon = document.createElement('p');
+  colophon.setAttribute('class', 'colophon');
+  colophon.append(`${EPUB_CREDIT[language] || EPUB_CREDIT.en} `);
+  const creditLink = document.createElement('a');
+  creditLink.setAttribute('href', creditUrl('epub'));
+  creditLink.textContent = 'Xtracticle';
+  colophon.append(creditLink, ' · ');
+  const sourceLink = document.createElement('a');
+  sourceLink.setAttribute('href', doc.sourceUrl);
+  sourceLink.textContent = doc.sourceUrl.replace(/^https?:\/\//, '');
+  colophon.append(sourceLink);
+  clone.append(document.createElement('hr'), colophon);
+
   const serializer = new XMLSerializer();
   const body = Array.from(clone.childNodes).map(n => serializer.serializeToString(n)).join('\n');
-  const language = (lang || 'en').slice(0, 2);
   const title = xml(doc.title);
   const creator = xml(`${doc.author.name} (@${doc.author.handle})`);
   const modified = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
@@ -317,14 +345,16 @@ export async function buildPdf(
       release(canvas);
     }
 
-    // Footer with source + page numbers (ASCII-only to stay within core fonts).
+    // Footer with source, credit and page numbers (ASCII-only to stay within core fonts).
     const total = pdf.getNumberOfPages();
     const source = doc.sourceUrl.replace(/^https?:\/\//, '');
+    const credit = 'xtracticle.com';
     for (let i = 1; i <= total; i++) {
       pdf.setPage(i);
       pdf.setFontSize(8);
       pdf.setTextColor(140);
       pdf.textWithLink(source, MARGIN_MM, pageH - 8, { url: doc.sourceUrl });
+      pdf.textWithLink(credit, (pageW - pdf.getTextWidth(credit)) / 2, pageH - 8, { url: creditUrl('pdf') });
       pdf.text(`${i} / ${total}`, pageW - MARGIN_MM, pageH - 8, { align: 'right' });
     }
     pdf.setProperties({ title: doc.title, author: `${doc.author.name} (@${doc.author.handle})`, subject: doc.sourceUrl, creator: 'Xtracticle (xtracticle.com)' });

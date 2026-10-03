@@ -1,4 +1,6 @@
 import { handleApi } from './shared/api';
+import { handleMarkdown } from './shared/markdown';
+import { handleMcp } from './shared/mcp';
 import type { FxTweet } from './shared/fx';
 import { titleFromText } from './shared/text';
 
@@ -6,12 +8,19 @@ export interface Env {
   ASSETS: Fetcher;
   /** 40 requests / 10 s per client IP on /api/* (wrangler.json `ratelimits`). */
   API_LIMITER?: RateLimit;
+  /** 20 requests / 60 s per client IP on the agent endpoints (/mcp, /api/markdown). */
+  AGENT_IP_LIMITER?: RateLimit;
+  /** Shared budget for all agent traffic (one key), so AI clients can't use up the Workers quota the site needs. */
+  AGENT_GLOBAL_LIMITER?: RateLimit;
+  /** Kill switch: set to "1" in the Cloudflare dashboard (Workers → Settings → Variables) to turn off /mcp and /api/markdown. */
+  AGENTS_DISABLED?: string;
 }
 
 /**
  * Cloudflare Worker for Xtracticle. Runs before static assets only for the
  * paths listed in wrangler.json `assets.run_worker_first`:
- *   /api/*                     → JSON API (src/shared/api.ts)
+ *   /api/*                     → JSON API (src/shared/api.ts), /api/markdown/:id (src/shared/markdown.ts)
+ *   /mcp                       → remote MCP server (src/shared/mcp.ts)
  *   /{user}/status/{id}        → app shell with per-post meta tags + preloaded data
  * Everything else is served directly from dist/ (with 404.html for unknown paths).
  */
@@ -24,18 +33,18 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
+    const isMcp = url.pathname === '/mcp' || url.pathname === '/mcp/';
+    const isMarkdownApi = url.pathname.startsWith('/api/markdown/');
+    if ((isMcp && request.method === 'POST') || isMarkdownApi) {
+      const blocked = await agentGate(request, env, isMcp);
+      if (blocked) return blocked;
+    }
+    if (isMcp) return handleMcp(request, p => ctx.waitUntil(p));
+
     if (url.pathname.startsWith('/api/')) {
-      if (env.API_LIMITER) {
-        const ip = request.headers.get('cf-connecting-ip') || 'unknown';
-        const { success } = await env.API_LIMITER.limit({ key: ip });
-        if (!success) {
-          return new Response(JSON.stringify({ error: 'Too many requests. Please wait a few seconds and try again.' }), {
-            status: 429,
-            headers: { 'Content-Type': 'application/json; charset=utf-8', 'Retry-After': '10' },
-          });
-        }
-      }
-      const res = await handleApi(request, p => ctx.waitUntil(p));
+      if (!isMarkdownApi && (await rateLimited(request, env))) return tooManyRequests();
+      const waitUntil = (p: Promise<unknown>) => ctx.waitUntil(p);
+      const res = (await handleMarkdown(request, waitUntil)) ?? (await handleApi(request, waitUntil));
       return (
         res ??
         new Response(JSON.stringify({ error: 'Not found.' }), {
@@ -55,6 +64,50 @@ export default {
     return env.ASSETS.fetch(request);
   },
 } satisfies ExportedHandler<Env>;
+
+/**
+ * Protects the site from AI-agent traffic (/mcp, /api/markdown): a kill switch, a per-IP
+ * limit and one shared budget. On the free Workers plan every request counts toward the
+ * daily quota the web app also needs, so agents get turned away first.
+ */
+async function agentGate(request: Request, env: Env, isMcp: boolean): Promise<Response | null> {
+  if (env.AGENTS_DISABLED === '1') {
+    return agentError(isMcp, 503, 'The Xtracticle MCP server and Markdown API are temporarily disabled. Please use https://xtracticle.com in a browser.');
+  }
+  const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+  if (env.AGENT_IP_LIMITER && !(await env.AGENT_IP_LIMITER.limit({ key: ip })).success) {
+    return agentError(isMcp, 429, 'Too many requests from your connection. Please wait a minute and try again.');
+  }
+  if (env.AGENT_GLOBAL_LIMITER && !(await env.AGENT_GLOBAL_LIMITER.limit({ key: 'all' })).success) {
+    return agentError(isMcp, 429, 'The free Xtracticle MCP server is busy right now. Please try again in a minute.');
+  }
+  return null;
+}
+
+function agentError(isMcp: boolean, status: number, message: string): Response {
+  const headers = {
+    'Content-Type': isMcp ? 'application/json' : 'text/plain; charset=utf-8',
+    'Access-Control-Allow-Origin': '*',
+    'Retry-After': '60',
+  };
+  const body = isMcp ? JSON.stringify({ jsonrpc: '2.0', id: null, error: { code: -32000, message } }) : message + '\n';
+  return new Response(body, { status, headers });
+}
+
+/** 40 requests / 10 s per client IP on the web app's /api/*. */
+async function rateLimited(request: Request, env: Env): Promise<boolean> {
+  if (!env.API_LIMITER) return false;
+  const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+  const { success } = await env.API_LIMITER.limit({ key: ip });
+  return !success;
+}
+
+function tooManyRequests(): Response {
+  return new Response(JSON.stringify({ error: 'Too many requests. Please wait a few seconds and try again.' }), {
+    status: 429,
+    headers: { 'Content-Type': 'application/json; charset=utf-8', 'Retry-After': '10', 'Access-Control-Allow-Origin': '*' },
+  });
+}
 
 /* ─── /video/* with byte-range support ─── */
 

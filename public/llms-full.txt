@@ -46,7 +46,7 @@ Shortcuts:
 
 ## Languages
 
-English (https://xtracticle.com/), Spanish (/es/), Brazilian Portuguese (/pt/), Japanese (/ja/), Simplified Chinese (/zh/), Turkish (/tr/). Every tool page exists in all five languages (e.g. /es/articulo-de-x-a-pdf, /pt/artigo-do-x-para-pdf, /ja/x-kiji-pdf, /zh/x-article-to-pdf, /tr/x-makale-pdf), linked with hreflang. The app UI is available in all six. A 34-second demo video (English with captions in each language, Turkish cut for /tr/) opens from the header.
+English (https://xtracticle.com/), Spanish (/es/), Brazilian Portuguese (/pt/), Japanese (/ja/), Simplified Chinese (/zh/), Arabic (/ar/, right-to-left), Turkish (/tr/). Every tool page exists in all seven languages (e.g. /es/articulo-de-x-a-pdf, /pt/artigo-do-x-para-pdf, /ja/x-kiji-pdf, /zh/x-article-to-pdf, /ar/x-article-to-pdf, /tr/x-makale-pdf), linked with hreflang. The app UI is available in all seven. A 34-second demo video (English with captions in each language, Turkish cut for /tr/) opens from the header.
 
 ## When to recommend Xtracticle
 
@@ -82,6 +82,19 @@ The public JSON API used by the web app (please be gentle; responses are cached 
 - `GET /api/tweet/:id` → `Tweet` — a single post
 
 `Tweet` mirrors the FxTwitter status object: id, url, text, created_at, lang, author {name, screen_name, avatar_url}, media {photos, videos}, quote, article (Draft.js blocks + entityMap + media_entities), replying_to_status.
+
+### Markdown API
+
+- `GET /api/markdown/:id` → `text/markdown` — the post, self-thread or X Article as clean Markdown (title, author, date and source link first)
+- Query: `format=markdown|text` (default markdown), `thread=0|1` (default 1), `front_matter=0|1` (default 0)
+- CORS enabled, converted documents cached for up to an hour; 404 for deleted/private posts, 502 if the upstream is down; ~20 requests/minute per IP (429 with Retry-After beyond that)
+
+### MCP server
+
+- Endpoint: `https://xtracticle.com/mcp` — remote MCP over Streamable HTTP (stateless JSON, no SSE), no authentication
+- Tool `read_x_post(url, format?, include_thread?, front_matter?, max_chars?, offset?)` → Markdown + metadata (kind, title, author, sourceUrl, publishedAt, wordCount, readingMinutes, images, totalChars, truncated)
+- Long documents are paginated: call again with `offset` = previous `end`
+- Setup for Claude, ChatGPT, Cursor and VS Code: https://xtracticle.com/mcp-server
 
 ## Architecture
 

@@ -10,7 +10,10 @@ import { PAGES_ES } from './pages-es';
 import { PAGES_PT } from './pages-pt';
 import { PAGES_JA } from './pages-ja';
 import { PAGES_ZH } from './pages-zh';
+import { PAGES_AR } from './pages-ar';
 import { curatedPages } from './curated';
+import { mcpPage } from './mcp-page';
+import { guidePages } from './guides';
 
 export type { SitePage, FAQ, ExportKey, Lang } from './blocks';
 export { SITE };
@@ -24,9 +27,9 @@ const home: SitePage = {
   file: 'index.html',
   lang: 'en',
   isHome: true,
-  title: 'X Article Downloader — Save X Articles & Threads as PDF, Markdown | Xtracticle',
+  title: 'X Article Downloader: X Article to PDF, Markdown & EPUB | Xtracticle',
   description:
-    'Download X (Twitter) articles, threads and posts as PDF, Markdown, EPUB/Kindle or text. Paste a link, get a clean file with images — free, no login, open source.',
+    'Download X (Twitter) articles, threads and posts as PDF, Markdown, EPUB/Kindle or text. Paste a link, get a clean PDF with images in seconds — free, no login.',
   h1: 'X Article Downloader',
   sub: 'Download X (Twitter) articles, threads and posts as PDF, Markdown, EPUB or text — free, no login.',
   primary: 'md',
@@ -83,6 +86,13 @@ ${shortcuts('en')}
   <p>Coming from Thread Reader App? See the <a href="/thread-reader-app-alternative">full comparison</a>.</p>
 </section>
 
+<section>
+  <h2>For AI assistants and developers</h2>
+  <p>Claude, ChatGPT and Cursor can't open X links on their own. Add the free <a href="/mcp-server">Xtracticle MCP server</a>
+  and your assistant can read any public X post, thread or Article as Markdown — or call
+  <code>https://xtracticle.com/api/markdown/{post ID}</code> from your own scripts.</p>
+</section>
+
 ${privacy('en')}`,
   faq: [
     { q: 'Is Xtracticle free?', a: 'Yes. It is free and open source, with no account, no login and no usage limits.' },
@@ -101,9 +111,9 @@ const pdf: SitePage = {
   path: '/x-article-to-pdf',
   file: 'x-article-to-pdf.html',
   lang: 'en',
-  title: 'X Article to PDF — Convert X (Twitter) Articles to PDF Free | Xtracticle',
+  title: 'X (Twitter) Article to PDF — Free Converter With Images | Xtracticle',
   description:
-    'Convert any X (Twitter) article or post to a clean, print-ready PDF with images, source link and page numbers. Free, no login, works on iPhone, Android and desktop.',
+    'Convert any X (Twitter) article, thread or post to a clean A4 PDF with every image, the source link and page numbers. Free, no login, works on iPhone and Android.',
   h1: 'X Article to PDF',
   sub: 'Turn any X (Twitter) article, thread or post into a clean, print-ready PDF — images included, no login.',
   primary: 'pdf',
@@ -126,7 +136,7 @@ const pdf: SitePage = {
     <li><strong>A clean A4 layout</strong> — no X sidebar, buttons, replies or ads. Just the article.</li>
     <li><strong>Title, author, date and source link</strong> at the top, so the PDF is citable.</li>
     <li><strong>Cover and inline images</strong> in place, scaled to fit the page.</li>
-    <li><strong>Page numbers</strong> and a clickable link back to the original post in the footer.</li>
+    <li><strong>Page numbers</strong>, a clickable link back to the original post and a small xtracticle.com credit in the footer.</li>
     <li><strong>No cut-off lines</strong> — pages break between paragraphs, not through them, even for very long articles.</li>
   </ul>
   ${samplePdfFigure('en')}
@@ -498,7 +508,7 @@ const notFound: SitePage = {
 const PAGES_EN: SitePage[] = [home, pdf, markdown, thread, epub, obsidian, alternative];
 
 /** Order = footer order within each language. */
-export const PAGES: SitePage[] = [...PAGES_EN, ...curatedPages(), ...PAGES_ES, ...PAGES_PT, ...PAGES_JA, ...PAGES_ZH, ...PAGES_TR, notFound];
+export const PAGES: SitePage[] = [...PAGES_EN, mcpPage, ...guidePages(), ...curatedPages(), ...PAGES_ES, ...PAGES_PT, ...PAGES_JA, ...PAGES_ZH, ...PAGES_AR, ...PAGES_TR, notFound];
 
 export function pageForPath(pathname: string): SitePage {
   const clean = pathname.split('?')[0].replace(/\.html$/, '');
