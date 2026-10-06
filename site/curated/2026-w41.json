@@ -1,0 +1,52 @@
+{
+  "week": "2026-W41",
+  "published": "2026-10-06",
+  "intro": "Five long reads people saved with Xtracticle this week — from the forward deployed engineer playbook to a guide on getting over awkward moments.",
+  "items": [
+    {
+      "id": "2105775147886264493",
+      "handle": "startupideaspod",
+      "author": "The Startup Ideas Podcast (SIP) 🧃",
+      "title": "Become a $1M/yr FDE (Full Course)",
+      "lang": "en",
+      "topic": "AI careers",
+      "summary": "A field guide to the forward deployed engineer role: map how a company really works before building anything, sort every step into delete, plain code, agent or human, build inside the client’s existing tools and price the work on measurable outcomes."
+    },
+    {
+      "id": "2105398907702595802",
+      "handle": "FlowbyGoogle",
+      "author": "Google Flow",
+      "title": "Creative prompting with Gemini Omni in Google Flow",
+      "lang": "en",
+      "topic": "AI video",
+      "summary": "Google’s own prompting guide for Gemini Omni in Flow, with ready-to-use prompt templates: give high-level constraints, anchor shots with start and end frames, tag reference images and clips, and refine pacing after the first generation."
+    },
+    {
+      "id": "2035736659010969856",
+      "handle": "santtiagom_",
+      "author": "santi",
+      "title": "¿Cómo funciona realmente Claude Code?",
+      "lang": "es",
+      "topic": "Developer tools",
+      "summary": "A clear tour (in Spanish) of how Claude Code works under the hood — the agent loop, tools, context and memory, hooks, skills, sub-agents and MCP — ending with real examples of how the pieces work together."
+    },
+    {
+      "id": "2106851684370510186",
+      "handle": "MaxTorchbearer",
+      "author": "Max",
+      "title": "Become hard to embarrass",
+      "lang": "en",
+      "topic": "Psychology",
+      "summary": "A short, sharp essay on why the recovery often makes an awkward moment worse than the mistake itself, and how to fix only what actually needs fixing, then let the conversation move on."
+    },
+    {
+      "id": "2105345806870126935",
+      "handle": "devoncnp",
+      "author": "Devon Canup",
+      "title": "Your Entire Life Changes When You Realize Getting Rich Is A Skill Issue",
+      "lang": "en",
+      "topic": "Money & mindset",
+      "summary": "An opinionated long read arguing that getting rich is a learnable skill rather than a slow-savings plan: pick work with fast feedback loops, get your reps in, change your environment and act like the person you want to become."
+    }
+  ]
+}

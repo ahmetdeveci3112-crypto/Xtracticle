@@ -255,9 +255,9 @@ const thread: SitePage = {
   path: '/x-thread-to-pdf',
   file: 'x-thread-to-pdf.html',
   lang: 'en',
-  title: 'X Thread Downloader — Unroll & Save Twitter Threads as PDF or Markdown | Xtracticle',
+  title: 'X Thread Downloader: Unroll Twitter Threads to PDF | Xtracticle',
   description:
-    'Download and unroll any X (Twitter) thread as one PDF, Markdown, EPUB or text file. Paste any post of the thread — no bot mention, no login, free.',
+    'Unroll any X (Twitter) thread into one clean PDF, Markdown or EPUB in seconds. Paste the first, middle or last post. No bot to tag, no login, free.',
   h1: 'X Thread Downloader',
   sub: 'Unroll any X (Twitter) thread and save it as one clean PDF, Markdown, EPUB or text file. Paste any post of the thread.',
   primary: 'pdf',
