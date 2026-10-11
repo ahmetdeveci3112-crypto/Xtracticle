@@ -36,6 +36,8 @@ const home: SitePage = {
     <div><h3><a href="/ja/x-kiji-obsidian">X記事をObsidianに保存</a></h3><p>ワンクリックで、記事全文とメタデータ入りの新しいノートを作成。</p></div>
     <div><h3>ZIP＋画像</h3><p>Markdownと全画像をローカルに保存。元のポストが削除されても残るアーカイブに。</p></div>
     <div><h3>テキスト</h3><p>どの端末・スクリプト・AIツールでも使えるシンプルな.txt。</p></div>
+    <div><h3><a href="/ja/thread-unroll">スレッドをまとめて読む</a></h3><p>どのポストのリンクでもOK。botへのメンションなしで、スレッドを1ページで読めます。</p></div>
+    <div><h3><a href="/ja/tweet-pdf">ツイートをPDFで保存</a></h3><p>ポスト1件を、写真・引用ポスト・日付・出典リンク付きのA4のPDFに。</p></div>
   </div>
 </section>
 

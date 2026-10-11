@@ -36,6 +36,8 @@ const home: SitePage = {
     <div><h3><a href="/zh/save-x-articles-to-obsidian">X 文章保存到 Obsidian</a></h3><p>一键在你的知识库中新建笔记，包含完整文章和元数据。</p></div>
     <div><h3>ZIP + 图片</h3><p>Markdown 加上所有本地保存的图片——真正的离线存档，帖子被删也不怕。</p></div>
     <div><h3>纯文本</h3><p>干净的 .txt，适用于任何设备、脚本或 AI 工具。</p></div>
+    <div><h3><a href="/zh/unroll-twitter-thread">推文串展开</a></h3><p>把整个推文串合并成一页直接阅读，无需 @ 机器人，无需登录。</p></div>
+    <div><h3><a href="/zh/tweet-to-pdf">推文转 PDF</a></h3><p>把单条 X 帖子保存为带图片和来源链接的干净 A4 PDF。</p></div>
   </div>
 </section>
 

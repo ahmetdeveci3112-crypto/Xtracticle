@@ -36,6 +36,8 @@ const home: SitePage = {
     <div><h3><a href="/tr/x-makale-obsidian">X makalelerini Obsidian'a kaydet</a></h3><p>Tek tıkla kasanızda makalenin tamamını ve bilgilerini içeren yeni not açılır.</p></div>
     <div><h3>ZIP + görseller</h3><p>Markdown ve tüm görseller yerel olarak — gönderi silinse bile kalıcı arşiv.</p></div>
     <div><h3>Düz metin</h3><p>Her cihaz, betik veya yapay zekâ aracı için temiz .txt.</p></div>
+    <div><h3><a href="/tr/twitter-flood-okuma">Twitter flood okuma</a></h3><p>Flood'u tek sayfada, sırayla okuyun: bot etiketlemek yok, giriş yok. Sonra isterseniz kaydedin.</p></div>
+    <div><h3><a href="/tr/tweet-pdf">Tweet'i PDF yap</a></h3><p>Tek bir X gönderisini fotoğrafları, alıntısı, tarihi ve kaynak linkiyle temiz bir A4 PDF'e çevirin.</p></div>
   </div>
 </section>
 

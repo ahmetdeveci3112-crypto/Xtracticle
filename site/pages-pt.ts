@@ -36,6 +36,8 @@ const home: SitePage = {
     <div><h3><a href="/pt/salvar-artigos-do-x-no-obsidian">Salvar artigos do X no Obsidian</a></h3><p>Um clique abre uma nova nota no seu cofre com o artigo completo e os metadados.</p></div>
     <div><h3>ZIP + imagens</h3><p>Markdown e todas as imagens salvas localmente: um arquivo que continua existindo mesmo se o post for apagado.</p></div>
     <div><h3>Texto simples</h3><p>Um .txt limpo para qualquer dispositivo, script ou ferramenta de IA.</p></div>
+    <div><h3><a href="/pt/desenrolar-thread-do-twitter">Desenrolar thread do Twitter</a></h3><p>Leia qualquer thread como uma única página limpa, sem bot e sem login. Depois salve se quiser.</p></div>
+    <div><h3><a href="/pt/tweet-para-pdf">Tweet para PDF</a></h3><p>Salve um post do X em PDF A4, com fotos, post citado, data e link da fonte.</p></div>
   </div>
 </section>
 

@@ -8,11 +8,13 @@
 - [X Article to PDF](https://xtracticle.com/x-article-to-pdf): Clean A4 PDF with images, source link and page numbers
 - [X Article to Markdown](https://xtracticle.com/x-article-to-markdown): Markdown with headings, links, lists, images and optional YAML front-matter
 - [Twitter Thread to PDF](https://xtracticle.com/x-thread-to-pdf): Unroll a whole thread from any of its posts into one document
+- [Unroll Twitter Thread](https://xtracticle.com/unroll-twitter-thread): Read any X thread as one clean page from any of its posts, no bot to tag
+- [Tweet to PDF](https://xtracticle.com/tweet-to-pdf): Save a single X post with photos, quoted post, author and date as PDF
 - [X Article to EPUB & Kindle](https://xtracticle.com/x-article-to-epub): EPUB 3 e-book for Kindle (Send to Kindle), Kobo, Apple Books
 - [Save X Articles to Obsidian](https://xtracticle.com/save-x-articles-to-obsidian): One-click Obsidian note with properties
 - [Thread Reader App alternative](https://xtracticle.com/thread-reader-app-alternative): Free comparison — PDF, Markdown and X Articles support
 - [MCP server](https://xtracticle.com/mcp-server): Let Claude, ChatGPT, Cursor and other AI assistants read X posts, threads and Articles as Markdown
-- [Guides](https://xtracticle.com/guides): What X Articles are, reading without an account, recovering deleted posts, backing up your writing
+- [Guides](https://xtracticle.com/guides): X Articles (what they are, how to write one, limits), reading without an account, seeing/recovering deleted tweets, the Wayback Machine, backing up your writing
 - [Español](https://xtracticle.com/es/): Descargar artículos e hilos de X
 - [Português](https://xtracticle.com/pt/): Baixar artigos e threads do X
 - [日本語](https://xtracticle.com/ja/): X記事・スレッドを保存

@@ -36,6 +36,8 @@ const home: SitePage = {
     <div><h3><a href="/es/guardar-articulos-de-x-en-obsidian">Guardar artículos de X en Obsidian</a></h3><p>Con un clic se abre una nota nueva en tu bóveda con el artículo completo y sus metadatos.</p></div>
     <div><h3>ZIP + imágenes</h3><p>Markdown y todas las imágenes en local: un archivo que sobrevive aunque borren el post.</p></div>
     <div><h3>Texto plano</h3><p>Un .txt limpio para cualquier dispositivo, script o herramienta de IA.</p></div>
+    <div><h3><a href="/es/desenrollar-hilo-de-twitter">Desenrollar hilo de Twitter</a></h3><p>Lee un hilo completo como una sola página, sin bots y sin iniciar sesión. Después, guárdalo si quieres.</p></div>
+    <div><h3><a href="/es/tweet-a-pdf">Tweet a PDF</a></h3><p>Guarda un post suelto de X como PDF A4 con fotos, post citado, fecha y enlace a la fuente.</p></div>
   </div>
 </section>
 
@@ -196,9 +198,9 @@ const thread: SitePage = {
   path: '/es/hilo-de-twitter-a-pdf',
   file: 'es/hilo-de-twitter-a-pdf.html',
   lang: 'es',
-  title: 'Convertir hilo de Twitter a PDF: desenrolla hilos de X | Xtracticle',
+  title: 'Guardar hilos de Twitter (X) en PDF o Markdown | Xtracticle',
   description:
-    'Desenrolla cualquier hilo de X (Twitter) y guárdalo en un solo PDF, Markdown, EPUB o texto. Pega cualquier post del hilo: sin mencionar bots, sin registro y gratis.',
+    'Guarda cualquier hilo de X (Twitter) en un solo PDF, Markdown, EPUB o texto. Pega cualquier post del hilo: sin mencionar bots, sin registro y gratis.',
   h1: 'Convertir hilo de Twitter a PDF',
   sub: 'Desenrolla cualquier hilo de X (Twitter) en un solo documento limpio — PDF, Markdown, EPUB o texto. Pega cualquier post del hilo.',
   primary: 'pdf',

@@ -14,6 +14,13 @@ import { PAGES_AR } from './pages-ar';
 import { curatedPages } from './curated';
 import { mcpPage } from './mcp-page';
 import { privacyPage } from './privacy-page';
+import { TOOL_PAGES_EN } from './tools-extra';
+import { EXTRA_PAGES as EXTRA_ZH } from './l10n/zh';
+import { EXTRA_PAGES as EXTRA_ES } from './l10n/es';
+import { EXTRA_PAGES as EXTRA_PT } from './l10n/pt';
+import { EXTRA_PAGES as EXTRA_JA } from './l10n/ja';
+import { EXTRA_PAGES as EXTRA_AR } from './l10n/ar';
+import { EXTRA_PAGES as EXTRA_TR } from './l10n/tr';
 import { guidePages } from './guides';
 
 export type { SitePage, FAQ, ExportKey, Lang } from './blocks';
@@ -45,6 +52,8 @@ const home: SitePage = {
     '<strong>Done</strong> — or copy it, send it to Obsidian, or listen to it read aloud.',
   ])}
   <p>Want to see the result first? <a href="${EXAMPLE}">Open an example X article</a>.</p>
+  <p>Looking for one thing? <a href="/x-article-to-pdf">Convert an X article to PDF</a>, <a href="/unroll-twitter-thread">unroll a Twitter thread</a>
+  or <a href="/tweet-to-pdf">save a single tweet as PDF</a>.</p>
 </section>
 
 <section>
@@ -56,6 +65,8 @@ const home: SitePage = {
     <div><h3><a href="/save-x-articles-to-obsidian">Save X articles to Obsidian</a></h3><p>One click opens a new note in your vault with the full article and metadata.</p></div>
     <div><h3>ZIP + images</h3><p>Markdown plus every image saved locally — a real offline archive that survives deleted posts.</p></div>
     <div><h3>Plain text</h3><p>Clean .txt for any device, script or AI tool.</p></div>
+    <div><h3><a href="/unroll-twitter-thread">Unroll a Twitter thread</a></h3><p>Read a whole thread on one clean page — paste any post of it, no bot to tag.</p></div>
+    <div><h3><a href="/tweet-to-pdf">Tweet to PDF</a></h3><p>Save a single post with its photos, quoted post, author and date as a PDF.</p></div>
   </div>
 </section>
 
@@ -144,13 +155,29 @@ const pdf: SitePage = {
 </section>
 
 <section>
+  <h2>X article to PDF: your options compared</h2>
+  <p>X has no export button for Articles, so there are four ways to get a PDF:</p>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle</th><th>Browser “Print → Save as PDF”</th><th>Screenshots</th><th>Browser extensions</th></tr></thead>
+    <tbody>
+      <tr><td>Clean layout (no X sidebar, replies or buttons)</td><td>✅</td><td>❌</td><td>❌</td><td>Varies</td></tr>
+      <tr><td>All images, in place</td><td>✅</td><td>⚠️ Lazy images often missing</td><td>⚠️ Manual</td><td>Varies</td></tr>
+      <tr><td>Images and text never split across pages</td><td>✅</td><td>⚠️ Often split</td><td>—</td><td>Varies</td></tr>
+      <tr><td>Title, author, date and source link</td><td>✅</td><td>⚠️ Partly</td><td>❌</td><td>Varies</td></tr>
+      <tr><td>Works on iPhone and Android</td><td>✅</td><td>⚠️</td><td>✅</td><td>❌ Desktop only</td></tr>
+      <tr><td>Nothing to install, no login</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
   <h2>Tweet to PDF, thread to PDF or article to PDF</h2>
   <h3>X (Twitter) article to PDF</h3>
   <p>Long-form X Articles keep their structure: headings, bold and italic text, bullet and numbered lists, quotes, code blocks,
   dividers, the cover image and every inline image. Embedded posts become links, videos become a thumbnail linked to the video.</p>
   <h3>Tweet to PDF</h3>
   <p>A single post keeps its text and line breaks, its photos and video thumbnails, and the post it quotes — handy for saving
-  receipts, announcements or anything you may need to cite later.</p>
+  receipts, announcements or anything you may need to cite later. More on <a href="/tweet-to-pdf">saving a tweet as PDF</a>.</p>
   <h3>Thread to PDF</h3>
   <p>Paste any post of a thread — not just the first — and every post the author wrote in it is merged into one numbered PDF.
   Replies from other people are left out. See the <a href="/x-thread-to-pdf">X thread downloader</a>.</p>
@@ -167,6 +194,9 @@ const pdf: SitePage = {
   <p>Tap PDF, then open the download from the Safari downloads list and use <em>Share → Save to Files</em> or send it to Books.</p>
   <h3>On Android</h3>
   <p>Tap PDF; the file goes to your Downloads folder and opens in any PDF viewer, Google Drive or your e-mail app.</p>
+  <h3>On Mac and Windows</h3>
+  <p>Click PDF and the file lands in your Downloads folder, named after the article. To skip copying links, change <code>x.com</code>
+  to <code>xtracticle.com</code> in the address bar of any article you're reading.</p>
   <h3>Very long or image-heavy articles</h3>
   <p>The PDF is built page by page in your browser and the button shows progress (for example “PDF 12/26”). A 20-image article
   takes a few seconds on a laptop and a little longer on a phone.</p>
@@ -180,6 +210,7 @@ ${privacy('en')}`,
     { q: 'Does it work on mobile?', a: 'Yes. It runs in any modern browser on iPhone, Android, Mac, Windows and Linux.' },
     { q: 'Can I convert private or deleted posts?', a: 'No. Only public posts that are still online can be converted — which is exactly why saving a PDF copy is useful.' },
     { q: 'How do I save a tweet as a PDF?', a: 'Copy the post link (Share → Copy link), paste it into Xtracticle and click PDF. Photos, quoted posts and the source link are included.' },
+    { q: 'Can I convert an X article to PDF without an extension?', a: 'Yes. Xtracticle runs in your browser: paste the post link and click PDF. Nothing to install and no login, on desktop and on phones.' },
     { q: 'How big are the PDF files?', a: 'It depends on the images. A text-focused article is usually a few hundred KB; a long article with around 20 large images can be several MB.' },
   ],
 };
@@ -279,7 +310,8 @@ const thread: SitePage = {
   <p>A thread is a chain of posts where the author replies to themselves. Xtracticle reads that chain and keeps only the author's own
   posts, in order — replies from other people are left out. Each post is numbered (<code>1/12</code>, <code>2/12</code>…) and keeps its
   line breaks, photos, videos and quoted posts.</p>
-  <p>No need to mention a bot under the thread or wait for a reply: it happens right here, privately.</p>
+  <p>No need to mention a bot under the thread or wait for a reply: it happens right here, privately. Just want to read it?
+  <a href="/unroll-twitter-thread">Unroll the thread on one page</a>.</p>
 </section>
 
 <section>
@@ -506,10 +538,10 @@ const notFound: SitePage = {
   faq: [],
 };
 
-const PAGES_EN: SitePage[] = [home, pdf, markdown, thread, epub, obsidian, alternative];
+const PAGES_EN: SitePage[] = [home, pdf, markdown, thread, ...TOOL_PAGES_EN, epub, obsidian, alternative];
 
 /** Order = footer order within each language. */
-export const PAGES: SitePage[] = [...PAGES_EN, mcpPage, ...guidePages(), privacyPage, ...curatedPages(), ...PAGES_ES, ...PAGES_PT, ...PAGES_JA, ...PAGES_ZH, ...PAGES_AR, ...PAGES_TR, notFound];
+export const PAGES: SitePage[] = [...PAGES_EN, mcpPage, ...guidePages(), privacyPage, ...curatedPages(), ...PAGES_ES, ...EXTRA_ES, ...PAGES_PT, ...EXTRA_PT, ...PAGES_JA, ...EXTRA_JA, ...PAGES_ZH, ...EXTRA_ZH, ...PAGES_AR, ...EXTRA_AR, ...PAGES_TR, ...EXTRA_TR, notFound];
 
 export function pageForPath(pathname: string): SitePage {
   const clean = pathname.split('?')[0].replace(/\.html$/, '');
