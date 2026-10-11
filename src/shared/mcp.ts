@@ -41,6 +41,7 @@ const META_SCHEMA = {
     stale: { type: 'boolean' },
     markdownUrl: { type: 'string' },
     downloadUrl: { type: 'string', description: 'Page where the user can download this post as PDF, EPUB, Markdown or ZIP.' },
+    text: { type: 'string', description: 'The document as Markdown (or plain text), from offset to end.' },
   },
 };
 
@@ -222,12 +223,14 @@ async function callTool(msg: Rpc, origin: string, ua: string, waitUntil?: Waiter
   };
   // Workers observability logs are the only server-side analytics.
   console.log(JSON.stringify({ mcp: TOOL.name, id: doc.id, kind: doc.kind, chars: page.text.length, stale, ms: Date.now() - started, ua: ua.slice(0, 80) }));
+  // Clients that support outputSchema (Claude Code among them) hand the model only
+  // structuredContent, so the document text has to live there as well.
   return rpcResult(msg.id, {
     content: [
       { type: 'text', text: `${page.text}\n\n---\nDownload as PDF, EPUB or Markdown: ${meta.downloadUrl}` },
       { type: 'text', text: JSON.stringify(meta) },
     ],
-    structuredContent: meta,
+    structuredContent: { ...meta, text: page.text },
   });
 }
 
