@@ -581,6 +581,17 @@ export default function App() {
               </div>
             )}
 
+            {!doc && !loading && (
+              <HeroLoop
+                dark={dark}
+                label={t.watchDemo}
+                onOpen={() => {
+                  setDemoOpen(true);
+                  track('demo_open', { lang, page: PAGE.page, source: 'hero_loop' });
+                }}
+              />
+            )}
+
             {/* Loading skeleton */}
             {loading && (
               <div className="card rounded-3xl p-6 md:p-10 mb-8" aria-busy="true">
@@ -730,6 +741,34 @@ export default function App() {
         </div>
       )}
     </div>
+  );
+}
+
+/* ─── Hero loop: 10 s muted product loop; the light/dark cut matches the page background exactly ─── */
+function HeroLoop({ dark, label, onOpen }: { dark: boolean; label: string; onOpen: () => void }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const still = useMemo(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false, []);
+  const base = `/video/hero-${dark ? 'dark' : 'light'}`;
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.muted = true; // React sets no muted attribute; iOS needs it for autoplay
+    // Pause while off screen, resume when back
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? el.play().catch(() => {}) : el.pause()));
+    io.observe(el);
+    return () => io.disconnect();
+  }, [base, still]);
+  return (
+    <button type="button" onClick={onOpen} aria-label={label} title={label} className="xt-hero-loop focus-ring print:hidden">
+      {still ? (
+        <img src={`${base}.webp`} alt="" width={1600} height={900} />
+      ) : (
+        <video key={base} ref={ref} poster={`${base}.webp`} autoPlay muted loop playsInline preload="auto" aria-hidden="true" width={1600} height={900}>
+          <source src={`${base}.webm`} type="video/webm" />
+          <source src={`${base}.mp4`} type="video/mp4" />
+        </video>
+      )}
+    </button>
   );
 }
 

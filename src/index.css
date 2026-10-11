@@ -224,6 +224,29 @@ body {
   box-shadow: var(--shadow-sm);
   cursor: pointer;
 }
+/* Hero loop: wider than the text column (centered in LTR and RTL), fades into the page at the bottom */
+.xt-hero-loop {
+  --w: min(60rem, calc(100vw - 2rem));
+  display: block;
+  width: var(--w);
+  margin: 0 calc((100% - var(--w)) / 2) 2.5rem;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: 0;
+  border-radius: 1rem;
+  background: none;
+  cursor: pointer;
+  /* Edges fade too: some browsers color-manage video differently from CSS, so never show a hard rectangle */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent),
+    linear-gradient(to bottom, transparent, #000 6%, #000 70%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent),
+    linear-gradient(to bottom, transparent, #000 6%, #000 70%, transparent);
+  mask-composite: intersect;
+}
+.xt-hero-loop video,
+.xt-hero-loop img { display: block; width: 100%; height: 100%; }
+
 .xt-demo-len {
   font-size: 0.75rem;
   padding: 0.1rem 0.45rem;
