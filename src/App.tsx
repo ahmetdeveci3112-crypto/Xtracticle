@@ -7,6 +7,7 @@ import type { FxTweet } from './shared/fx';
 import { translations, LANGS, langInfo, type Lang } from './i18n';
 import { buildDoc, fileBaseName, frontMatter, type XDoc } from './shared/convert';
 import { parseInput, parsePath, shareUrl } from './lib/url';
+import { archiveLinks, classifyInput, waybackProfile } from './shared/url';
 import { track } from './lib/analytics';
 import { demoVideo } from './shared/demo';
 
@@ -98,11 +99,15 @@ const isHomePath = (path: string) => LANGS.some(l => l.home === path);
 const isHomeLike = (path: string) => isHomePath(path) || !!parsePath(path);
 
 /* ─── API ─── */
-class ApiError extends Error {}
+class ApiError extends Error {
+  constructor(message: string, readonly code: 'not_found' | 'rate_limited' = 'not_found') {
+    super(message);
+  }
+}
 
 async function fetchThread(id: string, fallbackMsg: string, rateLimitedMsg?: string): Promise<FxTweet[]> {
   const res = await fetch(`/api/thread/${id}`);
-  if (res.status === 429) throw new ApiError(rateLimitedMsg || fallbackMsg);
+  if (res.status === 429) throw new ApiError(rateLimitedMsg || fallbackMsg, 'rate_limited');
   let data: any = null;
   try {
     data = await res.json();
@@ -110,6 +115,9 @@ async function fetchThread(id: string, fallbackMsg: string, rateLimitedMsg?: str
   if (!res.ok || !data?.tweets?.length) throw new ApiError(fallbackMsg);
   return data.tweets as FxTweet[];
 }
+
+/** An error message, optionally with places to look next (archives, a guide). */
+type ErrorInfo = { msg: string; help?: string; links?: { label: string; href: string }[] };
 
 /* ─── App ─── */
 export default function App() {
@@ -119,7 +127,7 @@ export default function App() {
 
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorInfo | null>(null);
   const [tweets, setTweets] = useState<FxTweet[] | null>(null);
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
   const [flash, setFlash] = useState<string | null>(null);
@@ -197,12 +205,22 @@ export default function App() {
     setError(null);
     const parsed = parseInput(input);
     if (!parsed) {
-      setError(t.invalidLink);
-      track('extract_error', { reason: 'invalid_link' });
+      // Only the shape of the input is tracked, never the input itself.
+      const shape = classifyInput(input);
+      if (shape.kind === 'profile') {
+        const handle = shape.handle;
+        setError({
+          msg: t.profileLink.replace('{handle}', handle),
+          links: [{ label: t.viewArchivedPosts.replace('{handle}', handle), href: waybackProfile(handle) }],
+        });
+      } else {
+        setError({ msg: t.invalidLink });
+      }
+      track('extract_error', { reason: 'invalid_link', input: shape.kind });
       return;
     }
     if (parsed.kind === 'article-link') {
-      setError(t.articleLink);
+      setError({ msg: t.articleLink });
       track('extract_error', { reason: 'article_link' });
       return;
     }
@@ -217,8 +235,26 @@ export default function App() {
       track('extract', { kind: first.article ? 'article' : list.length > 1 ? 'thread' : 'post', posts: list.length, page: PAGE.page });
     } catch (err) {
       if (reqId !== requestRef.current) return;
-      setError(err instanceof ApiError ? err.message : t.networkError);
-      track('extract_error', { reason: err instanceof ApiError ? 'not_found' : 'network' });
+      if (err instanceof ApiError && err.code === 'not_found') {
+        const guide = { label: t.deletedGuide, href: t.deletedGuidePath };
+        if (parsed.handle) {
+          const archive = archiveLinks(parsed.id, parsed.handle);
+          setError({
+            msg: err.message,
+            help: t.notFoundHelp,
+            links: [
+              { label: t.searchWayback, href: archive.wayback },
+              { label: t.searchArchiveToday, href: archive.archiveToday },
+              guide,
+            ],
+          });
+        } else {
+          setError({ msg: err.message, links: [guide] });
+        }
+      } else {
+        setError({ msg: err instanceof ApiError ? err.message : t.networkError });
+      }
+      track('extract_error', { reason: err instanceof ApiError ? err.code : 'network' });
     } finally {
       if (reqId === requestRef.current) setLoading(false);
     }
@@ -318,10 +354,10 @@ export default function App() {
       track('download_error', { format: key, message, words: doc.wordCount, images: doc.images.length });
       if (key === 'pdf') {
         // Never leave the user without a PDF: fall back to the browser's own "Save as PDF".
-        setError(t.pdfFallback);
+        setError({ msg: t.pdfFallback });
         setTimeout(() => window.print(), 400);
       } else {
-        setError(t.exportFailed);
+        setError({ msg: t.exportFailed });
       }
     } finally {
       setBusy(null);
@@ -533,7 +569,26 @@ export default function App() {
                   style={{ backgroundColor: 'var(--error-bg)', color: 'var(--error-text)', border: '1px solid var(--error-border)' }}
                 >
                   <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                  <p className="text-sm font-medium">{error}</p>
+                  <div className="text-sm min-w-0">
+                    <p className="font-medium">{error.msg}</p>
+                    {error.help && <p className="mt-2">{error.help}</p>}
+                    {error.links && (
+                      <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+                        {error.links.map(l => (
+                          <li key={l.href}>
+                            <a
+                              href={l.href}
+                              className="underline underline-offset-2 font-medium focus-ring rounded"
+                              {...(l.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer nofollow' } : {})}
+                              onClick={() => track('error_link', { to: l.href.startsWith('http') ? new URL(l.href).hostname : 'guide' })}
+                            >
+                              {l.label}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
               )}
             </form>
