@@ -2,7 +2,7 @@
  * Guías en español: artículos informativos sobre los Artículos de X (Twitter), los hilos y el archivado.
  * Los datos sobre X se escriben "a la fecha de redacción (octubre de 2026)" porque X cambia estas reglas a menudo.
  */
-import { privacy, type FAQ, type ExportKey, type SitePage } from '../../blocks';
+import { archiveCheck, privacy, type FAQ, type ExportKey, type SitePage } from '../../blocks';
 
 const HUB = '/es/guias';
 const WHEN = 'a la fecha de redacción (octubre de 2026)';
@@ -222,9 +222,9 @@ ${privacy('es')}`,
 
 const deleted = guide({
   slug: 'recuperar-tweets-borrados',
-  title: 'Recuperar tweets borrados: qué funciona de verdad | Xtracticle',
+  title: 'Cómo recuperar tweets borrados: 4 sitios donde buscar (2026) | Xtracticle',
   description:
-    'Guía honesta para recuperar posts borrados de X (Twitter): tu archivo de datos, Wayback Machine, archive.today, caché de buscadores y por qué conviene guardar a tiempo.',
+    'Recupera posts borrados de X (Twitter): tu archivo de datos antiguo, Wayback Machine, archive.today y capturas. Pega el enlace y busca en los archivos con un clic.',
   h1: '¿Se pueden recuperar tweets borrados?',
   sub: 'A veces, pero rara vez desde el propio X. Estas son las opciones que existen, qué tan fiable es cada una y cómo evitar necesitarlas.',
   primary: 'zip',
@@ -235,6 +235,8 @@ ${takeaways([
   'Los posts borrados de otras personas sobreviven solo si alguien los guardó: Wayback Machine, archive.today o una captura de pantalla. La cobertura es irregular.',
   'La solución fiable es guardar los posts y artículos importantes mientras siguen en línea, en PDF o en ZIP con imágenes.',
 ])}
+
+${archiveCheck('es')}
 
 <section>
   <h2>La respuesta honesta</h2>
@@ -430,9 +432,9 @@ ${privacy('es')}`,
 
 const seeDeleted = guide({
   slug: 'como-ver-tweets-borrados',
-  title: 'Cómo ver tweets borrados: opciones realistas | Xtracticle',
+  title: 'Cómo ver tweets borrados: busca en los archivos con un clic | Xtracticle',
   description:
-    'Cómo ver tweets borrados de otras cuentas: archivos web, fragmentos de búsqueda, citas y capturas, qué nunca funciona y cómo guardar posts a tiempo.',
+    'Ver tweets borrados de otra cuenta: pega el enlace del post y busca a la vez en Wayback Machine y archive.today. Además, citas, capturas y lo que nunca funciona.',
   h1: 'Cómo ver tweets borrados',
   sub: 'Ver el post borrado de otra persona solo es posible si alguien hizo una copia antes. Aquí verás dónde suelen existir copias y qué son callejones sin salida.',
   primary: 'pdf',
@@ -444,6 +446,8 @@ ${takeaways([
   'Los sitios que prometen "mostrar cualquier tweet borrado" no pueden acceder a datos que X ha eliminado. Desconfía de ellos.',
   'Si un post te importa, guárdalo mientras está en línea como <a href="/es/tweet-a-pdf">PDF</a> o ZIP.',
 ])}
+
+${archiveCheck('es')}
 
 <section>
   <h2>Tus propios posts borrados frente a los de otra persona</h2>
@@ -508,9 +512,9 @@ ${privacy('es')}`,
 
 const wayback = guide({
   slug: 'encontrar-tweets-en-wayback-machine',
-  title: 'Encontrar tweets borrados en Wayback Machine | Xtracticle',
+  title: 'Wayback Machine Twitter: encontrar tweets archivados y borrados | Xtracticle',
   description:
-    'Guía paso a paso para encontrar tweets archivados en la Wayback Machine: formas de URL, calendario, búsqueda con comodín, Save Page Now y archive.today.',
+    'Busca tweets y perfiles de X en Wayback Machine: formas de URL que funcionan, búsqueda con comodín de todos los posts archivados de una cuenta, archive.today y búsqueda en un clic.',
   h1: 'Cómo encontrar tweets en la Wayback Machine',
   sub: 'Una lista precisa para buscar en el Internet Archive posts y perfiles archivados de X (Twitter), y una mirada honesta a sus límites.',
   primary: 'pdf',
@@ -522,6 +526,8 @@ ${takeaways([
   'La cobertura de X es irregular, y que no haya resultados no significa que el post nunca existiera.',
   'Save Page Now puede fallar con X, así que para cualquier cosa importante conserva también tu propia copia.',
 ])}
+
+${archiveCheck('es')}
 
 <section>
   <h2>Antes de empezar</h2>

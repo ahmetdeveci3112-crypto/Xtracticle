@@ -2,7 +2,7 @@
  * Simplified Chinese guides: informational articles about X (Twitter) Articles, threads and
  * archiving. Facts about X are dated "截至撰写时（2026 年 10 月）" because X changes these rules often.
  */
-import { privacy, type FAQ, type ExportKey, type SitePage } from '../../blocks';
+import { archiveCheck, privacy, type FAQ, type ExportKey, type SitePage } from '../../blocks';
 
 const HUB = '/zh/guides';
 const WHEN = '截至撰写时（2026 年 10 月）';
@@ -194,8 +194,8 @@ ${privacy('zh')}`,
 
 const deleted = guide({
   slug: 'recover-deleted-tweets',
-  title: '已删除的推文能恢复吗？真实可行的方法 | Xtracticle',
-  description: '如实讲解如何恢复已删除的 X（推特）帖子：你的数据存档、Wayback Machine、archive.today、搜索缓存，以及为什么尽早保存才是真正的办法。',
+  title: '已删除的推文能恢复吗？4 个可以查找的地方（2026） | Xtracticle',
+  description: '恢复已删除的 X（推特）帖子：旧的数据存档、Wayback Machine、archive.today 和截图。粘贴帖子链接即可一键搜索存档。',
   h1: '已删除的推文能恢复吗？',
   sub: '有时可以，但很少能从 X 本身找回。这里列出现有的办法、各自的可靠程度，以及如何避免走到这一步。',
   primary: 'zip',
@@ -206,6 +206,8 @@ ${takeaways([
   '别人删除的帖子，只有在有人事先保存过时才会留存：Wayback Machine、archive.today 或一张截图。覆盖情况参差不齐。',
   '可靠的办法是在帖子和文章还在线时就保存下来，存为 PDF 或带图片的 ZIP。',
 ])}
+
+${archiveCheck('zh')}
 
 <section>
   <h2>实话实说</h2>
@@ -413,6 +415,8 @@ ${takeaways([
   '如果帖子很重要，请趁它还在线时存为 <a href="/zh/tweet-to-pdf">PDF</a> 或 ZIP。',
 ])}
 
+${archiveCheck('zh')}
+
 <section>
   <h2>你自己删除的帖子与别人删除的帖子</h2>
   <p>这是两个不同的问题。对<strong>你自己</strong>的帖子，旧版 X 数据存档里可能仍有这些内容，这条路径见<a href="/zh/guides/recover-deleted-tweets">已删除的推文能恢复吗？</a>。本指南讲的是<strong>别人</strong>的帖子——你没有自己的存档，只能依赖第三方做的副本。</p>
@@ -489,6 +493,8 @@ ${takeaways([
   'X 的覆盖参差不齐，搜不到不代表帖子从未存在过。',
   'Save Page Now 在 X 上可能失败，所以对重要内容，请同时自己留一份副本。',
 ])}
+
+${archiveCheck('zh')}
 
 <section>
   <h2>开始之前</h2>

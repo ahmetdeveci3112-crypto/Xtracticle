@@ -11,9 +11,9 @@ const unroll: SitePage = {
   path: '/unroll-twitter-thread',
   file: 'unroll-twitter-thread.html',
   lang: 'en',
-  title: 'Unroll Twitter Thread — Read It as One Page | Xtracticle',
+  title: 'Unroll Thread Instantly: Any Twitter/X Thread, No Bot | Xtracticle',
   description:
-    'Unroll any Twitter/X thread into one clean page, instantly. Paste any post — no bot to tag, no login. Then save it as PDF, Markdown or EPUB. Free.',
+    'Paste any post of a Twitter/X thread and read the whole thread on one clean page. No @threadreaderapp mention, no login. Save it as PDF, Markdown or EPUB. Free.',
   h1: 'Unroll Twitter Thread',
   sub: 'Read any X (Twitter) thread as one clean page. Paste a link to any post of the thread — no bot, no login.',
   primary: 'md',

@@ -1,5 +1,5 @@
 /** Japanese guides: hub + 9 guides. Facts about X are dated "2026年10月時点". */
-import { privacy, type ExportKey, type FAQ, type SitePage } from '../../blocks';
+import { archiveCheck, privacy, type ExportKey, type FAQ, type SitePage } from '../../blocks';
 
 const HUB = '/ja/guides';
 const WHEN = '本稿執筆時点（2026年10月）';
@@ -43,9 +43,9 @@ const guide = (g: GuideInput): SitePage => ({
 
 const whatAre = guide({
   slug: 'what-are-x-articles',
-  title: 'X記事とは？投稿できる人と保存方法 | Xtracticle',
+  title: 'X記事（X Articles）とは？投稿できる人と保存方法【2026】 | Xtracticle',
   description:
-    'X（旧Twitter）の記事は、見出し・画像・リスト付きの長文ポスト。投稿できる人、スレッドとの違い、保存方法を解説します。',
+    'X（旧Twitter）の記事は見出し・画像・リンク付きの長文ポスト。投稿できる人（Premium）、スレッドとの違い、PDFやMarkdownで保存する方法をまとめました。',
   h1: 'X記事（X Articles）とは？',
   sub: 'X記事は、Xに直接投稿できる書式付きの長文ポストです。誰が書けるのか、スレッドとの違い、コピーを残す方法を説明します。',
   primary: 'pdf',
@@ -195,9 +195,9 @@ ${privacy('ja')}`,
 
 const deleted = guide({
   slug: 'recover-deleted-tweets',
-  title: '削除されたツイートは復元できる？現実的な方法 | Xtracticle',
+  title: '削除したポスト・ツイートを復元する方法【2026】 | Xtracticle',
   description:
-    '削除されたX（旧Twitter）のポストを復元する現実的な方法。データアーカイブ、Wayback Machine、archive.today、検索キャッシュ、早めの保存が確実な理由。',
+    'Xで削除したポストやツイートは復元できる？過去のデータアーカイブ、Wayback Machine、archive.todayで探す手順と注意点。リンクを貼ればアーカイブ検索もワンクリック。',
   h1: '削除されたツイートは復元できる？',
   sub: '復元できることもありますが、X自体から戻せることはまれです。使える手段と信頼度、そもそも必要にならないための備えを紹介します。',
   primary: 'zip',
@@ -208,6 +208,8 @@ ${takeaways([
   '他の人の削除されたポストが残るのは、誰かが保存していた場合だけです。Wayback Machine、archive.today、スクリーンショットなどです。カバー範囲にはむらがあります。',
   '確実な対策は、大切なポストや記事を、公開されているうちにPDFや画像付きZIPで保存することです。',
 ])}
+
+${archiveCheck('ja')}
 
 <section>
   <h2>正直な答え</h2>
@@ -403,9 +405,9 @@ ${privacy('ja')}`,
 
 const seeDeleted = guide({
   slug: 'how-to-see-deleted-tweets',
-  title: '削除されたツイートを見る方法 | Xtracticle',
+  title: '削除されたツイート・ポストを見る方法【2026】アーカイブを一発検索 | Xtracticle',
   description:
-    '他のアカウントの削除されたツイートを見る方法。アーカイブ、検索スニペット、引用ポスト、スクリーンショットと、無駄な方法、保存のコツ。',
+    '消されたツイートや削除されたXのポストを見る方法。リンクを貼るだけでWayback Machineとarchive.todayをまとめて検索できます。引用ポストやスクショの探し方、無駄な方法も解説。無料・ログイン不要。',
   h1: '削除されたツイートを見る方法',
   sub: '他の人の削除されたポストを見られるのは、先にコピーが作られていた場合だけです。コピーが残りやすい場所と、行き止まりの方法を紹介します。',
   primary: 'pdf',
@@ -417,6 +419,8 @@ ${takeaways([
   '「削除されたツイートを何でも表示」とうたうサイトは、Xが削除したデータには届きません。疑ってかかりましょう。',
   '大切なポストは、公開されているうちに<a href="/ja/tweet-pdf">PDF</a>やZIPで保存してください。',
 ])}
+
+${archiveCheck('ja')}
 
 <section>
   <h2>自分の削除したポストと、他の人のポスト</h2>
@@ -481,9 +485,9 @@ ${privacy('ja')}`,
 
 const wayback = guide({
   slug: 'find-tweets-on-wayback-machine',
-  title: 'Wayback Machineでツイートを探す方法 | Xtracticle',
+  title: 'Wayback Machineでツイート・削除されたポストを探す方法 | Xtracticle',
   description:
-    'Wayback Machineでアーカイブされたツイートを探す手順。試すURL形式、カレンダー、ワイルドカード検索、Save Page Now、archive.todayを解説。',
+    'Wayback Machineで過去のツイートや削除されたポストを探す手順。試すURLの形、アカウント全体のワイルドカード検索、archive.today、ワンクリック検索の使い方。',
   h1: 'Wayback Machineでツイートを探す方法',
   sub: 'Internet Archiveで、アーカイブされたX（Twitter）のポストやプロフィールを探すための正確なチェックリストと、限界についての正直な説明です。',
   primary: 'pdf',
@@ -495,6 +499,8 @@ ${takeaways([
   'Xのカバー率にはむらがあり、結果が見つからなくても、そのポストが存在しなかったとは限りません。',
   'XではSave Page Nowが失敗することがあります。大切なものは、自分のコピーも残しておきましょう。',
 ])}
+
+${archiveCheck('ja')}
 
 <section>
   <h2>始める前に</h2>

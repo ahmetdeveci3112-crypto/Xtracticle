@@ -2,7 +2,7 @@
  * Guias em português do Brasil. Os fatos sobre o X seguem o texto em inglês e são escritos
  * "no momento da redação (outubro de 2026)", porque o X muda essas regras com frequência.
  */
-import { privacy, type FAQ, type ExportKey, type SitePage } from '../../blocks';
+import { archiveCheck, privacy, type FAQ, type ExportKey, type SitePage } from '../../blocks';
 
 const HUB = '/pt/guias';
 const WHEN = 'no momento da redação (outubro de 2026)';
@@ -202,9 +202,9 @@ ${privacy('pt')}`,
 const deleted = guide({
   slug: 'recover-deleted-tweets',
   pslug: 'recuperar-tweets-apagados',
-  title: 'Dá para recuperar tweets apagados? O que funciona | Xtracticle',
+  title: 'Como recuperar tweets apagados: 4 lugares para procurar (2026) | Xtracticle',
   description:
-    'Guia honesto para recuperar posts apagados do X (Twitter): arquivo de dados, Wayback Machine, archive.today, cache de busca e por que salvar cedo resolve.',
+    'Recupere posts apagados do X (Twitter): seu arquivo de dados antigo, Wayback Machine, archive.today e prints. Cole o link e busque nos arquivos com um clique.',
   h1: 'Dá para recuperar tweets apagados?',
   sub: 'Às vezes, mas raramente pelo próprio X. Veja as opções que existem, o quanto cada uma é confiável e como evitar precisar delas.',
   primary: 'zip',
@@ -215,6 +215,8 @@ ${takeaways([
   'Os posts apagados de outras pessoas só sobrevivem se alguém os salvou: Wayback Machine, archive.today ou um print. A cobertura é irregular.',
   'A solução confiável é salvar posts e artigos importantes enquanto estão no ar, em PDF ou ZIP com imagens.',
 ])}
+
+${archiveCheck('pt')}
 
 <section>
   <h2>A resposta honesta</h2>
@@ -413,9 +415,9 @@ ${privacy('pt')}`,
 const seeDeleted = guide({
   slug: 'how-to-see-deleted-tweets',
   pslug: 'ver-tweets-apagados',
-  title: 'Como ver tweets apagados: opções realistas | Xtracticle',
+  title: 'Como ver tweets apagados: busque nos arquivos com um clique | Xtracticle',
   description:
-    'Como ver tweets apagados de outras contas: arquivos web, trechos de busca, citações e prints, além do que nunca funciona e como salvar posts antes.',
+    'Veja tweets apagados de outra conta: cole o link do post e busque de uma vez na Wayback Machine e no archive.today. Mais citações, prints e o que nunca funciona.',
   h1: 'Como ver tweets apagados',
   sub: 'Só dá para ver o post apagado de outra pessoa se uma cópia foi feita antes. Veja onde as cópias costumam existir e o que é beco sem saída.',
   primary: 'pdf',
@@ -427,6 +429,8 @@ ${takeaways([
   'Sites que prometem “mostrar qualquer tweet apagado” não alcançam dados que o X removeu. Desconfie deles.',
   'Se um post importa, salve-o enquanto está no ar, em <a href="/pt/tweet-para-pdf">PDF</a> ou ZIP.',
 ])}
+
+${archiveCheck('pt')}
 
 <section>
   <h2>Seus posts apagados vs os de outra pessoa</h2>
@@ -492,9 +496,9 @@ ${privacy('pt')}`,
 const wayback = guide({
   slug: 'find-tweets-on-wayback-machine',
   pslug: 'encontrar-tweets-no-wayback-machine',
-  title: 'Encontrar tweets apagados na Wayback Machine | Xtracticle',
+  title: 'Wayback Machine Twitter: encontrar tweets arquivados e apagados | Xtracticle',
   description:
-    'Passo a passo para achar tweets arquivados na Wayback Machine: formas de URL, calendário, busca com curinga, Save Page Now e archive.today.',
+    'Busque tweets e perfis do X na Wayback Machine: formas de URL que funcionam, busca com curinga de todos os posts arquivados de uma conta, archive.today e busca com um clique.',
   h1: 'Como encontrar tweets na Wayback Machine',
   sub: 'Um roteiro preciso para pesquisar posts e perfis do X (Twitter) arquivados no Internet Archive, e um olhar honesto sobre onde ele falha.',
   primary: 'pdf',
@@ -506,6 +510,8 @@ ${takeaways([
   'A cobertura do X é irregular, e a ausência de resultado não significa que o post nunca existiu.',
   'O Save Page Now pode falhar no X, então, para qualquer coisa importante, guarde também a sua própria cópia.',
 ])}
+
+${archiveCheck('pt')}
 
 <section>
   <h2>Antes de começar</h2>

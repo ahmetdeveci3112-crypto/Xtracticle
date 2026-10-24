@@ -2,7 +2,7 @@
  * Arabic (MSA) versions of the guide pages. Facts about X are written "at the time of writing
  * (October 2026)" because X changes these rules often.
  */
-import { privacy, type FAQ, type ExportKey, type SitePage } from '../../blocks';
+import { archiveCheck, privacy, type FAQ, type ExportKey, type SitePage } from '../../blocks';
 
 const HUB = '/ar/guides';
 const WHEN = 'وقت كتابة هذا الدليل (أكتوبر 2026)';
@@ -196,9 +196,9 @@ ${privacy('ar')}`,
 
 const deleted = guide({
   slug: 'recover-deleted-tweets',
-  title: 'هل يمكن استرجاع التغريدات المحذوفة؟ ما ينفع فعلًا | Xtracticle',
+  title: 'استرجاع التغريدات المحذوفة: 4 أماكن للبحث (2026) | Xtracticle',
   description:
-    'دليل صريح لاسترجاع منشورات X (تويتر) المحذوفة: أرشيف بياناتك، وWayback Machine، وarchive.today، وذاكرة البحث المؤقتة، ولماذا الحفظ المبكر هو الحل.',
+    'استرجع منشورات X (تويتر) المحذوفة: أرشيف بياناتك القديم، وWayback Machine، وarchive.today، ولقطات الشاشة. الصق الرابط وابحث في الأرشيفات بنقرة واحدة.',
   h1: 'هل يمكن استرجاع التغريدات المحذوفة؟',
   sub: 'أحيانًا، لكن نادرًا من X نفسها. إليك الخيارات الموجودة، ومدى الاعتماد على كل منها، وكيف تتجنب الحاجة إليها.',
   primary: 'zip',
@@ -209,6 +209,8 @@ ${takeaways([
   'منشورات الآخرين المحذوفة لا تبقى إلا إذا حفظها أحد: Wayback Machine أو archive.today أو لقطة شاشة. والتغطية متفاوتة.',
   'الحل الموثوق أن تحفظ المنشورات والمقالات المهمة وهي متاحة، بصيغة PDF أو ZIP مع الصور.',
 ])}
+
+${archiveCheck('ar')}
 
 <section>
   <h2>الجواب الصريح</h2>
@@ -404,9 +406,9 @@ ${privacy('ar')}`,
 
 const seeDeleted = guide({
   slug: 'how-to-see-deleted-tweets',
-  title: 'رؤية التغريدات المحذوفة: خيارات واقعية | Xtracticle',
+  title: 'كيف ترى التغريدات المحذوفة: ابحث في الأرشيفات بنقرة | Xtracticle',
   description:
-    'كيف ترى التغريدات المحذوفة من حسابات الآخرين: الأرشيفات ومقتطفات البحث والمنشورات المقتبسة ولقطات الشاشة، وما لا ينجح أبدًا وكيف تحفظ المنشورات.',
+    'اطّلع على التغريدات المحذوفة من حسابات أخرى: الصق رابط المنشور وابحث في Wayback Machine وarchive.today معًا، إضافة إلى الاقتباسات ولقطات الشاشة وما لا ينجح أبدًا.',
   h1: 'كيف ترى التغريدات المحذوفة',
   sub: 'لا يمكنك رؤية منشور محذوف لشخص آخر إلا إذا صُنعت له نسخة قبل الحذف. إليك أين توجد النسخ عادة، وما هو طريق مسدود.',
   primary: 'pdf',
@@ -418,6 +420,8 @@ ${takeaways([
   'المواقع التي تَعِد بـ «عرض أي تغريدة محذوفة» لا تصل إلى بيانات أزالتها X. تعامل معها بحذر.',
   'إذا كان المنشور مهمًا، فاحفظه وهو متاح بصيغة <a href="/ar/tweet-to-pdf">PDF</a> أو ZIP.',
 ])}
+
+${archiveCheck('ar')}
 
 <section>
   <h2>منشوراتك المحذوفة مقابل منشورات الآخرين</h2>
@@ -482,9 +486,9 @@ ${privacy('ar')}`,
 
 const wayback = guide({
   slug: 'find-tweets-on-wayback-machine',
-  title: 'البحث عن التغريدات المحذوفة في Wayback Machine | Xtracticle',
+  title: 'Wayback Machine تويتر: العثور على التغريدات المؤرشفة والمحذوفة | Xtracticle',
   description:
-    'دليل خطوة بخطوة للعثور على التغريدات المؤرشفة في Wayback Machine: صيغ الروابط التي تجربها، والتقويم، والبحث بالرموز البديلة، وSave Page Now وarchive.today.',
+    'ابحث عن التغريدات وحسابات X في Wayback Machine: صيغ الروابط التي تنجح، والبحث بالرمز البديل عن كل منشورات الحساب المؤرشفة، وarchive.today، والبحث بنقرة واحدة.',
   h1: 'كيف تجد التغريدات في Wayback Machine',
   sub: 'قائمة تحقق دقيقة للبحث في Internet Archive عن منشورات X (تويتر) وملفاتها الشخصية المؤرشفة، ونظرة صريحة على مواطن قصوره.',
   primary: 'pdf',
@@ -496,6 +500,8 @@ ${takeaways([
   'تغطية X متفاوتة، وغياب النتيجة لا يعني أن المنشور لم يوجد قط.',
   'قد يفشل Save Page Now مع X، فاحتفظ بنسختك الخاصة لكل ما هو مهم.',
 ])}
+
+${archiveCheck('ar')}
 
 <section>
   <h2>قبل أن تبدأ</h2>

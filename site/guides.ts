@@ -3,7 +3,7 @@
  * Articles, threads and archiving, and point readers to the tool. Facts about X are written
  * "at the time of writing (October 2026)" because X changes these rules often.
  */
-import { privacy, type FAQ, type ExportKey, type SitePage } from './blocks';
+import { archiveCheck, privacy, type FAQ, type ExportKey, type SitePage } from './blocks';
 
 const HUB = '/guides';
 const WHEN = 'at the time of writing (October 2026)';
@@ -47,9 +47,9 @@ const guide = (g: GuideInput): SitePage => ({
 
 const whatAre = guide({
   slug: 'what-are-x-articles',
-  title: 'What Are X Articles? Who Can Publish and How to Save | Xtracticle',
+  title: 'X Articles Explained: What They Are and Who Can Post | Xtracticle',
   description:
-    'X Articles are long-form posts on X (Twitter) with headings, images and lists. Who can publish them, how they differ from threads, and how to save them.',
+    'X Articles are long-form posts on X with headings, images and links. Who can publish them (Premium), how they differ from threads, and how to save one as PDF.',
   h1: 'What Are X Articles?',
   sub: 'X Articles are long-form, formatted posts published directly on X — here is who can write them, how they differ from threads, and how to keep a copy.',
   primary: 'pdf',
@@ -197,9 +197,9 @@ ${privacy('en')}`,
 
 const deleted = guide({
   slug: 'recover-deleted-tweets',
-  title: 'Can You Recover Deleted Tweets? What Actually Works | Xtracticle',
+  title: 'How to Recover Deleted Tweets: 4 Places to Check (2026) | Xtracticle',
   description:
-    'Honest guide to recovering deleted X (Twitter) posts: your data archive, Wayback Machine, archive.today, search cache and why saving early is the real fix.',
+    'Recover deleted X (Twitter) posts: your old data archive, the Wayback Machine, archive.today and screenshots. Paste the link to search the archives in one click.',
   h1: 'Can You Recover Deleted Tweets?',
   sub: 'Sometimes, but rarely from X itself. Here are the options that exist, how reliable each is, and how to avoid needing them.',
   primary: 'zip',
@@ -210,6 +210,8 @@ ${takeaways([
   'Other people\'s deleted posts survive only if someone saved them: the Wayback Machine, archive.today or a screenshot. Coverage is patchy.',
   'The reliable fix is to save important posts and articles while they are live, as PDF or ZIP with images.',
 ])}
+
+${archiveCheck('en')}
 
 <section>
   <h2>The honest answer</h2>
@@ -405,9 +407,9 @@ ${privacy('en')}`,
 
 const seeDeleted = guide({
   slug: 'how-to-see-deleted-tweets',
-  title: 'How to See Deleted Tweets: Realistic Options | Xtracticle',
+  title: 'How to See Deleted Tweets: Search Archives in One Click | Xtracticle',
   description:
-    'How to see deleted tweets from other accounts: archives, search snippets, quote posts and screenshots, plus what never works and how to save posts.',
+    'See someone\'s deleted tweets: paste the post link to search the Wayback Machine and archive.today at once. Plus quote posts, screenshots and what never works.',
   h1: 'How to See Deleted Tweets',
   sub: 'Viewing someone else\'s deleted post is possible only when a copy was made first. Here is where copies tend to exist, and what is a dead end.',
   primary: 'pdf',
@@ -419,6 +421,8 @@ ${takeaways([
   'Sites that promise to "show any deleted tweet" cannot reach data X has removed. Treat them with suspicion.',
   'If a post matters, save it while it is live as a <a href="/tweet-to-pdf">PDF</a> or ZIP.',
 ])}
+
+${archiveCheck('en')}
 
 <section>
   <h2>Your own deleted posts vs someone else's</h2>
@@ -483,9 +487,9 @@ ${privacy('en')}`,
 
 const wayback = guide({
   slug: 'find-tweets-on-wayback-machine',
-  title: 'Find Deleted Tweets on the Wayback Machine | Xtracticle',
+  title: 'Wayback Machine Twitter: Find Archived and Deleted Tweets | Xtracticle',
   description:
-    'Step-by-step guide to finding archived tweets on the Wayback Machine: URL forms to try, calendar, wildcard search, Save Page Now and archive.today.',
+    'Search the Wayback Machine for tweets and X profiles: URL forms that work, a wildcard search for every archived post of an account, archive.today and a one-click lookup.',
   h1: 'How to Find Tweets on the Wayback Machine',
   sub: 'A precise checklist for searching the Internet Archive for archived X (Twitter) posts and profiles, and an honest look at where it falls short.',
   primary: 'pdf',
@@ -497,6 +501,8 @@ ${takeaways([
   'Coverage of X is patchy, and a missing result does not mean the post never existed.',
   'Save Page Now can fail on X, so for anything important keep your own copy as well.',
 ])}
+
+${archiveCheck('en')}
 
 <section>
   <h2>Before you start</h2>

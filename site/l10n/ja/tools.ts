@@ -7,9 +7,9 @@ const unroll: SitePage = {
   path: '/ja/thread-unroll',
   file: 'ja/thread-unroll.html',
   lang: 'ja',
-  title: 'スレッドをまとめて読む｜Xスレッド展開 | Xtracticle',
+  title: 'Xスレッドをまとめて読む｜スレッド展開ツール（bot不要） | Xtracticle',
   description:
-    'Xのスレッドを1ページにまとめて読める無料ツール。botのタグ付けもログインも不要で、PDF・Markdown・EPUBへの保存もできます。',
+    'Xのスレッドのどのポストでも貼り付けるだけで、スレッド全体を1ページで読めます。botへのリプライもログインも不要。PDF・Markdown・EPUBでの保存も無料。',
   h1: 'Twitterスレッドをまとめて読む',
   sub: 'X（旧Twitter）のスレッドを、ひと続きのきれいなページで読めます。スレッド内のどのポストのリンクでもOK。botもログインも不要です。',
   primary: 'md',

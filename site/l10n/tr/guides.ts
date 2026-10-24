@@ -2,7 +2,7 @@
  * Turkish "guide" pages. X'in kuralları sık değiştiği için X ile ilgili bilgiler
  * "bu yazının hazırlandığı sırada (Ekim 2026)" kaydıyla verilir.
  */
-import { privacy, type FAQ, type ExportKey, type SitePage } from '../../blocks';
+import { archiveCheck, privacy, type FAQ, type ExportKey, type SitePage } from '../../blocks';
 
 const HUB = '/tr/rehberler';
 const WHEN = 'bu yazının hazırlandığı sırada (Ekim 2026)';
@@ -227,9 +227,9 @@ ${privacy('tr')}`,
 
 const deleted = guide({
   slug: SLUG.deleted,
-  title: 'Silinen Tweetler Geri Getirilir mi? Ne İşe Yarar | Xtracticle',
+  title: 'Silinen Tweetleri Geri Getirme: Bakılacak 4 Yer (2026) | Xtracticle',
   description:
-    'Silinen X (Twitter) gönderilerini geri getirme rehberi: veri arşiviniz, Wayback Machine, archive.today, arama önbelleği ve erken kaydetmenin neden asıl çözüm olduğu.',
+    'Silinen X (Twitter) gönderilerini geri getirme: eski veri arşiviniz, Wayback Machine, archive.today ve ekran görüntüleri. Linki yapıştırıp arşivlerde tek tıkla arayın.',
   h1: 'Silinen Tweetler Geri Getirilir mi?',
   sub: 'Bazen, ama nadiren X’in kendisinden. Hangi seçeneklerin var olduğu, her birinin ne kadar güvenilir olduğu ve onlara ihtiyaç duymamanın yolu.',
   primary: 'zip',
@@ -240,6 +240,8 @@ ${takeaways([
   'Başkalarının silinmiş gönderileri ancak biri kaydettiyse kalır: Wayback Machine, archive.today veya bir ekran görüntüsü. Kapsam eksiktir.',
   'Güvenilir çözüm, önemli gönderileri ve makaleleri yayındayken PDF veya görselli ZIP olarak kaydetmektir.',
 ])}
+
+${archiveCheck('tr')}
 
 <section>
   <h2>Dürüst cevap</h2>
@@ -435,9 +437,9 @@ ${privacy('tr')}`,
 
 const seeDeleted = guide({
   slug: SLUG.seeDeleted,
-  title: 'Silinen Tweetler Nasıl Görülür? Gerçekçi Seçenekler | Xtracticle',
+  title: 'Silinen Tweetler Nasıl Görülür? Arşivlerde Tek Tıkla Arayın | Xtracticle',
   description:
-    'Başka hesapların silinen tweetlerini görme: arşivler, arama özetleri, alıntı gönderiler ve ekran görüntüleri; neyin hiç işe yaramadığı ve gönderiler nasıl kaydedilir.',
+    'Başkasının silinen tweetlerini görme: gönderi linkini yapıştırıp Wayback Machine ve archive.today’de aynı anda arayın. Alıntılar, ekran görüntüleri ve hiç işe yaramayanlar.',
   h1: 'Silinen Tweetler Nasıl Görülür?',
   sub: 'Başkasının silinmiş gönderisini görmek yalnızca önceden bir kopya alındıysa mümkün. Kopyaların nerede bulunabileceği ve nelerin çıkmaz sokak olduğu burada.',
   primary: 'pdf',
@@ -449,6 +451,8 @@ ${takeaways([
   '“Silinmiş her tweet’i gösteririz” diyen siteler X’in kaldırdığı veriye ulaşamaz. Şüpheyle yaklaşın.',
   'Bir gönderi önemliyse yayındayken <a href="/tr/tweet-pdf">PDF</a> veya ZIP olarak kaydedin.',
 ])}
+
+${archiveCheck('tr')}
 
 <section>
   <h2>Kendi silinen gönderileriniz ve başkasınınkiler</h2>
@@ -513,9 +517,9 @@ ${privacy('tr')}`,
 
 const wayback = guide({
   slug: SLUG.wayback,
-  title: 'Wayback Machine’de Silinen Tweetleri Bulma | Xtracticle',
+  title: 'Wayback Machine Twitter: Arşivlenmiş ve Silinen Tweetleri Bulma | Xtracticle',
   description:
-    'Wayback Machine’de arşivlenmiş tweetleri bulma rehberi: denenecek URL biçimleri, takvim, joker karakterli arama, Save Page Now ve archive.today.',
+    'Wayback Machine’de tweet ve X profili arama: işe yarayan URL biçimleri, bir hesabın tüm arşivlenmiş gönderileri için joker arama, archive.today ve tek tıkla arama.',
   h1: 'Wayback Machine’de Tweet Nasıl Bulunur?',
   sub: 'Internet Archive’da arşivlenmiş X (Twitter) gönderilerini ve profillerini aramak için net bir kontrol listesi ve nerede yetersiz kaldığına dair dürüst bir bakış.',
   primary: 'pdf',
@@ -527,6 +531,8 @@ ${takeaways([
   'X kapsamı eksiktir; sonuç çıkmaması gönderinin hiç var olmadığı anlamına gelmez.',
   'Save Page Now, X’te başarısız olabilir; bu yüzden önemli her şey için kendi kopyanızı da saklayın.',
 ])}
+
+${archiveCheck('tr')}
 
 <section>
   <h2>Başlamadan önce</h2>

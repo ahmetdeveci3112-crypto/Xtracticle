@@ -188,6 +188,55 @@ const PRIVACY: Record<Lang, { h2: string; p: string }> = {
   },
 };
 
+/** Points readers of the deleted-post guides to the lookup built into the tool above. */
+const ARCHIVE_CHECK: Record<Lang, { h2: string; p: string; note: string }> = {
+  en: {
+    h2: 'Quick check: search the archives for one post',
+    p: 'Paste the link of the deleted post (<code>x.com/username/status/…</code>) into the box at the top of this page and press Extract. If X no longer serves it, Xtracticle shows one-click searches for that exact post on the Wayback Machine and archive.today. Paste a profile link (<code>x.com/username</code>) instead to list every archived post of that account on the Wayback Machine.',
+    note: 'A search can come back empty: archives only hold copies someone made before the post was deleted.',
+  },
+  tr: {
+    h2: 'Hızlı kontrol: tek bir gönderiyi arşivlerde arayın',
+    p: 'Silinen gönderinin linkini (<code>x.com/kullanici/status/…</code>) bu sayfanın üstündeki kutuya yapıştırıp Çıkar’a basın. X gönderiyi artık göstermiyorsa Xtracticle, o gönderiyi Wayback Machine’de ve archive.today’de tek tıkla aramanız için linkler gösterir. Bunun yerine bir profil linki (<code>x.com/kullanici</code>) yapıştırırsanız o hesabın Wayback Machine’deki tüm arşivlenmiş gönderilerinin listesine ulaşırsınız.',
+    note: 'Arama boş dönebilir: arşivlerde yalnızca gönderi silinmeden önce birinin aldığı kopyalar bulunur.',
+  },
+  es: {
+    h2: 'Comprobación rápida: busca un post en los archivos',
+    p: 'Pega el enlace del post borrado (<code>x.com/usuario/status/…</code>) en el cuadro de arriba y pulsa Extraer. Si X ya no lo muestra, Xtracticle te ofrece búsquedas de ese post exacto en Wayback Machine y archive.today con un clic. Si pegas un enlace de perfil (<code>x.com/usuario</code>), verás la lista de todos los posts archivados de esa cuenta en Wayback Machine.',
+    note: 'La búsqueda puede no dar resultados: los archivos solo guardan copias que alguien hizo antes de que se borrara el post.',
+  },
+  pt: {
+    h2: 'Verificação rápida: procure um post nos arquivos',
+    p: 'Cole o link do post apagado (<code>x.com/usuario/status/…</code>) na caixa no topo desta página e toque em Extrair. Se o X não mostra mais o post, o Xtracticle oferece buscas por esse post exato na Wayback Machine e no archive.today com um clique. Se colar um link de perfil (<code>x.com/usuario</code>), você vê a lista de todos os posts arquivados dessa conta na Wayback Machine.',
+    note: 'A busca pode voltar vazia: os arquivos só guardam cópias feitas por alguém antes de o post ser apagado.',
+  },
+  ja: {
+    h2: 'すぐ試せる：ポストをアーカイブで検索',
+    p: '削除されたポストのリンク（<code>x.com/ユーザー名/status/…</code>）をこのページ上部の入力欄に貼り付けて「取得」を押してください。Xで表示できなくなっている場合、そのポストをWayback Machineとarchive.todayで検索するリンクがワンクリックで表示されます。プロフィールのリンク（<code>x.com/ユーザー名</code>）を貼り付けると、そのアカウントでWayback Machineに保存されているポストの一覧を開けます。',
+    note: '検索結果が空のこともあります。アーカイブにあるのは、削除される前に誰かが保存したコピーだけです。',
+  },
+  zh: {
+    h2: '快速查询：在存档中搜索某条帖子',
+    p: '把已删除帖子的链接（<code>x.com/用户名/status/…</code>）粘贴到本页顶部的输入框，然后点击“提取”。如果 X 已无法显示该帖子，Xtracticle 会给出一键在 Wayback Machine 和 archive.today 中搜索这条帖子的链接。若粘贴的是个人主页链接（<code>x.com/用户名</code>），则可打开该账号在 Wayback Machine 中所有已存档帖子的列表。',
+    note: '搜索结果可能为空：存档里只有帖子被删除前有人保存过的副本。',
+  },
+  ar: {
+    h2: 'فحص سريع: ابحث عن منشور في الأرشيفات',
+    p: 'الصق رابط المنشور المحذوف (<code>x.com/username/status/…</code>) في المربع أعلى هذه الصفحة واضغط «استخراج». إذا لم يعد X يعرض المنشور، يعرض لك Xtracticle روابط للبحث عن هذا المنشور بالتحديد في Wayback Machine وarchive.today بنقرة واحدة. وإذا لصقت رابط ملف شخصي (<code>x.com/username</code>) فستفتح قائمة بكل منشورات ذلك الحساب المؤرشفة في Wayback Machine.',
+    note: 'قد لا يعثر البحث على شيء: الأرشيفات لا تحفظ إلا النسخ التي التقطها أحدهم قبل حذف المنشور.',
+  },
+};
+
+export function archiveCheck(lang: Lang): string {
+  const c = ARCHIVE_CHECK[lang];
+  return `
+<section>
+  <h2>${c.h2}</h2>
+  <p>${c.p}</p>
+  <p>${c.note}</p>
+</section>`;
+}
+
 export function privacy(lang: Lang): string {
   const c = PRIVACY[lang];
   return `
