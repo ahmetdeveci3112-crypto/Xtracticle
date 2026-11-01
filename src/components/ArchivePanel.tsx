@@ -27,7 +27,7 @@ interface ArchiveResult {
 
 type State = { kind: 'loading' } | { kind: 'failed' } | { kind: 'done'; data: ArchiveResult };
 
-const CLIENT_TIMEOUT_MS = 40_000;
+const CLIENT_TIMEOUT_MS = 60_000;
 const SLOW_AFTER_MS = 8_000;
 
 const rowBtn = 'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium focus-ring btn-secondary whitespace-nowrap';
