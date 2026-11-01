@@ -49,6 +49,9 @@ const ID_RE = /\/status(?:es)?\/(\d{1,25})/;
 const SUBPAGE_RE = /^\/(?:photo\/|video\/|analytics|retweets|likes|quotes)/;
 const PLAIN_RE = /^https?:\/\/[^/?#]+\/[A-Za-z0-9_]{1,15}\/status(?:es)?\/\d{1,25}$/;
 
+/** twitter.com started redirecting to x.com on 17 May 2024. */
+const X_MIGRATION_TS = '20240517';
+const TWITTER_HOST_RE = /^(?:https?:\/\/)?(?:www\.|mobile\.)?twitter\.com/i;
 const FRESH_SECONDS = 6 * 3600;
 const PARTIAL_SECONDS = 30 * 60;
 const STALE_SECONDS = 30 * 24 * 3600;
@@ -104,6 +107,8 @@ export function normalizeCdxRows(
     const m = ID_RE.exec(original);
     if (!m) continue;
     if (SUBPAGE_RE.test(original.slice(m.index + m[0].length))) continue;
+    // Since X moved to x.com, twitter.com captures only hold the "x/migrate" redirect.
+    if (ts >= X_MIGRATION_TS && TWITTER_HOST_RE.test(original)) continue;
     add(byId, { id: m[1], ts, url: original, captures: 1, rank: PLAIN_RE.test(original) ? 0 : 1 });
   }
   return { entries: [...byId.values()], truncated, resumeKey };
@@ -116,9 +121,11 @@ function add(byId: Map<string, ArchiveEntry>, e: ArchiveEntry) {
     return;
   }
   cur.captures += e.captures;
+  // Keep the timestamp and URL of the same capture together, otherwise the
+  // snapshot link points Wayback at a URL it never saved at that time.
   // Older captures usually hold the text; 2020+ captures are often empty JS shells.
-  if (e.ts < cur.ts) cur.ts = e.ts;
-  if (e.rank < cur.rank) {
+  if (e.ts < cur.ts || (e.ts === cur.ts && e.rank < cur.rank)) {
+    cur.ts = e.ts;
     cur.url = e.url;
     cur.rank = e.rank;
   }
@@ -197,9 +204,9 @@ export async function handleArchive(
 
   const h = handle.toLowerCase();
   const cache = edgeCache();
-  const fullKey = `${url.origin}/api/archive-full/${h}`;
-  const staleKey = `${url.origin}/api/archive-stale/${h}`;
-  const failKey = `${url.origin}/api/archive-fail/${h}`;
+  const fullKey = `${url.origin}/api/archive-full/v2/${h}`;
+  const staleKey = `${url.origin}/api/archive-stale/v2/${h}`;
+  const failKey = `${url.origin}/api/archive-fail/v2/${h}`;
 
   const read = async (key: string): Promise<any | null> => {
     if (!cache) return null;
@@ -301,6 +308,18 @@ export async function handleArchive(
   return json(view(handle, snapshot, false), 200, { 'Cache-Control': `public, max-age=${ttl}` });
 }
 
+/**
+ * Posts from before the x.com move: ask Wayback for the twitter.com capture
+ * closest to the post date. Wayback redirects to the nearest one it has, which
+ * is usually the real page; later captures (and any capture we picked from a
+ * truncated CDX listing) are often empty shells or "x/migrate" redirects.
+ */
+function snapshotLink(handle: string, p: { id: string; ts: string; url: string }, date: Date | null): string {
+  const stamp = date ? date.toISOString().replace(/\D/g, '').slice(0, 14) : '';
+  if (stamp && stamp < X_MIGRATION_TS) return waybackSnapshot(stamp, `https://twitter.com/${handle}/status/${p.id}`);
+  return waybackSnapshot(p.ts, p.url);
+}
+
 /** The public response: the first 50 posts with dates and snapshot links. */
 function view(handle: string, s: ArchiveSnapshot, stale: boolean) {
   const posts = s.posts.slice(0, FREE_POSTS).map(p => {
@@ -310,7 +329,7 @@ function view(handle: string, s: ArchiveSnapshot, stale: boolean) {
       ...(d ? { date: d.toISOString() } : {}),
       ts: p.ts,
       url: p.url,
-      snapshot: waybackSnapshot(p.ts, p.url),
+      snapshot: snapshotLink(handle, p, d),
       captures: p.captures,
     };
   });

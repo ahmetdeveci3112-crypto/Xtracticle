@@ -165,7 +165,7 @@ export default function ArchivePanel({
           {data && data.posts.length === 0 && (
             <div className="mt-2 space-y-2">
               <p style={{ color: 'var(--text-secondary)' }}>{t.archiveEmpty}</p>
-              {data.partial && <p style={{ color: 'var(--error-text)' }}>{t.archivePartial}</p>}
+              {data.partial && <p style={{ color: 'var(--text-secondary)' }}>{t.archivePartial}</p>}
               <p>{fallback}</p>
             </div>
           )}
@@ -184,7 +184,7 @@ export default function ArchivePanel({
           {data.partial && (
             <p
               className="mx-4 mb-3 px-3 py-2 rounded-lg flex items-start gap-2"
-              style={{ backgroundColor: 'var(--error-bg)', color: 'var(--error-text)', border: '1px solid var(--error-border)' }}
+              style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
             >
               <Info className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
               <span>{t.archivePartial}</span>
