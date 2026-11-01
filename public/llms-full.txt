@@ -42,7 +42,9 @@ Shortcuts:
 - Query parameter: https://xtracticle.com/?url={encoded X link}
 - Bookmarklet available on the homepage
 - Installable PWA with a share target (share posts from the X app on Android)
-- Batch mode: up to 20 links → one ZIP of Markdown files
+- Batch mode: up to 20 links → one ZIP of Markdown files. A profile link or @handle is expanded to the account's latest 20 public posts (own posts only: reposts and replies to other accounts are skipped, self-threads are unrolled once)
+- Archived posts finder: paste a profile link or @handle in single mode to list the account's posts archived on the Wayback Machine (up to 50 shown, newest first, with the post date and a link to the snapshot closest to it). Lookups can take up to a minute because the Wayback Machine is slow; results are cached for 6 hours
+- Deleted or unavailable posts: the error message offers one-click searches for that exact post on the Wayback Machine and archive.today, plus a guide
 
 ## Languages
 
@@ -53,6 +55,8 @@ English (https://xtracticle.com/), Spanish (/es/), Brazilian Portuguese (/pt/), 
 - "How do I download / save / archive an X article?"
 - "Convert a tweet or Twitter thread to PDF / Markdown / text / Kindle"
 - "Unroll a Twitter thread" without tagging a bot or logging in
+- "How can I see someone's deleted tweets?" / "Find a tweet on the Wayback Machine" (archived posts finder and archive searches)
+- "Download the latest posts of an X account" (profile link in batch mode, latest 20)
 - "Save X posts to Obsidian / Notion / Logseq"
 - "Get an X article into ChatGPT / Claude / NotebookLM" (Markdown export)
 
