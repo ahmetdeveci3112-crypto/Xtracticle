@@ -146,6 +146,8 @@ export default function App() {
   const [showHistory, setShowHistory] = useState(false);
   const [withFrontMatter, setWithFrontMatter] = useState<boolean>(() => load(FM_KEY, true));
   const [mode, setMode] = useState<'single' | 'batch'>('single');
+  /** Text for batch mode to run as soon as it opens (archive panel → "Download latest 20 posts"). */
+  const [batchSeed, setBatchSeed] = useState<BatchSeed | null>(null);
   const [speaking, setSpeaking] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
@@ -546,7 +548,7 @@ export default function App() {
         </div>
 
         {mode === 'batch' ? (
-          <BatchPanel lang={lang} withFrontMatter={withFrontMatter} />
+          <BatchPanel lang={lang} withFrontMatter={withFrontMatter} seed={batchSeed} onSeedUsed={() => setBatchSeed(null)} />
         ) : (
           <>
             {/* Search Form */}
@@ -634,6 +636,10 @@ export default function App() {
                       const input = `https://x.com/${handle}/status/${id}`;
                       setUrl(input);
                       extract(input);
+                    }}
+                    onDownloadLatest={handle => {
+                      setBatchSeed({ text: `@${handle}`, n: Date.now() });
+                      setMode('batch');
                     }}
                   />
                 </Suspense>
@@ -968,33 +974,129 @@ function ObsidianIcon() {
 }
 
 /* ─── Batch mode ─── */
-function BatchPanel({ lang, withFrontMatter }: { lang: Lang; withFrontMatter: boolean }) {
+type ProfileStatus = 'ok' | 'empty' | 'failed';
+/** One profile link (or @handle) of a batch, expanded into its latest posts. */
+interface ProfileNote {
+  handle: string;
+  status: ProfileStatus;
+  count: number;
+}
+/** Opens batch mode with this text and runs it (from the archive panel's download button). */
+export interface BatchSeed {
+  text: string;
+  n: number;
+}
+
+const PROFILE_TIMEOUT_MS = 40_000;
+
+/** The latest own posts of an account (GET /api/profile/:handle/posts) as post links. */
+async function fetchProfilePosts(handle: string): Promise<{ status: ProfileStatus; handle: string; urls: string[] }> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), PROFILE_TIMEOUT_MS);
+  try {
+    const res = await fetch(`/api/profile/${encodeURIComponent(handle)}/posts`, {
+      headers: { 'X-Xt-Client': 'web' },
+      signal: controller.signal,
+    });
+    if (!res.ok) return { status: 'failed', handle, urls: [] };
+    const body: any = await res.json();
+    const urls: string[] = Array.isArray(body?.posts)
+      ? body.posts.map((p: any) => p?.url).filter((u: unknown): u is string => typeof u === 'string')
+      : [];
+    const name = typeof body?.handle === 'string' && body.handle ? body.handle : handle;
+    return { status: urls.length ? 'ok' : 'empty', handle: name, urls };
+  } catch {
+    return { status: 'failed', handle, urls: [] };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function BatchPanel({
+  lang,
+  withFrontMatter,
+  seed,
+  onSeedUsed,
+}: {
+  lang: Lang;
+  withFrontMatter: boolean;
+  seed?: BatchSeed | null;
+  onSeedUsed?: () => void;
+}) {
   const t = translations[lang];
   const locale = langInfo(lang).locale;
   const [text, setText] = useState('');
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState<string | null>(null);
   const [results, setResults] = useState<{ input: string; ok: boolean; title?: string }[]>([]);
+  const [notes, setNotes] = useState<ProfileNote[]>([]);
+  const [limited, setLimited] = useState(false);
+  const seedUsed = useRef(0);
 
-  const run = async () => {
-    const seen = new Set<string>();
-    const jobs = text
-      .split(/\s+/)
-      .map(s => s.trim())
-      .filter(Boolean)
-      .map(input => ({ input, parsed: parseInput(input) }))
-      .filter(j => j.parsed?.kind === 'status' && !seen.has(j.parsed.id) && !!seen.add(j.parsed.id))
-      .slice(0, MAX_BATCH);
-    if (!jobs.length) {
-      setProgress(t.invalidLink);
-      return;
+  const run = async (input: string = text, place: 'batch' | 'archive_panel' = 'batch') => {
+    if (running) return;
+    setResults([]);
+    setNotes([]);
+    setLimited(false);
+    const tokens = input.split(/\s+/).map(s => s.trim()).filter(Boolean);
+
+    // Profile links and @handles: replace each with the account's latest posts.
+    const profiles = new Map<string, string>();
+    for (const token of tokens) {
+      if (parseInput(token)) continue;
+      const shape = classifyInput(token);
+      if (shape.kind === 'profile' && !profiles.has(shape.handle.toLowerCase())) profiles.set(shape.handle.toLowerCase(), shape.handle);
     }
     setRunning(true);
-    setResults([]);
+    let lines = tokens;
+    const found: ProfileNote[] = [];
+    const profileUrls = new Set<string>();
+    if (profiles.size) {
+      const first = [...profiles.values()][0];
+      setProgress(profiles.size === 1 ? t.profileLoading.replace('{handle}', first) : t.working);
+      const keys = [...profiles.keys()];
+      const fetched = await Promise.all(keys.map(k => fetchProfilePosts(profiles.get(k)!)));
+      const byKey = new Map(keys.map((k, i) => [k, fetched[i]]));
+      for (const r of fetched) {
+        found.push({ handle: r.handle, status: r.status, count: r.urls.length });
+        track('profile_posts', { status: r.status, count: r.urls.length, place });
+      }
+      const used = new Set<string>();
+      for (const r of fetched) if (r.status === 'ok') r.urls.forEach(u => profileUrls.add(u));
+      lines = tokens.flatMap(token => {
+        if (parseInput(token)) return [token];
+        const shape = classifyInput(token);
+        if (shape.kind !== 'profile') return [token];
+        const key = shape.handle.toLowerCase();
+        const r = byKey.get(key);
+        if (!r || r.status !== 'ok') return [token];
+        if (used.has(key)) return [];
+        used.add(key);
+        return r.urls;
+      });
+      if (found.some(n => n.status === 'ok')) setText(lines.join('\n'));
+      setNotes(found);
+    }
+    const fromProfile = found.some(n => n.status === 'ok');
+
+    const seen = new Set<string>();
+    const valid = lines
+      .map(line => ({ input: line, parsed: parseInput(line) }))
+      .filter(j => j.parsed?.kind === 'status' && !seen.has(j.parsed.id) && !!seen.add(j.parsed.id))
+      // Links the user pasted themselves go first; profile posts fill the rest.
+      .sort((a, b) => Number(profileUrls.has(a.input)) - Number(profileUrls.has(b.input)));
+    const jobs = valid.slice(0, MAX_BATCH);
+    if (valid.length > MAX_BATCH) setLimited(true);
+    if (!jobs.length) {
+      setProgress(found.length ? null : t.invalidLink);
+      setRunning(false);
+      return;
+    }
     const out: { base: string; markdown: string }[] = [];
     const res: { input: string; ok: boolean; title?: string }[] = [];
     let done = 0;
     let next = 0;
+    setProgress(t.batchProgress(0, jobs.length));
     const worker = async () => {
       while (next < jobs.length) {
         const job = jobs[next++];
@@ -1009,16 +1111,45 @@ function BatchPanel({ lang, withFrontMatter }: { lang: Lang; withFrontMatter: bo
         setProgress(t.batchProgress(++done, jobs.length));
       }
     };
-    await Promise.all([worker(), worker(), worker()]);
-    if (out.length) {
-      const ex = await import('./lib/export');
-      ex.saveBlob(await ex.buildBatchZip(out), `xtracticle-${new Date().toISOString().slice(0, 10)}.zip`);
+    try {
+      await Promise.all([worker(), worker(), worker()]);
+      if (out.length) {
+        const ex = await import('./lib/export');
+        ex.saveBlob(await ex.buildBatchZip(out), `xtracticle-${new Date().toISOString().slice(0, 10)}.zip`);
+      }
+      setResults(res);
+      setProgress(t.batchDone(out.length, jobs.length - out.length));
+    } catch {
+      setProgress(t.exportFailed);
+    } finally {
+      setRunning(false);
     }
-    setResults(res);
-    setProgress(t.batchDone(out.length, jobs.length - out.length));
-    setRunning(false);
-    track('batch_extract', { requested: jobs.length, ok: out.length });
+    track('batch_extract', { requested: jobs.length, ok: out.length, ...(fromProfile ? { source: 'profile' } : {}) });
   };
+
+  // Opened from the archive panel's "Download latest 20 posts": run right away (once per click).
+  useEffect(() => {
+    if (!seed || seedUsed.current === seed.n) return;
+    seedUsed.current = seed.n;
+    setText(seed.text);
+    onSeedUsed?.();
+    run(seed.text, 'archive_panel');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seed?.n]);
+
+  // "@name" is isolated left-to-right so it keeps its order inside Arabic text.
+  const noteText = (n: ProfileNote) => {
+    const msg = n.status === 'ok' ? t.profileExpanded.replace('{n}', String(n.count)) : n.status === 'empty' ? t.profileNoPosts : t.profileFetchFailed;
+    const [before, after = ''] = msg.split('@{handle}');
+    return (
+      <>
+        {before}
+        <bdi dir="ltr">@{n.handle}</bdi>
+        {after}
+      </>
+    );
+  };
+  const expanded = notes.some(n => n.status === 'ok');
 
   return (
     <div className="max-w-2xl mx-auto mb-10 print:hidden">
@@ -1034,7 +1165,7 @@ function BatchPanel({ lang, withFrontMatter }: { lang: Lang; withFrontMatter: bo
       <div className="mt-3 flex items-center gap-3">
         <button
           type="button"
-          onClick={run}
+          onClick={() => run()}
           disabled={running}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm btn-primary focus-ring disabled:opacity-60"
           style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
@@ -1044,14 +1175,33 @@ function BatchPanel({ lang, withFrontMatter }: { lang: Lang; withFrontMatter: bo
         </button>
         {progress && <span className="text-sm" style={{ color: 'var(--text-secondary)' }} aria-live="polite">{progress}</span>}
       </div>
+      {(notes.length > 0 || limited) && (
+        <ul className="mt-4 text-sm space-y-1" aria-live="polite">
+          {notes.map(n => (
+            <li key={n.handle.toLowerCase()} className="flex items-start gap-2" style={{ color: n.status === 'failed' ? 'var(--error-text)' : 'var(--text-secondary)' }}>
+              <Layers className="w-3.5 h-3.5 shrink-0 mt-1" aria-hidden="true" />
+              <span className="min-w-0 break-words">{noteText(n)}</span>
+            </li>
+          ))}
+          {limited && (
+            <li className="flex items-start gap-2" style={{ color: 'var(--text-secondary)' }}>
+              <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-1" aria-hidden="true" />
+              <span className="min-w-0">{t.profileBatchLimit.split('{max}').join(String(MAX_BATCH))}</span>
+            </li>
+          )}
+        </ul>
+      )}
       {results.length > 0 && (
         <ul className="mt-4 text-sm space-y-1">
           {results.map(r => (
             <li key={r.input} className="truncate" style={{ color: r.ok ? 'var(--text-secondary)' : 'var(--error-text)' }}>
-              {r.ok ? '✓' : '✗'} {r.title || r.input}
+              {r.ok ? '✓' : '✗'} <bdi dir="auto">{r.title || r.input}</bdi>
             </li>
           ))}
         </ul>
+      )}
+      {expanded && !running && (
+        <p className="mt-4 text-xs" style={{ color: 'var(--text-tertiary)' }}>{t.profileProTeaser}</p>
       )}
     </div>
   );

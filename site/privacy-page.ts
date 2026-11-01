@@ -36,7 +36,7 @@ export const privacyPage: SitePage = {
   open-source FxTwitter API. To keep the service fast and available, the post data is cached on Cloudflare’s edge network:
   the converted document for up to one hour and a fallback copy for up to seven days. Cached copies are not linked to you and
   expire automatically. Private, protected and deleted posts cannot be fetched at all. When you paste a profile link, we send only the
-  account name to the Internet Archive’s CDX API to list its archived posts; the results are cached for up to 30 days and are not linked to you.</p>
+  account name to the Internet Archive’s CDX API to list its archived posts; the results are cached for up to 30 days and are not linked to you. To list an account’s latest posts for a ZIP download, we fetch its recent public posts through the FxTwitter API; the list is cached for up to 15 minutes and is not linked to you.</p>
 </section>
 
 <section>

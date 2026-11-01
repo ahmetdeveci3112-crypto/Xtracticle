@@ -7,6 +7,7 @@ import { handleApi } from './src/shared/api';
 import { handleArchive } from './src/shared/archive';
 import { handleMarkdown } from './src/shared/markdown';
 import { handleMcp } from './src/shared/mcp';
+import { handleProfile } from './src/shared/profile';
 import { sitePages } from './site/plugin';
 
 /**
@@ -61,6 +62,7 @@ function devApi(): Plugin {
           const response = isMcp
             ? await handleMcp(request)
             : ((await handleArchive(request, undefined, { ARCHIVE_DISABLED: process.env.ARCHIVE_DISABLED, CDX_BASE_URL: process.env.CDX_BASE_URL })) ??
+              (await handleProfile(request, undefined, { PROFILE_DISABLED: process.env.PROFILE_DISABLED })) ??
               (await handleMarkdown(request)) ??
               (await handleApi(request)));
           if (!response) return next();

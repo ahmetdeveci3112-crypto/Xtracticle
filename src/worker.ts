@@ -2,6 +2,7 @@ import { handleApi } from './shared/api';
 import { handleArchive } from './shared/archive';
 import { handleMarkdown } from './shared/markdown';
 import { handleMcp } from './shared/mcp';
+import { handleProfile } from './shared/profile';
 import type { FxTweet } from './shared/fx';
 import { titleFromText } from './shared/text';
 
@@ -17,6 +18,8 @@ export interface Env {
   AGENTS_DISABLED?: string;
   /** Kill switch: set to "1" to turn off /api/archive/:handle (Wayback lookups for a profile link). */
   ARCHIVE_DISABLED?: string;
+  /** Kill switch: set to "1" to turn off /api/profile/:handle/posts (an account's latest posts for the batch ZIP). */
+  PROFILE_DISABLED?: string;
   /** Testing only: replaces https://web.archive.org for the archive finder's CDX requests. */
   CDX_BASE_URL?: string;
 }
@@ -25,7 +28,8 @@ export interface Env {
  * Cloudflare Worker for Xtracticle. Runs before static assets only for the
  * paths listed in wrangler.json `assets.run_worker_first`:
  *   /api/*                     → JSON API (src/shared/api.ts), /api/markdown/:id (src/shared/markdown.ts),
- *                                /api/archive/:handle (src/shared/archive.ts)
+ *                                /api/archive/:handle (src/shared/archive.ts),
+ *                                /api/profile/:handle/posts (src/shared/profile.ts)
  *   /mcp                       → remote MCP server (src/shared/mcp.ts)
  *   /{user}/status/{id}        → app shell with per-post meta tags + preloaded data
  * Everything else is served directly from dist/ (with 404.html for unknown paths).
@@ -52,6 +56,7 @@ export default {
       const waitUntil = (p: Promise<unknown>) => ctx.waitUntil(p);
       const res =
         (await handleArchive(request, waitUntil, env)) ??
+        (await handleProfile(request, waitUntil, env)) ??
         (await handleMarkdown(request, waitUntil)) ??
         (await handleApi(request, waitUntil));
       return (

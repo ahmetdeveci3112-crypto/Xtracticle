@@ -4,7 +4,7 @@
  */
 
 export const USER_AGENT = 'Xtracticle/3.0 (https://xtracticle.com)';
-const FX_BASE = 'https://api.fxtwitter.com';
+export const FX_BASE = 'https://api.fxtwitter.com';
 const MAX_LEGACY_DEPTH = 40;
 
 /**

@@ -324,7 +324,7 @@ const privacyPage: SitePage = {
   red edge de Cloudflare: el documento convertido hasta una hora y una copia de respaldo hasta siete días. Las copias en caché no están
   vinculadas a ti y caducan automáticamente. Los posts privados, protegidos y eliminados no se pueden obtener en absoluto. Cuando pegas un enlace
   de perfil, solo enviamos el nombre de la cuenta a la API CDX de Internet Archive para listar sus posts archivados; los resultados se guardan en caché
-  hasta 30 días y no están vinculados a ti.</p>
+  hasta 30 días y no están vinculados a ti. Para listar los últimos posts de una cuenta y descargarlos en ZIP, obtenemos sus posts públicos recientes a través de la API de FxTwitter; la lista se guarda en caché hasta 15 minutos y no está vinculada a ti.</p>
 </section>
 
 <section>

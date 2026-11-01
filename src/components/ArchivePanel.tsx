@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Archive, ExternalLink, Info, Loader2, RotateCcw, Zap } from 'lucide-react';
+import { Archive, Download, ExternalLink, Info, Loader2, RotateCcw, Zap } from 'lucide-react';
 import type { Strings } from '../i18n';
 import { waybackProfile } from '../shared/url';
 import { track } from '../lib/analytics';
@@ -39,11 +39,14 @@ export default function ArchivePanel({
   t,
   locale,
   onOpenPost,
+  onDownloadLatest,
 }: {
   handle: string;
   t: Strings;
   locale: string;
   onOpenPost: (id: string, handle: string) => void;
+  /** Opens batch mode with this account's latest posts (works without the Wayback list). */
+  onDownloadLatest?: (handle: string) => void;
 }) {
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [slow, setSlow] = useState(false);
@@ -133,6 +136,17 @@ export default function ArchivePanel({
         <Archive className="w-5 h-5 shrink-0 mt-0.5" style={{ color: 'var(--text-secondary)' }} aria-hidden="true" />
         <div className="min-w-0 flex-1">
           <h2 className="font-semibold text-base break-words">{t.archiveTitle.replace('{handle}', handle)}</h2>
+          {onDownloadLatest && (
+            <button
+              type="button"
+              onClick={() => onDownloadLatest(handle)}
+              className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold btn-primary focus-ring"
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+            >
+              <Download className="w-3.5 h-3.5" aria-hidden="true" />
+              {t.profileDownloadLatest}
+            </button>
+          )}
 
           {state.kind === 'loading' && (
             <div className="mt-2 space-y-1" style={{ color: 'var(--text-secondary)' }}>

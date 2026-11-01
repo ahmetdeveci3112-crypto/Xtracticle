@@ -316,7 +316,7 @@ const privacyPt: SitePage = {
   o documento convertido por até uma hora e uma cópia reserva por até sete dias. As cópias em cache não são vinculadas a você e
   expiram automaticamente. Posts privados, protegidos e apagados não podem ser buscados de forma alguma. Quando você cola um link de perfil,
   enviamos apenas o nome da conta à API CDX do Internet Archive para listar os posts arquivados; os resultados ficam em cache por até 30 dias e não
-  são vinculados a você.</p>
+  são vinculados a você. Para listar os últimos posts de uma conta e baixá-los em ZIP, buscamos os posts públicos recentes dela pela API do FxTwitter; a lista fica em cache por até 15 minutos e não é vinculada a você.</p>
 </section>
 
 <section>
