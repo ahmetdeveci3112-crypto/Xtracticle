@@ -313,7 +313,8 @@ const privacyPage: SitePage = {
   <p>Bir link yapıştırdığınızda (ya da bir yapay zekâ asistanı MCP sunucusunu çağırdığında) o <strong>herkese açık</strong> X gönderisini
   açık kaynaklı FxTwitter API’si üzerinden çekeriz. Hizmeti hızlı ve erişilebilir tutmak için gönderi verisi Cloudflare’ın uç ağında önbelleğe alınır:
   dönüştürülmüş belge en fazla bir saat, yedek kopya ise en fazla yedi gün. Önbellekteki kopyalar sizinle ilişkilendirilmez ve
-  kendiliğinden silinir. Gizli, korumalı ve silinmiş gönderiler hiç çekilemez.</p>
+  kendiliğinden silinir. Gizli, korumalı ve silinmiş gönderiler hiç çekilemez. Bir profil linki yapıştırdığınızda arşivlenmiş gönderileri listelemek için
+  Internet Archive’ın CDX API’sine yalnızca hesap adını göndeririz; sonuçlar en fazla 30 gün önbellekte tutulur ve sizinle ilişkilendirilmez.</p>
 </section>
 
 <section>

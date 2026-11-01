@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
 import {
   Download, FileText, AlertCircle, Loader2, FileDown, Moon, Sun, Copy, Check, Share2, Clock, ChevronDown,
-  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages, X, CirclePlay,
+  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages, X, CirclePlay, Coffee,
 } from 'lucide-react';
 import type { FxTweet } from './shared/fx';
 import { translations, LANGS, langInfo, type Lang } from './i18n';
 import { buildDoc, fileBaseName, frontMatter, type XDoc } from './shared/convert';
 import { parseInput, parsePath, shareUrl } from './lib/url';
 import { archiveLinks, classifyInput, waybackProfile } from './shared/url';
+import { coffeeUrl } from './shared/support';
 import { track } from './lib/analytics';
 import { demoVideo } from './shared/demo';
 
@@ -19,6 +20,8 @@ const LazyMarkdown = lazy(() =>
     })
   )
 );
+
+const ArchivePanel = lazy(() => import('./components/ArchivePanel'));
 
 /* ─── Page config (injected per page by the build / Worker) ─── */
 type ExportKey = 'md' | 'pdf' | 'epub' | 'zip' | 'txt' | 'obsidian';
@@ -55,6 +58,9 @@ const HISTORY_KEY = 'xtracticle_history';
 const THEME_KEY = 'xtracticle_theme';
 /** Explicit language choice (selector, banner or a language link) — drives redirects. */
 const LANG_KEY = 'xtracticle_lang';
+const TIP_KEY = 'xtracticle_tip';
+/** After a dismissal or click, the tip stays away this long. */
+const TIP_QUIET_MS = 7 * 24 * 3600 * 1000;
 const BANNER_KEY = 'xtracticle_lang_banner_dismissed';
 const FM_KEY = 'xtracticle_frontmatter';
 const MAX_HISTORY = 20;
@@ -117,7 +123,7 @@ async function fetchThread(id: string, fallbackMsg: string, rateLimitedMsg?: str
 }
 
 /** An error message, optionally with places to look next (archives, a guide). */
-type ErrorInfo = { msg: string; help?: string; links?: { label: string; href: string }[] };
+type ErrorInfo = { msg: string; help?: string; links?: { label: string; href: string; onClick?: () => void }[] };
 
 /* ─── App ─── */
 export default function App() {
@@ -128,9 +134,12 @@ export default function App() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ErrorInfo | null>(null);
+  /** Profile lookup: the account's archived posts. `n` remounts the panel on every new lookup. */
+  const [archive, setArchive] = useState<{ handle: string; n: number } | null>(null);
   const [tweets, setTweets] = useState<FxTweet[] | null>(null);
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
   const [flash, setFlash] = useState<string | null>(null);
+  const [tip, setTip] = useState(false);
   const [busy, setBusy] = useState<ExportKey | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
   const [recent, setRecent] = useState<HistoryItem[]>(() => load(HISTORY_KEY, []));
@@ -203,16 +212,14 @@ export default function App() {
 
   const extract = useCallback(async (input: string, opts: { pushUrl?: boolean } = {}) => {
     setError(null);
+    setArchive(null);
     const parsed = parseInput(input);
     if (!parsed) {
       // Only the shape of the input is tracked, never the input itself.
       const shape = classifyInput(input);
       if (shape.kind === 'profile') {
-        const handle = shape.handle;
-        setError({
-          msg: t.profileLink.replace('{handle}', handle),
-          links: [{ label: t.viewArchivedPosts.replace('{handle}', handle), href: waybackProfile(handle) }],
-        });
+        // Instead of only an error: list the account's archived posts right here.
+        setArchive({ handle: shape.handle, n: Date.now() });
       } else {
         setError({ msg: t.invalidLink });
       }
@@ -238,7 +245,8 @@ export default function App() {
       if (err instanceof ApiError && err.code === 'not_found') {
         const guide = { label: t.deletedGuide, href: t.deletedGuidePath };
         if (parsed.handle) {
-          const archive = archiveLinks(parsed.id, parsed.handle);
+          const handle = parsed.handle;
+          const archive = archiveLinks(parsed.id, handle);
           setError({
             msg: err.message,
             help: t.notFoundHelp,
@@ -246,6 +254,11 @@ export default function App() {
               { label: t.searchWayback, href: archive.wayback },
               { label: t.searchArchiveToday, href: archive.archiveToday },
               guide,
+              {
+                label: t.archiveOtherPosts.replace('{handle}', handle),
+                href: waybackProfile(handle),
+                onClick: () => setArchive({ handle, n: Date.now() }),
+              },
             ],
           });
         } else {
@@ -302,6 +315,7 @@ export default function App() {
         setTweets(null);
         setLoading(false);
         setError(null);
+        setArchive(null);
         setUrl('');
       }
     };
@@ -348,6 +362,11 @@ export default function App() {
           ex.saveBlob(await ex.buildPdf(doc, el, (done, total) => total > 2 && setProgress(`${done}/${total}`)), `${base}.pdf`);
       }
       track('download_done', { format: key, kind: doc.kind, ms: Math.round(performance.now() - started) });
+      // Thank-you line, only after something was actually saved and at most once a week.
+      if (!tip && coffeeUrl('app') && Date.now() - load<number>(TIP_KEY, 0) > TIP_QUIET_MS) {
+        setTip(true);
+        track('tip_view', { format: key });
+      }
     } catch (err) {
       console.error(err);
       const message = String((err as Error)?.message || err).slice(0, 100);
@@ -575,21 +594,49 @@ export default function App() {
                     {error.links && (
                       <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
                         {error.links.map(l => (
-                          <li key={l.href}>
-                            <a
-                              href={l.href}
-                              className="underline underline-offset-2 font-medium focus-ring rounded"
-                              {...(l.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer nofollow' } : {})}
-                              onClick={() => track('error_link', { to: l.href.startsWith('http') ? new URL(l.href).hostname : 'guide' })}
-                            >
-                              {l.label}
-                            </a>
+                          <li key={l.label}>
+                            {l.onClick ? (
+                              <button
+                                type="button"
+                                className="underline underline-offset-2 font-medium focus-ring rounded text-start"
+                                onClick={() => {
+                                  track('error_link', { to: 'archive_list' });
+                                  l.onClick!();
+                                }}
+                              >
+                                {l.label}
+                              </button>
+                            ) : (
+                              <a
+                                href={l.href}
+                                className="underline underline-offset-2 font-medium focus-ring rounded"
+                                {...(l.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer nofollow' } : {})}
+                                onClick={() => track('error_link', { to: l.href.startsWith('http') ? new URL(l.href).hostname : 'guide' })}
+                              >
+                                {l.label}
+                              </a>
+                            )}
                           </li>
                         ))}
                       </ul>
                     )}
                   </div>
                 </div>
+              )}
+              {archive && (
+                <Suspense fallback={null}>
+                  <ArchivePanel
+                    key={`${archive.handle}-${archive.n}`}
+                    handle={archive.handle}
+                    t={t}
+                    locale={locale}
+                    onOpenPost={(id, handle) => {
+                      const input = `https://x.com/${handle}/status/${id}`;
+                      setUrl(input);
+                      extract(input);
+                    }}
+                  />
+                </Suspense>
               )}
             </form>
             <p className="text-center text-xs mb-8 print:hidden" style={{ color: 'var(--text-tertiary)' }}>{t.urlTip}</p>
@@ -636,7 +683,7 @@ export default function App() {
               </div>
             )}
 
-            {!doc && !loading && (
+            {!doc && !loading && !archive && (
               <HeroLoop
                 dark={dark}
                 label={t.watchDemo}
@@ -699,6 +746,40 @@ export default function App() {
                       {exportButton('zip', <Archive className="w-3.5 h-3.5" />, t.zip)}
                       {exportButton('txt', <FileText className="w-3.5 h-3.5" />, t.txt)}
                     </div>
+                    {tip && (
+                      <div className="mt-3 flex items-start gap-2 text-sm rounded-lg px-3 py-2" style={secondaryStyle} role="status">
+                        <Coffee className="w-4 h-4 shrink-0 mt-0.5" style={{ color: 'var(--text-secondary)' }} aria-hidden="true" />
+                        <p className="min-w-0" style={{ color: 'var(--text-secondary)' }}>
+                          {t.tipText}{' '}
+                          <a
+                            href={coffeeUrl('app')}
+                            target="_blank"
+                            rel="noopener"
+                            className="underline underline-offset-2 font-medium focus-ring rounded"
+                            style={{ color: 'var(--text-primary)' }}
+                            onClick={() => {
+                              store(TIP_KEY, Date.now());
+                              track('tip_click', { place: 'after_download' });
+                            }}
+                          >
+                            {t.tipCta}
+                          </a>
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setTip(false);
+                            store(TIP_KEY, Date.now());
+                            track('tip_dismiss');
+                          }}
+                          className="ms-auto shrink-0 p-0.5 rounded focus-ring"
+                          aria-label={t.tipDismiss}
+                          title={t.tipDismiss}
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div>

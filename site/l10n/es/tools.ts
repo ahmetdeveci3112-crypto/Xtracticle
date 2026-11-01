@@ -322,7 +322,9 @@ const privacyPage: SitePage = {
   <p>Cuando pegas un enlace (o un asistente de IA llama al servidor MCP), obtenemos ese post <strong>público</strong> de X a través de la API
   de código abierto FxTwitter. Para que el servicio sea rápido y esté siempre disponible, los datos del post se almacenan en caché en la
   red edge de Cloudflare: el documento convertido hasta una hora y una copia de respaldo hasta siete días. Las copias en caché no están
-  vinculadas a ti y caducan automáticamente. Los posts privados, protegidos y eliminados no se pueden obtener en absoluto.</p>
+  vinculadas a ti y caducan automáticamente. Los posts privados, protegidos y eliminados no se pueden obtener en absoluto. Cuando pegas un enlace
+  de perfil, solo enviamos el nombre de la cuenta a la API CDX de Internet Archive para listar sus posts archivados; los resultados se guardan en caché
+  hasta 30 días y no están vinculados a ti.</p>
 </section>
 
 <section>

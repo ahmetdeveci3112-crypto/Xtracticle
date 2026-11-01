@@ -80,3 +80,12 @@ export function archiveLinks(id: string, handle: string) {
 
 /** Wayback Machine's list of every archived post URL of an account. */
 export const waybackProfile = (handle: string) => `https://web.archive.org/web/*/twitter.com/${handle}/status/*`;
+
+/** A Wayback Machine snapshot link; Wayback redirects to the capture nearest to `ts`. */
+export const waybackSnapshot = (ts: string, original: string) => `https://web.archive.org/web/${ts}/${original}`;
+
+/** Sorts numeric post IDs newest first without BigInt: a longer ID is a larger number. */
+export function compareIdsDesc(a: string, b: string): number {
+  if (a.length !== b.length) return b.length - a.length;
+  return a < b ? 1 : a > b ? -1 : 0;
+}

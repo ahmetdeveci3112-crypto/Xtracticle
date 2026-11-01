@@ -1,3 +1,4 @@
+import { coffeeUrl, sponsorsUrl } from '../src/shared/support';
 import { PAGES, SITE, GITHUB_URL, type Lang, type SitePage } from './pages';
 import { langTag } from './blocks';
 import { latestPicks } from './curated';
@@ -224,6 +225,21 @@ function faqHtml(page: SitePage): string {
 </section>`;
 }
 
+const SUPPORT_LABEL: Record<Lang, string> = {
+  en: 'Buy me a coffee', tr: 'Bir kahve ısmarla', es: 'Invítame a un café', pt: 'Me pague um café',
+  ja: 'コーヒーをおごる', zh: '请我喝杯咖啡', ar: 'ادعمني بفنجان قهوة',
+};
+
+/** Empty until a support account is configured in src/shared/support.ts. */
+function supportLinks(lang: Lang): string {
+  const coffee = coffeeUrl('footer');
+  const sponsors = sponsorsUrl();
+  return (
+    (coffee ? ` · <a href="${coffee}" rel="noopener">☕ ${SUPPORT_LABEL[lang]}</a>` : '') +
+    (sponsors ? ` · <a href="${sponsors}" rel="noopener">GitHub Sponsors</a>` : '')
+  );
+}
+
 function footer(page: SitePage): string {
   const tools = PAGES.filter(p => p.lang === page.lang && p.nav && !p.noindex).map(
     p => `<a href="${p.path}"${p.id === page.id ? ' aria-current="page"' : ''}>${esc(p.nav)}</a>`,
@@ -241,7 +257,7 @@ function footer(page: SitePage): string {
   <nav aria-label="Tools">${tools.join('')}</nav>
   <nav aria-label="Languages">${languages.join('')}</nav>
   <p>${tagline}</p>
-  <p>${built} <a href="https://x.com/DvciAhmet" rel="noopener">@DvciAhmet</a> · <a href="${GITHUB_URL}" rel="noopener">GitHub</a> · <a href="https://www.producthunt.com/posts/xtracticle" rel="noopener">Product Hunt</a> · <a href="/llms.txt">llms.txt</a></p>
+  <p>${built} <a href="https://x.com/DvciAhmet" rel="noopener">@DvciAhmet</a> · <a href="${GITHUB_URL}" rel="noopener">GitHub</a> · <a href="https://www.producthunt.com/posts/xtracticle" rel="noopener">Product Hunt</a> · <a href="/llms.txt">llms.txt</a>${supportLinks(page.lang)}</p>
   <p>${disclaimer}</p>
 </footer>`;
 }

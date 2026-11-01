@@ -1,4 +1,5 @@
 import { handleApi } from './shared/api';
+import { handleArchive } from './shared/archive';
 import { handleMarkdown } from './shared/markdown';
 import { handleMcp } from './shared/mcp';
 import type { FxTweet } from './shared/fx';
@@ -14,12 +15,17 @@ export interface Env {
   AGENT_GLOBAL_LIMITER?: RateLimit;
   /** Kill switch: set to "1" in the Cloudflare dashboard (Workers → Settings → Variables) to turn off /mcp and /api/markdown. */
   AGENTS_DISABLED?: string;
+  /** Kill switch: set to "1" to turn off /api/archive/:handle (Wayback lookups for a profile link). */
+  ARCHIVE_DISABLED?: string;
+  /** Testing only: replaces https://web.archive.org for the archive finder's CDX requests. */
+  CDX_BASE_URL?: string;
 }
 
 /**
  * Cloudflare Worker for Xtracticle. Runs before static assets only for the
  * paths listed in wrangler.json `assets.run_worker_first`:
- *   /api/*                     → JSON API (src/shared/api.ts), /api/markdown/:id (src/shared/markdown.ts)
+ *   /api/*                     → JSON API (src/shared/api.ts), /api/markdown/:id (src/shared/markdown.ts),
+ *                                /api/archive/:handle (src/shared/archive.ts)
  *   /mcp                       → remote MCP server (src/shared/mcp.ts)
  *   /{user}/status/{id}        → app shell with per-post meta tags + preloaded data
  * Everything else is served directly from dist/ (with 404.html for unknown paths).
@@ -44,7 +50,10 @@ export default {
     if (url.pathname.startsWith('/api/')) {
       if (!isMarkdownApi && (await rateLimited(request, env))) return tooManyRequests();
       const waitUntil = (p: Promise<unknown>) => ctx.waitUntil(p);
-      const res = (await handleMarkdown(request, waitUntil)) ?? (await handleApi(request, waitUntil));
+      const res =
+        (await handleArchive(request, waitUntil, env)) ??
+        (await handleMarkdown(request, waitUntil)) ??
+        (await handleApi(request, waitUntil));
       return (
         res ??
         new Response(JSON.stringify({ error: 'Not found.' }), {

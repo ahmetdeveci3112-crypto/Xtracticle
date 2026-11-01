@@ -314,7 +314,9 @@ const privacyPt: SitePage = {
   <p>Quando você cola um link (ou um assistente de IA chama o servidor MCP), buscamos esse post <strong>público</strong> do X pela API
   de código aberto do FxTwitter. Para manter o serviço rápido e disponível, os dados do post ficam em cache na rede de borda da Cloudflare:
   o documento convertido por até uma hora e uma cópia reserva por até sete dias. As cópias em cache não são vinculadas a você e
-  expiram automaticamente. Posts privados, protegidos e apagados não podem ser buscados de forma alguma.</p>
+  expiram automaticamente. Posts privados, protegidos e apagados não podem ser buscados de forma alguma. Quando você cola um link de perfil,
+  enviamos apenas o nome da conta à API CDX do Internet Archive para listar os posts arquivados; os resultados ficam em cache por até 30 dias e não
+  são vinculados a você.</p>
 </section>
 
 <section>
