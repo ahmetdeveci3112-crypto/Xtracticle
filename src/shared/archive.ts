@@ -52,7 +52,7 @@ const PLAIN_RE = /^https?:\/\/[^/?#]+\/[A-Za-z0-9_]{1,15}\/status(?:es)?\/\d{1,2
 const FRESH_SECONDS = 6 * 3600;
 const PARTIAL_SECONDS = 30 * 60;
 const STALE_SECONDS = 30 * 24 * 3600;
-const FAIL_SECONDS = 5 * 60;
+const FAIL_SECONDS = 60;
 const CDX_TIMEOUT_MS = 45_000;
 const RETRY_DELAY_MS = 2_000;
 const RETRY_BEFORE_MS = 12_000;
@@ -211,11 +211,6 @@ export async function handleArchive(
       return null;
     }
   };
-  const put = async (puts: Promise<unknown>[]) => {
-    const all = Promise.all(puts).catch(() => {});
-    if (waitUntil) waitUntil(all);
-    else await all;
-  };
   const serveStale = async (sources: Record<string, SourceStatus>): Promise<Response | null> => {
     const stale: ArchiveSnapshot | null = await read(staleKey);
     if (!stale) return null;
@@ -229,71 +224,80 @@ export async function handleArchive(
     return json(view(handle, fresh, false), 200, { 'Cache-Control': `public, max-age=${Math.max(60, ttl - age)}` });
   }
 
-  // A recent failure: don't ask CDX again for 5 minutes.
+  // A recent failure: don't ask CDX again for a minute.
   const failed: { sources: Record<string, SourceStatus> } | null = await read(failKey);
   if (failed) {
     return (await serveStale(failed.sources)) ?? json({ error: 'upstream', sources: failed.sources }, 502, { 'Cache-Control': 'no-store' });
   }
 
-  /* Fetch all hosts in parallel. */
-  const started = Date.now();
-  const base = (env.CDX_BASE_URL || 'https://web.archive.org').replace(/\/+$/, '');
-  const settled = await Promise.allSettled(HOSTS.map(host => queryHost(base, host, handle, started)));
+  /*
+   * Fetch all hosts in parallel. CDX can take close to a minute, longer than
+   * people wait, so the lookup runs under waitUntil: it still finishes and
+   * fills the cache after the visitor gives up, and "Try again" is instant.
+   */
+  const refresh = async (): Promise<{ sources: Record<string, SourceStatus>; snapshot: ArchiveSnapshot | null }> => {
+    const started = Date.now();
+    const base = (env.CDX_BASE_URL || 'https://web.archive.org').replace(/\/+$/, '');
+    const settled = await Promise.allSettled(HOSTS.map(host => queryHost(base, host, handle, started)));
 
-  const sources: Record<string, SourceStatus> = {};
-  const lists: ArchiveEntry[][] = [];
-  const resumeKeys: Record<string, string> = {};
-  let truncated = false;
-  settled.forEach((r, i) => {
-    const host = HOSTS[i];
-    const value = r.status === 'fulfilled' ? r.value : { status: 'error' as SourceStatus };
-    sources[host] = value.status;
-    if (value.status !== 'ok') return;
-    const norm = normalizeCdxRows(value.rows, host);
-    lists.push(norm.entries);
-    if (norm.truncated) truncated = true;
-    if (norm.resumeKey) resumeKeys[host] = norm.resumeKey;
-  });
-  const okCount = lists.length;
-  const ms = Date.now() - started;
+    const sources: Record<string, SourceStatus> = {};
+    const lists: ArchiveEntry[][] = [];
+    const resumeKeys: Record<string, string> = {};
+    let truncated = false;
+    settled.forEach((r, i) => {
+      const host = HOSTS[i];
+      const value = r.status === 'fulfilled' ? r.value : { status: 'error' as SourceStatus };
+      sources[host] = value.status;
+      if (value.status !== 'ok') return;
+      const norm = normalizeCdxRows(value.rows, host);
+      lists.push(norm.entries);
+      if (norm.truncated) truncated = true;
+      if (norm.resumeKey) resumeKeys[host] = norm.resumeKey;
+    });
+    const okCount = lists.length;
+    const ms = Date.now() - started;
 
-  if (okCount === 0) {
-    console.log(JSON.stringify({ archive: 1, ok: false, total: 0, ms, sources }));
-    const stale = await serveStale(sources);
-    await put(
-      cache
-        ? [cache.put(failKey, json({ sources }, 200, { 'Cache-Control': `public, max-age=${FAIL_SECONDS}` }))]
-        : [],
-    );
-    return stale ?? json({ error: 'upstream', sources }, 502, { 'Cache-Control': 'no-store' });
-  }
-
-  const merged = mergeHosts(lists);
-  const partial = okCount < HOSTS.length;
-  const snapshot: ArchiveSnapshot = {
-    posts: merged.slice(0, MAX_POSTS).map(e => ({ id: e.id, ts: e.ts, url: e.url, captures: e.captures })),
-    total: merged.length,
-    truncated: truncated || merged.length > MAX_POSTS,
-    partial,
-    sources,
-    resumeKeys,
-    fetchedAt: new Date().toISOString(),
-  };
-  console.log(JSON.stringify({ archive: 1, ok: true, total: snapshot.total, ms, sources }));
-
-  const ttl = partial ? PARTIAL_SECONDS : FRESH_SECONDS;
-  if (cache) {
-    const body = JSON.stringify(snapshot);
-    const puts: Promise<unknown>[] = [
-      cache.put(fullKey, new Response(body, { headers: { ...JSON_HEADERS, 'Cache-Control': `public, max-age=${ttl}` } })),
-    ];
-    // A partial list only replaces the 30-day copy when there is none yet.
-    const keepStale = partial && (await cache.match(staleKey));
-    if (!keepStale) {
-      puts.push(cache.put(staleKey, new Response(body, { headers: { ...JSON_HEADERS, 'Cache-Control': `public, max-age=${STALE_SECONDS}` } })));
+    if (okCount === 0) {
+      console.log(JSON.stringify({ archive: 1, ok: false, total: 0, ms, sources }));
+      if (cache) await cache.put(failKey, json({ sources }, 200, { 'Cache-Control': `public, max-age=${FAIL_SECONDS}` }));
+      return { sources, snapshot: null };
     }
-    await put(puts);
+
+    const merged = mergeHosts(lists);
+    const partial = okCount < HOSTS.length;
+    const snapshot: ArchiveSnapshot = {
+      posts: merged.slice(0, MAX_POSTS).map(e => ({ id: e.id, ts: e.ts, url: e.url, captures: e.captures })),
+      total: merged.length,
+      truncated: truncated || merged.length > MAX_POSTS,
+      partial,
+      sources,
+      resumeKeys,
+      fetchedAt: new Date().toISOString(),
+    };
+    console.log(JSON.stringify({ archive: 1, ok: true, total: snapshot.total, ms, sources }));
+
+    const ttl = partial ? PARTIAL_SECONDS : FRESH_SECONDS;
+    if (cache) {
+      const body = JSON.stringify(snapshot);
+      const puts: Promise<unknown>[] = [
+        cache.put(fullKey, new Response(body, { headers: { ...JSON_HEADERS, 'Cache-Control': `public, max-age=${ttl}` } })),
+      ];
+      // A partial list only replaces the 30-day copy when there is none yet.
+      const keepStale = partial && (await cache.match(staleKey));
+      if (!keepStale) {
+        puts.push(cache.put(staleKey, new Response(body, { headers: { ...JSON_HEADERS, 'Cache-Control': `public, max-age=${STALE_SECONDS}` } })));
+      }
+      await Promise.all(puts);
+    }
+    return { sources, snapshot };
+  };
+  const work = refresh();
+  if (waitUntil) waitUntil(work.catch(() => {}));
+  const { sources, snapshot } = await work;
+  if (!snapshot) {
+    return (await serveStale(sources)) ?? json({ error: 'upstream', sources }, 502, { 'Cache-Control': 'no-store' });
   }
+  const ttl = snapshot.partial ? PARTIAL_SECONDS : FRESH_SECONDS;
   return json(view(handle, snapshot, false), 200, { 'Cache-Control': `public, max-age=${ttl}` });
 }
 
