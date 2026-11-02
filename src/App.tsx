@@ -224,10 +224,11 @@ export default function App() {
       if (shape.kind === 'profile') {
         // Instead of only an error: list the account's archived posts right here.
         setArchive({ handle: shape.handle, n: Date.now() });
+        track('profile_input', { input: 'profile' });
       } else {
         setError({ msg: t.invalidLink });
+        track('extract_error', { reason: 'invalid_link', input: shape.kind });
       }
-      track('extract_error', { reason: 'invalid_link', input: shape.kind });
       return;
     }
     if (parsed.kind === 'article-link') {

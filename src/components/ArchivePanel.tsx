@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Archive, Download, ExternalLink, Info, Loader2, RotateCcw, Zap } from 'lucide-react';
+import { Archive, Check, Download, ExternalLink, Info, Loader2, RotateCcw, Zap } from 'lucide-react';
 import type { Strings } from '../i18n';
 import { waybackProfile } from '../shared/url';
 import { track } from '../lib/analytics';
@@ -34,6 +34,11 @@ const rowBtn = 'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-x
 const rowBtnStyle = { backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)', color: 'var(--text-primary)' };
 const linkClass = 'underline underline-offset-2 font-medium focus-ring rounded';
 
+const PRO_INTEREST_KEY = 'xt_pro_interest';
+function readProInterest(): boolean {
+  try { return localStorage.getItem(PRO_INTEREST_KEY) === '1'; } catch { return false; }
+}
+
 export default function ArchivePanel({
   handle,
   t,
@@ -52,6 +57,7 @@ export default function ArchivePanel({
   const [slow, setSlow] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const teaserTracked = useRef(false);
+  const [proInterest, setProInterest] = useState(readProInterest);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -250,7 +256,28 @@ export default function ArchivePanel({
           {(showTeaser || data.stale) && (
             <div className="p-4 space-y-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
               {showTeaser && (
-                <p>{t.archiveProTeaser.replace('{n}', `${data.total.toLocaleString(locale)}${data.truncated ? '+' : ''}`)}</p>
+                <div className="space-y-2">
+                  <p>{t.archiveProTeaser.replace('{n}', `${data.total.toLocaleString(locale)}${data.truncated ? '+' : ''}`)}</p>
+                  {proInterest ? (
+                    <p className="flex items-start gap-1.5" style={{ color: 'var(--text-secondary)' }}>
+                      <Check className="w-3.5 h-3.5 shrink-0 mt-px" aria-hidden="true" />
+                      <span>{t.proInterestThanks}</span>
+                    </p>
+                  ) : (
+                    <button
+                      type="button"
+                      className={rowBtn}
+                      style={rowBtnStyle}
+                      onClick={() => {
+                        track('pro_interest', { feature: 'archive', place: 'archive_panel' });
+                        try { localStorage.setItem(PRO_INTEREST_KEY, '1'); } catch { /* ignore */ }
+                        setProInterest(true);
+                      }}
+                    >
+                      {t.proInterestButton}
+                    </button>
+                  )}
+                </div>
               )}
               {data.stale && (
                 <p>{t.archiveStale.replace('{date}', new Date(data.fetchedAt).toLocaleDateString(locale))}</p>
