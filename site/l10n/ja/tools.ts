@@ -1,4 +1,4 @@
-/** Japanese: unroll, tweet to PDF, MCP server and privacy pages. */
+/** Japanese: unroll, tweet to PDF, deleted tweet finder, MCP server and privacy pages. */
 import { GITHUB, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
 
 const unroll: SitePage = {
@@ -348,4 +348,95 @@ const privacyPage: SitePage = {
   faq: [],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, mcp, privacyPage];
+/* ─── 削除されたツイートを探す ─── */
+
+const deletedFinder: SitePage = {
+  id: 'ja-deleted-finder',
+  group: 'deleted-finder',
+  path: '/ja/deleted-tweet-finder',
+  file: 'ja/deleted-tweet-finder.html',
+  lang: 'ja',
+  title: '削除されたツイートを探す｜Xの消えたポストを見る方法 | Xtracticle',
+  description:
+    'プロフィールのリンクか@ユーザー名を貼るだけで、そのアカウントのポストをWayback Machineの保存記録から探します。削除済みのポストも対象。無料・ログイン不要。',
+  h1: '削除されたツイートを探す',
+  sub: 'X（旧Twitter）のプロフィールのリンクか@ユーザー名を貼り付けてください（ポストのリンクではありません）。そのアカウントのポストのうち、Wayback Machineに保存されているものを一覧にします。',
+  primary: 'md',
+  nav: '削除ツイート検索',
+  sections: `
+<section>
+  <p><strong>Xtracticleの削除ツイート検索は、あるアカウントのポストをWayback Machineから探すツールです。</strong>@ユーザー名を入力するか
+  プロフィールのリンクを貼り付けると、Internet Archiveに保存されたそのアカウントのポストが新しい順に並び、それぞれのスナップショットへのリンクが付きます。
+  誰かが保存したあとでXから削除されたポストなら、そのスナップショットで内容をもう一度見られます。無料で、アカウント登録も不要です。</p>
+  <h2>3ステップで削除されたツイートを探す</h2>
+  ${steps([
+    '<strong>アカウントを指定：</strong><code>@ユーザー名</code>を入力するか、プロフィールのリンク（<code>x.com/ユーザー名</code>）を貼り付けます。個別のポストのリンクではなく、プロフィールを使ってください。',
+    '<strong>「取得」を押す：</strong>XtracticleがWayback Machineに、そのアカウントの保存済みポストをすべて問い合わせます。アーカイブの応答が遅いため、最大1分ほどかかることがあります。',
+    '<strong>スナップショットを開く：</strong>保存済みのポストが最大50件、新しい順に日付付きで表示されます。<em>「スナップショットを開く」</em>で保存されたコピーを、<em>「Xで取得を試す」</em>でそのポストがまだXにあるかを確認できます。',
+  ])}
+</section>
+
+<section>
+  <h2>見つかるもの・見つからないもの</h2>
+  <p>削除されたポストを見られるのは、消える前に誰かがコピーを残していた場合だけです。このツールが探すのはWayback Machineのスナップショットという
+  1種類のコピーで、できないことも正直にお伝えします。</p>
+  <ul>
+    <li><strong>保存済みのポストは見つかります。</strong>Wayback Machineに記録されたそのアカウントのポストは、まだ公開中でも、あとで削除されていても一覧に出ます。</li>
+    <li><strong>誰も保存していないポストは見つかりません。</strong>保存される前に削除されたポストは失われています。Xがもう配信していないため、どのツールでも復元できません。</li>
+    <li><strong>どれが削除済みかは表示されません。</strong>Xがそれを公開していないためです。<em>「Xで取得を試す」</em>を押して、開けばまだ公開中、見つからなければ削除済みか非公開になっています。</li>
+    <li><strong>鍵アカウントは読めません。</strong>非公開のポストは一度も公開されていないので、通常はアーカイブにもありません。</li>
+    <li><strong>スナップショットの中身はまちまちです。</strong>古いものはたいてい本文が残っていますが、2020年以降のものは空のXページしか写っていないことがあります。</li>
+    <li><strong>投稿の多いアカウントは一部だけ表示されます。</strong>表示されるのは新しい順に50件で、総数は一覧の上に表示されます。</li>
+  </ul>
+  <p>アカウントがまだ公開中なら、同じパネルの<em>「最新20件のポストをダウンロード（ZIP）」</em>も使えます。そのアカウントの最新の公開ポスト20件を、
+  消える前にMarkdownファイルとして保存できます。あとで確実に見返すには、自分でコピーを持っておくのがいちばんです。</p>
+</section>
+
+<section>
+  <h2>特定の1件を探したいとき</h2>
+  <p>ポストそのもののリンク（<code>x.com/ユーザー名/status/…</code>）がわかるなら、そちらを貼り付けてください。Xで表示できなくなっている場合、
+  そのポストをWayback Machineとarchive.todayで検索するリンクと、同じアカウントのほかの保存済みポストを開くボタンがワンクリックで表示されます。
+  それでも見つからないことはあります。アーカイブにあるのは、削除される前に誰かが保存したコピーだけです。手作業での探し方は
+  <a href="/ja/guides/find-tweets-on-wayback-machine">Wayback Machineガイド</a>で詳しく説明しています。</p>
+</section>
+
+<section>
+  <h2>無料の検索と有料の削除ツイート監視サービスの違い</h2>
+  <p>TrackTweetsのような有料サービスは、アカウントを監視し、監視を始めた日以降に削除されたポストのコピーを残します。
+  このページとは答える問いが違い、料金もアカウント単位でかかります。</p>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle</th><th>有料の監視サービス</th></tr></thead>
+    <tbody>
+      <tr><td>見つかるもの</td><td>過去に保存されたポスト（調べる前に削除されたものも含む）</td><td>監視を始めたあとに削除されたポスト</td></tr>
+      <tr><td>料金</td><td>無料</td><td>1アカウントあたり月額約9ドル（TrackTweets、執筆時点）</td></tr>
+      <tr><td>アカウント</td><td>ログインも連携も不要</td><td>登録とサブスクリプションが必要</td></tr>
+      <tr><td>向いている用途</td><td>あるアカウントの過去の投稿を一度確かめる</td><td>特定のアカウントを継続的に見張る</td></tr>
+    </tbody>
+  </table></div>
+  <p>Xtracticle Proでは、新しい50件だけでなく保存済みポストの全件表示、CSV書き出し、アカウント監視を提供する予定です。それまでは、単発の検索は無料のままです。</p>
+</section>
+
+<section>
+  <h2>あわせて読みたい</h2>
+  <ul>
+    <li><a href="/ja/guides/how-to-see-deleted-tweets">削除されたツイートを見る方法</a>：コピーが残っていそうな場所と、効果のない方法。</li>
+    <li><a href="/ja/guides/recover-deleted-tweets">削除されたツイートは復元できる？</a>：自分のポスト、Xのデータアーカイブ、そしてその限界。</li>
+    <li><a href="/ja/guides/find-tweets-on-wayback-machine">Wayback Machineでツイートを探す方法</a>：手作業での検索とワイルドカードURL。</li>
+  </ul>
+  <p>まだ公開中のポストやスレッドを保存するなら、<a href="/ja/">トップページ</a>のツールを使うか、
+  <a href="/ja/thread-unroll">スレッドをまとめて読む</a>で1ページにして読むか、<a href="/ja/x-thread-pdf">スレッドをPDFで保存</a>や
+  <a href="/ja/tweet-pdf">ツイートをPDFで保存</a>でファイルとして残せます。</p>
+</section>
+
+${privacy('ja')}`,
+  faq: [
+    { q: '他人の削除されたツイートを見るには？', a: '@ユーザー名を入力するかプロフィールのリンクをXtracticleに貼り付けて「取得」を押します。そのアカウントのポストのうちWayback Machineに保存されているものが、スナップショットへのリンク付きで一覧になります。削除されたポストが出てくるのは、削除前に誰かが保存していた場合だけです。' },
+    { q: '一度も保存されていない削除済みツイートも見られますか？', a: 'いいえ。ポストが削除されると、Xはそれを配信しなくなります。事前に誰も保存していなければ、どのツールでも見られるコピーは残っていません。' },
+    { q: 'どのツイートが削除されたか一覧でわかりますか？', a: 'いいえ。Xは削除の情報を公開していません。各行の「Xで取得を試す」を押し、開けばまだ公開中、見つからなければ削除済みか非公開です。' },
+    { q: '削除ツイート検索は無料ですか？', a: 'はい。無料でログイン不要、Xアカウントの連携を求めることもありません。' },
+    { q: '特定の削除されたポストを1件だけ探せますか？', a: 'はい。プロフィールの代わりにポストのリンクを貼り付けてください。Xで表示できない場合、そのポストをWayback Machineとarchive.todayで検索するリンクがワンクリックで表示されます。' },
+    { q: '鍵アカウントでも使えますか？', a: 'いいえ。非公開のポストは一度も公開されていないため読めず、通常はアーカイブにもありません。' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, mcp, privacyPage];

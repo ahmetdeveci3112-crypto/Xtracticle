@@ -10,6 +10,7 @@
 - [Twitter Thread to PDF](https://xtracticle.com/x-thread-to-pdf): Unroll a whole thread from any of its posts into one document
 - [Unroll Twitter Thread](https://xtracticle.com/unroll-twitter-thread): Read any X thread as one clean page from any of its posts, no bot to tag
 - [Tweet to PDF](https://xtracticle.com/tweet-to-pdf): Save a single X post with photos, quoted post, author and date as PDF
+- [Deleted Tweet Finder](https://xtracticle.com/deleted-tweet-finder): Paste a profile link or @handle to list that account's posts archived on the Wayback Machine, including deleted ones
 - [X Article to EPUB & Kindle](https://xtracticle.com/x-article-to-epub): EPUB 3 e-book for Kindle (Send to Kindle), Kobo, Apple Books
 - [Save X Articles to Obsidian](https://xtracticle.com/save-x-articles-to-obsidian): One-click Obsidian note with properties
 - [Thread Reader App alternative](https://xtracticle.com/thread-reader-app-alternative): Free comparison — PDF, Markdown and X Articles support

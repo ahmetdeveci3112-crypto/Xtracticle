@@ -1,6 +1,7 @@
 /**
- * Extra English landing pages: "unroll twitter thread" (read-first intent) and
- * "tweet to pdf" (single-post intent). Same structure as the pages in pages.ts.
+ * Extra English landing pages: "unroll twitter thread" (read-first intent),
+ * "tweet to pdf" (single-post intent) and "deleted tweet finder" (profile → archived posts).
+ * Same structure as the pages in pages.ts.
  */
 
 import { privacy, samplePdfFigure, shortcuts, steps, type SitePage } from './blocks';
@@ -96,7 +97,7 @@ const tweetpdf: SitePage = {
   path: '/tweet-to-pdf',
   file: 'tweet-to-pdf.html',
   lang: 'en',
-  title: 'Tweet to PDF — Save Any X Post as PDF | Xtracticle',
+  title: 'Tweet to PDF: Free X Post Downloader, No Login | Xtracticle',
   description:
     'Save any tweet or X post as a clean A4 PDF with photos, quoted post, date and source link. Free, no login, no watermark — works on iPhone and Android.',
   h1: 'Tweet to PDF',
@@ -176,4 +177,94 @@ ${privacy('en')}`,
   ],
 };
 
-export const TOOL_PAGES_EN: SitePage[] = [unroll, tweetpdf];
+const deletedFinder: SitePage = {
+  id: 'deleted-finder',
+  group: 'deleted-finder',
+  path: '/deleted-tweet-finder',
+  file: 'deleted-tweet-finder.html',
+  lang: 'en',
+  title: 'Deleted Tweet Finder: See Deleted Tweets, Free | Xtracticle',
+  description:
+    'Paste a profile link or @handle and we search the Wayback Machine for snapshots of that account’s posts, including deleted ones. Free, no login.',
+  h1: 'Deleted Tweet Finder',
+  sub: 'Paste an X (Twitter) profile link or @username, not a post link, to list the archived copies of that account’s posts on the Wayback Machine.',
+  primary: 'md',
+  nav: 'Deleted Tweet Finder',
+  sections: `
+<section>
+  <p><strong>Xtracticle’s deleted tweet finder searches the Wayback Machine for an account’s posts.</strong> Type an @username or paste a
+  profile link and you get the posts of that account that the Internet Archive captured, newest first, each with a link to its
+  snapshot. If a post was deleted from X after someone archived it, the snapshot is how you see it again. It’s free and needs no account.</p>
+  <h2>Find deleted tweets in three steps</h2>
+  ${steps([
+    '<strong>Enter the account</strong>: type <code>@username</code> or paste the profile link (<code>x.com/username</code>). Use the profile, not a single post link.',
+    '<strong>Press Extract.</strong> Xtracticle asks the Wayback Machine for every post of that account it has captured. The archive is slow, so this can take up to a minute.',
+    '<strong>Open a snapshot.</strong> The list shows up to 50 archived posts, newest first, with their dates. <em>Open snapshot</em> shows the archived copy; <em>Try live post</em> checks whether the post is still on X.',
+  ])}
+</section>
+
+<section>
+  <h2>What it can find, and what it can’t</h2>
+  <p>A deleted post can only be seen if a copy was made before it disappeared. This tool looks for one kind of copy, Wayback Machine snapshots, and is
+  honest about the gaps:</p>
+  <ul>
+    <li><strong>It finds archived posts.</strong> Any post of the account that the Wayback Machine captured, whether it is still online or was deleted later.</li>
+    <li><strong>It can’t find posts nobody archived.</strong> A post deleted before anyone saved it is gone. No tool can bring it back, because X no longer serves it.</li>
+    <li><strong>It doesn’t mark which posts were deleted.</strong> X doesn’t say. Use <em>Try live post</em>: if the post opens, it is still online; if it comes back as not found, it was deleted or the account went private.</li>
+    <li><strong>Private accounts can’t be read.</strong> Protected posts were never public, so archives normally have nothing either.</li>
+    <li><strong>Snapshots vary.</strong> Older snapshots usually contain the text. Snapshots from 2020 onward sometimes show an empty X page.</li>
+    <li><strong>Busy accounts are trimmed.</strong> The list shows the newest 50 archived posts; the total count is shown above it.</li>
+  </ul>
+  <p>For an account that is still live, the same panel has a <em>Download latest 20 posts (ZIP)</em> button. It saves the account’s 20 most recent
+  public posts as Markdown files while they are still online, which is the only reliable way to keep a post for later.</p>
+</section>
+
+<section>
+  <h2>Looking for one deleted post?</h2>
+  <p>If you have the link of the post itself (<code>x.com/username/status/…</code>), paste that instead. When X no longer serves the post,
+  Xtracticle shows one-click searches for that exact post on the Wayback Machine and on archive.today, plus a shortcut to the account’s other
+  archived posts. A search can still come back empty: archives only hold copies someone made before the deletion. The
+  <a href="/guides/find-tweets-on-wayback-machine">Wayback Machine guide</a> covers the manual searches step by step.</p>
+</section>
+
+<section>
+  <h2>Free lookup or paid deleted-tweet tracker?</h2>
+  <p>Paid tracker services such as TrackTweets watch an account and keep a copy of every post it deletes from the day you start tracking.
+  They answer a different question from this page, and they cost money per account:</p>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle</th><th>Paid tracker</th></tr></thead>
+    <tbody>
+      <tr><td>Finds</td><td>Posts archived in the past, including ones deleted before you looked</td><td>Posts deleted after you start tracking</td></tr>
+      <tr><td>Price</td><td>Free</td><td>About $9 a month per account (TrackTweets, at the time of writing)</td></tr>
+      <tr><td>Account</td><td>No login, nothing to connect</td><td>Sign-up and subscription</td></tr>
+      <tr><td>Best for</td><td>A one-off look at what an account posted</td><td>Ongoing monitoring of specific accounts</td></tr>
+    </tbody>
+  </table></div>
+  <p>Xtracticle Pro is coming with the full archived list instead of the newest 50, CSV export and account monitoring. Until then, one-off
+  lookups stay free.</p>
+</section>
+
+<section>
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="/guides/how-to-see-deleted-tweets">How to see deleted tweets</a>: every place a copy might exist, and what never works.</li>
+    <li><a href="/guides/recover-deleted-tweets">Can you recover deleted tweets?</a>: your own posts, your X data archive and the limits.</li>
+    <li><a href="/guides/find-tweets-on-wayback-machine">How to find tweets on the Wayback Machine</a>: manual searches and wildcard URLs.</li>
+  </ul>
+  <p>To save a post or thread that is still online, use the tool on the <a href="/">home page</a>,
+  <a href="/unroll-twitter-thread">unroll a Twitter thread</a> to read it as one page, or keep it as a file with
+  <a href="/x-thread-to-pdf">thread to PDF</a> and <a href="/tweet-to-pdf">tweet to PDF</a>.</p>
+</section>
+
+${privacy('en')}`,
+  faq: [
+    { q: 'How do I find someone’s deleted tweets?', a: 'Type their @username or paste their profile link into Xtracticle and press Extract. It lists the posts of that account archived on the Wayback Machine, with a link to each snapshot. Deleted posts appear only if someone archived them before they were deleted.' },
+    { q: 'Can it show a deleted tweet that was never archived?', a: 'No. Once a post is deleted, X stops serving it. If nobody archived it first, there is no copy left for any tool to show.' },
+    { q: 'Does the list show which tweets were deleted?', a: 'No, because X does not report deletions. Press Try live post on an entry: if it opens, the post is still online; if it is not found, it was deleted or the account is private.' },
+    { q: 'Is the deleted tweet finder free?', a: 'Yes. It is free, needs no login and never asks you to connect your X account.' },
+    { q: 'Can I search for one specific deleted post?', a: 'Yes. Paste the post link instead of the profile. If X no longer serves it, Xtracticle offers one-click searches for that post on the Wayback Machine and archive.today.' },
+    { q: 'Does it work for private accounts?', a: 'No. Protected posts were never public, so they can’t be read and archives normally don’t have them.' },
+  ],
+};
+
+export const TOOL_PAGES_EN: SitePage[] = [unroll, tweetpdf, deletedFinder];

@@ -1,4 +1,4 @@
-/** Turkish: unroll, tweet-to-PDF, MCP server and privacy pages. */
+/** Turkish: unroll, tweet-to-PDF, deleted tweet finder, MCP server and privacy pages. */
 import { GITHUB, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
 
 const unroll: SitePage = {
@@ -352,4 +352,95 @@ const privacyPage: SitePage = {
   faq: [],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, mcp, privacyPage];
+/* ─── Silinen tweetleri bulma ─── */
+
+const deletedFinder: SitePage = {
+  id: 'tr-deleted-finder',
+  group: 'deleted-finder',
+  path: '/tr/silinen-tweetleri-bulma',
+  file: 'tr/silinen-tweetleri-bulma.html',
+  lang: 'tr',
+  title: 'Silinen Tweetleri Bulma: Hesabın Arşivini Görün | Xtracticle',
+  description:
+    'Bir profil linki veya @kullanıcıadı yapıştırın; o hesabın gönderilerinin Wayback Machine kopyalarını, silinenler dahil, bulalım. Ücretsiz, giriş yok.',
+  h1: 'Silinen Tweetleri Bulma',
+  sub: 'Bir X (Twitter) profil linki veya @kullanıcıadı yapıştırın (gönderi linki değil); o hesabın Wayback Machine’de arşivlenmiş gönderilerini listeleyelim.',
+  primary: 'md',
+  nav: 'Silinen Tweetleri Bulma',
+  sections: `
+<section>
+  <p><strong>Xtracticle’ın silinen tweet bulucusu, bir hesabın gönderilerini Wayback Machine’de arar.</strong> Bir @kullanıcıadı yazın ya da
+  profil linkini yapıştırın; Internet Archive’ın o hesaptan kaydettiği gönderiler en yeniden eskiye, her biri arşiv kopyasının linkiyle
+  listelenir. Biri arşivledikten sonra X’ten silinen bir gönderiyi tekrar görmenin yolu o kopyadır. Ücretsizdir, hesap gerekmez.</p>
+  <h2>Silinen tweetleri üç adımda bulun</h2>
+  ${steps([
+    '<strong>Hesabı girin:</strong> <code>@kullaniciadi</code> yazın veya profil linkini (<code>x.com/kullaniciadi</code>) yapıştırın. Tek bir gönderinin linkini değil, profili kullanın.',
+    '<strong>Çıkar’a basın.</strong> Xtracticle, Wayback Machine’e o hesabın kaydedilmiş tüm gönderilerini sorar. Arşiv yavaş çalıştığı için bu bir dakikayı bulabilir.',
+    '<strong>Arşiv kopyasını açın.</strong> Listede tarihleriyle birlikte en fazla 50 arşivlenmiş gönderi, en yeniden eskiye görünür. <em>Arşiv kopyasını aç</em> kaydedilmiş hâli gösterir; <em>Canlı gönderiyi dene</em> gönderinin X’te hâlâ durup durmadığını kontrol eder.',
+  ])}
+</section>
+
+<section>
+  <h2>Neyi bulur, neyi bulamaz?</h2>
+  <p>Silinen bir gönderi ancak kaybolmadan önce kopyası alındıysa görülebilir. Bu araç tek bir tür kopyaya, Wayback Machine kayıtlarına bakar
+  ve sınırlarını açıkça söyler:</p>
+  <ul>
+    <li><strong>Arşivlenmiş gönderileri bulur.</strong> Wayback Machine’in kaydettiği her gönderi listeye girer; hâlâ yayında olsa da sonradan silinmiş olsa da.</li>
+    <li><strong>Kimsenin arşivlemediği gönderiyi bulamaz.</strong> Kaydedilmeden silinen bir gönderi gitmiştir. X onu artık sunmadığı için hiçbir araç geri getiremez.</li>
+    <li><strong>Hangi gönderinin silindiğini işaretlemez.</strong> X bunu bildirmiyor. <em>Canlı gönderiyi dene</em>’ye basın: açılıyorsa gönderi yayında; “bulunamadı” dönüyorsa silinmiş ya da hesap gizliye alınmıştır.</li>
+    <li><strong>Gizli hesaplar okunamaz.</strong> Korumalı gönderiler hiç herkese açık olmadığı için arşivlerde de genelde yoktur.</li>
+    <li><strong>Kopyalar farklı olabilir.</strong> Eski kayıtlarda metin genelde bulunur; 2020 ve sonrasındaki bazı kayıtlar boş bir X sayfası gösterir.</li>
+    <li><strong>Çok gönderisi olan hesaplarda liste kısalır.</strong> En yeni 50 arşivlenmiş gönderi gösterilir; toplam sayı listenin üstünde yazar.</li>
+  </ul>
+  <p>Hesap hâlâ açıksa aynı panelde <em>Son 20 gönderiyi indir (ZIP)</em> butonu da var. Hesabın herkese açık son 20 gönderisini, henüz yayındayken
+  Markdown dosyaları olarak kaydeder. Bir gönderiyi sonra görebilmenin tek güvenilir yolu kendi kopyanızı almaktır.</p>
+</section>
+
+<section>
+  <h2>Tek bir silinmiş gönderiyi mi arıyorsunuz?</h2>
+  <p>Gönderinin kendi linki (<code>x.com/kullaniciadi/status/…</code>) elinizdeyse onu yapıştırın. X gönderiyi artık göstermiyorsa Xtracticle,
+  o gönderiyi Wayback Machine’de ve archive.today’de tek tıkla aramanız için linkler ve hesabın diğer arşivlenmiş gönderilerine bir kısayol gösterir.
+  Arama yine boş dönebilir: arşivlerde yalnızca gönderi silinmeden önce birinin aldığı kopyalar bulunur. Elle arama adımları
+  <a href="/tr/rehberler/wayback-machine-tweet-bulma">Wayback Machine rehberinde</a>.</p>
+</section>
+
+<section>
+  <h2>Ücretsiz arama mı, ücretli silinen tweet takibi mi?</h2>
+  <p>TrackTweets gibi ücretli takip servisleri bir hesabı izler ve takibe başladığınız günden itibaren silinen her gönderinin kopyasını saklar.
+  Bu sayfadan farklı bir soruya cevap verirler ve hesap başına ücretlidirler:</p>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle</th><th>Ücretli takip servisi</th></tr></thead>
+    <tbody>
+      <tr><td>Ne bulur?</td><td>Geçmişte arşivlenmiş gönderiler, siz bakmadan önce silinenler dahil</td><td>Takibe başladıktan sonra silinen gönderiler</td></tr>
+      <tr><td>Fiyat</td><td>Ücretsiz</td><td>Hesap başına ayda yaklaşık 9 $ (TrackTweets, yazının yazıldığı tarihte)</td></tr>
+      <tr><td>Hesap</td><td>Giriş yok, bağlanacak bir şey yok</td><td>Kayıt ve abonelik</td></tr>
+      <tr><td>En uygun olduğu iş</td><td>Bir hesabın neler paylaştığına tek seferlik bakmak</td><td>Belirli hesapları sürekli izlemek</td></tr>
+    </tbody>
+  </table></div>
+  <p>Xtracticle Pro yakında geliyor: en yeni 50 yerine tüm arşiv listesi, CSV dışa aktarma ve hesap takibi. O zamana kadar tek seferlik aramalar ücretsiz.</p>
+</section>
+
+<section>
+  <h2>Daha fazlası</h2>
+  <ul>
+    <li><a href="/tr/rehberler/silinen-tweetleri-gorme">Silinen tweetler nasıl görülür?</a> Bir kopyanın bulunabileceği her yer ve asla işe yaramayan yöntemler.</li>
+    <li><a href="/tr/rehberler/silinen-tweetler-geri-getirilir-mi">Silinen tweetler geri getirilir mi?</a> Kendi gönderileriniz, X veri arşiviniz ve sınırlar.</li>
+    <li><a href="/tr/rehberler/wayback-machine-tweet-bulma">Wayback Machine’de tweet nasıl bulunur?</a> Elle arama ve joker karakterli URL’ler.</li>
+  </ul>
+  <p>Hâlâ yayındaki bir gönderiyi ya da flood’u kaydetmek için <a href="/tr/">ana sayfadaki</a> aracı kullanın,
+  <a href="/tr/twitter-flood-okuma">flood’u tek sayfada okuyun</a> ya da <a href="/tr/twitter-flood-pdf">flood’u PDF</a> ve
+  <a href="/tr/tweet-pdf">tweet’i PDF</a> olarak saklayın.</p>
+</section>
+
+${privacy('tr')}`,
+  faq: [
+    { q: 'Birinin silinen tweetlerini nasıl bulurum?', a: '@kullanıcıadını yazın veya profil linkini Xtracticle’a yapıştırıp Çıkar’a basın. O hesabın Wayback Machine’de arşivlenmiş gönderileri, her birinin arşiv kopyası linkiyle listelenir. Silinen gönderiler yalnızca silinmeden önce biri arşivlediyse görünür.' },
+    { q: 'Hiç arşivlenmemiş silinen bir tweeti gösterebilir mi?', a: 'Hayır. Bir gönderi silindiğinde X onu sunmayı bırakır. Önceden kimse arşivlemediyse hiçbir aracın gösterebileceği bir kopya kalmaz.' },
+    { q: 'Liste hangi tweetlerin silindiğini gösteriyor mu?', a: 'Hayır, çünkü X silinmeleri bildirmiyor. Bir satırda Canlı gönderiyi dene’ye basın: açılıyorsa gönderi yayında; bulunamıyorsa silinmiş ya da hesap gizli.' },
+    { q: 'Silinen tweet bulucu ücretsiz mi?', a: 'Evet. Ücretsizdir, giriş gerektirmez ve X hesabınızı bağlamanızı istemez.' },
+    { q: 'Belirli bir silinmiş gönderiyi arayabilir miyim?', a: 'Evet. Profil yerine gönderinin linkini yapıştırın. X onu artık göstermiyorsa Xtracticle, o gönderiyi Wayback Machine’de ve archive.today’de tek tıkla arama linkleri sunar.' },
+    { q: 'Gizli hesaplarda çalışır mı?', a: 'Hayır. Korumalı gönderiler hiç herkese açık olmadığı için okunamaz ve arşivlerde genelde bulunmaz.' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, mcp, privacyPage];

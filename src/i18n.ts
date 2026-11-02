@@ -7,6 +7,8 @@ const en = {
   h1: 'X Article Downloader',
   sub: 'Download X (Twitter) articles, threads and posts as PDF, Markdown, EPUB or text — free, no login.',
   placeholder: 'Paste an X post link…',
+  /** Input placeholder on the Deleted Tweet Finder pages (they expect an account, not a post). */
+  profilePlaceholder: 'Paste a profile link or @username…',
   extract: 'Extract',
   invalidLink: 'Please enter a valid X post link, e.g. https://x.com/user/status/123…',
   articleLink:
@@ -105,6 +107,7 @@ const tr: typeof en = {
   h1: 'X Makale İndirici',
   sub: "X (Twitter) makalelerini, flood'larını ve gönderilerini PDF, Markdown, EPUB veya metin olarak indirin — ücretsiz, giriş gerektirmez.",
   placeholder: 'Bir X gönderi linki yapıştırın…',
+  profilePlaceholder: 'Bir profil linki veya @kullanıcıadı yapıştırın…',
   extract: 'Çıkar',
   invalidLink: 'Geçerli bir X gönderi linki girin, örn. https://x.com/kullanici/status/123…',
   articleLink:
@@ -203,6 +206,7 @@ const es: typeof en = {
   h1: 'Descargar artículos de X',
   sub: 'Descarga artículos, hilos y posts de X (Twitter) en PDF, Markdown, EPUB o texto — gratis y sin iniciar sesión.',
   placeholder: 'Pega el enlace de un post de X…',
+  profilePlaceholder: 'Pega el enlace de un perfil o un @usuario…',
   extract: 'Extraer',
   invalidLink: 'Introduce un enlace válido de un post de X, p. ej. https://x.com/usuario/status/123…',
   articleLink:
@@ -301,6 +305,7 @@ const pt: typeof en = {
   h1: 'Baixar artigos do X',
   sub: 'Baixe artigos, threads e posts do X (Twitter) em PDF, Markdown, EPUB ou texto — grátis e sem login.',
   placeholder: 'Cole o link de um post do X…',
+  profilePlaceholder: 'Cole o link de um perfil ou um @usuário…',
   extract: 'Extrair',
   invalidLink: 'Digite um link válido de post do X, ex.: https://x.com/usuario/status/123…',
   articleLink:
@@ -399,6 +404,7 @@ const ja: typeof en = {
   h1: 'X記事ダウンローダー',
   sub: 'X（旧Twitter）の記事・スレッド・ポストをPDF、Markdown、EPUB、テキストで保存。無料・ログイン不要。',
   placeholder: 'Xのポストのリンクを貼り付け…',
+  profilePlaceholder: 'プロフィールのリンクか@ユーザー名を貼り付け…',
   extract: '取得',
   invalidLink: '有効なXのポストのリンクを入力してください（例：https://x.com/user/status/123…）',
   articleLink:
@@ -497,6 +503,7 @@ const zh: typeof en = {
   h1: 'X 文章下载器',
   sub: '下载 X（推特）文章、推文串和帖子，支持 PDF、Markdown、EPUB 和纯文本——免费，无需登录。',
   placeholder: '粘贴 X 帖子链接…',
+  profilePlaceholder: '粘贴个人主页链接或 @用户名…',
   extract: '提取',
   invalidLink: '请输入有效的 X 帖子链接，例如 https://x.com/user/status/123…',
   articleLink:
@@ -595,6 +602,7 @@ const ar: typeof en = {
   h1: 'تحميل مقالات X',
   sub: 'حمّل مقالات X (تويتر) والثريدات والمنشورات بصيغة PDF أو Markdown أو EPUB أو نص، مجانًا ودون تسجيل دخول.',
   placeholder: 'الصق رابط منشور من X…',
+  profilePlaceholder: 'الصق رابط ملف شخصي أو اسم مستخدم مع @…',
   extract: 'استخراج',
   invalidLink: 'يرجى إدخال رابط منشور صالح من X، مثل https://x.com/user/status/123…',
   articleLink:

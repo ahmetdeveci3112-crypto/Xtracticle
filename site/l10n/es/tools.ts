@@ -363,4 +363,96 @@ const privacyPage: SitePage = {
   faq: [],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, mcp, privacyPage];
+/* ─── Buscador de tweets borrados ─── */
+
+const deletedFinder: SitePage = {
+  id: 'es-deleted-finder',
+  group: 'deleted-finder',
+  path: '/es/buscador-de-tweets-borrados',
+  file: 'es/buscador-de-tweets-borrados.html',
+  lang: 'es',
+  title: 'Ver tweets borrados: buscador gratis, sin login | Xtracticle',
+  description:
+    'Pega el enlace de un perfil o un @usuario y buscamos en Wayback Machine las capturas de sus posts, también los borrados. Gratis y sin iniciar sesión.',
+  h1: 'Buscador de tweets borrados',
+  sub: 'Pega el enlace de un perfil de X (Twitter) o un @usuario, no el de un post, y verás las copias archivadas de los posts de esa cuenta en Wayback Machine.',
+  primary: 'md',
+  nav: 'Tweets borrados',
+  sections: `
+<section>
+  <p><strong>El buscador de tweets borrados de Xtracticle busca en Wayback Machine los posts de una cuenta.</strong> Escribe un @usuario o pega
+  el enlace del perfil y verás los posts de esa cuenta que guardó el Internet Archive, del más reciente al más antiguo, cada uno con el enlace
+  a su captura. Si un post se borró de X después de que alguien lo archivara, esa captura es la forma de volver a verlo. Es gratis y no hace falta cuenta.</p>
+  <h2>Cómo ver tweets borrados en tres pasos</h2>
+  ${steps([
+    '<strong>Indica la cuenta:</strong> escribe <code>@usuario</code> o pega el enlace del perfil (<code>x.com/usuario</code>). Usa el perfil, no el enlace de un post concreto.',
+    '<strong>Pulsa Extraer.</strong> Xtracticle pide a Wayback Machine todos los posts de esa cuenta que tenga guardados. El archivo es lento, así que puede tardar hasta un minuto.',
+    '<strong>Abre una captura.</strong> La lista muestra hasta 50 posts archivados, del más reciente al más antiguo, con su fecha. <em>Abrir captura</em> enseña la copia archivada y <em>Probar el post en X</em> comprueba si el post sigue publicado.',
+  ])}
+</section>
+
+<section>
+  <h2>Qué puede encontrar y qué no</h2>
+  <p>Un post borrado solo se puede ver si alguien hizo una copia antes de que desapareciera. Esta herramienta busca un tipo de copia, las capturas
+  de Wayback Machine, y no esconde sus límites:</p>
+  <ul>
+    <li><strong>Encuentra posts archivados.</strong> Cualquier post de la cuenta que haya guardado Wayback Machine, siga publicado o se haya borrado después.</li>
+    <li><strong>No encuentra lo que nadie archivó.</strong> Un post borrado antes de que alguien lo guardara se ha perdido. Ninguna herramienta puede recuperarlo, porque X ya no lo sirve.</li>
+    <li><strong>No marca qué posts se borraron.</strong> X no lo indica. Usa <em>Probar el post en X</em>: si se abre, sigue en línea; si aparece como no encontrado, se borró o la cuenta pasó a ser privada.</li>
+    <li><strong>Las cuentas privadas no se pueden leer.</strong> Los posts protegidos nunca fueron públicos, así que los archivos normalmente tampoco los tienen.</li>
+    <li><strong>Las capturas varían.</strong> Las antiguas suelen conservar el texto; algunas de 2020 en adelante muestran una página de X vacía.</li>
+    <li><strong>En cuentas muy activas la lista se recorta.</strong> Se muestran los 50 posts archivados más recientes y el total aparece encima.</li>
+  </ul>
+  <p>Si la cuenta sigue activa, el mismo panel tiene el botón <em>Descargar los últimos 20 posts (ZIP)</em>. Guarda los 20 posts públicos más
+  recientes de la cuenta como archivos Markdown mientras siguen en línea, que es la única forma fiable de conservar un post para después.</p>
+</section>
+
+<section>
+  <h2>¿Buscas un solo post borrado?</h2>
+  <p>Si tienes el enlace del propio post (<code>x.com/usuario/status/…</code>), pégalo en su lugar. Cuando X ya no lo muestra, Xtracticle te ofrece
+  búsquedas de ese post exacto en Wayback Machine y en archive.today con un clic, además de un acceso a los demás posts archivados de la cuenta.
+  La búsqueda puede no dar resultados: los archivos solo guardan copias hechas antes del borrado. La
+  <a href="/es/guias/encontrar-tweets-en-wayback-machine">guía de Wayback Machine</a> explica las búsquedas manuales paso a paso.</p>
+</section>
+
+<section>
+  <h2>¿Búsqueda gratuita o rastreador de tweets borrados de pago?</h2>
+  <p>Los servicios de pago como TrackTweets vigilan una cuenta y guardan una copia de cada post que borra desde el día en que empiezas a
+  seguirla. Responden a otra pregunta distinta a la de esta página y cobran por cuenta:</p>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle</th><th>Rastreador de pago</th></tr></thead>
+    <tbody>
+      <tr><td>Qué encuentra</td><td>Posts archivados en el pasado, incluidos los borrados antes de que miraras</td><td>Posts borrados después de empezar el seguimiento</td></tr>
+      <tr><td>Precio</td><td>Gratis</td><td>Unos 9 $ al mes por cuenta (TrackTweets, en el momento de escribir esto)</td></tr>
+      <tr><td>Cuenta</td><td>Sin iniciar sesión ni conectar nada</td><td>Registro y suscripción</td></tr>
+      <tr><td>Ideal para</td><td>Echar un vistazo puntual a lo que publicó una cuenta</td><td>Vigilar cuentas concretas de forma continua</td></tr>
+    </tbody>
+  </table></div>
+  <p>Xtracticle Pro está en camino, con la lista archivada completa en lugar de los 50 más recientes, exportación a CSV y seguimiento de cuentas.
+  Mientras tanto, las búsquedas puntuales siguen siendo gratis.</p>
+</section>
+
+<section>
+  <h2>Más información</h2>
+  <ul>
+    <li><a href="/es/guias/como-ver-tweets-borrados">Cómo ver tweets borrados</a>: dónde puede quedar una copia y qué no funciona nunca.</li>
+    <li><a href="/es/guias/recuperar-tweets-borrados">¿Se pueden recuperar tweets borrados?</a>: tus propios posts, tu archivo de datos de X y sus límites.</li>
+    <li><a href="/es/guias/encontrar-tweets-en-wayback-machine">Cómo encontrar tweets en la Wayback Machine</a>: búsquedas manuales y URL con comodines.</li>
+  </ul>
+  <p>Para guardar un post o un hilo que sigue en línea, usa la herramienta de la <a href="/es/">página de inicio</a>,
+  <a href="/es/desenrollar-hilo-de-twitter">desenrolla un hilo de Twitter</a> para leerlo en una sola página o consérvalo como archivo con
+  <a href="/es/hilo-de-twitter-a-pdf">hilo de Twitter a PDF</a> y <a href="/es/tweet-a-pdf">tweet a PDF</a>.</p>
+</section>
+
+${privacy('es')}`,
+  faq: [
+    { q: '¿Cómo puedo ver los tweets borrados de alguien?', a: 'Escribe su @usuario o pega el enlace de su perfil en Xtracticle y pulsa Extraer. Verás los posts de esa cuenta archivados en Wayback Machine, con el enlace a cada captura. Los posts borrados solo aparecen si alguien los archivó antes de que se borraran.' },
+    { q: '¿Puede mostrar un tweet borrado que nunca se archivó?', a: 'No. Cuando un post se borra, X deja de servirlo. Si nadie lo archivó antes, no queda ninguna copia que una herramienta pueda mostrar.' },
+    { q: '¿La lista indica qué tweets se borraron?', a: 'No, porque X no informa de los borrados. Pulsa Probar el post en X en una entrada: si se abre, sigue publicado; si no se encuentra, se borró o la cuenta es privada.' },
+    { q: '¿El buscador de tweets borrados es gratis?', a: 'Sí. Es gratis, no pide iniciar sesión y nunca te pide conectar tu cuenta de X.' },
+    { q: '¿Puedo buscar un post borrado concreto?', a: 'Sí. Pega el enlace del post en lugar del perfil. Si X ya no lo muestra, Xtracticle te ofrece búsquedas de ese post en Wayback Machine y archive.today con un clic.' },
+    { q: '¿Funciona con cuentas privadas?', a: 'No. Los posts protegidos nunca fueron públicos, así que no se pueden leer y los archivos normalmente no los tienen.' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, mcp, privacyPage];

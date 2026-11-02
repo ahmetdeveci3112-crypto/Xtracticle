@@ -1,4 +1,4 @@
-/** Simplified Chinese: unroll, tweet to PDF, MCP server and privacy pages. */
+/** Simplified Chinese: unroll, tweet to PDF, deleted tweet finder, MCP server and privacy pages. */
 import { GITHUB, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
 
 const ENDPOINT = 'https://xtracticle.com/mcp';
@@ -320,4 +320,88 @@ const privacyPage: SitePage = {
   faq: [],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, mcp, privacyPage];
+/* ─── 已删除推文查找 ─── */
+
+const deletedFinder: SitePage = {
+  id: 'zh-deleted-finder',
+  group: 'deleted-finder',
+  path: '/zh/deleted-tweet-finder',
+  file: 'zh/deleted-tweet-finder.html',
+  lang: 'zh',
+  title: '已删除推文查找：推特时光机，查看被删的推文 | Xtracticle',
+  description: '粘贴个人主页链接或 @用户名，我们在 Wayback Machine 中查找该账号帖子的存档快照，包括已删除的帖子。免费，无需登录。',
+  h1: '已删除推文查找',
+  sub: '粘贴 X（推特）个人主页链接或 @用户名（不是帖子链接），即可列出该账号在 Wayback Machine 中存档的帖子。',
+  primary: 'md',
+  nav: '已删除推文查找',
+  sections: `
+<section>
+  <p><strong>Xtracticle 的已删除推文查找工具会在 Wayback Machine 中搜索某个账号的帖子。</strong>输入 @用户名或粘贴个人主页链接，就能看到 Internet Archive
+  保存过的该账号帖子，按从新到旧排列，每条都附有快照链接。如果某条帖子在有人存档之后才从 X 上删除，打开快照就能再次看到它——不少人把它叫作“推特时光机”。完全免费，无需账号。</p>
+  <h2>三步查找已删除的推文</h2>
+  ${steps([
+    '<strong>指定账号：</strong>输入 <code>@用户名</code>，或粘贴个人主页链接（<code>x.com/用户名</code>）。请使用个人主页，而不是某条帖子的链接。',
+    '<strong>点击“提取”。</strong>Xtracticle 会向 Wayback Machine 查询该账号所有被存档的帖子。存档服务响应较慢，最长可能需要一分钟。',
+    '<strong>打开快照。</strong>列表按从新到旧显示最多 50 条存档帖子及其日期。<em>打开快照</em>可查看存档副本，<em>尝试获取原帖</em>可检查这条帖子是否还在 X 上。',
+  ])}
+</section>
+
+<section>
+  <h2>能找到什么，找不到什么</h2>
+  <p>只有在帖子消失前有人做过副本，才能看到已删除的帖子。本工具只查找一种副本，即 Wayback Machine 的快照，并且如实说明它的局限：</p>
+  <ul>
+    <li><strong>能找到已存档的帖子。</strong>Wayback Machine 记录过的该账号帖子都会列出，不论它仍然在线还是后来被删除。</li>
+    <li><strong>找不到无人存档的帖子。</strong>在被保存之前就删除的帖子已经没有了。X 不再提供这些内容，任何工具都无法恢复。</li>
+    <li><strong>不会标出哪些帖子已删除。</strong>X 不公开这类信息。请点击<em>尝试获取原帖</em>：能打开说明仍在线；显示找不到，则说明已删除或账号已设为私密。</li>
+    <li><strong>无法读取私密账号。</strong>受保护的帖子从未公开，存档里通常也没有。</li>
+    <li><strong>快照质量不一。</strong>较早的快照通常保留了正文；2020 年以后的部分快照只显示一个空白的 X 页面。</li>
+    <li><strong>帖子很多的账号只显示一部分。</strong>列表显示最新的 50 条存档帖子，总数显示在列表上方。</li>
+  </ul>
+  <p>如果账号仍然公开，同一面板中还有<em>下载最新 20 条帖子（ZIP）</em>按钮，可在帖子还在线时，把该账号最新的 20 条公开帖子保存为 Markdown 文件。想以后还能看到某条帖子，最可靠的办法就是自己留一份副本。</p>
+</section>
+
+<section>
+  <h2>只想找某一条已删除的帖子？</h2>
+  <p>如果你有那条帖子本身的链接（<code>x.com/用户名/status/…</code>），直接粘贴它即可。当 X 已无法显示该帖子时，Xtracticle 会给出一键在 Wayback Machine 和 archive.today
+  中搜索这条帖子的链接，并提供查看该账号其他存档帖子的入口。搜索结果仍可能为空：存档里只有帖子被删除前有人保存过的副本。手动搜索的具体步骤见
+  <a href="/zh/guides/find-tweets-on-wayback-machine">Wayback Machine 指南</a>。</p>
+</section>
+
+<section>
+  <h2>免费查找，还是付费的删推监控服务？</h2>
+  <p>TrackTweets 这类付费服务会监控某个账号，从你开始监控的那天起保存它删除的每一条帖子。它们回答的是另一个问题，而且按账号收费：</p>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle</th><th>付费监控服务</th></tr></thead>
+    <tbody>
+      <tr><td>能找到</td><td>过去被存档的帖子，包括你查看之前就已删除的</td><td>开始监控之后被删除的帖子</td></tr>
+      <tr><td>价格</td><td>免费</td><td>每个账号每月约 9 美元（TrackTweets，撰写本文时）</td></tr>
+      <tr><td>账号</td><td>无需登录，无需关联任何账号</td><td>需要注册并订阅</td></tr>
+      <tr><td>适合</td><td>一次性查看某个账号发过什么</td><td>长期监控特定账号</td></tr>
+    </tbody>
+  </table></div>
+  <p>Xtracticle Pro 即将推出，将提供完整的存档列表（不再限于最新 50 条）、CSV 导出和账号监控。在此之前，单次查询一直免费。</p>
+</section>
+
+<section>
+  <h2>延伸阅读</h2>
+  <ul>
+    <li><a href="/zh/guides/how-to-see-deleted-tweets">如何查看已删除推文</a>：哪些地方可能留有副本，哪些方法根本行不通。</li>
+    <li><a href="/zh/guides/recover-deleted-tweets">已删除的推文能恢复吗？</a>：你自己的帖子、X 数据存档以及其中的限制。</li>
+    <li><a href="/zh/guides/find-tweets-on-wayback-machine">如何在 Wayback Machine 查找推文</a>：手动搜索与通配符网址。</li>
+  </ul>
+  <p>要保存仍在线的帖子或推文串，可以使用<a href="/zh/">首页</a>的工具，用<a href="/zh/unroll-twitter-thread">推文串展开</a>把它合并成一页阅读，
+  或者用 <a href="/zh/x-thread-to-pdf">推文串转 PDF</a> 和 <a href="/zh/tweet-to-pdf">推文转 PDF</a> 保存为文件。</p>
+</section>
+
+${privacy('zh')}`,
+  faq: [
+    { q: '怎样查看别人已删除的推文？', a: '在 Xtracticle 中输入对方的 @用户名或粘贴其个人主页链接，然后点击“提取”。工具会列出该账号在 Wayback Machine 中存档的帖子，并附上每个快照的链接。只有在删除前有人存档过，已删除的帖子才会出现。' },
+    { q: '从未被存档的已删除推文能显示吗？', a: '不能。帖子一旦删除，X 就不再提供。如果事先没人存档，就没有任何副本可供任何工具显示。' },
+    { q: '列表会标出哪些推文被删除了吗？', a: '不会，因为 X 不公开删除信息。在某一条上点击“尝试获取原帖”：能打开说明仍在线，找不到则说明已删除或账号为私密。' },
+    { q: '已删除推文查找免费吗？', a: '免费。无需登录，也绝不会要求你关联 X 账号。' },
+    { q: '可以只查找某一条已删除的帖子吗？', a: '可以。粘贴帖子链接而不是个人主页链接。如果 X 已无法显示该帖子，Xtracticle 会给出一键在 Wayback Machine 和 archive.today 中搜索它的链接。' },
+    { q: '私密账号可以用吗？', a: '不可以。受保护的帖子从未公开，无法读取，存档里通常也没有。' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, mcp, privacyPage];

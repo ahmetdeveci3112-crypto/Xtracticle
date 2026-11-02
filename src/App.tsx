@@ -42,6 +42,8 @@ declare global {
   }
 }
 const PAGE: PageConfig = (typeof window !== 'undefined' && window.__XT__) || {};
+/** Deleted Tweet Finder pages (id `deleted-finder`, `tr-deleted-finder`, …) ask for an account, not a post. */
+const ACCOUNT_INPUT = /(^|-)deleted-finder$/.test(PAGE.page || '');
 
 /* ─── Persistence ─── */
 interface HistoryItem {
@@ -299,7 +301,7 @@ export default function App() {
       setUrl(input);
       window.history.replaceState(null, '', location.pathname);
       extract(input);
-      track('deep_link', { source: params.has('text') || params.has('link') ? 'share_target' : 'query' });
+      track('deep_link', { via: params.has('text') || params.has('link') ? 'share_target' : 'query' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -554,7 +556,7 @@ export default function App() {
             {/* Search Form */}
             <form onSubmit={onSubmit} className="mb-3 print:hidden">
               <div className="relative flex items-center max-w-2xl mx-auto">
-                <label htmlFor="xt-url" className="sr-only">{t.placeholder}</label>
+                <label htmlFor="xt-url" className="sr-only">{ACCOUNT_INPUT ? t.profilePlaceholder : t.placeholder}</label>
                 <input
                   id="xt-url"
                   type="text"
@@ -570,7 +572,7 @@ export default function App() {
                       extract(pasted);
                     }
                   }}
-                  placeholder={t.placeholder}
+                  placeholder={ACCOUNT_INPUT ? t.profilePlaceholder : t.placeholder}
                   className="w-full ps-5 pe-28 py-4 rounded-2xl text-base input-glow focus-ring"
                   style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)', boxShadow: 'var(--shadow-sm)' }}
                 />
@@ -695,7 +697,7 @@ export default function App() {
                 label={t.watchDemo}
                 onOpen={() => {
                   setDemoOpen(true);
-                  track('demo_open', { lang, page: PAGE.page, source: 'hero_loop' });
+                  track('demo_open', { lang, page: PAGE.page, via: 'hero_loop' });
                 }}
               />
             )}
@@ -1124,7 +1126,7 @@ function BatchPanel({
     } finally {
       setRunning(false);
     }
-    track('batch_extract', { requested: jobs.length, ok: out.length, ...(fromProfile ? { source: 'profile' } : {}) });
+    track('batch_extract', { requested: jobs.length, ok: out.length, ...(fromProfile ? { via: 'profile' } : {}) });
   };
 
   // Opened from the archive panel's "Download latest 20 posts": run right away (once per click).

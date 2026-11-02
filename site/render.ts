@@ -97,6 +97,17 @@ const WATCH_DEMO: Record<Lang, string> = {
   ar: 'شاهد العرض التوضيحي (30 ثانية)',
 };
 
+/** Mirrors `profilePlaceholder` in src/i18n.ts: the Deleted Tweet Finder pages ask for an account, not a post. */
+const PROFILE_PLACEHOLDER: Record<Lang, string> = {
+  en: 'Paste a profile link or @username…',
+  tr: 'Bir profil linki veya @kullanıcıadı yapıştırın…',
+  es: 'Pega el enlace de un perfil o un @usuario…',
+  pt: 'Cole o link de um perfil ou um @usuário…',
+  ja: 'プロフィールのリンクか@ユーザー名を貼り付け…',
+  zh: '粘贴个人主页链接或 @用户名…',
+  ar: 'الصق رابط ملف شخصي أو اسم مستخدم مع @…',
+};
+
 const LANG_NAMES: Record<Lang, string> = { en: 'English', es: 'Español', pt: 'Português', ja: '日本語', zh: '简体中文', ar: 'العربية', tr: 'Türkçe' };
 
 const HOMES = () => PAGES.filter(p => p.isHome && !p.noindex);
@@ -196,7 +207,8 @@ function head(page: SitePage): string {
 
 /** Mirrors the React header markup/classes so hydration causes no layout shift. */
 function shell(page: SitePage): string {
-  const { placeholder, button } = UI[page.lang];
+  const { button } = UI[page.lang];
+  const placeholder = page.group === 'deleted-finder' ? PROFILE_PLACEHOLDER[page.lang] : UI[page.lang].placeholder;
   const home = homeOf(page.lang).path;
   return `<main class="max-w-3xl mx-auto px-5 pt-16 pb-8 md:pt-24">
         <header class="mb-10 text-center">

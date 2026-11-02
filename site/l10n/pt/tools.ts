@@ -1,4 +1,4 @@
-/** Páginas em português do Brasil: desenrolar thread, tweet para PDF, servidor MCP e privacidade. */
+/** Páginas em português do Brasil: desenrolar thread, tweet para PDF, localizador de tweets apagados, servidor MCP e privacidade. */
 import { GITHUB, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
 
 const ENDPOINT = 'https://xtracticle.com/mcp';
@@ -354,4 +354,96 @@ const privacyPt: SitePage = {
   faq: [],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, mcp, privacyPt];
+/* ─── Localizador de tweets apagados ─── */
+
+const deletedFinder: SitePage = {
+  id: 'pt-deleted-finder',
+  group: 'deleted-finder',
+  path: '/pt/localizador-de-tweets-apagados',
+  file: 'pt/localizador-de-tweets-apagados.html',
+  lang: 'pt',
+  title: 'Ver tweets apagados: localizador grátis | Xtracticle',
+  description:
+    'Cole o link de um perfil ou um @usuário e buscamos na Wayback Machine as capturas dos posts dessa conta, inclusive os apagados. Grátis e sem login.',
+  h1: 'Localizador de tweets apagados',
+  sub: 'Cole o link de um perfil do X (Twitter) ou um @usuário, não o link de um post, para ver as cópias arquivadas dos posts dessa conta na Wayback Machine.',
+  primary: 'md',
+  nav: 'Tweets apagados',
+  sections: `
+<section>
+  <p><strong>O localizador de tweets apagados do Xtracticle procura os posts de uma conta na Wayback Machine.</strong> Digite um @usuário ou cole
+  o link do perfil e você vê os posts dessa conta que o Internet Archive guardou, do mais recente ao mais antigo, cada um com o link da captura.
+  Se um post foi apagado do X depois que alguém o arquivou, essa captura é o jeito de vê-lo de novo. É grátis e não precisa de conta.</p>
+  <h2>Como ver tweets apagados em três passos</h2>
+  ${steps([
+    '<strong>Informe a conta:</strong> digite <code>@usuario</code> ou cole o link do perfil (<code>x.com/usuario</code>). Use o perfil, não o link de um post.',
+    '<strong>Toque em Extrair.</strong> O Xtracticle pede à Wayback Machine todos os posts dessa conta que ela capturou. O arquivo é lento, então isso pode levar até um minuto.',
+    '<strong>Abra uma captura.</strong> A lista mostra até 50 posts arquivados, do mais recente ao mais antigo, com a data. <em>Abrir captura</em> mostra a cópia arquivada e <em>Tentar o post no X</em> verifica se o post ainda está no ar.',
+  ])}
+</section>
+
+<section>
+  <h2>O que ele encontra e o que não encontra</h2>
+  <p>Um post apagado só pode ser visto se alguém fez uma cópia antes de ele sumir. Esta ferramenta procura um tipo de cópia, as capturas da
+  Wayback Machine, e é franca sobre os limites:</p>
+  <ul>
+    <li><strong>Encontra posts arquivados.</strong> Qualquer post da conta que a Wayback Machine capturou, esteja ainda no ar ou tenha sido apagado depois.</li>
+    <li><strong>Não encontra o que ninguém arquivou.</strong> Um post apagado antes de alguém salvá-lo se perdeu. Nenhuma ferramenta consegue trazê-lo de volta, porque o X não o entrega mais.</li>
+    <li><strong>Não marca quais posts foram apagados.</strong> O X não informa isso. Use <em>Tentar o post no X</em>: se abrir, o post ainda está no ar; se voltar como não encontrado, foi apagado ou a conta ficou privada.</li>
+    <li><strong>Contas privadas não podem ser lidas.</strong> Posts protegidos nunca foram públicos, então os arquivos normalmente também não os têm.</li>
+    <li><strong>As capturas variam.</strong> As mais antigas costumam ter o texto; algumas de 2020 em diante mostram uma página do X vazia.</li>
+    <li><strong>Em contas muito ativas a lista é cortada.</strong> Aparecem os 50 posts arquivados mais recentes, e o total fica acima da lista.</li>
+  </ul>
+  <p>Se a conta ainda estiver ativa, o mesmo painel tem o botão <em>Baixar os últimos 20 posts (ZIP)</em>. Ele salva os 20 posts públicos mais
+  recentes da conta como arquivos Markdown enquanto ainda estão no ar, que é o único jeito confiável de guardar um post para depois.</p>
+</section>
+
+<section>
+  <h2>Procurando um único post apagado?</h2>
+  <p>Se você tem o link do próprio post (<code>x.com/usuario/status/…</code>), cole esse link. Quando o X não mostra mais o post, o Xtracticle
+  oferece buscas por esse post exato na Wayback Machine e no archive.today com um clique, além de um atalho para os outros posts arquivados da conta.
+  A busca ainda pode voltar vazia: os arquivos só guardam cópias feitas antes da exclusão. O
+  <a href="/pt/guias/encontrar-tweets-no-wayback-machine">guia da Wayback Machine</a> mostra as buscas manuais passo a passo.</p>
+</section>
+
+<section>
+  <h2>Busca grátis ou rastreador pago de tweets apagados?</h2>
+  <p>Serviços pagos como o TrackTweets monitoram uma conta e guardam uma cópia de cada post que ela apaga a partir do dia em que você começa o
+  monitoramento. Eles respondem a uma pergunta diferente da desta página e cobram por conta:</p>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle</th><th>Rastreador pago</th></tr></thead>
+    <tbody>
+      <tr><td>O que encontra</td><td>Posts arquivados no passado, inclusive os apagados antes de você olhar</td><td>Posts apagados depois que o monitoramento começa</td></tr>
+      <tr><td>Preço</td><td>Grátis</td><td>Cerca de US$ 9 por mês por conta (TrackTweets, no momento em que escrevemos)</td></tr>
+      <tr><td>Conta</td><td>Sem login e sem conectar nada</td><td>Cadastro e assinatura</td></tr>
+      <tr><td>Ideal para</td><td>Uma olhada pontual no que uma conta publicou</td><td>Monitorar contas específicas de forma contínua</td></tr>
+    </tbody>
+  </table></div>
+  <p>O Xtracticle Pro está a caminho, com a lista arquivada completa em vez dos 50 mais recentes, exportação em CSV e monitoramento de contas.
+  Até lá, as buscas pontuais continuam grátis.</p>
+</section>
+
+<section>
+  <h2>Saiba mais</h2>
+  <ul>
+    <li><a href="/pt/guias/ver-tweets-apagados">Como ver tweets apagados</a>: onde uma cópia pode existir e o que nunca funciona.</li>
+    <li><a href="/pt/guias/recuperar-tweets-apagados">Dá para recuperar tweets apagados?</a>: seus próprios posts, seu arquivo de dados do X e os limites.</li>
+    <li><a href="/pt/guias/encontrar-tweets-no-wayback-machine">Como encontrar tweets na Wayback Machine</a>: buscas manuais e URLs com curinga.</li>
+  </ul>
+  <p>Para salvar um post ou uma thread que ainda está no ar, use a ferramenta da <a href="/pt/">página inicial</a>,
+  <a href="/pt/desenrolar-thread-do-twitter">desenrole uma thread do Twitter</a> para ler tudo em uma página ou guarde como arquivo com
+  <a href="/pt/thread-do-twitter-para-pdf">thread em PDF</a> e <a href="/pt/tweet-para-pdf">tweet para PDF</a>.</p>
+</section>
+
+${privacy('pt')}`,
+  faq: [
+    { q: 'Como vejo os tweets apagados de alguém?', a: 'Digite o @usuário ou cole o link do perfil no Xtracticle e toque em Extrair. Você verá os posts dessa conta arquivados na Wayback Machine, com o link de cada captura. Posts apagados só aparecem se alguém os arquivou antes da exclusão.' },
+    { q: 'Ele mostra um tweet apagado que nunca foi arquivado?', a: 'Não. Quando um post é apagado, o X deixa de entregá-lo. Se ninguém o arquivou antes, não sobra nenhuma cópia para ferramenta alguma mostrar.' },
+    { q: 'A lista mostra quais tweets foram apagados?', a: 'Não, porque o X não informa exclusões. Toque em Tentar o post no X em um item: se abrir, o post ainda está no ar; se não for encontrado, foi apagado ou a conta é privada.' },
+    { q: 'O localizador de tweets apagados é grátis?', a: 'Sim. É grátis, não exige login e nunca pede para conectar sua conta do X.' },
+    { q: 'Posso procurar um post apagado específico?', a: 'Sim. Cole o link do post em vez do perfil. Se o X não mostra mais o post, o Xtracticle oferece buscas por ele na Wayback Machine e no archive.today com um clique.' },
+    { q: 'Funciona com contas privadas?', a: 'Não. Posts protegidos nunca foram públicos, então não podem ser lidos e os arquivos normalmente não os têm.' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, mcp, privacyPt];
