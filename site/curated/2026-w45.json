@@ -1,0 +1,52 @@
+{
+  "week": "2026-W45",
+  "published": "2026-11-02",
+  "intro": "Five long reads people saved with Xtracticle this week — two lab notebooks on code-made motion design, a candid look at how the Claude Code team reviews AI-written code, a one-day life-reset protocol and a Chinese crash course on how AI actually works.",
+  "items": [
+    {
+      "id": "2105311836190978392",
+      "handle": "flxrnc",
+      "author": "Florence",
+      "title": "Opus 5.5 Motion Lab: Make Claude Animate Like a Studio",
+      "lang": "en",
+      "topic": "AI motion design",
+      "summary": "A lab notebook of three Opus 5.5 animations, each printed with its original prompt and every follow-up correction, arguing that the unglamorous middle part — the second and third prompt — is where studio-quality motion comes from."
+    },
+    {
+      "id": "2010751592346030461",
+      "handle": "thedankoe",
+      "author": "DAN KOE",
+      "title": "How to fix your entire life in 1 day",
+      "lang": "en",
+      "topic": "Self-improvement",
+      "summary": "Dan Koe argues that resolutions fail because people change their actions instead of their identity, and closes with a day-long protocol for working out what you actually want before setting any goal."
+    },
+    {
+      "id": "2114604912520921136",
+      "handle": "addyosmani",
+      "author": "Addy Osmani",
+      "title": "How the Claude Code team does code review",
+      "lang": "en",
+      "topic": "Engineering practice",
+      "summary": "Addy Osmani explains how the Claude Code team kept reviewing code while merge volume doubled: automated review runs before a human looks, human attention is saved for design-level questions, and reverting became fast and cheap."
+    },
+    {
+      "id": "2111356255889723723",
+      "handle": "long_jingai",
+      "author": "龙井longjing",
+      "title": "2小时从零看懂 AI：一篇文章建立AI认知体系（8000元企业内训同款）",
+      "lang": "zh",
+      "topic": "AI literacy",
+      "summary": "A two-hour corporate AI training course rewritten as one long article: what large models are, how to write prompts, what agents are and how to build a first one, aimed at readers starting from zero."
+    },
+    {
+      "id": "2105643919119696297",
+      "handle": "0xwhrrari",
+      "author": "rari🈀",
+      "title": "Motion Engineering: Build a Video Studio Around Opus 5.5",
+      "lang": "en",
+      "topic": "AI motion design",
+      "summary": "Rari describes a five-layer pipeline for making videos with Opus 5.5 — the model writes a frame function, a renderer draws it, and a review loop decides what ships — so the next clip can be produced without rebuilding the whole setup."
+    }
+  ]
+}
