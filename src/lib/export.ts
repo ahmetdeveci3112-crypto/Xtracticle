@@ -120,7 +120,12 @@ const EPUB_CREDIT: Record<string, string> = {
   ar: 'حُفظ باستخدام',
 };
 
-export async function buildEpub(doc: XDoc, contentEl: HTMLElement, lang: string): Promise<Blob> {
+/** Xtracticle Pro exports carry no "Saved with Xtracticle" line. */
+export interface ExportOptions {
+  credit?: boolean;
+}
+
+export async function buildEpub(doc: XDoc, contentEl: HTMLElement, lang: string, opts: ExportOptions = {}): Promise<Blob> {
   const [{ zipSync, strToU8 }, images] = await Promise.all([import('fflate'), fetchImages(doc.images)]);
 
   const clone = contentEl.cloneNode(true) as HTMLElement;
@@ -141,11 +146,13 @@ export async function buildEpub(doc: XDoc, contentEl: HTMLElement, lang: string)
   const language = (lang || 'en').slice(0, 2);
   const colophon = document.createElement('p');
   colophon.setAttribute('class', 'colophon');
-  colophon.append(`${EPUB_CREDIT[language] || EPUB_CREDIT.en} `);
-  const creditLink = document.createElement('a');
-  creditLink.setAttribute('href', creditUrl('epub'));
-  creditLink.textContent = 'Xtracticle';
-  colophon.append(creditLink, ' · ');
+  if (opts.credit !== false) {
+    colophon.append(`${EPUB_CREDIT[language] || EPUB_CREDIT.en} `);
+    const creditLink = document.createElement('a');
+    creditLink.setAttribute('href', creditUrl('epub'));
+    creditLink.textContent = 'Xtracticle';
+    colophon.append(creditLink, ' · ');
+  }
   const sourceLink = document.createElement('a');
   sourceLink.setAttribute('href', doc.sourceUrl);
   sourceLink.textContent = doc.sourceUrl.replace(/^https?:\/\//, '');
@@ -251,6 +258,7 @@ export async function buildPdf(
   doc: XDoc,
   contentEl: HTMLElement,
   onProgress?: (done: number, total: number) => void,
+  opts: ExportOptions = {},
 ): Promise<Blob> {
   const [{ jsPDF }, { default: html2canvas }] = await Promise.all([import('jspdf'), import('html2canvas-pro')]);
 
@@ -354,7 +362,7 @@ export async function buildPdf(
       pdf.setFontSize(8);
       pdf.setTextColor(140);
       pdf.textWithLink(source, MARGIN_MM, pageH - 8, { url: doc.sourceUrl });
-      pdf.textWithLink(credit, (pageW - pdf.getTextWidth(credit)) / 2, pageH - 8, { url: creditUrl('pdf') });
+      if (opts.credit !== false) pdf.textWithLink(credit, (pageW - pdf.getTextWidth(credit)) / 2, pageH - 8, { url: creditUrl('pdf') });
       pdf.text(`${i} / ${total}`, pageW - MARGIN_MM, pageH - 8, { align: 'right' });
     }
     pdf.setProperties({ title: doc.title, author: `${doc.author.name} (@${doc.author.handle})`, subject: doc.sourceUrl, creator: 'Xtracticle (xtracticle.com)' });

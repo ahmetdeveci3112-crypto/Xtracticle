@@ -10,6 +10,9 @@ import { compareIdsDesc, snowflakeDate, waybackSnapshot } from './url';
  * and a short negative entry so a failing upstream isn't hammered.
  *
  * Only the SPA may call it (X-Xt-Client: web), so it can't be used as a free CDX proxy.
+ * Free requests get the newest 50 posts; Xtracticle Pro (cookie, see pro.ts) gets the whole list and
+ * `GET /api/archive/:handle.csv`. The cache holds the full list under keys that are never served
+ * directly, so each response is cut to the caller's tier when it is built.
  * Returns null for any other path so the caller can continue routing.
  */
 
@@ -188,19 +191,35 @@ export async function handleArchive(
   request: Request,
   waitUntil?: (p: Promise<unknown>) => void,
   env: ArchiveEnv = {},
+  /** The caller holds a valid Xtracticle Pro cookie (checked by the Worker). */
+  pro = false,
 ): Promise<Response | null> {
   const url = new URL(request.url);
-  const match = url.pathname.match(/^\/api\/archive\/([^/]*)\/?$/);
+  const match = url.pathname.match(/^\/api\/archive\/([^/]*?)(\.csv)?\/?$/);
   if (!match) return null;
   if (request.method !== 'GET') return json({ error: 'method_not_allowed' }, 405);
+  const csv = !!match[2];
 
   let handle = '';
   try {
     handle = decodeURIComponent(match[1]).replace(/^@/, '');
   } catch { /* malformed escape → bad handle */ }
   if (!HANDLE_RE.test(handle)) return json({ error: 'bad_handle' }, 400);
-  if (request.headers.get('X-Xt-Client') !== 'web') return json({ error: 'forbidden' }, 403);
+  // The CSV is opened as a download link, which cannot carry the client header; the Pro cookie is its gate.
+  if (csv) {
+    if (!pro) return json({ error: 'pro_required' }, 402);
+  } else if (request.headers.get('X-Xt-Client') !== 'web') {
+    return json({ error: 'forbidden' }, 403);
+  }
   if (env.ARCHIVE_DISABLED === '1') return json({ error: 'disabled' }, 503);
+
+  // Free and Pro answers differ for the same URL: never let a browser or proxy reuse one for the other.
+  const tier: Record<string, string> = pro ? { 'Cache-Control': 'private, no-store', Vary: 'Cookie' } : { Vary: 'Cookie' };
+  const reply = (s: ArchiveSnapshot, stale: boolean, cacheControl: string, extra: Record<string, string> = {}) => {
+    const headers = { 'Cache-Control': cacheControl, ...extra, ...tier };
+    if (csv) return csvResponse(handle, s, headers);
+    return json(view(handle, s, stale, pro), 200, headers);
+  };
 
   const h = handle.toLowerCase();
   const cache = edgeCache();
@@ -221,14 +240,14 @@ export async function handleArchive(
   const serveStale = async (sources: Record<string, SourceStatus>): Promise<Response | null> => {
     const stale: ArchiveSnapshot | null = await read(staleKey);
     if (!stale) return null;
-    return json(view(handle, { ...stale, sources }, true), 200, { 'Cache-Control': 'no-store', 'X-Xt-Stale': '1' });
+    return reply({ ...stale, sources }, true, 'no-store', { 'X-Xt-Stale': '1' });
   };
 
   const fresh: ArchiveSnapshot | null = await read(fullKey);
   if (fresh) {
     const ttl = fresh.partial ? PARTIAL_SECONDS : FRESH_SECONDS;
     const age = Math.max(0, Math.floor((Date.now() - Date.parse(fresh.fetchedAt)) / 1000));
-    return json(view(handle, fresh, false), 200, { 'Cache-Control': `public, max-age=${Math.max(60, ttl - age)}` });
+    return reply(fresh, false, `public, max-age=${Math.max(60, ttl - age)}`);
   }
 
   // A recent failure: don't ask CDX again for a minute.
@@ -305,7 +324,7 @@ export async function handleArchive(
     return (await serveStale(sources)) ?? json({ error: 'upstream', sources }, 502, { 'Cache-Control': 'no-store' });
   }
   const ttl = snapshot.partial ? PARTIAL_SECONDS : FRESH_SECONDS;
-  return json(view(handle, snapshot, false), 200, { 'Cache-Control': `public, max-age=${ttl}` });
+  return reply(snapshot, false, `public, max-age=${ttl}`);
 }
 
 /**
@@ -320,9 +339,8 @@ function snapshotLink(handle: string, p: { id: string; ts: string; url: string }
   return waybackSnapshot(p.ts, p.url);
 }
 
-/** The public response: the first 50 posts with dates and snapshot links. */
-function view(handle: string, s: ArchiveSnapshot, stale: boolean) {
-  const posts = s.posts.slice(0, FREE_POSTS).map(p => {
+function rows(handle: string, s: ArchiveSnapshot, all: boolean) {
+  return s.posts.slice(0, all ? MAX_POSTS : FREE_POSTS).map(p => {
     const d = snowflakeDate(p.id);
     return {
       id: p.id,
@@ -333,6 +351,11 @@ function view(handle: string, s: ArchiveSnapshot, stale: boolean) {
       captures: p.captures,
     };
   });
+}
+
+/** The public response: the first 50 posts (all collected posts for Pro) with dates and snapshot links. */
+function view(handle: string, s: ArchiveSnapshot, stale: boolean, all = false) {
+  const posts = rows(handle, s, all);
   return {
     handle,
     posts,
@@ -344,4 +367,30 @@ function view(handle: string, s: ArchiveSnapshot, stale: boolean) {
     sources: s.sources,
     fetchedAt: s.fetchedAt,
   };
+}
+
+/** One CSV field: quoted when needed, quotes doubled, formula-looking values neutralized. */
+export function csvField(v: string): string {
+  let out = v;
+  if (/^[=+\-@\t\r]/.test(out)) out = `'${out}`;
+  return /[",\r\n]/.test(out) ? `"${out.replace(/"/g, '""')}"` : out;
+}
+
+/** The Pro CSV: `date,snapshot_url,original_url`, UTF-8 with BOM, CRLF line ends. */
+export function archiveCsv(handle: string, s: ArchiveSnapshot): string {
+  const lines = ['date,snapshot_url,original_url'];
+  for (const r of rows(handle, s, true)) lines.push([r.date || '', r.snapshot, r.url].map(csvField).join(','));
+  return '\uFEFF' + lines.join('\r\n') + '\r\n';
+}
+
+function csvResponse(handle: string, s: ArchiveSnapshot, headers: Record<string, string>): Response {
+  return new Response(archiveCsv(handle, s), {
+    status: 200,
+    headers: {
+      ...headers,
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename="xtracticle-archive-${handle}.csv"`,
+      'X-Content-Type-Options': 'nosniff',
+    },
+  });
 }

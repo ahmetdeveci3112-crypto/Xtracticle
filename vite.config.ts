@@ -8,6 +8,7 @@ import { handleArchive } from './src/shared/archive';
 import { handleMarkdown } from './src/shared/markdown';
 import { handleMcp } from './src/shared/mcp';
 import { handleProfile } from './src/shared/profile';
+import { handlePro } from './src/shared/pro';
 import { sitePages } from './site/plugin';
 
 /**
@@ -61,7 +62,8 @@ function devApi(): Plugin {
           });
           const response = isMcp
             ? await handleMcp(request)
-            : ((await handleArchive(request, undefined, { ARCHIVE_DISABLED: process.env.ARCHIVE_DISABLED, CDX_BASE_URL: process.env.CDX_BASE_URL })) ??
+            : ((await handlePro(request, process.env as Record<string, string | undefined>)) ??
+              (await handleArchive(request, undefined, { ARCHIVE_DISABLED: process.env.ARCHIVE_DISABLED, CDX_BASE_URL: process.env.CDX_BASE_URL })) ??
               (await handleProfile(request, undefined, { PROFILE_DISABLED: process.env.PROFILE_DISABLED })) ??
               (await handleMarkdown(request)) ??
               (await handleApi(request)));

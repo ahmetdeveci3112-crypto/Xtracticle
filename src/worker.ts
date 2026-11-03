@@ -3,10 +3,11 @@ import { handleArchive } from './shared/archive';
 import { handleMarkdown } from './shared/markdown';
 import { handleMcp } from './shared/mcp';
 import { handleProfile } from './shared/profile';
+import { bearerPro, handlePro, proFromRequest, type ProEnv } from './shared/pro';
 import type { FxTweet } from './shared/fx';
 import { titleFromText } from './shared/text';
 
-export interface Env {
+export interface Env extends ProEnv {
   ASSETS: Fetcher;
   /** 40 requests / 10 s per client IP on /api/* (wrangler.json `ratelimits`). */
   API_LIMITER?: RateLimit;
@@ -28,8 +29,9 @@ export interface Env {
  * Cloudflare Worker for Xtracticle. Runs before static assets only for the
  * paths listed in wrangler.json `assets.run_worker_first`:
  *   /api/*                     → JSON API (src/shared/api.ts), /api/markdown/:id (src/shared/markdown.ts),
- *                                /api/archive/:handle (src/shared/archive.ts),
- *                                /api/profile/:handle/posts (src/shared/profile.ts)
+ *                                /api/archive/:handle[.csv] (src/shared/archive.ts),
+ *                                /api/profile/:handle/posts (src/shared/profile.ts),
+ *                                /api/pro/* — Xtracticle Pro license cookie (src/shared/pro.ts)
  *   /mcp                       → remote MCP server (src/shared/mcp.ts)
  *   /{user}/status/{id}        → app shell with per-post meta tags + preloaded data
  * Everything else is served directly from dist/ (with 404.html for unknown paths).
@@ -55,7 +57,8 @@ export default {
       if (!isMarkdownApi && (await rateLimited(request, env))) return tooManyRequests();
       const waitUntil = (p: Promise<unknown>) => ctx.waitUntil(p);
       const res =
-        (await handleArchive(request, waitUntil, env)) ??
+        (await handlePro(request, env)) ??
+        (await handleArchive(request, waitUntil, env, url.pathname.startsWith('/api/archive/') ? (await proFromRequest(request, env)).pro : false)) ??
         (await handleProfile(request, waitUntil, env)) ??
         (await handleMarkdown(request, waitUntil)) ??
         (await handleApi(request, waitUntil));
@@ -87,6 +90,13 @@ export default {
 async function agentGate(request: Request, env: Env, isMcp: boolean): Promise<Response | null> {
   if (env.AGENTS_DISABLED === '1') {
     return agentError(isMcp, 503, 'The Xtracticle MCP server and Markdown API are temporarily disabled. Please use https://xtracticle.com in a browser.');
+  }
+  // A valid Xtracticle Pro license key (Authorization: Bearer …) is exempt from the two limiters;
+  // the WAF rule still applies. A key Polar rejects is refused outright so the owner notices.
+  const bearer = await bearerPro(request, env);
+  if (bearer === 'pro') return null;
+  if (bearer === 'invalid') {
+    return agentError(isMcp, 401, 'This Xtracticle Pro license key is not valid (unknown, expired or revoked). Check it at https://xtracticle.com/pro or remove the Authorization header to use the free quota.');
   }
   const ip = request.headers.get('cf-connecting-ip') || 'unknown';
   if (env.AGENT_IP_LIMITER && !(await env.AGENT_IP_LIMITER.limit({ key: ip })).success) {

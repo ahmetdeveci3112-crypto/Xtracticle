@@ -15,6 +15,7 @@
 - [Save X Articles to Obsidian](https://xtracticle.com/save-x-articles-to-obsidian): One-click Obsidian note with properties
 - [Thread Reader App alternative](https://xtracticle.com/thread-reader-app-alternative): Free comparison — PDF, Markdown and X Articles support
 - [MCP server](https://xtracticle.com/mcp-server): Let Claude, ChatGPT, Cursor and other AI assistants read X posts, threads and Articles as Markdown
+- [Xtracticle Pro](https://xtracticle.com/pro): Paid tier ($5/month, $36/year or $59 once) — full archived-post list with CSV export, batches of 200 links, a license key that lifts the MCP/API rate limits, PDFs without a credit line
 - [Guides](https://xtracticle.com/guides): X Articles (what they are, how to write one, limits), reading without an account, seeing/recovering deleted tweets, the Wayback Machine, backing up your writing
 - [Español](https://xtracticle.com/es/): Descargar artículos e hilos de X
 - [Português](https://xtracticle.com/pt/): Baixar artigos e threads do X
@@ -35,7 +36,7 @@
 - Batch mode: up to 20 links at once, downloaded as one ZIP of Markdown files; a profile link or @handle adds the account's latest 20 public posts (reposts and replies to others excluded)
 - Archived posts finder: paste a profile link (x.com/{user}) or @handle to list that account's posts saved on the Wayback Machine, with links to snapshots near each post's date
 - Deleted posts: when a post can no longer be fetched, Xtracticle offers one-click searches for it on the Wayback Machine and archive.today
-- MCP endpoint for AI assistants: `https://xtracticle.com/mcp` (Streamable HTTP, no auth), tool `read_x_post`
+- MCP endpoint for AI assistants: `https://xtracticle.com/mcp` (Streamable HTTP, no auth), tool `read_x_post`; an Xtracticle Pro license key as `Authorization: Bearer <key>` lifts the free rate limits
 - Markdown API: `GET https://xtracticle.com/api/markdown/{post ID}` (`?format=markdown|text&thread=0|1&front_matter=0|1`)
 - Works only with public posts; private, deleted or age-restricted posts cannot be fetched from X (for deleted posts it points to archived copies instead)
 - Posts are fetched on demand via the open-source FxTwitter API and not stored; anonymous usage is measured with Google Analytics

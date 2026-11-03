@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Archive, Check, Download, ExternalLink, Info, Loader2, RotateCcw, Zap } from 'lucide-react';
+import { Archive, Check, Download, ExternalLink, FileSpreadsheet, Info, Loader2, RotateCcw, Zap } from 'lucide-react';
 import type { Strings } from '../i18n';
 import { waybackProfile } from '../shared/url';
 import { track } from '../lib/analytics';
@@ -45,10 +45,13 @@ export default function ArchivePanel({
   locale,
   onOpenPost,
   onDownloadLatest,
+  pro = false,
 }: {
   handle: string;
   t: Strings;
   locale: string;
+  /** Xtracticle Pro: the Worker returns every collected post and the CSV can be downloaded. */
+  pro?: boolean;
   onOpenPost: (id: string, handle: string) => void;
   /** Opens batch mode with this account's latest posts (works without the Wayback list). */
   onDownloadLatest?: (handle: string) => void;
@@ -71,7 +74,8 @@ export default function ArchivePanel({
     (async () => {
       let data: ArchiveResult | null = null;
       try {
-        const res = await fetch(`/api/archive/${encodeURIComponent(handle)}`, {
+        // `?full=1` only keeps the Pro answer out of the browser's cache entry for the free one (the cookie decides).
+        const res = await fetch(`/api/archive/${encodeURIComponent(handle)}${pro ? '?full=1' : ''}`, {
           headers: { 'X-Xt-Client': 'web' },
           signal: controller.signal,
         });
@@ -106,11 +110,11 @@ export default function ArchivePanel({
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [handle, attempt]);
+  }, [handle, attempt, pro]);
 
   const data = state.kind === 'done' ? state.data : null;
   // "Showing 50 of N": only when there really are more than we list.
-  const showTeaser = !!data && (data.total > data.shown || (data.truncated && data.shown >= 50));
+  const showTeaser = !pro && !!data && (data.total > data.shown || (data.truncated && data.shown >= 50));
   useEffect(() => {
     if (showTeaser && !teaserTracked.current) {
       teaserTracked.current = true;
@@ -211,6 +215,20 @@ export default function ArchivePanel({
             </p>
           )}
           <p className="mx-4 mb-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>{t.archiveNote}</p>
+          {pro && (
+            <p className="mx-4 mb-3">
+              <a
+                href={`/api/archive/${encodeURIComponent(handle)}.csv`}
+                download={`xtracticle-archive-${handle}.csv`}
+                className={rowBtn}
+                style={rowBtnStyle}
+                onClick={() => track('pro_csv', { count: data.shown })}
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5" aria-hidden="true" />
+                {t.proCsv}
+              </a>
+            </p>
+          )}
 
           <ul style={{ borderTop: '1px solid var(--border)' }}>
             {data.posts.map(p => (
@@ -257,7 +275,10 @@ export default function ArchivePanel({
             <div className="p-4 space-y-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
               {showTeaser && (
                 <div className="space-y-2">
-                  <p>{t.archiveProTeaser.replace('{n}', `${data.total.toLocaleString(locale)}${data.truncated ? '+' : ''}`)}</p>
+                  <p>
+                    {t.archiveProTeaser.replace('{n}', `${data.total.toLocaleString(locale)}${data.truncated ? '+' : ''}`)}{' '}
+                    <a href={t.proPath} className={linkClass} onClick={() => track('archive_pro_teaser', { action: 'link' })}>{t.proLearnMore}</a>
+                  </p>
                   {proInterest ? (
                     <p className="flex items-start gap-1.5" style={{ color: 'var(--text-secondary)' }}>
                       <Check className="w-3.5 h-3.5 shrink-0 mt-px" aria-hidden="true" />

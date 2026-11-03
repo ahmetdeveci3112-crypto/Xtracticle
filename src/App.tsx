@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
 import {
   Download, FileText, AlertCircle, Loader2, FileDown, Moon, Sun, Copy, Check, Share2, Clock, ChevronDown,
-  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages, X, CirclePlay, Coffee,
+  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages, X, CirclePlay, Coffee, BadgeCheck,
 } from 'lucide-react';
 import type { FxTweet } from './shared/fx';
 import { translations, LANGS, langInfo, type Lang } from './i18n';
@@ -10,6 +10,7 @@ import { parseInput, parsePath, shareUrl } from './lib/url';
 import { archiveLinks, classifyInput, waybackProfile } from './shared/url';
 import { coffeeUrl } from './shared/support';
 import { track } from './lib/analytics';
+import { logout as proLogout, usePro } from './lib/pro';
 import { demoVideo } from './shared/demo';
 
 // Lazy-load react-markdown + remark-gfm together (~165KB saved from initial bundle)
@@ -66,7 +67,9 @@ const TIP_QUIET_MS = 7 * 24 * 3600 * 1000;
 const BANNER_KEY = 'xtracticle_lang_banner_dismissed';
 const FM_KEY = 'xtracticle_frontmatter';
 const MAX_HISTORY = 20;
-const MAX_BATCH = 20;
+const MAX_BATCH_FREE = 20;
+/** Xtracticle Pro (src/lib/pro.ts). */
+const MAX_BATCH_PRO = 200;
 
 function load<T>(key: string, fallback: T): T {
   try {
@@ -148,6 +151,7 @@ export default function App() {
   const [showHistory, setShowHistory] = useState(false);
   const [withFrontMatter, setWithFrontMatter] = useState<boolean>(() => load(FM_KEY, true));
   const [mode, setMode] = useState<'single' | 'batch'>('single');
+  const pro = usePro();
   /** Text for batch mode to run as soon as it opens (archive panel → "Download latest 20 posts"). */
   const [batchSeed, setBatchSeed] = useState<BatchSeed | null>(null);
   const [speaking, setSpeaking] = useState(false);
@@ -362,9 +366,10 @@ export default function App() {
         setBusy(key);
         const el = previewEl();
         if (key === 'zip') ex.saveBlob(await ex.buildZip(doc, markdownForFile(), base), `${base}.zip`);
-        else if (key === 'epub' && el) ex.saveBlob(await ex.buildEpub(doc, el, doc.lang || lang), `${base}.epub`);
+        // Pro exports carry no Xtracticle credit line.
+        else if (key === 'epub' && el) ex.saveBlob(await ex.buildEpub(doc, el, doc.lang || lang, { credit: !pro.pro }), `${base}.epub`);
         else if (key === 'pdf' && el)
-          ex.saveBlob(await ex.buildPdf(doc, el, (done, total) => total > 2 && setProgress(`${done}/${total}`)), `${base}.pdf`);
+          ex.saveBlob(await ex.buildPdf(doc, el, (done, total) => total > 2 && setProgress(`${done}/${total}`), { credit: !pro.pro }), `${base}.pdf`);
       }
       track('download_done', { format: key, kind: doc.kind, ms: Math.round(performance.now() - started) });
       // Thank-you line, only after something was actually saved and at most once a week.
@@ -475,6 +480,7 @@ export default function App() {
     <div className="relative" style={{ color: 'var(--text-primary)' }}>
       {/* Top controls */}
       <div className="absolute top-4 end-4 z-50 flex gap-2 print:hidden">
+        {pro.pro && <ProBadge t={t} plan={pro.plan} expiresAt={pro.expiresAt} locale={locale} />}
         <label
           className="relative h-10 ps-3 pe-2 rounded-xl flex items-center gap-1.5 text-xs font-semibold btn-secondary focus-within:ring-2"
           style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
@@ -551,7 +557,7 @@ export default function App() {
         </div>
 
         {mode === 'batch' ? (
-          <BatchPanel lang={lang} withFrontMatter={withFrontMatter} seed={batchSeed} onSeedUsed={() => setBatchSeed(null)} />
+          <BatchPanel lang={lang} withFrontMatter={withFrontMatter} seed={batchSeed} onSeedUsed={() => setBatchSeed(null)} pro={pro.pro} />
         ) : (
           <>
             {/* Search Form */}
@@ -635,6 +641,7 @@ export default function App() {
                     handle={archive.handle}
                     t={t}
                     locale={locale}
+                    pro={pro.pro}
                     onOpenPost={(id, handle) => {
                       const input = `https://x.com/${handle}/status/${id}`;
                       setUrl(input);
@@ -976,6 +983,63 @@ function ObsidianIcon() {
   );
 }
 
+/* ─── Pro badge: "Pro ✓" with a tiny menu (plan, sign out). Rendered only for Pro users. ─── */
+function ProBadge({ t, plan, expiresAt, locale }: { t: typeof translations.en; plan?: keyof typeof translations.en.proPlan; expiresAt?: string; locale: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+  const until = expiresAt ? new Date(expiresAt) : null;
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className="h-10 px-3 rounded-xl flex items-center gap-1.5 text-xs font-semibold btn-secondary focus-ring"
+        style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
+      >
+        <BadgeCheck className="w-4 h-4" aria-hidden="true" />
+        Pro
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="absolute end-0 mt-2 w-56 p-3 rounded-xl text-sm animate-slide-up"
+          style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-lg)' }}
+        >
+          <p className="font-semibold">Xtracticle Pro · {t.proPlan[plan || 'pro']}</p>
+          <p className="mt-1 text-xs" style={{ color: 'var(--text-secondary)' }}>
+            {until ? t.proActiveUntil.replace('{date}', until.toLocaleDateString(locale)) : t.proActive}
+          </p>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              void proLogout();
+            }}
+            className="mt-3 w-full px-3 py-1.5 rounded-lg text-xs font-medium btn-secondary focus-ring text-start"
+            style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
+          >
+            {t.proSignOut}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Batch mode ─── */
 type ProfileStatus = 'ok' | 'empty' | 'failed';
 /** One profile link (or @handle) of a batch, expanded into its latest posts. */
@@ -991,6 +1055,8 @@ export interface BatchSeed {
 }
 
 const PROFILE_TIMEOUT_MS = 40_000;
+const BATCH_PACE_MS = 300;
+const RATE_LIMIT_RETRY_MS = 4_000;
 
 /** The latest own posts of an account (GET /api/profile/:handle/posts) as post links. */
 async function fetchProfilePosts(handle: string): Promise<{ status: ProfileStatus; handle: string; urls: string[] }> {
@@ -1020,13 +1086,16 @@ function BatchPanel({
   withFrontMatter,
   seed,
   onSeedUsed,
+  pro,
 }: {
   lang: Lang;
   withFrontMatter: boolean;
   seed?: BatchSeed | null;
   onSeedUsed?: () => void;
+  pro: boolean;
 }) {
   const t = translations[lang];
+  const maxBatch = pro ? MAX_BATCH_PRO : MAX_BATCH_FREE;
   const locale = langInfo(lang).locale;
   const [text, setText] = useState('');
   const [running, setRunning] = useState(false);
@@ -1088,8 +1157,8 @@ function BatchPanel({
       .filter(j => j.parsed?.kind === 'status' && !seen.has(j.parsed.id) && !!seen.add(j.parsed.id))
       // Links the user pasted themselves go first; profile posts fill the rest.
       .sort((a, b) => Number(profileUrls.has(a.input)) - Number(profileUrls.has(b.input)));
-    const jobs = valid.slice(0, MAX_BATCH);
-    if (valid.length > MAX_BATCH) setLimited(true);
+    const jobs = valid.slice(0, maxBatch);
+    if (valid.length > maxBatch) setLimited(true);
     if (!jobs.length) {
       setProgress(found.length ? null : t.invalidLink);
       setRunning(false);
@@ -1100,11 +1169,27 @@ function BatchPanel({
     let done = 0;
     let next = 0;
     setProgress(t.batchProgress(0, jobs.length));
+    // Big (Pro) batches are paced to stay under the API's 40 requests / 10 s per IP; a 429 is retried once.
+    const pace = jobs.length > MAX_BATCH_FREE ? BATCH_PACE_MS : 0;
+    let lastStart = 0;
     const worker = async () => {
       while (next < jobs.length) {
         const job = jobs[next++];
+        if (pace) {
+          const wait = Math.max(0, lastStart + pace - Date.now());
+          lastStart = Date.now() + wait;
+          if (wait) await new Promise(r => setTimeout(r, wait));
+        }
         try {
-          const list = await fetchThread((job.parsed as { id: string }).id, t.fetchError, t.rateLimited);
+          const id = (job.parsed as { id: string }).id;
+          let list: FxTweet[];
+          try {
+            list = await fetchThread(id, t.fetchError, t.rateLimited);
+          } catch (err) {
+            if (!(err instanceof ApiError && err.code === 'rate_limited')) throw err;
+            await new Promise(r => setTimeout(r, RATE_LIMIT_RETRY_MS));
+            list = await fetchThread(id, t.fetchError, t.rateLimited);
+          }
           const doc = buildDoc(list, t.labels, locale);
           out.push({ base: fileBaseName(doc), markdown: (withFrontMatter ? frontMatter(doc) : '') + doc.md });
           res.push({ input: job.input, ok: true, title: doc.title });
@@ -1159,8 +1244,8 @@ function BatchPanel({
       <textarea
         value={text}
         onChange={e => setText(e.target.value)}
-        placeholder={t.batchPlaceholder}
-        aria-label={t.batchPlaceholder}
+        placeholder={t.batchPlaceholder.replace('{max}', String(maxBatch))}
+        aria-label={t.batchPlaceholder.replace('{max}', String(maxBatch))}
         rows={6}
         className="w-full p-4 rounded-2xl text-sm font-mono input-glow focus-ring resize-y"
         style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
@@ -1189,7 +1274,7 @@ function BatchPanel({
           {limited && (
             <li className="flex items-start gap-2" style={{ color: 'var(--text-secondary)' }}>
               <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-1" aria-hidden="true" />
-              <span className="min-w-0">{t.profileBatchLimit.split('{max}').join(String(MAX_BATCH))}</span>
+              <span className="min-w-0">{t.profileBatchLimit.split('{max}').join(String(maxBatch))}</span>
             </li>
           )}
         </ul>
@@ -1203,8 +1288,11 @@ function BatchPanel({
           ))}
         </ul>
       )}
-      {expanded && !running && (
-        <p className="mt-4 text-xs" style={{ color: 'var(--text-tertiary)' }}>{t.profileProTeaser}</p>
+      {expanded && !running && !pro && (
+        <p className="mt-4 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+          {t.profileProTeaser}{' '}
+          <a href={t.proPath} className="underline underline-offset-2 focus-ring rounded">{t.proLearnMore}</a>
+        </p>
       )}
     </div>
   );

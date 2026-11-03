@@ -14,6 +14,7 @@ import { PAGES_AR } from './pages-ar';
 import { curatedPages } from './curated';
 import { mcpPage } from './mcp-page';
 import { privacyPage } from './privacy-page';
+import { PRO_EN, proPage } from './pro-page';
 import { TOOL_PAGES_EN } from './tools-extra';
 import { EXTRA_PAGES as EXTRA_ZH } from './l10n/zh';
 import { EXTRA_PAGES as EXTRA_ES } from './l10n/es';
@@ -541,7 +542,7 @@ const notFound: SitePage = {
 const PAGES_EN: SitePage[] = [home, pdf, markdown, thread, ...TOOL_PAGES_EN, epub, obsidian, alternative];
 
 /** Order = footer order within each language. */
-export const PAGES: SitePage[] = [...PAGES_EN, mcpPage, ...guidePages(), privacyPage, ...curatedPages(), ...PAGES_ES, ...EXTRA_ES, ...PAGES_PT, ...EXTRA_PT, ...PAGES_JA, ...EXTRA_JA, ...PAGES_ZH, ...EXTRA_ZH, ...PAGES_AR, ...EXTRA_AR, ...PAGES_TR, ...EXTRA_TR, notFound];
+export const PAGES: SitePage[] = [...PAGES_EN, mcpPage, proPage('en', PRO_EN), ...guidePages(), privacyPage, ...curatedPages(), ...PAGES_ES, ...EXTRA_ES, ...PAGES_PT, ...EXTRA_PT, ...PAGES_JA, ...EXTRA_JA, ...PAGES_ZH, ...EXTRA_ZH, ...PAGES_AR, ...EXTRA_AR, ...PAGES_TR, ...EXTRA_TR, notFound];
 
 export function pageForPath(pathname: string): SitePage {
   const clean = pathname.split('?')[0].replace(/\.html$/, '');

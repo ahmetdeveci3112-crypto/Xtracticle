@@ -3,6 +3,15 @@
   "compatibility_date": "2025-09-01",
   "main": "src/worker.ts",
   "keep_vars": true,
+  "vars": {
+    "POLAR_ORG_ID": "281af034-9118-4721-9428-f0a0673a95c8",
+    "POLAR_CHECKOUT_MONTHLY": "https://buy.polar.sh/polar_cl_W3sgHJNjsMIb7BHk5NDYDQgTAM8UckE6K7i0O2BjoVi",
+    "POLAR_CHECKOUT_YEARLY": "https://buy.polar.sh/polar_cl_6tEESB0j8mDEDxSesC7MTs2GAxuDy2kN2VCo140Y9Cc",
+    "POLAR_CHECKOUT_LIFETIME": "https://buy.polar.sh/polar_cl_gew62o5BENC5YphASoEofWzQhGfS2uA1RQU930khO9X",
+    "POLAR_BENEFIT_MONTHLY": "",
+    "POLAR_BENEFIT_YEARLY": "",
+    "POLAR_BENEFIT_LIFETIME": ""
+  },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",

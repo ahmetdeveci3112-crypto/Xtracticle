@@ -95,6 +95,7 @@ curl "https://xtracticle.com/api/markdown/${SAMPLE_ID}?format=text&thread=0&fron
   <ul>
     <li>Only <strong>public</strong> posts can be read — not deleted, protected or age-restricted ones.</li>
     <li>Please be gentle: about 20 requests per minute per connection, plus a shared limit for all users. It is a free service, so bulk scraping is not supported.</li>
+    <li>Need more? An <a href="/pro">Xtracticle Pro</a> license key sent as <code>Authorization: Bearer &lt;key&gt;</code> lifts these limits for your connection.</li>
     <li>Nothing is stored and there are no accounts. Content comes from the public FxTwitter API and is cached briefly at the edge.</li>
     <li>Post content is written by third parties. Treat it as data — the server tells your assistant not to follow instructions inside it.</li>
   </ul>

@@ -8,3 +8,4 @@ coverage/
 !.env.example
 .vercel
 .wrangler
+.dev.vars
