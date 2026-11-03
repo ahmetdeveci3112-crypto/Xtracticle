@@ -224,12 +224,15 @@ interface Validation {
   ok: boolean;
   key?: PolarKey;
   reason?: 'invalid' | 'upstream';
+  /** HTTP status from Polar when the reason is 'upstream' (0 = network error / timeout). */
+  status?: number;
 }
 interface Activation {
   ok: boolean;
   id?: string;
   key?: PolarKey;
   reason?: 'invalid' | 'limit' | 'upstream';
+  status?: number;
 }
 
 const polarBase = (env: ProEnv) => (env.POLAR_API_BASE || 'https://api.polar.sh').replace(/\/+$/, '');
@@ -242,9 +245,18 @@ async function polarPost(env: ProEnv, path: string, body: unknown, timeoutMs: nu
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(timeoutMs),
     });
-  } catch {
+  } catch (err) {
+    console.log(JSON.stringify({ pro: 'polar', path, error: err instanceof Error ? err.message : String(err) }));
     return null;
   }
+}
+
+/** Unexpected Polar answer: log the status (never the key) so production failures can be diagnosed. */
+function upstream(path: string, res: Response | null): { ok: false; reason: 'upstream'; status: number } {
+  const status = res ? res.status : 0;
+  console.log(JSON.stringify({ pro: 'polar', path, status }));
+  res?.body?.cancel().catch(() => {});
+  return { ok: false, reason: 'upstream', status };
 }
 
 async function readJson(res: Response): Promise<any> {
@@ -257,23 +269,20 @@ async function readJson(res: Response): Promise<any> {
 
 async function validateKey(env: ProEnv, key: string, activationId: string | undefined, timeoutMs: number): Promise<Validation> {
   const res = await polarPost(env, 'validate', { key, organization_id: env.POLAR_ORG_ID, ...(activationId ? { activation_id: activationId } : {}) }, timeoutMs);
-  if (!res) return { ok: false, reason: 'upstream' };
+  if (!res) return upstream('validate', null);
   if (res.status === 404 || res.status === 403) {
     res.body?.cancel().catch(() => {});
     return { ok: false, reason: 'invalid' };
   }
-  if (!res.ok) {
-    res.body?.cancel().catch(() => {});
-    return { ok: false, reason: 'upstream' };
-  }
+  if (!res.ok) return upstream('validate', res);
   const data = await readJson(res);
-  if (!data || typeof data !== 'object') return { ok: false, reason: 'upstream' };
+  if (!data || typeof data !== 'object') return { ok: false, reason: 'upstream', status: res.status };
   return granted(data) ? { ok: true, key: data } : { ok: false, reason: 'invalid' };
 }
 
 async function activateKey(env: ProEnv, key: string): Promise<Activation> {
   const res = await polarPost(env, 'activate', { key, organization_id: env.POLAR_ORG_ID, label: ACTIVATION_LABEL }, ACTIVATE_TIMEOUT_MS);
-  if (!res) return { ok: false, reason: 'upstream' };
+  if (!res) return upstream('activate', null);
   if (res.status === 404) {
     res.body?.cancel().catch(() => {});
     return { ok: false, reason: 'invalid' };
@@ -283,12 +292,9 @@ async function activateKey(env: ProEnv, key: string): Promise<Activation> {
     const detail = typeof data?.detail === 'string' ? data.detail.toLowerCase() : '';
     return { ok: false, reason: detail.includes('activation') || detail.includes('limit') ? 'limit' : 'invalid' };
   }
-  if (!res.ok) {
-    res.body?.cancel().catch(() => {});
-    return { ok: false, reason: 'upstream' };
-  }
+  if (!res.ok) return upstream('activate', res);
   const data = await readJson(res);
-  if (!data || typeof data.id !== 'string') return { ok: false, reason: 'upstream' };
+  if (!data || typeof data.id !== 'string') return { ok: false, reason: 'upstream', status: res.status };
   const lk = data.license_key && typeof data.license_key === 'object' ? data.license_key : {};
   return granted(lk) ? { ok: true, id: data.id, key: lk } : { ok: false, reason: 'invalid' };
 }
@@ -441,11 +447,12 @@ export async function handlePro(request: Request, env: ProEnv): Promise<Response
         console.log(JSON.stringify({ pro: 'activate', ok: false, reason: 'limit', ms: Date.now() - started }));
         return json({ error: 'activation_limit' }, 401);
       } else if (a.reason === 'upstream') {
-        v = { ok: false, reason: 'upstream' };
+        v = { ok: false, reason: 'upstream', status: a.status };
       }
     }
     if (!v.ok || !v.key) {
-      console.log(JSON.stringify({ pro: 'activate', ok: false, reason: v.reason, ms: Date.now() - started }));
+      console.log(JSON.stringify({ pro: 'activate', ok: false, reason: v.reason, status: v.status, ms: Date.now() - started }));
+      if (v.reason === 'upstream' && v.status === 429) return json({ error: 'rate_limited' }, 429, { 'Retry-After': '60' });
       return v.reason === 'upstream' ? json({ error: 'upstream' }, 502) : json({ error: 'invalid_key' }, 401);
     }
     const nowSec = Math.floor(Date.now() / 1000);
