@@ -3,6 +3,7 @@ import { Archive, Check, Download, ExternalLink, FileSpreadsheet, Info, Loader2,
 import type { Strings } from '../i18n';
 import { waybackProfile } from '../shared/url';
 import { track } from '../lib/analytics';
+import TipRow, { tipAllowed } from './TipRow';
 
 /** Archived posts of an account (GET /api/archive/:handle), shown when a profile link is pasted. */
 
@@ -61,6 +62,7 @@ export default function ArchivePanel({
   const [attempt, setAttempt] = useState(0);
   const teaserTracked = useRef(false);
   const [proInterest, setProInterest] = useState(readProInterest);
+  const [tipOn, setTipOn] = useState(() => tipAllowed(pro));
 
   useEffect(() => {
     const controller = new AbortController();
@@ -145,7 +147,20 @@ export default function ArchivePanel({
       <header className="flex items-start gap-3 p-4">
         <Archive className="w-5 h-5 shrink-0 mt-0.5" style={{ color: 'var(--text-secondary)' }} aria-hidden="true" />
         <div className="min-w-0 flex-1">
-          <h2 className="font-semibold text-base break-words">{t.archiveTitle.replace('{handle}', handle)}</h2>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <h2 className="font-semibold text-base break-words min-w-0">{t.archiveTitle.replace('{handle}', handle)}</h2>
+            {pro && (
+              <span
+                className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[0.7rem] font-semibold leading-tight"
+                style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+                title={t.proArchiveTag}
+              >
+                Pro
+                <Check className="w-3 h-3" strokeWidth={3} aria-hidden="true" />
+                <span className="sr-only">: {t.proArchiveTag}</span>
+              </span>
+            )}
+          </div>
           {onDownloadLatest && (
             <button
               type="button"
@@ -303,6 +318,11 @@ export default function ArchivePanel({
               {data.stale && (
                 <p>{t.archiveStale.replace('{date}', new Date(data.fetchedAt).toLocaleDateString(locale))}</p>
               )}
+            </div>
+          )}
+          {tipOn && !pro && (
+            <div className={`px-4 pb-4 ${showTeaser || data.stale ? '' : 'pt-4'}`}>
+              <TipRow t={t} place="archive_panel" short onHide={() => setTipOn(false)} />
             </div>
           )}
         </>

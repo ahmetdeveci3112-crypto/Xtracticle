@@ -48,6 +48,16 @@ export const PRO_PT: ProCopy = {
   msgRate: 'Muitas tentativas. Aguarde alguns segundos e tente de novo.',
   msgNetwork: 'Erro de rede: verifique sua conexão e tente novamente.',
   success: 'Pagamento recebido, obrigado! Sua chave de licença está no recibo da Gumroad e no e-mail da Gumroad. Cole-a abaixo para ativar o Pro.',
+  activeH2: 'O Pro está ativo',
+  activeIn: 'ativo neste navegador',
+  nowH3: 'O que você pode fazer agora',
+  now: [
+    { title: 'Localizador de tweets apagados', text: 'A lista completa de posts arquivados de qualquer conta, com exportação em CSV', href: '/pt/localizador-de-tweets-apagados' },
+    { title: 'Modo em lote', text: 'Até 200 links em um único ZIP', href: '/pt/?mode=batch' },
+    { title: 'Chave MCP / API', text: 'Use sua chave de licença como token Bearer para ter limites maiores', href: '/pt/servidor-mcp' },
+  ],
+  signOut: 'Sair do Pro',
+  yourPlan: 'Seu plano',
   faq: [
     { q: 'Como recebo minha chave de licença?', a: 'Logo após o pagamento, a Gumroad mostra sua chave de licença na página do recibo e a envia por e-mail (ela também aparece na página de download do produto na Gumroad). Cole a chave no formulário desta página e o Pro fica ativo nesse navegador.' },
     { q: 'Preciso de uma conta?', a: 'Não. O Xtracticle não tem contas. A chave é a única coisa que verificamos; ela fica guardada criptografada em um cookie no seu dispositivo por períodos de 30 dias e se renova sozinha enquanto seu plano estiver ativo.' },

@@ -242,12 +242,17 @@ const SUPPORT_LABEL: Record<Lang, string> = {
   ja: 'コーヒーをおごる', zh: '请我喝杯咖啡', ar: 'ادعمني بفنجان قهوة',
 };
 
+/** Small cup, Buy Me a Coffee yellow; same drawing as CoffeeIcon in src/components/TipRow.tsx. */
+const COFFEE_ICON =
+  '<svg class="xt-coffee-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
+  '<path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" fill="#FFDD00"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3v3M12 3v3"/></svg>';
+
 /** Empty until a support account is configured in src/shared/support.ts. */
 function supportLinks(lang: Lang): string {
   const coffee = coffeeUrl('footer');
   const sponsors = sponsorsUrl();
   return (
-    (coffee ? ` · <a href="${coffee}" rel="noopener">☕ ${SUPPORT_LABEL[lang]}</a>` : '') +
+    (coffee ? ` · <a href="${coffee}" rel="noopener">${COFFEE_ICON}${SUPPORT_LABEL[lang]}</a>` : '') +
     (sponsors ? ` · <a href="${sponsors}" rel="noopener">GitHub Sponsors</a>` : '')
   );
 }

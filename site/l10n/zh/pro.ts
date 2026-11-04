@@ -48,6 +48,16 @@ export const PRO_ZH: ProCopy = {
   msgRate: '尝试次数过多。请等待几秒后重试。',
   msgNetwork: '网络错误——请检查连接后重试。',
   success: '已收到付款，谢谢！你的许可密钥在 Gumroad 收据页面和 Gumroad 发来的邮件中。把它粘贴到下方即可开启 Pro。',
+  activeH2: 'Pro 已启用',
+  activeIn: '已在此浏览器中启用',
+  nowH3: '现在你可以',
+  now: [
+    { title: '已删除推文查找', text: '查看任意账号的完整存档帖子列表，并导出 CSV', href: '/zh/deleted-tweet-finder' },
+    { title: '批量模式', text: '一个 ZIP 最多 200 个链接', href: '/zh/?mode=batch' },
+    { title: 'MCP / API 密钥', text: '把许可证密钥作为 Bearer 令牌使用，享受更高的额度', href: '/zh/mcp-server' },
+  ],
+  signOut: '退出 Pro',
+  yourPlan: '当前方案',
   faq: [
     { q: '如何获得许可密钥？', a: '付款完成后，Gumroad 会立即在收据页面显示许可密钥，并发送到你的邮箱（Gumroad 的产品下载页面中也能看到）。把密钥粘贴到本页的表单中，Pro 就会在该浏览器中启用。' },
     { q: '需要账号吗？', a: '不需要。Xtracticle 没有账号系统。我们只验证密钥；它会以加密形式存放在你设备的 Cookie 中，每次有效 30 天，只要套餐有效就会自动续期。' },

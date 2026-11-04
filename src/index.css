@@ -581,3 +581,87 @@ body {
 .xt-pro-row button:disabled { opacity: 0.6; cursor: wait; }
 .xt-content .xt-pro-msg { margin: 0.6rem 0 0; min-height: 1.3em; font-size: 0.9rem; color: var(--text-primary); }
 .xt-pro-msg.err { color: var(--error-text); }
+
+/* Plan in use: tag on the pricing card (set by the /pro script). */
+.xt-price { position: relative; }
+.xt-price-current { border-color: var(--text-primary); }
+.xt-price-tag {
+  align-self: flex-start;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background-color: var(--accent);
+  color: var(--bg-primary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Success card that replaces the key form once Pro is active. */
+.xt-pro-active {
+  padding: 1.5rem;
+  border: 1px solid var(--text-primary);
+  border-radius: 1rem;
+  background-color: var(--bg-secondary);
+  box-shadow: var(--shadow-md);
+  scroll-margin: 2rem;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* Focused only so screen readers announce it; the black frame already marks it. */
+.xt-pro-active:focus { outline: none; }
+.xt-pro-active-head { display: flex; align-items: center; gap: 1rem; }
+.xt-pro-check {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 999px;
+  background-color: var(--accent);
+  color: var(--bg-primary);
+}
+.xt-content .xt-pro-active h2 { margin: 0; font-size: 1.6rem; line-height: 1.2; }
+.xt-content .xt-pro-active-plan { margin: 0.25rem 0 0; color: var(--text-secondary); }
+.xt-content .xt-pro-now-h {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.xt-content .xt-pro-now { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+.xt-content .xt-pro-now li { margin: 0; padding: 0; border-bottom: 1px solid var(--border); }
+.xt-content .xt-pro-now li::before { content: none; }
+.xt-content .xt-pro-now a {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 0.25rem;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+.xt-content .xt-pro-now a > span:first-child { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+.xt-content .xt-pro-now a span span { font-size: 0.875rem; color: var(--text-secondary); }
+.xt-content .xt-pro-now a:hover strong { text-decoration: underline; text-underline-offset: 2px; }
+.xt-content .xt-pro-now a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 0.5rem; }
+.xt-pro-arrow { flex-shrink: 0; color: var(--text-tertiary); }
+[dir="rtl"] .xt-pro-arrow { transform: scaleX(-1); }
+.xt-pro-signout {
+  margin-top: 1rem;
+  padding: 0.25rem 0;
+  background: none;
+  border: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.xt-pro-signout:hover { color: var(--text-primary); }
+.xt-pro-signout:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 0.25rem; }
+.xt-pro-signout:disabled { opacity: 0.6; cursor: wait; }
+@media (prefers-reduced-motion: reduce) { .xt-pro-active { animation: none; } }
+
+/* Footer coffee icon (site/render.ts). */
+.xt-footer .xt-coffee-ico { display: inline-block; width: 0.95em; height: 0.95em; vertical-align: -0.12em; margin-inline-end: 0.25em; }

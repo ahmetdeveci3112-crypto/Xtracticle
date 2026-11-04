@@ -48,6 +48,16 @@ export const PRO_TR: ProCopy = {
   msgRate: 'Çok fazla deneme yapıldı. Birkaç saniye bekleyip tekrar deneyin.',
   msgNetwork: 'Ağ hatası — bağlantınızı kontrol edip tekrar deneyin.',
   success: 'Ödemeniz alındı, teşekkürler! Lisans anahtarınız Gumroad fişinizde ve Gumroad’dan gelen e-postada. Pro’yu açmak için aşağıya yapıştırın.',
+  activeH2: 'Pro etkin',
+  activeIn: 'bu tarayıcıda etkin',
+  nowH3: 'Şimdi neler yapabilirsiniz?',
+  now: [
+    { title: 'Silinen Tweetleri Bulma', text: 'Herhangi bir hesabın arşivlenmiş gönderilerinin tam listesi ve CSV dışa aktarma', href: '/tr/silinen-tweetleri-bulma' },
+    { title: 'Toplu mod', text: 'Tek ZIP’te 200 linke kadar', href: '/tr/?mode=batch' },
+    { title: 'MCP / API anahtarı', text: 'Daha yüksek sınırlar için lisans anahtarınızı Bearer token olarak kullanın', href: '/tr/mcp-sunucusu' },
+  ],
+  signOut: 'Pro oturumunu kapat',
+  yourPlan: 'Planınız',
   faq: [
     { q: 'Lisans anahtarımı nasıl alırım?', a: 'Ödemenin hemen ardından Gumroad lisans anahtarınızı fiş sayfasında gösterir ve e-postayla da gönderir (Gumroad’daki ürün indirme sayfasında da görünür). Anahtarı bu sayfadaki forma yapıştırın; Pro o tarayıcıda etkinleşir.' },
     { q: 'Hesap açmam gerekiyor mu?', a: 'Hayır. Xtracticle’da hesap yoktur. Kontrol ettiğimiz tek şey anahtardır; cihazınızda şifrelenmiş bir çerezde 30 günlük dönemlerle saklanır ve planınız etkin olduğu sürece kendini yeniler.' },

@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
 import {
   Download, FileText, AlertCircle, Loader2, FileDown, Moon, Sun, Copy, Check, Share2, Clock, ChevronDown,
-  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages, X, CirclePlay, Coffee, BadgeCheck,
+  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages, X, CirclePlay,
 } from 'lucide-react';
 import type { FxTweet } from './shared/fx';
 import { translations, LANGS, langInfo, type Lang } from './i18n';
 import { buildDoc, fileBaseName, frontMatter, type XDoc } from './shared/convert';
 import { parseInput, parsePath, shareUrl } from './lib/url';
 import { archiveLinks, classifyInput, waybackProfile } from './shared/url';
-import { coffeeUrl } from './shared/support';
+import TipRow, { tipAllowed } from './components/TipRow';
 import { track } from './lib/analytics';
 import { logout as proLogout, usePro } from './lib/pro';
 import { demoVideo } from './shared/demo';
@@ -61,9 +61,6 @@ const HISTORY_KEY = 'xtracticle_history';
 const THEME_KEY = 'xtracticle_theme';
 /** Explicit language choice (selector, banner or a language link) — drives redirects. */
 const LANG_KEY = 'xtracticle_lang';
-const TIP_KEY = 'xtracticle_tip';
-/** After a dismissal or click, the tip stays away this long. */
-const TIP_QUIET_MS = 7 * 24 * 3600 * 1000;
 const BANNER_KEY = 'xtracticle_lang_banner_dismissed';
 const FM_KEY = 'xtracticle_frontmatter';
 const MAX_HISTORY = 20;
@@ -150,7 +147,8 @@ export default function App() {
   const [recent, setRecent] = useState<HistoryItem[]>(() => load(HISTORY_KEY, []));
   const [showHistory, setShowHistory] = useState(false);
   const [withFrontMatter, setWithFrontMatter] = useState<boolean>(() => load(FM_KEY, true));
-  const [mode, setMode] = useState<'single' | 'batch'>('single');
+  // `?mode=batch` (links from the /pro page) opens batch mode.
+  const [mode, setMode] = useState<'single' | 'batch'>(() => (new URLSearchParams(location.search).get('mode') === 'batch' ? 'batch' : 'single'));
   const pro = usePro();
   /** Text for batch mode to run as soon as it opens (archive panel → "Download latest 20 posts"). */
   const [batchSeed, setBatchSeed] = useState<BatchSeed | null>(null);
@@ -299,6 +297,7 @@ export default function App() {
     }
     const params = new URLSearchParams(location.search);
     // Share sheets put the link in different fields (often inside `text`) — search them all.
+    if (params.get('mode') === 'batch') window.history.replaceState(null, '', location.pathname);
     const shared = ['url', 'link', 'text', 'title'].map(k => params.get(k)).filter(Boolean).join(' ');
     if (shared) {
       const parsed = parseInput(shared);
@@ -372,11 +371,8 @@ export default function App() {
           ex.saveBlob(await ex.buildPdf(doc, el, (done, total) => total > 2 && setProgress(`${done}/${total}`), { credit: !pro.pro }), `${base}.pdf`);
       }
       track('download_done', { format: key, kind: doc.kind, ms: Math.round(performance.now() - started) });
-      // Thank-you line, only after something was actually saved and at most once a week.
-      if (!tip && coffeeUrl('app') && Date.now() - load<number>(TIP_KEY, 0) > TIP_QUIET_MS) {
-        setTip(true);
-        track('tip_view', { format: key });
-      }
+      // Coffee row after every real save (free users; quiet for 30/90 days after "Not now"/a click).
+      if (tipAllowed(pro.pro)) setTip(true);
     } catch (err) {
       console.error(err);
       const message = String((err as Error)?.message || err).slice(0, 100);
@@ -655,6 +651,15 @@ export default function App() {
                 </Suspense>
               )}
             </form>
+            {pro.pro && (
+              <p
+                className="flex items-center justify-center gap-1.5 text-xs mb-2 print:hidden animate-slide-up"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <Check className="w-3.5 h-3.5 shrink-0" strokeWidth={2.5} aria-hidden="true" />
+                <span>{t.proStatusRow}</span>
+              </p>
+            )}
             <p className="text-center text-xs mb-8 print:hidden" style={{ color: 'var(--text-tertiary)' }}>{t.urlTip}</p>
 
             {/* History */}
@@ -762,38 +767,9 @@ export default function App() {
                       {exportButton('zip', <Archive className="w-3.5 h-3.5" />, t.zip)}
                       {exportButton('txt', <FileText className="w-3.5 h-3.5" />, t.txt)}
                     </div>
-                    {tip && (
-                      <div className="mt-3 flex items-start gap-2 text-sm rounded-lg px-3 py-2" style={secondaryStyle} role="status">
-                        <Coffee className="w-4 h-4 shrink-0 mt-0.5" style={{ color: 'var(--text-secondary)' }} aria-hidden="true" />
-                        <p className="min-w-0" style={{ color: 'var(--text-secondary)' }}>
-                          {t.tipText}{' '}
-                          <a
-                            href={coffeeUrl('app')}
-                            target="_blank"
-                            rel="noopener"
-                            className="underline underline-offset-2 font-medium focus-ring rounded"
-                            style={{ color: 'var(--text-primary)' }}
-                            onClick={() => {
-                              store(TIP_KEY, Date.now());
-                              track('tip_click', { place: 'after_download' });
-                            }}
-                          >
-                            {t.tipCta}
-                          </a>
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setTip(false);
-                            store(TIP_KEY, Date.now());
-                            track('tip_dismiss');
-                          }}
-                          className="ms-auto shrink-0 p-0.5 rounded focus-ring"
-                          aria-label={t.tipDismiss}
-                          title={t.tipDismiss}
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
+                    {tip && !pro.pro && (
+                      <div className="mt-3" role="status">
+                        <TipRow t={t} place="after_download" onHide={() => setTip(false)} />
                       </div>
                     )}
                   </div>
@@ -1006,11 +982,13 @@ function ProBadge({ t, plan, expiresAt, locale }: { t: typeof translations.en; p
         onClick={() => setOpen(o => !o)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="h-10 px-3 rounded-xl flex items-center gap-1.5 text-xs font-semibold btn-secondary focus-ring"
-        style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
+        title={t.proActive}
+        className="h-10 ps-3.5 pe-3 rounded-full flex items-center gap-1 text-xs font-semibold btn-primary focus-ring"
+        style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)', border: '1px solid var(--accent)' }}
       >
-        <BadgeCheck className="w-4 h-4" aria-hidden="true" />
         Pro
+        <Check className="w-3.5 h-3.5" strokeWidth={3} aria-hidden="true" />
+        <span className="sr-only">{t.proActive}</span>
       </button>
       {open && (
         <div

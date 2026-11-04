@@ -55,6 +55,16 @@ export interface ProCopy {
   msgNetwork: string;
   /** Notice shown when the visitor returns from checkout (?status=success). */
   success: string;
+  /** Success card that replaces the key form once Pro is active in this browser. */
+  activeH2: string;
+  /** Line under the heading: "{plan} · …"; the plan name is put in front by the script. */
+  activeIn: string;
+  nowH3: string;
+  /** "What you can do now" rows; `href` is this language's page. */
+  now: { title: string; text: string; href: string }[];
+  signOut: string;
+  /** Small tag on the pricing card of the plan in use. */
+  yourPlan: string;
   faqH2?: string;
   faq: FAQ[];
 }
@@ -80,17 +90,31 @@ function off(){if(soon)soon.hidden=false;}
 fetch('/api/pro/config').then(function(r){return r.json()}).then(function(c){
 if(!c||!c.available){off();return;}
 btns.forEach(function(b){var p=b.getAttribute('data-plan'),u=c.checkout&&c.checkout[p];
-if(!u){return;}b.href=u;b.removeAttribute('aria-disabled');b.addEventListener('click',function(){g('pro_checkout_click',{plan:p})});});
+if(!u){return;}b.href=u;if(!b.parentNode.classList.contains('xt-price-current'))b.removeAttribute('aria-disabled');b.addEventListener('click',function(){g('pro_checkout_click',{plan:p})});});
 }).catch(off);
 var f=document.getElementById('xt-pro-form');if(!f)return;
 var out=f.querySelector('[role=status]'),inp=f.querySelector('input'),btn=f.querySelector('button'),d=f.dataset;
 function say(t,good){out.textContent=t;out.className='xt-pro-msg '+(good?'ok':'err');}
-if(/(^|; )xt_pro_hint=1/.test(document.cookie)){fetch('/api/pro/me',{credentials:'same-origin'}).then(function(r){return r.json()}).then(function(m){if(m&&m.pro)say(d.already,true)}).catch(function(){});}
+var card=document.getElementById('xt-pro-active'),box=document.getElementById('xt-pro-keybox');
+function mark(p){btns.forEach(function(b){var c=b.parentNode,t=c.querySelector('.xt-price-tag'),on=b.getAttribute('data-plan')===p;
+if(on){c.classList.add('xt-price-current');b.setAttribute('aria-disabled','true');b.setAttribute('tabindex','-1');
+if(!t){t=document.createElement('span');t.className='xt-price-tag';t.textContent=card.dataset.your;c.insertBefore(t,c.firstChild);}}
+else if(c.classList.contains('xt-price-current')){c.classList.remove('xt-price-current');b.removeAttribute('tabindex');if(t)t.parentNode.removeChild(t);if(b.getAttribute('href')!=='#')b.removeAttribute('aria-disabled');}});}
+function show(p,scroll){if(!card)return;var n=card.dataset[p];
+card.querySelector('[data-plan-line]').textContent=(n?n+' \\u00b7 ':'')+card.dataset.on;
+card.hidden=false;if(box)box.hidden=true;mark(p);
+if(scroll){var still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+card.scrollIntoView({behavior:still?'auto':'smooth',block:'center'});try{card.focus({preventScroll:true})}catch(e){}}}
+function hide(){if(!card)return;card.hidden=true;if(box)box.hidden=false;mark('');say('',true);try{inp.focus()}catch(e){}}
+if(card){card.querySelector('[data-signout]').addEventListener('click',function(){var s=this;s.disabled=true;
+fetch('/api/pro/logout',{method:'POST',credentials:'same-origin'}).catch(function(){}).then(function(){s.disabled=false;
+try{sessionStorage.removeItem('xt_pro_state')}catch(e){}g('pro_signout',{place:'pro_page'});hide();window.dispatchEvent(new Event('xt:pro'));});});}
+if(/(^|; )xt_pro_hint=1/.test(document.cookie)){fetch('/api/pro/me',{credentials:'same-origin'}).then(function(r){return r.json()}).then(function(m){if(m&&m.pro)show(m.plan,false)}).catch(function(){});}
 f.addEventListener('submit',function(e){e.preventDefault();var k=inp.value.trim();if(!k)return;btn.disabled=true;say(d.working,true);
 fetch('/api/pro/activate',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k})})
 .then(function(r){return r.json().then(function(b){return{s:r.status,b:b}},function(){return{s:r.status,b:null}})})
 .then(function(x){btn.disabled=false;
-if(x.s===200&&x.b&&x.b.pro){say(d.ok,true);inp.value='';g('pro_activate',{ok:true});try{sessionStorage.removeItem('xt_pro_state')}catch(e){}window.dispatchEvent(new Event('xt:pro'));return;}
+if(x.s===200&&x.b&&x.b.pro){say('',true);inp.value='';show(x.b.plan,true);g('pro_activate',{ok:true});try{sessionStorage.removeItem('xt_pro_state')}catch(e){}window.dispatchEvent(new Event('xt:pro'));return;}
 var err=(x.b&&x.b.error)||String(x.s);
 say(x.s===503?d.unavailable:x.s===429?d.rate:err==='activation_limit'?d.limit:x.s===401?d.invalid:d.upstream,false);
 g('pro_activate',{ok:false,error:err});})
@@ -119,6 +143,22 @@ export function proPage(lang: Lang, c: ProCopy): SitePage {
     </div>
     <p class="xt-pro-msg" role="status" aria-live="polite"></p>
   </form>`;
+
+  const active = `<div id="xt-pro-active" class="xt-pro-active" tabindex="-1" role="region" aria-labelledby="xt-pro-active-h" hidden
+    data-monthly="${esc(c.monthly)}" data-yearly="${esc(c.yearly)}" data-lifetime="${esc(c.lifetime)}" data-on="${esc(c.activeIn)}" data-your="${esc(c.yourPlan)}">
+    <div class="xt-pro-active-head">
+      <span class="xt-pro-check" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+      <div>
+        <h2 id="xt-pro-active-h">${esc(c.activeH2)}</h2>
+        <p class="xt-pro-active-plan" data-plan-line></p>
+      </div>
+    </div>
+    <p class="xt-pro-now-h">${esc(c.nowH3)}</p>
+    <ul class="xt-pro-now">${c.now
+      .map(r => `<li><a href="${r.href}"><span><strong>${esc(r.title)}</strong><span>${esc(r.text)}</span></span><span class="xt-pro-arrow" aria-hidden="true">→</span></a></li>`)
+      .join('')}</ul>
+    <button type="button" class="xt-pro-signout" data-signout>${esc(c.signOut)}</button>
+  </div>`;
 
   return {
     id: lang === 'en' ? 'pro' : `${lang}-pro`,
@@ -169,10 +209,13 @@ export function proPage(lang: Lang, c: ProCopy): SitePage {
 </section>
 
 <section id="activate">
-  <h2>${esc(c.keyH2)}</h2>
-  <p>${c.keyIntro}</p>
-  <p id="xt-pro-success" class="xt-pro-success" role="status" hidden>${esc(c.success)}</p>
-  ${form}
+  <div id="xt-pro-keybox">
+    <h2>${esc(c.keyH2)}</h2>
+    <p>${c.keyIntro}</p>
+    <p id="xt-pro-success" class="xt-pro-success" role="status" hidden>${esc(c.success)}</p>
+    ${form}
+  </div>
+  ${active}
 </section>
 <script>${SCRIPT}</script>`,
     faq: c.faq,
@@ -225,6 +268,16 @@ export const PRO_EN: ProCopy = {
   msgRate: 'Too many attempts. Please wait a few seconds and try again.',
   msgNetwork: 'Network error — please check your connection and try again.',
   success: 'Payment received — thank you! Your license key is on your Gumroad receipt and in the e-mail from Gumroad. Paste it below to switch Pro on.',
+  activeH2: 'Pro is active',
+  activeIn: 'active in this browser',
+  nowH3: 'What you can do now',
+  now: [
+    { title: 'Deleted Tweet Finder', text: 'The full archived-post list of any account, with CSV export', href: '/deleted-tweet-finder' },
+    { title: 'Batch mode', text: 'Up to 200 links in one ZIP', href: '/?mode=batch' },
+    { title: 'MCP / API key', text: 'Use your license key as a Bearer token for higher limits', href: '/mcp-server' },
+  ],
+  signOut: 'Sign out of Pro',
+  yourPlan: 'Your plan',
   faq: [
     { q: 'How do I get my license key?', a: 'Right after checkout Gumroad shows your license key on the receipt page and e-mails it to you (it is also on the product’s download page on Gumroad). Paste it into the form on this page and Pro is active in that browser.' },
     { q: 'Do I need an account?', a: 'No. Xtracticle has no accounts. The key is the only thing we check; it is stored encrypted in a cookie on your device for 30 days at a time and renews itself as long as your plan is active.' },
