@@ -103,7 +103,7 @@ The public JSON API used by the web app (please be gentle; responses are cached 
 
 ## Xtracticle Pro
 
-- Optional paid tier, no accounts: a Polar.sh license key (entered on https://xtracticle.com/pro) is checked and kept encrypted in a cookie
+- Optional paid tier, no accounts: a Gumroad license key (entered on https://xtracticle.com/pro) is checked and kept encrypted in a cookie
 - Adds: the full archived-post list of an account (up to 1,500) with CSV export in the Deleted Tweet Finder, batches of 200 links, higher MCP/API quota via the key, PDFs/EPUBs without the Xtracticle credit line
 - Prices: $5/month, $36/year, $59 lifetime (launch price); 14-day refund
 

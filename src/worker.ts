@@ -92,7 +92,7 @@ async function agentGate(request: Request, env: Env, isMcp: boolean): Promise<Re
     return agentError(isMcp, 503, 'The Xtracticle MCP server and Markdown API are temporarily disabled. Please use https://xtracticle.com in a browser.');
   }
   // A valid Xtracticle Pro license key (Authorization: Bearer …) is exempt from the two limiters;
-  // the WAF rule still applies. A key Polar rejects is refused outright so the owner notices.
+  // the WAF rule still applies. A key Gumroad rejects is refused outright so the owner notices.
   const bearer = await bearerPro(request, env);
   if (bearer === 'pro') return null;
   if (bearer === 'invalid') {

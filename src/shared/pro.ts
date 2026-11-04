@@ -1,34 +1,40 @@
 /**
- * Xtracticle Pro: a paid tier unlocked by a Polar.sh license key — no accounts, no database.
+ * Xtracticle Pro: a paid tier unlocked by a Gumroad license key — no accounts, no database.
  *
- *   POST /api/pro/activate { key }  → validates the key with Polar's public customer-portal API and
+ *   POST /api/pro/activate { key }  → verifies the key with Gumroad's public license API and
  *                                     sets the signed, HttpOnly `xt_pro` cookie
- *   GET  /api/pro/me                → { pro, plan, expiresAt } from the cookie (re-validated once a day)
+ *   GET  /api/pro/me                → { pro, plan, expiresAt } from the cookie (re-verified once a day)
  *   POST /api/pro/logout            → clears the cookie
  *   GET  /api/pro/config            → { available, checkout: { monthly, yearly, lifetime } } for the /pro page
  *
  * The cookie is base64url(payload) + "." + base64url(HMAC-SHA256(payload)). The payload holds the
  * license key AES-GCM-encrypted (so a leaked cookie never shows the key), the plan, an expiry and the
- * time of the last successful Polar check. Both keys are derived from PRO_COOKIE_SECRET with HKDF.
+ * time of the last successful Gumroad check. Both keys are derived from PRO_COOKIE_SECRET with HKDF.
  * Everything here is WebCrypto only: the free Workers plan allows 10 ms of CPU per request.
  *
- * Polar's customer-portal endpoints (https://polar.sh/docs/features/benefits/license-keys) need no
- * token: validate answers 200 with status "granted" or 404 for unknown, revoked, disabled and expired
- * keys; activate answers 403 when a key has used up its device activations.
+ * Gumroad's verify endpoint (https://gumroad.com/help/article/76-license-keys) needs no token:
+ * POST https://api.gumroad.com/v2/licenses/verify with form fields product_id, license_key and
+ * increment_uses_count answers 200 { success: true, uses, purchase } or 404 { success: false }
+ * for a key that does not belong to that product. Refunds, chargebacks, lost disputes and ended
+ * memberships are flags on `purchase` — Gumroad keeps answering 200 for them, so they are checked
+ * here. Two products carry Pro: the membership (monthly / yearly) and the one-off lifetime product;
+ * a key is tried against the membership first, then lifetime.
+ *
+ * Gumroad has no device activations. The `uses` counter is incremented only by /activate (never by
+ * the daily recheck or the Bearer path) and a key activated more than MAX_USES times is refused, so
+ * a key posted publicly stops working; the owner resets the counter in the Gumroad sales dashboard.
  */
 
 export interface ProEnv {
-  /** Polar organization ID. Empty = Pro is not for sale yet: /api/pro/* answers 503. */
-  POLAR_ORG_ID?: string;
-  /** Testing only: replaces https://api.polar.sh. */
-  POLAR_API_BASE?: string;
-  POLAR_CHECKOUT_MONTHLY?: string;
-  POLAR_CHECKOUT_YEARLY?: string;
-  POLAR_CHECKOUT_LIFETIME?: string;
-  /** Optional: Polar benefit IDs, so the cookie can name the plan. Unknown benefit → plan "pro". */
-  POLAR_BENEFIT_MONTHLY?: string;
-  POLAR_BENEFIT_YEARLY?: string;
-  POLAR_BENEFIT_LIFETIME?: string;
+  /** Gumroad product IDs (shown in the License key block of each product). Either empty = Pro is not for sale: /api/pro/* answers 503. */
+  GUMROAD_PRODUCT_MEMBERSHIP?: string;
+  GUMROAD_PRODUCT_LIFETIME?: string;
+  /** Checkout links for the three cards on /pro, passed through by /api/pro/config. */
+  GUMROAD_URL_MONTHLY?: string;
+  GUMROAD_URL_YEARLY?: string;
+  GUMROAD_URL_LIFETIME?: string;
+  /** Testing only: replaces https://api.gumroad.com. */
+  GUMROAD_API_BASE?: string;
   /** Secret (wrangler secret / .dev.vars): signs and encrypts the cookie. */
   PRO_COOKIE_SECRET?: string;
 }
@@ -49,10 +55,8 @@ interface Payload {
   p: ProPlan;
   /** Unix seconds: the cookie is dead after this. */
   exp: number;
-  /** Unix seconds of the last successful validation against Polar. */
+  /** Unix seconds of the last successful verification against Gumroad. */
   chk: number;
-  /** Polar activation ID, when the key uses device activations. */
-  a?: string;
 }
 
 export const COOKIE = 'xt_pro';
@@ -69,7 +73,8 @@ const BEARER_BAD_MS = 5 * 60 * 1000;
 const BEARER_CACHE_MAX = 2000;
 const MIN_SECRET_LENGTH = 16;
 const KEY_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{6,198}$/;
-const ACTIVATION_LABEL = 'xtracticle.com';
+/** /activate calls beyond this many on one key answer activation_limit (the counter lives at Gumroad). */
+const MAX_USES = 10;
 const USER_AGENT = 'Xtracticle/3.0 (+https://xtracticle.com; pro)';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' };
@@ -159,9 +164,8 @@ export async function verifyCookie(value: string | null | undefined, secret: str
   }
   if (!p || typeof p !== 'object' || typeof p.k !== 'string' || typeof p.exp !== 'number' || typeof p.chk !== 'number') return null;
   if (!['monthly', 'yearly', 'lifetime', 'pro'].includes(p.p)) return null;
-  if (p.a !== undefined && typeof p.a !== 'string') return null;
   if (!(p.exp > now / 1000)) return null;
-  return { k: p.k, p: p.p, exp: p.exp, chk: p.chk, ...(p.a ? { a: p.a } : {}) };
+  return { k: p.k, p: p.p, exp: p.exp, chk: p.chk };
 }
 
 export async function encryptKey(key: string, secret: string): Promise<string> {
@@ -212,49 +216,40 @@ function cookieHeaders(request: Request, value: string | null): Headers {
   return h;
 }
 
-/* ─── Polar ─── */
+/* ─── Gumroad ─── */
 
-interface PolarKey {
-  status?: string;
-  expires_at?: string | null;
-  benefit_id?: string;
+/** The subset of `purchase` from /v2/licenses/verify that decides access. */
+interface Purchase {
+  product_id?: string;
+  recurrence?: string;
+  refunded?: boolean;
+  chargebacked?: boolean;
+  disputed?: boolean;
+  dispute_won?: boolean;
+  subscription_ended_at?: string | null;
+  subscription_cancelled_at?: string | null;
+  subscription_failed_at?: string | null;
 }
-/* Plain shapes (not discriminated unions): tsconfig.worker.json is not strict, so `!v.ok` would not narrow. */
-interface Validation {
+type Product = 'membership' | 'lifetime';
+/* Plain shape (not a discriminated union): tsconfig.worker.json is not strict, so `!v.ok` would not narrow. */
+interface Verification {
   ok: boolean;
-  key?: PolarKey;
+  plan?: ProPlan;
+  purchase?: Purchase;
+  /** Gumroad's activation counter for the key (after the increment, when one was requested). */
+  uses?: number;
   reason?: 'invalid' | 'upstream';
-  /** HTTP status from Polar when the reason is 'upstream' (0 = network error / timeout). */
-  status?: number;
-}
-interface Activation {
-  ok: boolean;
-  id?: string;
-  key?: PolarKey;
-  reason?: 'invalid' | 'limit' | 'upstream';
+  /** HTTP status from Gumroad when the reason is 'upstream' (0 = network error / timeout). */
   status?: number;
 }
 
-const polarBase = (env: ProEnv) => (env.POLAR_API_BASE || 'https://api.polar.sh').replace(/\/+$/, '');
+const gumroadBase = (env: ProEnv) => (env.GUMROAD_API_BASE || 'https://api.gumroad.com').replace(/\/+$/, '');
+const VERIFY_PATH = '/v2/licenses/verify';
 
-async function polarPost(env: ProEnv, path: string, body: unknown, timeoutMs: number): Promise<Response | null> {
-  try {
-    return await fetch(`${polarBase(env)}/v1/customer-portal/license-keys/${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'User-Agent': USER_AGENT },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(timeoutMs),
-    });
-  } catch (err) {
-    console.log(JSON.stringify({ pro: 'polar', path, error: err instanceof Error ? err.message : String(err) }));
-    return null;
-  }
-}
-
-/** Unexpected Polar answer: log the status (never the key) so production failures can be diagnosed. */
-function upstream(path: string, res: Response | null): { ok: false; reason: 'upstream'; status: number } {
+/** Unexpected Gumroad answer: log the status (never the key) so production failures can be diagnosed. */
+function upstream(res: Response | null, product: Product): Verification {
   const status = res ? res.status : 0;
-  console.log(JSON.stringify({ pro: 'polar', path, status }));
+  console.log(JSON.stringify({ pro: 'gumroad', path: VERIFY_PATH, product, status }));
   res?.body?.cancel().catch(() => {});
   return { ok: false, reason: 'upstream', status };
 }
@@ -267,61 +262,82 @@ async function readJson(res: Response): Promise<any> {
   }
 }
 
-async function validateKey(env: ProEnv, key: string, activationId: string | undefined, timeoutMs: number): Promise<Validation> {
-  const res = await polarPost(env, 'validate', { key, organization_id: env.POLAR_ORG_ID, ...(activationId ? { activation_id: activationId } : {}) }, timeoutMs);
-  if (!res) return upstream('validate', null);
-  if (res.status === 404 || res.status === 403) {
-    res.body?.cancel().catch(() => {});
-    return { ok: false, reason: 'invalid' };
+/**
+ * One verify call for one product. 404 (or a 200 without success) = the key is not this product's;
+ * 200 with success = Gumroad knows the key, and `granted` decides whether it still pays for Pro.
+ */
+async function verifyProduct(env: ProEnv, product: Product, key: string, increment: boolean, timeoutMs: number): Promise<Verification> {
+  const productId = product === 'lifetime' ? env.GUMROAD_PRODUCT_LIFETIME! : env.GUMROAD_PRODUCT_MEMBERSHIP!;
+  const form = new URLSearchParams({ product_id: productId, license_key: key, increment_uses_count: increment ? 'true' : 'false' });
+  let res: Response;
+  try {
+    res = await fetch(gumroadBase(env) + VERIFY_PATH, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'User-Agent': USER_AGENT },
+      body: form.toString(),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch (err) {
+    console.log(JSON.stringify({ pro: 'gumroad', path: VERIFY_PATH, product, error: err instanceof Error ? err.message : String(err) }));
+    return { ok: false, reason: 'upstream', status: 0 };
   }
-  if (!res.ok) return upstream('validate', res);
-  const data = await readJson(res);
-  if (!data || typeof data !== 'object') return { ok: false, reason: 'upstream', status: res.status };
-  return granted(data) ? { ok: true, key: data } : { ok: false, reason: 'invalid' };
-}
-
-async function activateKey(env: ProEnv, key: string): Promise<Activation> {
-  const res = await polarPost(env, 'activate', { key, organization_id: env.POLAR_ORG_ID, label: ACTIVATION_LABEL }, ACTIVATE_TIMEOUT_MS);
-  if (!res) return upstream('activate', null);
   if (res.status === 404) {
     res.body?.cancel().catch(() => {});
     return { ok: false, reason: 'invalid' };
   }
-  if (res.status === 403) {
-    const data = await readJson(res);
-    const detail = typeof data?.detail === 'string' ? data.detail.toLowerCase() : '';
-    return { ok: false, reason: detail.includes('activation') || detail.includes('limit') ? 'limit' : 'invalid' };
-  }
-  if (!res.ok) return upstream('activate', res);
+  if (!res.ok) return upstream(res, product);
   const data = await readJson(res);
-  if (!data || typeof data.id !== 'string') return { ok: false, reason: 'upstream', status: res.status };
-  const lk = data.license_key && typeof data.license_key === 'object' ? data.license_key : {};
-  return granted(lk) ? { ok: true, id: data.id, key: lk } : { ok: false, reason: 'invalid' };
+  if (!data || typeof data !== 'object') return { ok: false, reason: 'upstream', status: res.status };
+  if (data.success !== true) return { ok: false, reason: 'invalid' };
+  const purchase: Purchase = data.purchase && typeof data.purchase === 'object' ? data.purchase : {};
+  const uses = typeof data.uses === 'number' ? data.uses : undefined;
+  if (!granted(purchase)) return { ok: false, reason: 'invalid', uses };
+  return { ok: true, plan: planFor(product, purchase), purchase, uses };
 }
 
-/** "granted" and not past expires_at (subscriptions have no expires_at and are revoked instead). */
-function granted(k: PolarKey): boolean {
-  if (k.status !== 'granted') return false;
-  if (k.expires_at) {
-    const t = Date.parse(k.expires_at);
-    if (Number.isNaN(t) || t <= Date.now()) return false;
-  }
+/**
+ * Verifies a key against the membership product, then the lifetime one (two POSTs at most).
+ * Stops at the first Gumroad failure: if the membership check is down, lifetime is too.
+ */
+async function verifyKey(env: ProEnv, key: string, increment: boolean, timeoutMs: number): Promise<Verification> {
+  const m = await verifyProduct(env, 'membership', key, increment, timeoutMs);
+  if (m.ok || m.reason === 'upstream') return m;
+  const l = await verifyProduct(env, 'lifetime', key, increment, timeoutMs);
+  if (l.ok || l.reason === 'upstream') return l;
+  // Both say invalid: keep the `uses` of the one that knew the key (a refunded sale, say).
+  return m.uses !== undefined ? m : l;
+}
+
+/** A timestamp field that is set and already in the past; Gumroad's membership fields hold the end date. */
+function ended(ts: string | null | undefined, nowMs: number): boolean {
+  if (!ts) return false;
+  const t = Date.parse(ts);
+  return Number.isNaN(t) || t <= nowMs;
+}
+
+/**
+ * Paid and still paying: not refunded, not charged back, no dispute lost, and the membership (if any)
+ * has not ended, failed to renew or passed its cancellation date. A cancellation whose date is still
+ * ahead keeps access until then (the cookie expires at that date, see cookieExp).
+ */
+function granted(p: Purchase, nowMs = Date.now()): boolean {
+  if (p.refunded === true || p.chargebacked === true) return false;
+  if (p.disputed === true && p.dispute_won !== true) return false;
+  if (p.subscription_ended_at || p.subscription_failed_at) return false;
+  if (ended(p.subscription_cancelled_at, nowMs)) return false;
   return true;
 }
 
-function planFor(env: ProEnv, benefitId: string | undefined): ProPlan {
-  if (!benefitId) return 'pro';
-  if (benefitId === env.POLAR_BENEFIT_MONTHLY) return 'monthly';
-  if (benefitId === env.POLAR_BENEFIT_YEARLY) return 'yearly';
-  if (benefitId === env.POLAR_BENEFIT_LIFETIME) return 'lifetime';
-  return 'pro';
+function planFor(product: Product, p: Purchase): ProPlan {
+  if (product === 'lifetime') return 'lifetime';
+  return p.recurrence === 'yearly' ? 'yearly' : 'monthly';
 }
 
-/** Cookie expiry: 30 days, or the key's own expiry if sooner. */
-function cookieExp(k: PolarKey, nowSec: number): number {
+/** Cookie expiry: 30 days, or the membership's cancellation date if sooner. */
+function cookieExp(p: Purchase | undefined, nowSec: number): number {
   let exp = nowSec + COOKIE_SECONDS;
-  if (k.expires_at) {
-    const t = Math.floor(Date.parse(k.expires_at) / 1000);
+  if (p?.subscription_cancelled_at) {
+    const t = Math.floor(Date.parse(p.subscription_cancelled_at) / 1000);
     if (t > nowSec && t < exp) exp = t;
   }
   return exp;
@@ -329,7 +345,7 @@ function cookieExp(k: PolarKey, nowSec: number): number {
 
 const stateOf = (p: Payload): ProState => ({ pro: true, plan: p.p, expiresAt: new Date(p.exp * 1000).toISOString() });
 
-const available = (env: ProEnv) => !!env.POLAR_ORG_ID && !!secretOf(env);
+const available = (env: ProEnv) => !!env.GUMROAD_PRODUCT_MEMBERSHIP && !!env.GUMROAD_PRODUCT_LIFETIME && !!secretOf(env);
 
 /* ─── Public helpers for other handlers ─── */
 
@@ -350,12 +366,12 @@ export const isPro = proFromRequest;
 
 export type BearerResult = 'none' | 'pro' | 'invalid' | 'upstream';
 
-const BEARER_CACHE = new Map<string, { pro: boolean; until: number; activation?: string }>();
+const BEARER_CACHE = new Map<string, { pro: boolean; until: number }>();
 
 /**
- * `Authorization: Bearer <license key>` on the agent endpoints (/mcp, /api/markdown): validated
- * against Polar, with the verdict cached in memory for an hour (five minutes for bad keys).
- * Only a hash of the key is kept.
+ * `Authorization: Bearer <license key>` on the agent endpoints (/mcp, /api/markdown): verified
+ * against Gumroad without touching the uses counter, with the verdict cached in memory for an hour
+ * (five minutes for bad keys). Only a hash of the key is kept.
  */
 export async function bearerPro(request: Request, env: ProEnv): Promise<BearerResult> {
   const auth = request.headers.get('Authorization') || '';
@@ -364,25 +380,14 @@ export async function bearerPro(request: Request, env: ProEnv): Promise<BearerRe
   const key = m[1];
   if (!KEY_RE.test(key)) return 'invalid';
   if (!available(env)) return 'invalid';
-  const id = b64url(new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(`${env.POLAR_ORG_ID}\n${key}`))));
+  const id = b64url(new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(`${env.GUMROAD_PRODUCT_MEMBERSHIP}\n${env.GUMROAD_PRODUCT_LIFETIME}\n${key}`))));
   const now = Date.now();
   const hit = BEARER_CACHE.get(id);
   if (hit && hit.until > now) return hit.pro ? 'pro' : 'invalid';
-  // Same order as /activate: a plain validation first, a device activation only if Polar insists on one.
-  let activation = hit?.activation;
-  let v = await validateKey(env, key, activation, BEARER_TIMEOUT_MS);
-  if (!v.ok && v.reason === 'invalid' && !activation) {
-    const a = await activateKey(env, key);
-    if (a.ok && a.id) {
-      activation = a.id;
-      v = await validateKey(env, key, a.id, BEARER_TIMEOUT_MS);
-    } else if (a.reason === 'upstream') {
-      v = { ok: false, reason: 'upstream' };
-    }
-  }
+  const v = await verifyKey(env, key, false, BEARER_TIMEOUT_MS);
   if (!v.ok && v.reason === 'upstream') return hit ? (hit.pro ? 'pro' : 'invalid') : 'upstream';
   if (BEARER_CACHE.size >= BEARER_CACHE_MAX) BEARER_CACHE.clear();
-  BEARER_CACHE.set(id, { pro: v.ok, until: now + (v.ok ? BEARER_OK_MS : BEARER_BAD_MS), ...(activation ? { activation } : {}) });
+  BEARER_CACHE.set(id, { pro: v.ok, until: now + (v.ok ? BEARER_OK_MS : BEARER_BAD_MS) });
   return v.ok ? 'pro' : 'invalid';
 }
 
@@ -401,7 +406,7 @@ export async function handlePro(request: Request, env: ProEnv): Promise<Response
       {
         available: on,
         checkout: on
-          ? { monthly: env.POLAR_CHECKOUT_MONTHLY || '', yearly: env.POLAR_CHECKOUT_YEARLY || '', lifetime: env.POLAR_CHECKOUT_LIFETIME || '' }
+          ? { monthly: env.GUMROAD_URL_MONTHLY || '', yearly: env.GUMROAD_URL_YEARLY || '', lifetime: env.GUMROAD_URL_LIFETIME || '' }
           : { monthly: '', yearly: '', lifetime: '' },
       },
       200,
@@ -434,36 +439,20 @@ export async function handlePro(request: Request, env: ProEnv): Promise<Response
     if (!KEY_RE.test(key)) return json({ error: 'invalid_key' }, 401);
 
     const started = Date.now();
-    // Keys without device activations validate directly; keys with activations enabled answer 404
-    // until activated, so an activation is tried before giving up.
-    let activationId: string | undefined;
-    let v = await validateKey(env, key, undefined, ACTIVATE_TIMEOUT_MS);
-    if (!v.ok && v.reason === 'invalid') {
-      const a = await activateKey(env, key);
-      if (a.ok && a.id) {
-        activationId = a.id;
-        v = await validateKey(env, key, a.id, ACTIVATE_TIMEOUT_MS);
-      } else if (a.reason === 'limit') {
-        console.log(JSON.stringify({ pro: 'activate', ok: false, reason: 'limit', ms: Date.now() - started }));
-        return json({ error: 'activation_limit' }, 401);
-      } else if (a.reason === 'upstream') {
-        v = { ok: false, reason: 'upstream', status: a.status };
-      }
-    }
-    if (!v.ok || !v.key) {
-      console.log(JSON.stringify({ pro: 'activate', ok: false, reason: v.reason, status: v.status, ms: Date.now() - started }));
+    // The only call that increments Gumroad's uses counter: it counts activations per key.
+    const v = await verifyKey(env, key, true, ACTIVATE_TIMEOUT_MS);
+    if (!v.ok) {
+      console.log(JSON.stringify({ pro: 'activate', ok: false, reason: v.reason, status: v.status, uses: v.uses, ms: Date.now() - started }));
       if (v.reason === 'upstream' && v.status === 429) return json({ error: 'rate_limited' }, 429, { 'Retry-After': '60' });
       return v.reason === 'upstream' ? json({ error: 'upstream' }, 502) : json({ error: 'invalid_key' }, 401);
     }
+    if (typeof v.uses === 'number' && v.uses > MAX_USES) {
+      console.log(JSON.stringify({ pro: 'activate', ok: false, reason: 'limit', plan: v.plan, uses: v.uses, ms: Date.now() - started }));
+      return json({ error: 'activation_limit' }, 401);
+    }
     const nowSec = Math.floor(Date.now() / 1000);
-    const payload: Payload = {
-      k: await encryptKey(key, secret),
-      p: planFor(env, v.key.benefit_id),
-      exp: cookieExp(v.key, nowSec),
-      chk: nowSec,
-      ...(activationId ? { a: activationId } : {}),
-    };
-    console.log(JSON.stringify({ pro: 'activate', ok: true, plan: payload.p, activation: !!activationId, ms: Date.now() - started }));
+    const payload: Payload = { k: await encryptKey(key, secret), p: v.plan || 'pro', exp: cookieExp(v.purchase, nowSec), chk: nowSec };
+    console.log(JSON.stringify({ pro: 'activate', ok: true, plan: payload.p, uses: v.uses, ms: Date.now() - started }));
     return withCookie(request, await signPayload(payload, secret), stateOf(payload));
   }
 
@@ -483,9 +472,9 @@ export async function handlePro(request: Request, env: ProEnv): Promise<Response
   if (nowSec - payload.chk < RECHECK_SECONDS) return json(stateOf(payload));
 
   const key = await decryptKey(payload.k, secret);
-  const v: Validation = key ? await validateKey(env, key, payload.a, RECHECK_TIMEOUT_MS) : { ok: false, reason: 'invalid' };
-  if (v.ok && v.key) {
-    const fresh: Payload = { ...payload, p: planFor(env, v.key.benefit_id), exp: cookieExp(v.key, nowSec), chk: nowSec };
+  const v: Verification = key ? await verifyKey(env, key, false, RECHECK_TIMEOUT_MS) : { ok: false, reason: 'invalid' };
+  if (v.ok) {
+    const fresh: Payload = { ...payload, p: v.plan || 'pro', exp: cookieExp(v.purchase, nowSec), chk: nowSec };
     console.log(JSON.stringify({ pro: 'recheck', ok: true, plan: fresh.p }));
     return withCookie(request, await signPayload(fresh, secret), stateOf(fresh));
   }
@@ -496,7 +485,7 @@ export async function handlePro(request: Request, env: ProEnv): Promise<Response
     headers.set('Cache-Control', 'no-store');
     return new Response(JSON.stringify({ pro: false }), { status: 200, headers });
   }
-  // Polar unreachable: keep trusting the cookie until its own expiry.
+  // Gumroad unreachable: keep trusting the cookie until its own expiry.
   return json({ ...stateOf(payload), stale: true });
 }
 

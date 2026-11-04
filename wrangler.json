@@ -4,13 +4,11 @@
   "main": "src/worker.ts",
   "keep_vars": true,
   "vars": {
-    "POLAR_ORG_ID": "",
-    "POLAR_CHECKOUT_MONTHLY": "https://buy.polar.sh/polar_cl_W3sgHJNjsMIb7BHk5NDYDQgTAM8UckE6K7i0O2BjoVi",
-    "POLAR_CHECKOUT_YEARLY": "https://buy.polar.sh/polar_cl_6tEESB0j8mDEDxSesC7MTs2GAxuDy2kN2VCo140Y9Cc",
-    "POLAR_CHECKOUT_LIFETIME": "https://buy.polar.sh/polar_cl_gew62o5BENC5YphASoEofWzQhGfS2uA1RQU930khO9X",
-    "POLAR_BENEFIT_MONTHLY": "",
-    "POLAR_BENEFIT_YEARLY": "",
-    "POLAR_BENEFIT_LIFETIME": ""
+    "GUMROAD_PRODUCT_MEMBERSHIP": "zRyxi6_UZTOjng_IESQhkA==",
+    "GUMROAD_PRODUCT_LIFETIME": "hGyDc5sjkcwOajGlD00fsQ==",
+    "GUMROAD_URL_MONTHLY": "https://gumroad.com/checkout?product=jjhcgr&option=097Q4L16dycOtUBN5f2LrQ%3D%3D&recurrence=monthly&quantity=1",
+    "GUMROAD_URL_YEARLY": "https://gumroad.com/checkout?product=jjhcgr&option=097Q4L16dycOtUBN5f2LrQ%3D%3D&recurrence=yearly&quantity=1",
+    "GUMROAD_URL_LIFETIME": "https://gumroad.com/checkout?product=inexys&quantity=1"
   },
   "assets": {
     "directory": "./dist",

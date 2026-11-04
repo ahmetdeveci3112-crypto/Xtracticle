@@ -1,7 +1,7 @@
 import { GITHUB, type FAQ, type Lang, type SitePage } from './blocks';
 
 /**
- * /pro (and /tr/pro, /es/pro, …): Xtracticle Pro — license-key based paid tier sold through Polar.sh.
+ * /pro (and /tr/pro, /es/pro, …): Xtracticle Pro — license-key based paid tier sold through Gumroad.
  *
  * The static page cannot read Worker variables, so the price buttons start disabled and a small
  * inline script fills their links from GET /api/pro/config (which also says whether Pro is on sale
@@ -114,7 +114,7 @@ export function proPage(lang: Lang, c: ProCopy): SitePage {
     data-rate="${esc(c.msgRate)}" data-network="${esc(c.msgNetwork)}">
     <label for="xt-pro-key">${esc(c.keyLabel)}</label>
     <div class="xt-pro-row">
-      <input id="xt-pro-key" name="key" type="text" inputmode="text" spellcheck="false" autocapitalize="characters" placeholder="XTPRO-…" maxlength="200" required dir="ltr" />
+      <input id="xt-pro-key" name="key" type="text" inputmode="text" spellcheck="false" autocapitalize="characters" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" maxlength="200" required dir="ltr" />
       <button type="submit">${esc(c.activate)}</button>
     </div>
     <p class="xt-pro-msg" role="status" aria-live="polite"></p>
@@ -210,26 +210,26 @@ export const PRO_EN: ProCopy = {
   buy: 'Get Pro',
   soon: 'Pro is almost ready. Checkout opens in a few days — everything on this page stays free until then.',
   checkoutHint:
-    'Payments are handled by <a href="https://polar.sh" rel="noopener">Polar</a> (card, Apple Pay, Google Pay). Your license key arrives by e-mail within a minute of paying — no account on Xtracticle is created.',
+    'Payments are handled by <a href="https://gumroad.com" rel="noopener">Gumroad</a> (card, Apple Pay, Google Pay). Your license key is shown on the receipt page right after paying and also arrives by e-mail from Gumroad — no account on Xtracticle is created.',
   keyH2: 'Already have a key? Enter it here',
-  keyIntro: 'Paste the license key from your Polar e-mail. Pro is then active in this browser; repeat on each device you use.',
+  keyIntro: 'Paste the license key from your Gumroad receipt (on the page after checkout or in the e-mail). Pro is then active in this browser; repeat on each device you use.',
   keyLabel: 'License key',
   activate: 'Activate',
   msgWorking: 'Checking your key…',
   msgOk: 'Pro is active in this browser. Enjoy!',
   msgAlready: 'Pro is already active in this browser.',
-  msgInvalid: 'This key was not recognized. Check for typos — the key starts with XTPRO — or whether the subscription has ended.',
-  msgLimit: 'This key is already active on 3 devices. Remove one in your Polar customer portal (link in your receipt e-mail) and try again.',
+  msgInvalid: 'This key was not recognized. Check for typos or whether the subscription has ended.',
+  msgLimit: 'This key has been activated too many times. If you are the buyer, contact us via GitHub or @DvciAhmet on X and we’ll reset it.',
   msgUpstream: 'The license server did not answer. Please try again in a minute.',
   msgUnavailable: 'Pro is not open yet. Please check back in a few days.',
   msgRate: 'Too many attempts. Please wait a few seconds and try again.',
   msgNetwork: 'Network error — please check your connection and try again.',
-  success: 'Payment received — thank you! Your license key is in the e-mail from Polar. Paste it below to switch Pro on.',
+  success: 'Payment received — thank you! Your license key is on your Gumroad receipt and in the e-mail from Gumroad. Paste it below to switch Pro on.',
   faq: [
-    { q: 'How do I get my license key?', a: 'Right after checkout Polar e-mails you a license key (it also appears on the confirmation page and in Polar’s customer portal). Paste it into the form on this page and Pro is active in that browser.' },
+    { q: 'How do I get my license key?', a: 'Right after checkout Gumroad shows your license key on the receipt page and e-mails it to you (it is also on the product’s download page on Gumroad). Paste it into the form on this page and Pro is active in that browser.' },
     { q: 'Do I need an account?', a: 'No. Xtracticle has no accounts. The key is the only thing we check; it is stored encrypted in a cookie on your device for 30 days at a time and renews itself as long as your plan is active.' },
-    { q: 'On how many devices does a key work?', a: 'Up to 3 at the same time. Enter the same key in each browser you use. You can remove a device in Polar’s customer portal.' },
-    { q: 'Can I cancel?', a: 'Yes, anytime, from the customer-portal link in your receipt e-mail. Pro stays active until the end of the period you paid for. The lifetime plan is a single payment with nothing to cancel.' },
+    { q: 'On how many devices does a key work?', a: 'On every device you use: enter the same key in each browser. The key is checked once a day, so it keeps working as long as your plan is active.' },
+    { q: 'Can I cancel?', a: 'Yes, anytime, from the “Manage membership” link in your Gumroad receipt or subscription e-mail. Pro stays active until the end of the period you paid for. The lifetime plan is a single payment with nothing to cancel.' },
     { q: 'Is there a refund?', a: 'Yes: 14 days, no questions asked. Open an issue on GitHub or message @DvciAhmet on X and the payment is refunded.' },
     { q: 'Does Pro change what free users get?', a: 'No. Single posts, threads, Articles, every export format, the first 50 archived posts and batches of 20 stay free, with no ads and no login.' },
     { q: 'Where do I ask questions?', a: `Open an issue on GitHub (${GITHUB.replace('https://', '')}) or send a message to @DvciAhmet on X.` },
