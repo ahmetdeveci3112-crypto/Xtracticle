@@ -241,7 +241,8 @@ const deletedFinder: SitePage = {
     </tbody>
   </table></div>
   <p>Need more than the newest 50? <a href="/pro">Xtracticle Pro</a> shows every archived post the Wayback Machine holds for an account
-  (up to 1,500) and exports it as CSV. From $3 a month billed yearly, or $59 once.</p>
+  (up to 1,500) and exports it as CSV. From $3 a month billed yearly, or $59 once. Pro also includes <a href="/pro#watch">Watch</a>:
+  it checks up to 5 public accounts every hour (2 on lifetime) and keeps the text of any post that gets deleted, delivered as a feed or an e-mail digest.</p>
 </section>
 
 <section>

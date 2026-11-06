@@ -420,7 +420,8 @@ const deletedFinder: SitePage = {
     </tbody>
   </table></div>
   <p>Precisa de mais do que os 50 mais recentes? O <a href="/pt/pro">Xtracticle Pro</a> mostra todos os posts arquivados que o Wayback Machine
-  guarda de uma conta (até 1.500) e exporta tudo em CSV. A partir de US$ 3 por mês no plano anual, ou US$ 59 uma única vez.</p>
+  guarda de uma conta (até 1.500) e exporta tudo em CSV. A partir de US$ 3 por mês no plano anual, ou US$ 59 uma única vez. O Pro também inclui o <a href="/pt/pro#watch">Watch</a>:
+  ele verifica até 5 contas públicas a cada hora (2 no vitalício) e guarda o texto de qualquer post apagado, entregue como feed ou resumo por e-mail.</p>
 </section>
 
 <section>

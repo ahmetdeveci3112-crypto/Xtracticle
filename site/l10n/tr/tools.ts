@@ -418,7 +418,8 @@ const deletedFinder: SitePage = {
     </tbody>
   </table></div>
   <p>En yeni 50 gönderi yetmiyor mu? <a href="/tr/pro">Xtracticle Pro</a>, Wayback Machine’in bir hesap için sakladığı tüm arşivlenmiş gönderileri
-  (1.500’e kadar) gösterir ve CSV olarak dışa aktarır. Yıllık ödemede ayda 3 $’dan başlar ya da tek seferlik 59 $.</p>
+  (1.500’e kadar) gösterir ve CSV olarak dışa aktarır. Yıllık ödemede ayda 3 $’dan başlar ya da tek seferlik 59 $. Pro’da <a href="/tr/pro#watch">Watch</a> da var:
+  herkese açık 5 hesaba kadar (ömür boyu planda 2) her saat bakar ve silinen gönderilerin metnini saklar; akış ya da e-posta özeti olarak size ulaşır.</p>
 </section>
 
 <section>

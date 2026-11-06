@@ -663,5 +663,91 @@ body {
 .xt-pro-signout:disabled { opacity: 0.6; cursor: wait; }
 @media (prefers-reduced-motion: reduce) { .xt-pro-active { animation: none; } }
 
+/* Watch manager inside the Pro-active card (filled by the /pro script). */
+#watch { scroll-margin-top: 2rem; }
+.xt-watch { scroll-margin-top: 2rem; }
+.xt-content .xt-watch p { margin: 0; }
+.xt-content .xt-watch .xt-pro-now-h { margin: 1.75rem 0 0.5rem; }
+.xt-content .xt-watch .xt-watch-intro { margin: 0 0 0.6rem; font-size: 0.9rem; line-height: 1.6; }
+.xt-content .xt-watch-count { font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+.xt-content .xt-watch-state, .xt-content .xt-watch-unavail { padding: 0.6rem 0; font-size: 0.9rem; }
+.xt-content .xt-watch-list { list-style: none; margin: 0.5rem 0 1rem; padding: 0; border-top: 1px solid var(--border); }
+.xt-content .xt-watch-list:empty { display: none; }
+.xt-content .xt-watch-list > li { margin: 0; padding: 0.9rem 0.25rem; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; }
+.xt-content .xt-watch-list li::before { content: none; }
+.xt-watch-top { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.xt-content a.xt-watch-handle { font-weight: 600; text-decoration: none; overflow-wrap: anywhere; }
+.xt-content a.xt-watch-handle:hover { text-decoration: underline; }
+.xt-watch-badge {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.xt-watch-badge.on { border-color: var(--text-primary); color: var(--text-primary); }
+.xt-content .xt-watch-note, .xt-content .xt-watch-hint { font-size: 0.8rem; line-height: 1.5; color: var(--text-tertiary); }
+.xt-content .xt-watch-meta { font-size: 0.85rem; line-height: 1.5; overflow-wrap: anywhere; }
+.xt-watch-meta span + span::before { content: " · "; color: var(--text-tertiary); }
+.xt-content .xt-watch-feeds { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.9rem; font-size: 0.85rem; }
+.xt-watch-label { font-weight: 600; color: var(--text-primary); }
+.xt-watch-feed { display: inline-flex; align-items: center; gap: 0.4rem; }
+.xt-content .xt-watch-sub {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.xt-content .xt-watch-events { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+.xt-content .xt-watch-events li { margin: 0; padding-inline-start: 0.75rem; border-inline-start: 2px solid var(--border); font-size: 0.85rem; line-height: 1.5; min-width: 0; }
+.xt-content .xt-watch-ev-h { display: flex; flex-wrap: wrap; gap: 0 0.5rem; }
+.xt-content .xt-watch-ev-h span { color: var(--text-tertiary); }
+.xt-content .xt-watch-ev-t { color: var(--text-primary); overflow-wrap: anywhere; }
+.xt-content .xt-watch-ev-l { display: flex; flex-wrap: wrap; gap: 0 0.9rem; }
+.xt-watch-ctrl, .xt-watch-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.35rem; }
+.xt-watch-ctrl[hidden], .xt-watch-confirm[hidden], .xt-watch-email[hidden], .xt-watch-add[hidden] { display: none; }
+.xt-watch-confirm > span { flex-basis: 100%; font-size: 0.85rem; color: var(--text-primary); }
+.xt-watch-mode { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--text-secondary); }
+.xt-watch select {
+  max-width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+.xt-watch .xt-pro-row select { padding: 0.7rem 0.6rem; border-radius: 0.75rem; font-size: 0.95rem; }
+.xt-watch select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.xt-watch .xt-pro-row input:disabled, .xt-watch select:disabled { opacity: 0.6; }
+.xt-watch .xt-pro-row button:disabled { cursor: not-allowed; }
+.xt-watch-mini {
+  padding: 0.35rem 0.7rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.xt-watch-mini:hover { border-color: var(--text-secondary); }
+.xt-watch-mini:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.xt-watch-mini:disabled { opacity: 0.6; cursor: wait; }
+.xt-watch-mini[hidden] { display: none; }
+.xt-watch-del { color: var(--error-text); }
+.xt-watch-email { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.35rem; align-items: flex-start; }
+.xt-watch-email .xt-pro-row { width: 100%; }
+.xt-watch-email label, .xt-watch-add label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); }
+.xt-watch-email input { font-family: inherit; }
+.xt-watch-add { margin-top: 0.25rem; }
+.xt-watch-add label { margin-bottom: 0.4rem; }
+.xt-content .xt-watch-full { margin-top: 0.5rem; font-size: 0.85rem; }
+.xt-content .xt-watch .xt-pro-msg { margin-top: 0.4rem; min-height: 0; }
+
 /* Footer coffee icon (site/render.ts). */
 .xt-footer .xt-coffee-ico { display: inline-block; width: 0.95em; height: 0.95em; vertical-align: -0.12em; margin-inline-end: 0.25em; }

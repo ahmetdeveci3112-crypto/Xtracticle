@@ -379,7 +379,7 @@ const deletedFinder: SitePage = {
       <tr><td>适合</td><td>一次性查看某个账号发过什么</td><td>长期监控特定账号</td></tr>
     </tbody>
   </table></div>
-  <p>最新 50 条不够用？<a href="/zh/pro">Xtracticle Pro</a> 会显示 Wayback Machine 为该账号保存的全部存档帖子（最多 1500 条），并可导出为 CSV。按年付费折合每月 3 美元起，或一次性支付 59 美元。</p>
+  <p>最新 50 条不够用？<a href="/zh/pro">Xtracticle Pro</a> 会显示 Wayback Machine 为该账号保存的全部存档帖子（最多 1500 条），并可导出为 CSV。按年付费折合每月 3 美元起，或一次性支付 59 美元。Pro 还包含 <a href="/zh/pro#watch">Watch</a>：每小时检查最多 5 个公开账号（终身版为 2 个），并保存被删除帖子的文字，通过订阅源或邮件摘要发送给你。</p>
 </section>
 
 <section>
