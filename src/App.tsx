@@ -287,10 +287,13 @@ export default function App() {
     }
   }, [t, applyResult]);
 
-  // Deep links: /{user}/status/{id}, ?url= / ?link= / ?text= (PWA share target, bookmarklet)
+  // Deep links: /{user}/status/{id}, ?url= / ?link= / ?text= (PWA share target, bookmarklet, iOS shortcut)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const wantImage = params.get('img') === '1' || params.get('action') === 'image';
+    const wantImage =
+      params.get('img') === '1' ||
+      params.get('action') === 'image' ||
+      params.get('utm_source') === 'ios-shortcut';
     if (wantImage) autoOpenImageRef.current = true;
     const fromPath = parsePath(location.pathname);
     if (fromPath) {
