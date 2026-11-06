@@ -3,11 +3,15 @@ import { handleArchive } from './shared/archive';
 import { handleMarkdown } from './shared/markdown';
 import { handleMcp } from './shared/mcp';
 import { handleProfile } from './shared/profile';
-import { bearerPro, handlePro, proFromRequest, type ProEnv } from './shared/pro';
+import { bearerPro, handlePro, proFromRequest } from './shared/pro';
 import type { FxTweet } from './shared/fx';
 import { titleFromText } from './shared/text';
+import { handleWatch } from './shared/watch/api';
+import { runWatchCron } from './shared/watch/cron';
+import type { WatchEnv } from './shared/watch/db';
 
-export interface Env extends ProEnv {
+/** WatchEnv carries ProEnv, FxEnv (FX_BASE_URL) and the Watch bindings/vars (src/shared/watch/db.ts). */
+export interface Env extends WatchEnv {
   ASSETS: Fetcher;
   /** 40 requests / 10 s per client IP on /api/* (wrangler.json `ratelimits`). */
   API_LIMITER?: RateLimit;
@@ -31,10 +35,13 @@ export interface Env extends ProEnv {
  *   /api/*                     → JSON API (src/shared/api.ts), /api/markdown/:id (src/shared/markdown.ts),
  *                                /api/archive/:handle[.csv] (src/shared/archive.ts),
  *                                /api/profile/:handle/posts (src/shared/profile.ts),
- *                                /api/pro/* — Xtracticle Pro license cookie (src/shared/pro.ts)
+ *                                /api/pro/* — Xtracticle Pro license cookie (src/shared/pro.ts),
+ *                                /api/watch/* — Pro account monitoring (src/shared/watch/api.ts)
  *   /mcp                       → remote MCP server (src/shared/mcp.ts)
  *   /{user}/status/{id}        → app shell with per-post meta tags + preloaded data
  * Everything else is served directly from dist/ (with 404.html for unknown paths).
+ * The `scheduled` handler (wrangler.json `triggers.crons`, every 5 min) runs the Watch poller
+ * (src/shared/watch/cron.ts); it needs the WATCH_DB D1 binding and does nothing without it.
  */
 
 const STATUS_PATH = /^\/(?:([A-Za-z0-9_]{1,15})|i(?:\/web)?)\/status(?:es)?\/(\d{1,25})\/?$/;
@@ -58,6 +65,7 @@ export default {
       const waitUntil = (p: Promise<unknown>) => ctx.waitUntil(p);
       const res =
         (await handlePro(request, env)) ??
+        (await handleWatch(request, env, waitUntil)) ??
         (await handleArchive(request, waitUntil, env, url.pathname.startsWith('/api/archive/') ? (await proFromRequest(request, env)).pro : false)) ??
         (await handleProfile(request, waitUntil, env)) ??
         (await handleMarkdown(request, waitUntil)) ??
@@ -79,6 +87,10 @@ export default {
     }
 
     return env.ASSETS.fetch(request);
+  },
+
+  async scheduled(controller: ScheduledController, env: Env): Promise<void> {
+    await runWatchCron(env, controller.scheduledTime);
   },
 } satisfies ExportedHandler<Env>;
 

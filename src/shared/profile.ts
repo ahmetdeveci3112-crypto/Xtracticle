@@ -1,4 +1,4 @@
-import { FX_BASE } from './fx';
+import { fxBase, type FxEnv } from './fx';
 import { compareIdsDesc } from './url';
 
 /**
@@ -14,7 +14,7 @@ import { compareIdsDesc } from './url';
  * Returns null for any other path so the caller can continue routing.
  */
 
-export interface ProfileEnv {
+export interface ProfileEnv extends FxEnv {
   /** Kill switch: "1" turns the endpoint off. */
   PROFILE_DISABLED?: string;
 }
@@ -36,14 +36,15 @@ export interface ProfileResult {
 }
 
 /** The fields we read from one FxTwitter v2 status. */
-interface RawStatus {
+export interface RawStatus {
   id?: unknown;
   text?: unknown;
   created_at?: unknown;
   created_timestamp?: unknown;
-  author?: { screen_name?: unknown } | null;
+  author?: { screen_name?: unknown; name?: unknown } | null;
   replying_to?: { screen_name?: unknown; status?: unknown } | null;
   reposted_by?: unknown;
+  media?: { photos?: unknown; videos?: unknown } | null;
 }
 
 const HANDLE_RE = /^[A-Za-z0-9_]{1,15}$/;
@@ -80,7 +81,7 @@ function edgeCache(): Cache | undefined {
 /* ─── Pure helpers (exported for tests) ─── */
 
 /** An own post kept from the timeline, before it is turned into the public shape. */
-interface OwnPost {
+export interface OwnPost {
   id: string;
   /** Parent post ID when this is a reply to the account itself. */
   parent: string | null;
@@ -135,7 +136,7 @@ export function foldThreads(posts: OwnPost[]): { post: OwnPost; thread: boolean 
   return kept.map(post => ({ post, thread: threads.has(post.id) }));
 }
 
-function isoDate(r: RawStatus): string {
+export function isoDate(r: RawStatus): string {
   if (typeof r.created_timestamp === 'number' && r.created_timestamp > 0) return new Date(r.created_timestamp * 1000).toISOString();
   const parsed = typeof r.created_at === 'string' ? Date.parse(r.created_at) : NaN;
   return Number.isNaN(parsed) ? '' : new Date(parsed).toISOString();
@@ -167,9 +168,9 @@ export function toPublic(handle: string, item: { post: OwnPost; thread: boolean 
 
 type Page = { status: 'ok'; results: unknown; cursor: string | null } | { status: 'not_found' } | { status: 'error' };
 
-async function fetchPage(handle: string, cursor: string | null): Promise<Page> {
+async function fetchPage(base: string, handle: string, cursor: string | null): Promise<Page> {
   const url =
-    `${FX_BASE}/2/profile/${encodeURIComponent(handle)}/statuses?count=${PAGE_SIZE}` +
+    `${base}/2/profile/${encodeURIComponent(handle)}/statuses?count=${PAGE_SIZE}` +
     (cursor ? `&cursor=${encodeURIComponent(cursor)}` : '');
   try {
     const res = await fetch(url, {
@@ -192,6 +193,70 @@ async function fetchPage(handle: string, cursor: string | null): Promise<Page> {
   } catch {
     return { status: 'error' };
   }
+}
+
+export interface TimelineOptions {
+  /** Stop once this many own posts are collected (after folding, for the profile endpoint; raw for Watch). */
+  maxPosts: number;
+  maxPages: number;
+  /** FxTwitter base URL (see fxBase). */
+  base: string;
+  /** Count folded threads toward maxPosts (the profile endpoint) instead of raw own posts. */
+  foldForCount?: boolean;
+}
+
+export interface Timeline {
+  /** 'ok' also covers a list cut short by a failing later page (`failed` is then true). */
+  status: 'ok' | 'not_found' | 'error';
+  own: OwnPost[];
+  /** A later page failed: the list may be shorter than the account's timeline. */
+  failed: boolean;
+  /** The next page's cursor when the timeline continues. */
+  cursor: string | null;
+  pages: number;
+}
+
+/**
+ * The account's latest own posts from up to `maxPages` timeline pages, with the retry policy above.
+ * Shared by /api/profile/:handle/posts and the Watch poller. Never throws.
+ */
+export async function fetchOwnTimeline(handle: string, o: TimelineOptions): Promise<Timeline> {
+  const started = Date.now();
+  const h = handle.toLowerCase();
+  const own: OwnPost[] = [];
+  let cursor: string | null = null;
+  let pages = 0;
+  let failed = false;
+  let status: Timeline['status'] = 'ok';
+
+  while (pages < o.maxPages) {
+    const attempts = pages === 0 ? FIRST_PAGE_ATTEMPTS : LATER_PAGE_ATTEMPTS;
+    let page = await fetchPage(o.base, handle, cursor);
+    for (let a = 1; a < attempts && page.status !== 'ok' && Date.now() - started < RETRY_BEFORE_MS; a++) {
+      page = await fetchPage(o.base, handle, cursor);
+    }
+    pages++;
+    if (page.status !== 'ok') {
+      // A missing account answers 404 on the first page; a later failure keeps what we have.
+      if (pages === 1) {
+        if (page.status === 'not_found') status = 'not_found';
+        else {
+          status = 'error';
+          failed = true;
+        }
+      } else {
+        // The timeline doesn't end with a 404, so a later one means the list may be cut short.
+        failed = true;
+      }
+      cursor = null;
+      break;
+    }
+    for (const p of ownPosts(page.results, h)) own.push(p);
+    cursor = page.cursor;
+    const count = o.foldForCount === false ? own.length : foldThreads(own).length;
+    if (count >= o.maxPosts || !cursor) break;
+  }
+  return { status, own, failed, cursor, pages };
 }
 
 /* ─── Handler ─── */
@@ -227,37 +292,10 @@ export async function handleProfile(
   }
 
   const started = Date.now();
-  const own: OwnPost[] = [];
-  let cursor: string | null = null;
-  let pages = 0;
-  let failed = false;
-  let notFound = false;
-  let folded: { post: OwnPost; thread: boolean }[] = [];
-
-  while (pages < MAX_PAGES) {
-    const attempts = pages === 0 ? FIRST_PAGE_ATTEMPTS : LATER_PAGE_ATTEMPTS;
-    let page = await fetchPage(handle, cursor);
-    for (let a = 1; a < attempts && page.status !== 'ok' && Date.now() - started < RETRY_BEFORE_MS; a++) {
-      page = await fetchPage(handle, cursor);
-    }
-    pages++;
-    if (page.status !== 'ok') {
-      // A missing account answers 404 on the first page; a later failure keeps what we have.
-      if (pages === 1) {
-        if (page.status === 'not_found') notFound = true;
-        else failed = true;
-      } else {
-        // The timeline doesn't end with a 404, so a later one means the list may be cut short.
-        failed = true;
-      }
-      cursor = null;
-      break;
-    }
-    for (const p of ownPosts(page.results, h)) own.push(p);
-    cursor = page.cursor;
-    folded = foldThreads(own);
-    if (folded.length >= MAX_POSTS || !cursor) break;
-  }
+  const timeline = await fetchOwnTimeline(handle, { maxPosts: MAX_POSTS, maxPages: MAX_PAGES, base: fxBase(env) });
+  const { pages, failed, cursor } = timeline;
+  const notFound = timeline.status === 'not_found';
+  const folded = foldThreads(timeline.own);
   const ms = Date.now() - started;
 
   if (failed && !folded.length) {

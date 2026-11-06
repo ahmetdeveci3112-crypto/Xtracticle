@@ -5,6 +5,14 @@
 
 export const USER_AGENT = 'Xtracticle/3.0 (https://xtracticle.com)';
 export const FX_BASE = 'https://api.fxtwitter.com';
+
+/** Testing only: `FX_BASE_URL` points the profile timeline and Watch lookups at a local fixture server. */
+export interface FxEnv {
+  FX_BASE_URL?: string;
+}
+
+/** The FxTwitter base URL for callers that accept the test override; /api/tweet and /api/thread always use FX_BASE. */
+export const fxBase = (env?: FxEnv): string => (env?.FX_BASE_URL || FX_BASE).replace(/\/+$/, '');
 const MAX_LEGACY_DEPTH = 40;
 
 /**
