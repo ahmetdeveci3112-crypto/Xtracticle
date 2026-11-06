@@ -473,9 +473,9 @@ function cardElementStyles(p: CardPalette, mode: ShareImageMode): Record<string,
     HR: `border:0;border-top:1px dashed ${p.border};margin:16px 0`,
     A: `color:${p.accent};text-decoration:none;word-break:break-all`,
     IMG: `display:block;${imgMaxH}max-width:100%;height:auto;margin:10px auto;border-radius:12px;border:1px solid ${p.border}`,
-    TABLE: `border-collapse:collapse;margin:0 0 12px;width:100%;font-size:13.5px`,
-    TD: `border:1px solid ${p.border};padding:5px 8px;color:${p.text}`,
-    TH: `border:1px solid ${p.border};padding:5px 8px;font-weight:700;color:${p.text}`,
+    TABLE: `border-collapse:collapse;table-layout:fixed;margin:0 0 12px;width:100%;font-size:13.5px;word-break:break-word`,
+    TD: `border:1px solid ${p.border};padding:5px 8px;color:${p.text};word-break:break-word;overflow-wrap:anywhere`,
+    TH: `border:1px solid ${p.border};padding:5px 8px;font-weight:700;color:${p.text};word-break:break-word;overflow-wrap:anywhere`,
   };
 }
 
@@ -734,7 +734,16 @@ export async function buildShareImages(doc: XDoc, contentEl: HTMLElement, opts: 
     measureBox.dir = contentDir;
     if (contentLang) measureBox.lang = contentLang;
     measureBox.style.cssText = `width:${innerCardW}px;padding:18px 22px;box-sizing:border-box;background:${p.cardBg};color:${p.text};`;
-    Array.from(clone.children).forEach(ch => measureBox.appendChild(ch));
+    Array.from(clone.childNodes).forEach(node => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        measureBox.appendChild(node);
+      } else if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
+        const pEl = document.createElement('p');
+        pEl.style.cssText = styles.P;
+        pEl.textContent = node.textContent;
+        measureBox.appendChild(pEl);
+      }
+    });
     host.appendChild(measureBox);
 
     await Promise.all(
