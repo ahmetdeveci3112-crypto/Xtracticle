@@ -423,13 +423,13 @@ const deletedFinder: SitePage = {
     <thead><tr><th></th><th>Xtracticle</th><th>Rastreador de pago</th></tr></thead>
     <tbody>
       <tr><td>Qué encuentra</td><td>Posts archivados en el pasado, incluidos los borrados antes de que miraras</td><td>Posts borrados después de empezar el seguimiento</td></tr>
-      <tr><td>Precio</td><td>Gratis</td><td>Unos 9 $ al mes por cuenta (TrackTweets, en el momento de escribir esto)</td></tr>
+      <tr><td>Precio</td><td>Gratis · Pro desde 36 $/año para la lista completa y CSV</td><td>Unos 9 $ al mes por cuenta (TrackTweets, en el momento de escribir esto)</td></tr>
       <tr><td>Cuenta</td><td>Sin iniciar sesión ni conectar nada</td><td>Registro y suscripción</td></tr>
       <tr><td>Ideal para</td><td>Echar un vistazo puntual a lo que publicó una cuenta</td><td>Vigilar cuentas concretas de forma continua</td></tr>
     </tbody>
   </table></div>
-  <p>Xtracticle Pro está en camino, con la lista archivada completa en lugar de los 50 más recientes, exportación a CSV y seguimiento de cuentas.
-  Mientras tanto, las búsquedas puntuales siguen siendo gratis.</p>
+  <p>¿Necesitas más que los 50 más recientes? <a href="/es/pro">Xtracticle Pro</a> muestra todos los posts archivados que Wayback Machine guarda
+  de una cuenta (hasta 1500) y los exporta a CSV. Desde 3 $ al mes con pago anual, o 59 $ una sola vez.</p>
 </section>
 
 <section>

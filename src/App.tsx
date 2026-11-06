@@ -476,7 +476,19 @@ export default function App() {
     <div className="relative" style={{ color: 'var(--text-primary)' }}>
       {/* Top controls */}
       <div className="absolute top-4 end-4 z-50 flex gap-2 print:hidden">
-        {pro.pro && <ProBadge t={t} plan={pro.plan} expiresAt={pro.expiresAt} locale={locale} />}
+        {pro.pro ? (
+          <ProBadge t={t} plan={pro.plan} expiresAt={pro.expiresAt} locale={locale} />
+        ) : (
+          <a
+            href={t.proPath}
+            onClick={() => track('pro_nav_click')}
+            className="h-10 px-2 rounded-xl flex items-center text-xs font-semibold hover:underline underline-offset-2 focus-ring"
+            style={{ color: 'var(--text-secondary)' }}
+            title={t.proLearnMore}
+          >
+            {t.proPlan.pro}
+          </a>
+        )}
         <label
           className="relative h-10 ps-3 pe-2 rounded-xl flex items-center gap-1.5 text-xs font-semibold btn-secondary focus-within:ring-2"
           style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}

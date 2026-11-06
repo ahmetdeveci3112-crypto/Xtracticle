@@ -235,13 +235,13 @@ const deletedFinder: SitePage = {
     <thead><tr><th></th><th>Xtracticle</th><th>Paid tracker</th></tr></thead>
     <tbody>
       <tr><td>Finds</td><td>Posts archived in the past, including ones deleted before you looked</td><td>Posts deleted after you start tracking</td></tr>
-      <tr><td>Price</td><td>Free</td><td>About $9 a month per account (TrackTweets, at the time of writing)</td></tr>
+      <tr><td>Price</td><td>Free · Pro from $36/year for the full list and CSV</td><td>About $9 a month per account (TrackTweets, at the time of writing)</td></tr>
       <tr><td>Account</td><td>No login, nothing to connect</td><td>Sign-up and subscription</td></tr>
       <tr><td>Best for</td><td>A one-off look at what an account posted</td><td>Ongoing monitoring of specific accounts</td></tr>
     </tbody>
   </table></div>
-  <p>Xtracticle Pro is coming with the full archived list instead of the newest 50, CSV export and account monitoring. Until then, one-off
-  lookups stay free.</p>
+  <p>Need more than the newest 50? <a href="/pro">Xtracticle Pro</a> shows every archived post the Wayback Machine holds for an account
+  (up to 1,500) and exports it as CSV. From $3 a month billed yearly, or $59 once.</p>
 </section>
 
 <section>

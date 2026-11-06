@@ -412,12 +412,13 @@ const deletedFinder: SitePage = {
     <thead><tr><th></th><th>Xtracticle</th><th>Ücretli takip servisi</th></tr></thead>
     <tbody>
       <tr><td>Ne bulur?</td><td>Geçmişte arşivlenmiş gönderiler, siz bakmadan önce silinenler dahil</td><td>Takibe başladıktan sonra silinen gönderiler</td></tr>
-      <tr><td>Fiyat</td><td>Ücretsiz</td><td>Hesap başına ayda yaklaşık 9 $ (TrackTweets, yazının yazıldığı tarihte)</td></tr>
+      <tr><td>Fiyat</td><td>Ücretsiz · tam liste ve CSV için Pro yılda 36 $’dan başlar</td><td>Hesap başına ayda yaklaşık 9 $ (TrackTweets, yazının yazıldığı tarihte)</td></tr>
       <tr><td>Hesap</td><td>Giriş yok, bağlanacak bir şey yok</td><td>Kayıt ve abonelik</td></tr>
       <tr><td>En uygun olduğu iş</td><td>Bir hesabın neler paylaştığına tek seferlik bakmak</td><td>Belirli hesapları sürekli izlemek</td></tr>
     </tbody>
   </table></div>
-  <p>Xtracticle Pro yakında geliyor: en yeni 50 yerine tüm arşiv listesi, CSV dışa aktarma ve hesap takibi. O zamana kadar tek seferlik aramalar ücretsiz.</p>
+  <p>En yeni 50 gönderi yetmiyor mu? <a href="/tr/pro">Xtracticle Pro</a>, Wayback Machine’in bir hesap için sakladığı tüm arşivlenmiş gönderileri
+  (1.500’e kadar) gösterir ve CSV olarak dışa aktarır. Yıllık ödemede ayda 3 $’dan başlar ya da tek seferlik 59 $.</p>
 </section>
 
 <section>

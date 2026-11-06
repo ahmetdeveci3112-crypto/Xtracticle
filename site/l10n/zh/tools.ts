@@ -374,12 +374,12 @@ const deletedFinder: SitePage = {
     <thead><tr><th></th><th>Xtracticle</th><th>付费监控服务</th></tr></thead>
     <tbody>
       <tr><td>能找到</td><td>过去被存档的帖子，包括你查看之前就已删除的</td><td>开始监控之后被删除的帖子</td></tr>
-      <tr><td>价格</td><td>免费</td><td>每个账号每月约 9 美元（TrackTweets，撰写本文时）</td></tr>
+      <tr><td>价格</td><td>免费 · 完整列表和 CSV 导出需 Pro，每年 36 美元起</td><td>每个账号每月约 9 美元（TrackTweets，撰写本文时）</td></tr>
       <tr><td>账号</td><td>无需登录，无需关联任何账号</td><td>需要注册并订阅</td></tr>
       <tr><td>适合</td><td>一次性查看某个账号发过什么</td><td>长期监控特定账号</td></tr>
     </tbody>
   </table></div>
-  <p>Xtracticle Pro 即将推出，将提供完整的存档列表（不再限于最新 50 条）、CSV 导出和账号监控。在此之前，单次查询一直免费。</p>
+  <p>最新 50 条不够用？<a href="/zh/pro">Xtracticle Pro</a> 会显示 Wayback Machine 为该账号保存的全部存档帖子（最多 1500 条），并可导出为 CSV。按年付费折合每月 3 美元起，或一次性支付 59 美元。</p>
 </section>
 
 <section>

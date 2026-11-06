@@ -408,12 +408,12 @@ const deletedFinder: SitePage = {
     <thead><tr><th></th><th>Xtracticle</th><th>有料の監視サービス</th></tr></thead>
     <tbody>
       <tr><td>見つかるもの</td><td>過去に保存されたポスト（調べる前に削除されたものも含む）</td><td>監視を始めたあとに削除されたポスト</td></tr>
-      <tr><td>料金</td><td>無料</td><td>1アカウントあたり月額約9ドル（TrackTweets、執筆時点）</td></tr>
+      <tr><td>料金</td><td>無料・全件リストとCSVはProで年額36ドルから</td><td>1アカウントあたり月額約9ドル（TrackTweets、執筆時点）</td></tr>
       <tr><td>アカウント</td><td>ログインも連携も不要</td><td>登録とサブスクリプションが必要</td></tr>
       <tr><td>向いている用途</td><td>あるアカウントの過去の投稿を一度確かめる</td><td>特定のアカウントを継続的に見張る</td></tr>
     </tbody>
   </table></div>
-  <p>Xtracticle Proでは、新しい50件だけでなく保存済みポストの全件表示、CSV書き出し、アカウント監視を提供する予定です。それまでは、単発の検索は無料のままです。</p>
+  <p>最新50件では足りない場合は、<a href="/ja/pro">Xtracticle Pro</a>で、Wayback Machineが保存しているそのアカウントのポストをすべて（最大1,500件）表示し、CSVに書き出せます。年払いなら月あたり3ドルから、または買い切り59ドルです。</p>
 </section>
 
 <section>
