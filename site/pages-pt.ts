@@ -10,9 +10,9 @@ const home: SitePage = {
   isHome: true,
   title: 'Baixar artigos do X em PDF e Markdown — threads e posts | Xtracticle',
   description:
-    'Baixe artigos, threads e posts do X (Twitter) em PDF, Markdown, EPUB/Kindle ou texto. Cole um link e receba um arquivo limpo com imagens — grátis e sem cadastro.',
+    'Baixe artigos, threads e posts do X (Twitter) em imagem para compartilhar (PNG), PDF, Markdown, EPUB/Kindle ou texto. Cole um link e receba um arquivo limpo com imagens — grátis e sem cadastro.',
   h1: 'Baixar artigos do X',
-  sub: 'Baixe artigos, threads e posts do X (Twitter) em PDF, Markdown, EPUB ou texto — grátis e sem login.',
+  sub: 'Baixe artigos, threads e posts do X (Twitter) em imagem para compartilhar, PDF, Markdown, EPUB ou texto — grátis e sem login.',
   primary: 'pdf',
   nav: 'Baixar artigos do X',
   sections: `
@@ -21,8 +21,8 @@ const home: SitePage = {
   ${steps([
     '<strong>Copie o link do post</strong> — no X toque em <em>Compartilhar → Copiar link</em>. Qualquer post de uma thread funciona.',
     '<strong>Cole aqui em cima</strong> — o Xtracticle busca o artigo, a thread ou o post em um ou dois segundos.',
-    '<strong>Escolha o formato</strong> — PDF, Markdown, EPUB/Kindle, ZIP com imagens ou texto simples.',
-    '<strong>Pronto</strong> — você também pode copiar, mandar para o Obsidian ou ouvir em voz alta.',
+    '<strong>Escolha o formato</strong> — Imagem para compartilhar (PNG), PDF, Markdown, EPUB/Kindle, ZIP com imagens ou texto simples.',
+    '<strong>Pronto</strong> — você também pode compartilhar o card de imagem no celular, copiar, mandar para o Obsidian ou ouvir em voz alta.',
   ])}
   <p>Quer ver o resultado antes? <a href="${EXAMPLE}">Abra um artigo de exemplo</a>.</p>
 </section>
@@ -30,6 +30,7 @@ const home: SitePage = {
 <section>
   <h2>Todos os formatos que você precisa</h2>
   <div class="xt-grid">
+    <div><h3>Imagem para compartilhar (PNG)</h3><p>Imagem longa ou múltiplos cards otimizados para celular com autor, data, link original, QR code e temas Claro / Escuro / Quente.</p></div>
     <div><h3><a href="/pt/artigo-do-x-para-pdf">Artigo do X para PDF</a></h3><p>Formato A4, pronto para imprimir: imagens, link da fonte e números de página.</p></div>
     <div><h3><a href="/pt/artigo-do-x-para-markdown">Artigo do X para Markdown</a></h3><p>Mantém títulos, negrito, links, listas, citações e imagens. Front-matter YAML opcional.</p></div>
     <div><h3><a href="/pt/artigo-do-x-para-epub-kindle">Artigo do X para EPUB / Kindle</a></h3><p>Leia artigos longos no Kindle, Kobo ou Apple Books, com as imagens incluídas.</p></div>

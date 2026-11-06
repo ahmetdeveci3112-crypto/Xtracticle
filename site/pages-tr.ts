@@ -10,9 +10,9 @@ const home: SitePage = {
   isHome: true,
   title: 'X Makale ve Flood İndir — PDF, Markdown, EPUB | Xtracticle',
   description:
-    "X (Twitter) makale, flood ve gönderilerini PDF, Markdown, EPUB/Kindle veya metin olarak indirin. Linki yapıştırın, görselli dosyayı alın — ücretsiz, girişsiz.",
+    "X (Twitter) makale, flood ve gönderilerini paylaşılabilir görsel (PNG), PDF, Markdown, EPUB/Kindle veya metin olarak indirin. Linki yapıştırın, görselli dosyayı alın — ücretsiz, girişsiz.",
   h1: 'X Makale İndirici',
-  sub: "X (Twitter) makalelerini, flood'larını ve gönderilerini PDF, Markdown, EPUB veya metin olarak indirin — ücretsiz, giriş gerektirmez.",
+  sub: "X (Twitter) makalelerini, flood'larını ve gönderilerini paylaşılabilir görsel, PDF, Markdown, EPUB veya metin olarak indirin — ücretsiz, giriş gerektirmez.",
   primary: 'md',
   nav: 'X Makale İndirici',
   sections: `
@@ -21,8 +21,8 @@ const home: SitePage = {
   ${steps([
     '<strong>Gönderi linkini kopyalayın</strong> — X’te <em>Paylaş → Linki kopyala</em>. Flood’un herhangi bir tweeti olur.',
     '<strong>Yukarıya yapıştırın</strong> — Xtracticle makaleyi, flood’u veya gönderiyi birkaç saniyede getirir.',
-    '<strong>Format seçin</strong> — PDF, Markdown, EPUB/Kindle, görselli ZIP veya düz metin.',
-    '<strong>Hepsi bu</strong> — isterseniz kopyalayın, Obsidian’a gönderin veya sesli dinleyin.',
+    '<strong>Format seçin</strong> — Paylaşılabilir Görsel (PNG), PDF, Markdown, EPUB/Kindle, görselli ZIP veya düz metin.',
+    '<strong>Hepsi bu</strong> — görsel kartını telefondan doğrudan paylaşın, kopyalayın, Obsidian’a gönderin veya sesli dinleyin.',
   ])}
   <p>Sonucu önce görmek mi istiyorsunuz? <a href="${EXAMPLE}">Örnek bir X makalesini açın</a>.</p>
 </section>
@@ -30,6 +30,7 @@ const home: SitePage = {
 <section>
   <h2>İhtiyacınız olan her format</h2>
   <div class="xt-grid">
+    <div><h3>Paylaşılabilir Görsel (PNG)</h3><p>Yazar bilgisi, tarih, kaynak linki, QR kod ve Açık / Koyu / Sıcak temalarla mobil uyumlu uzun görsel veya çoklu kart.</p></div>
     <div><h3><a href="/tr/x-makale-pdf">X makalesini PDF olarak indir</a></h3><p>A4, yazdırmaya hazır; görseller, kaynak linki ve sayfa numaraları dahil.</p></div>
     <div><h3><a href="/tr/x-makale-markdown">X makalesini Markdown'a çevir</a></h3><p>Başlıklar, kalın/italik, linkler, listeler, alıntılar ve görseller korunur. İsteğe bağlı YAML front-matter.</p></div>
     <div><h3><a href="/tr/x-makale-epub-kindle">X makalesini EPUB / Kindle yap</a></h3><p>Uzun makaleleri Kindle, Kobo veya Apple Books’ta okuyun.</p></div>
