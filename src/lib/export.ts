@@ -756,7 +756,8 @@ export async function buildShareImages(doc: XDoc, contentEl: HTMLElement, opts: 
       for (const b of rawBlocks) {
         if ((b.tagName === 'UL' || b.tagName === 'OL' || b.tagName === 'BLOCKQUOTE') && b.offsetHeight > PAGED_BODY_H_PX && b.children.length > 1) {
           const items = Array.from(b.children) as HTMLElement[];
-          const baseStart = b.tagName === 'OL' ? parseInt(b.getAttribute('start') || '1', 10) || 1 : 1;
+          const parsedStart = b.tagName === 'OL' ? parseInt(b.getAttribute('start') ?? '1', 10) : 1;
+          const baseStart = Number.isNaN(parsedStart) ? 1 : parsedStart;
           let itemIndex = 0;
           let subList = b.cloneNode(false) as HTMLElement;
           let subH = 0;
