@@ -80,15 +80,24 @@ export default function ImageShareModal({ doc, t, locale, dark, onClose }: Image
   const [copied, setCopied] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const genIdRef = useRef(0);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   const cardStrings = resolveCardStrings(t, doc);
 
   useEffect(() => {
+    const prevFocus = document.activeElement as HTMLElement | null;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+      prevFocus?.focus?.();
+    };
   }, [onClose]);
 
   useEffect(() => {
@@ -224,6 +233,7 @@ export default function ImageShareModal({ doc, t, locale, dark, onClose }: Image
         >
           <h2 className="text-base font-bold">{t.shareImage}</h2>
           <button
+            ref={closeRef}
             type="button"
             onClick={onClose}
             className="w-8 h-8 rounded-full flex items-center justify-center btn-secondary focus-ring"

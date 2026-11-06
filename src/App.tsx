@@ -607,6 +607,22 @@ export default function App() {
                     type="button"
                     disabled={loading}
                     onClick={async () => {
+                      try {
+                        const clip = (await navigator.clipboard.readText()).trim();
+                        const clipParsed = clip ? parseInput(clip) : null;
+                        if (clipParsed?.kind === 'status') {
+                          setUrl(clip);
+                          if (doc && doc.id === clipParsed.id) {
+                            setImageOpen(true);
+                          } else {
+                            autoOpenImageRef.current = true;
+                            extract(clip);
+                          }
+                          return;
+                        }
+                      } catch {
+                        /* clipboard read denied or unavailable — fall back to current input */
+                      }
                       const currentParsed = parseInput(url);
                       if (currentParsed?.kind === 'status') {
                         if (doc && doc.id === currentParsed.id) {
@@ -616,17 +632,6 @@ export default function App() {
                           extract(url);
                         }
                         return;
-                      }
-                      try {
-                        const clip = (await navigator.clipboard.readText()).trim();
-                        if (clip) {
-                          setUrl(clip);
-                          autoOpenImageRef.current = true;
-                          extract(clip);
-                          return;
-                        }
-                      } catch {
-                        /* clipboard read denied: focus input so user can paste */
                       }
                       document.getElementById('xt-url')?.focus();
                     }}
