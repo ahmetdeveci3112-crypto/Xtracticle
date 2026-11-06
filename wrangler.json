@@ -3,6 +3,19 @@
   "compatibility_date": "2025-09-01",
   "main": "src/worker.ts",
   "keep_vars": true,
+  "migrations_dir": "migrations",
+  "d1_databases": [
+    {
+      "binding": "WATCH_DB",
+      "database_name": "xtracticle-watch",
+      "database_id": "REPLACE_WITH_REAL_ID"
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "*/5 * * * *"
+    ]
+  },
   "vars": {
     "GUMROAD_PRODUCT_MEMBERSHIP": "zRyxi6_UZTOjng_IESQhkA==",
     "GUMROAD_PRODUCT_LIFETIME": "hGyDc5sjkcwOajGlD00fsQ==",

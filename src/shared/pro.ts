@@ -366,7 +366,14 @@ export const isPro = proFromRequest;
 
 export type BearerResult = 'none' | 'pro' | 'invalid' | 'upstream';
 
-const BEARER_CACHE = new Map<string, { pro: boolean; until: number }>();
+/** A Bearer verdict with what Watch needs: the plan and the key itself (never stored, only hashed by the caller). */
+export interface BearerDetail {
+  result: BearerResult;
+  plan?: ProPlan;
+  key?: string;
+}
+
+const BEARER_CACHE = new Map<string, { pro: boolean; plan?: ProPlan; until: number }>();
 
 /**
  * `Authorization: Bearer <license key>` on the agent endpoints (/mcp, /api/markdown): verified
@@ -374,21 +381,41 @@ const BEARER_CACHE = new Map<string, { pro: boolean; until: number }>();
  * (five minutes for bad keys). Only a hash of the key is kept.
  */
 export async function bearerPro(request: Request, env: ProEnv): Promise<BearerResult> {
+  return (await bearerProDetail(request, env)).result;
+}
+
+export async function bearerProDetail(request: Request, env: ProEnv): Promise<BearerDetail> {
   const auth = request.headers.get('Authorization') || '';
   const m = /^Bearer\s+(\S+)\s*$/i.exec(auth);
-  if (!m) return 'none';
+  if (!m) return { result: 'none' };
   const key = m[1];
-  if (!KEY_RE.test(key)) return 'invalid';
-  if (!available(env)) return 'invalid';
+  if (!KEY_RE.test(key)) return { result: 'invalid' };
+  if (!available(env)) return { result: 'invalid' };
   const id = b64url(new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(`${env.GUMROAD_PRODUCT_MEMBERSHIP}\n${env.GUMROAD_PRODUCT_LIFETIME}\n${key}`))));
   const now = Date.now();
   const hit = BEARER_CACHE.get(id);
-  if (hit && hit.until > now) return hit.pro ? 'pro' : 'invalid';
+  const fromHit = (h: { pro: boolean; plan?: ProPlan }): BearerDetail => (h.pro ? { result: 'pro', plan: h.plan || 'pro', key } : { result: 'invalid' });
+  if (hit && hit.until > now) return fromHit(hit);
   const v = await verifyKey(env, key, false, BEARER_TIMEOUT_MS);
-  if (!v.ok && v.reason === 'upstream') return hit ? (hit.pro ? 'pro' : 'invalid') : 'upstream';
+  if (!v.ok && v.reason === 'upstream') return hit ? fromHit(hit) : { result: 'upstream' };
   if (BEARER_CACHE.size >= BEARER_CACHE_MAX) BEARER_CACHE.clear();
-  BEARER_CACHE.set(id, { pro: v.ok, until: now + (v.ok ? BEARER_OK_MS : BEARER_BAD_MS) });
-  return v.ok ? 'pro' : 'invalid';
+  BEARER_CACHE.set(id, { pro: v.ok, plan: v.plan, until: now + (v.ok ? BEARER_OK_MS : BEARER_BAD_MS) });
+  return v.ok ? { result: 'pro', plan: v.plan || 'pro', key } : { result: 'invalid' };
+}
+
+/**
+ * The license key and plan behind a valid Pro cookie (signature, expiry and decryption only, no
+ * network). Watch hashes the key to find the caller's watches; the key itself is never stored.
+ */
+export async function proKeyFromRequest(request: Request, env: ProEnv): Promise<{ key: string; plan: ProPlan } | null> {
+  const secret = secretOf(env);
+  if (!secret) return null;
+  const raw = readCookie(request, COOKIE);
+  if (!raw) return null;
+  const payload = await verifyCookie(raw, secret);
+  if (!payload) return null;
+  const key = await decryptKey(payload.k, secret);
+  return key ? { key, plan: payload.p } : null;
 }
 
 /* ─── Handler ─── */

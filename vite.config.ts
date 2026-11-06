@@ -9,6 +9,7 @@ import { handleMarkdown } from './src/shared/markdown';
 import { handleMcp } from './src/shared/mcp';
 import { handleProfile } from './src/shared/profile';
 import { handlePro } from './src/shared/pro';
+import { handleWatch } from './src/shared/watch/api';
 import { sitePages } from './site/plugin';
 
 /**
@@ -63,6 +64,8 @@ function devApi(): Plugin {
           const response = isMcp
             ? await handleMcp(request)
             : ((await handlePro(request, process.env as Record<string, string | undefined>)) ??
+              // No D1 in the Vite server: /api/watch answers 503 here; use `wrangler dev` for Watch.
+              (await handleWatch(request, process.env as Record<string, string | undefined>)) ??
               (await handleArchive(request, undefined, { ARCHIVE_DISABLED: process.env.ARCHIVE_DISABLED, CDX_BASE_URL: process.env.CDX_BASE_URL })) ??
               (await handleProfile(request, undefined, { PROFILE_DISABLED: process.env.PROFILE_DISABLED })) ??
               (await handleMarkdown(request)) ??
