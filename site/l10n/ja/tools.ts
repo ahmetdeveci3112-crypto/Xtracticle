@@ -413,7 +413,7 @@ const deletedFinder: SitePage = {
       <tr><td>向いている用途</td><td>あるアカウントの過去の投稿を一度確かめる</td><td>特定のアカウントを継続的に見張る</td></tr>
     </tbody>
   </table></div>
-  <p>最新50件では足りない場合は、<a href="/ja/pro">Xtracticle Pro</a>で、Wayback Machineが保存しているそのアカウントのポストをすべて（最大1,500件）表示し、CSVに書き出せます。年払いなら月あたり3ドルから、または買い切り59ドルです。</p>
+  <p>最新50件では足りない場合は、<a href="/ja/pro">Xtracticle Pro</a>で、Wayback Machineが保存しているそのアカウントのポストをすべて（最大1,500件）表示し、CSVに書き出せます。年払いなら月あたり3ドルから、または買い切り59ドルです。Proには<a href="/ja/pro#watch">Watch</a>も含まれます。公開アカウントを最大5件（買い切りプランは2件）1時間ごとに確認し、削除されたポストの本文を保存してフィードやメールのまとめでお届けします。</p>
 </section>
 
 <section>

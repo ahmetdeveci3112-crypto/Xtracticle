@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Archive, Check, Download, ExternalLink, FileSpreadsheet, Info, Loader2, RotateCcw, Zap } from 'lucide-react';
+import { Archive, Check, Download, ExternalLink, Eye, FileSpreadsheet, Info, Loader2, RotateCcw, Zap } from 'lucide-react';
 import type { Strings } from '../i18n';
 import { waybackProfile } from '../shared/url';
 import { track } from '../lib/analytics';
@@ -27,6 +27,13 @@ interface ArchiveResult {
 }
 
 type State = { kind: 'loading' } | { kind: 'failed' } | { kind: 'done'; data: ArchiveResult };
+/** "Watch @handle" (Pro): POST /api/watch from the panel. */
+type WatchState = { kind: 'idle' } | { kind: 'working' } | { kind: 'ok' } | { kind: 'exists' } | { kind: 'error'; msg: string };
+
+/** Puts the handle into "@{handle}" as an isolated left-to-right run, so the @ stays in front in Arabic. */
+function withHandle(s: string, handle: string) {
+  return s.split('@{handle}').flatMap((part, i) => (i ? [<bdi key={i} dir="ltr">@{handle}</bdi>, part] : [part]));
+}
 
 const CLIENT_TIMEOUT_MS = 60_000;
 const SLOW_AFTER_MS = 8_000;
@@ -57,6 +64,40 @@ export default function ArchivePanel({
   const [attempt, setAttempt] = useState(0);
   const teaserTracked = useRef(false);
   const [tipOn, setTipOn] = useState(() => tipAllowed(pro));
+  const [watch, setWatch] = useState<WatchState>({ kind: 'idle' });
+
+  async function startWatch() {
+    setWatch({ kind: 'working' });
+    const e = t.watchErr;
+    try {
+      const res = await fetch('/api/watch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Xt-Client': 'web' },
+        body: JSON.stringify({ handle, mode: 'deleted' }),
+      });
+      const body = await res.json().catch(() => null);
+      if (res.status === 201) {
+        setWatch({ kind: 'ok' });
+        track('watch_add', { mode: 'deleted', place: 'archive_panel' });
+        return;
+      }
+      const err: string = typeof body?.error === 'string' ? body.error : String(res.status);
+      track('watch_add_error', { error: err, place: 'archive_panel' });
+      if (res.status === 409) {
+        setWatch({ kind: 'exists' });
+        return;
+      }
+      const msg =
+        res.status === 503 ? e.unavailable
+        : err === 'not_found' || err === 'protected' || err === 'blocklisted' ? e[err]
+        : err === 'limit_reached' ? e.limit_reached.replace('{limit}', String(body?.limit ?? ''))
+        : e.generic;
+      setWatch({ kind: 'error', msg });
+    } catch {
+      track('watch_add_error', { error: 'network', place: 'archive_panel' });
+      setWatch({ kind: 'error', msg: e.generic });
+    }
+  }
 
   useEffect(() => {
     const controller = new AbortController();
@@ -117,6 +158,56 @@ export default function ArchivePanel({
       track('archive_pro_teaser', { action: 'view' });
     }
   }, [showTeaser]);
+
+  const manageLink = (
+    <a href={`${t.proPath}#watch`} className={linkClass} style={{ color: 'var(--text-primary)' }}>{t.watchManage}</a>
+  );
+  // Pro: one click watches the account for deleted posts. Free: a quiet link to the Watch section of /pro.
+  const watchRow = pro ? (
+    watch.kind === 'ok' || watch.kind === 'exists' ? (
+      <p className="flex flex-wrap items-center gap-x-2 gap-y-1" role="status" style={{ color: 'var(--text-primary)' }}>
+        <Check className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+        <span>{withHandle(watch.kind === 'ok' ? t.watchAdded : t.watchExists, handle)}</span>
+        {manageLink}
+      </p>
+    ) : (
+      <div className="space-y-1.5">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <button
+            type="button"
+            onClick={startWatch}
+            disabled={watch.kind === 'working'}
+            aria-busy={watch.kind === 'working'}
+            className={`${rowBtn} disabled:opacity-60`}
+            style={rowBtnStyle}
+          >
+            {watch.kind === 'working'
+              ? <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+              : <Eye className="w-3.5 h-3.5" aria-hidden="true" />}
+            <span>{withHandle(t.watchCta, handle)}</span>
+          </button>
+          <span>{t.watchHint}</span>
+        </div>
+        {watch.kind === 'error' && (
+          <p role="alert" style={{ color: 'var(--error-text)' }}>
+            {watch.msg}{' '}{manageLink}
+          </p>
+        )}
+      </div>
+    )
+  ) : (
+    <p>
+      <a
+        href={`${t.proPath}#watch`}
+        className={`${linkClass} inline-flex items-center gap-1.5`}
+        style={{ color: 'var(--text-secondary)' }}
+        onClick={() => track('watch_cta_click', { pro: false })}
+      >
+        <Eye className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+        <span>{withHandle(t.watchFree, handle)}</span>
+      </a>
+    </p>
+  );
 
   const fallback = (
     <a
@@ -280,41 +371,41 @@ export default function ArchivePanel({
             ))}
           </ul>
 
-          {(showTeaser || data.stale) && (
-            <div className="p-4 space-y-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-              {showTeaser && (
-                <div className="space-y-2">
-                  <p>
-                    {t.archiveProTeaser.replace('{n}', `${data.total.toLocaleString(locale)}${data.truncated ? '+' : ''}`)}{' '}
-                    <a href={t.proPath} className={linkClass} onClick={() => track('archive_pro_teaser', { action: 'link' })}>{t.proLearnMore}</a>
-                  </p>
-                  <a
-                    href={t.proPath}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold focus-ring btn-primary whitespace-nowrap"
-                    style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
-                    onClick={() => track('archive_pro_teaser', { action: 'cta' })}
-                  >
-                    {t.proUnlockCta}
-                  </a>
-                </div>
-              )}
-              {data.stale && (
-                <p>{t.archiveStale.replace('{date}', new Date(data.fetchedAt).toLocaleDateString(locale))}</p>
-              )}
-            </div>
-          )}
+          <div className="p-4 space-y-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+            {showTeaser && (
+              <div className="space-y-2">
+                <p>
+                  {t.archiveProTeaser.replace('{n}', `${data.total.toLocaleString(locale)}${data.truncated ? '+' : ''}`)}{' '}
+                  <a href={t.proPath} className={linkClass} onClick={() => track('archive_pro_teaser', { action: 'link' })}>{t.proLearnMore}</a>
+                </p>
+                <a
+                  href={t.proPath}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold focus-ring btn-primary whitespace-nowrap"
+                  style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+                  onClick={() => track('archive_pro_teaser', { action: 'cta' })}
+                >
+                  {t.proUnlockCta}
+                </a>
+              </div>
+            )}
+            {watchRow}
+            {data.stale && (
+              <p>{t.archiveStale.replace('{date}', new Date(data.fetchedAt).toLocaleDateString(locale))}</p>
+            )}
+          </div>
           {tipOn && !pro && (
-            <div className={`px-4 pb-4 ${showTeaser || data.stale ? '' : 'pt-4'}`}>
+            <div className="px-4 pb-4">
               <TipRow t={t} place="archive_panel" short onHide={() => setTipOn(false)} />
             </div>
           )}
         </>
       )}
 
-      {data && data.posts.length === 0 && data.stale && (
-        <p className="px-4 pb-4 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-          {t.archiveStale.replace('{date}', new Date(data.fetchedAt).toLocaleDateString(locale))}
-        </p>
+      {data && data.posts.length === 0 && (
+        <div className="px-4 pb-4 space-y-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+          {watchRow}
+          {data.stale && <p>{t.archiveStale.replace('{date}', new Date(data.fetchedAt).toLocaleDateString(locale))}</p>}
+        </div>
       )}
     </section>
   );
