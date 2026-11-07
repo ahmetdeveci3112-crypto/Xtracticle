@@ -133,7 +133,7 @@ function jsonLd(page: SitePage): unknown[] {
       isAccessibleForFree: true,
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       featureList: [
-        'Download X Articles as PDF, Markdown, EPUB, text or ZIP with images',
+        'Download X Articles as shareable PNG images, PDF, Markdown, EPUB, text or ZIP with images',
         'Unroll full threads from any post of the thread',
         'Send to Obsidian with YAML front-matter',
         'Batch download up to 20 posts as a ZIP',

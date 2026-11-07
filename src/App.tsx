@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
 import {
   Download, FileText, AlertCircle, Loader2, FileDown, Moon, Sun, Copy, Check, Share2, Clock, ChevronDown,
-  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages, X, CirclePlay,
+  BookOpen, Archive, Volume2, Square, Layers, Link2, Languages, X, CirclePlay, Image as ImageIcon, ClipboardPaste,
 } from 'lucide-react';
 import type { FxTweet } from './shared/fx';
 import { translations, LANGS, langInfo, type Lang } from './i18n';
@@ -23,6 +23,7 @@ const LazyMarkdown = lazy(() =>
 );
 
 const ArchivePanel = lazy(() => import('./components/ArchivePanel'));
+const ImageShareModal = lazy(() => import('./components/ImageShareModal'));
 
 /* ─── Page config (injected per page by the build / Worker) ─── */
 type ExportKey = 'md' | 'pdf' | 'epub' | 'zip' | 'txt' | 'obsidian';
@@ -82,9 +83,13 @@ function store(key: string, value: unknown) {
   } catch { /* private mode */ }
 }
 
-// Status pages (/{user}/status/{id}) reuse the English home shell, so they follow the
-// visitor's preference instead of the page's language.
-const ON_STATUS_PAGE = typeof window !== 'undefined' && !!parsePath(window.location.pathname);
+// Status pages (/{user}/status/{id}) and shared deep links (/?url=…, /?text=…, /?img=1)
+// reuse the English home shell, so they follow the visitor's preference instead of the page's language.
+const ON_STATUS_PAGE =
+  typeof window !== 'undefined' &&
+  (!!parsePath(window.location.pathname) ||
+    (window.location.pathname === '/' &&
+      ['url', 'link', 'text', 'title', 'img', 'action'].some(k => new URLSearchParams(window.location.search).has(k))));
 
 function initialLang(): Lang {
   if (PAGE.lang && !ON_STATUS_PAGE) return PAGE.lang;
@@ -154,6 +159,8 @@ export default function App() {
   const [batchSeed, setBatchSeed] = useState<BatchSeed | null>(null);
   const [speaking, setSpeaking] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
+  const [imageOpen, setImageOpen] = useState(false);
+  const autoOpenImageRef = useRef(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const scrollPending = useRef(false);
   const requestRef = useRef(0);
@@ -280,8 +287,14 @@ export default function App() {
     }
   }, [t, applyResult]);
 
-  // Deep links: /{user}/status/{id}, ?url= / ?link= / ?text= (PWA share target, bookmarklet)
+  // Deep links: /{user}/status/{id}, ?url= / ?link= / ?text= (PWA share target, bookmarklet, iOS shortcut)
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const wantImage =
+      params.get('img') === '1' ||
+      params.get('action') === 'image' ||
+      params.get('utm_source') === 'ios-shortcut';
+    if (wantImage) autoOpenImageRef.current = true;
     const fromPath = parsePath(location.pathname);
     if (fromPath) {
       const preload = window.__XT_PRELOAD__;
@@ -295,7 +308,6 @@ export default function App() {
       }
       return;
     }
-    const params = new URLSearchParams(location.search);
     // Share sheets put the link in different fields (often inside `text`) — search them all.
     if (params.get('mode') === 'batch') window.history.replaceState(null, '', location.pathname);
     const shared = ['url', 'link', 'text', 'title'].map(k => params.get(k)).filter(Boolean).join(' ');
@@ -340,6 +352,10 @@ export default function App() {
     if (doc && !loading && scrollPending.current) {
       scrollPending.current = false;
       resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if (doc && !loading && autoOpenImageRef.current) {
+      autoOpenImageRef.current = false;
+      setImageOpen(true);
     }
   }, [doc, loading]);
 
@@ -600,6 +616,48 @@ export default function App() {
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t.extract}
                 </button>
               </div>
+              {!ACCOUNT_INPUT && (
+                <div className="mt-2.5 flex justify-center">
+                  <button
+                    type="button"
+                    disabled={loading}
+                    onClick={async () => {
+                      try {
+                        const clip = (await navigator.clipboard.readText()).trim();
+                        const clipParsed = clip ? parseInput(clip) : null;
+                        if (clipParsed?.kind === 'status') {
+                          setUrl(clip);
+                          if (doc && doc.id === clipParsed.id) {
+                            setImageOpen(true);
+                          } else {
+                            autoOpenImageRef.current = true;
+                            extract(clip);
+                          }
+                          return;
+                        }
+                      } catch {
+                        /* clipboard read denied or unavailable — fall back to current input */
+                      }
+                      const currentParsed = parseInput(url);
+                      if (currentParsed?.kind === 'status') {
+                        if (doc && doc.id === currentParsed.id) {
+                          setImageOpen(true);
+                        } else {
+                          autoOpenImageRef.current = true;
+                          extract(url);
+                        }
+                        return;
+                      }
+                      document.getElementById('xt-url')?.focus();
+                    }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold btn-secondary focus-ring disabled:opacity-50"
+                    style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                  >
+                    <ClipboardPaste className="w-3.5 h-3.5" />
+                    {t.pasteToImage}
+                  </button>
+                </div>
+              )}
               {error && (
                 <div
                   role="alert"
@@ -773,6 +831,19 @@ export default function App() {
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>{t.downloads}</p>
                     <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImageOpen(true);
+                          track('download', { format: 'image_modal', kind: doc.kind, page: PAGE.page });
+                        }}
+                        disabled={!!busy}
+                        className={`${btnBase} btn-primary`}
+                        style={primaryStyle}
+                      >
+                        <ImageIcon className="w-3.5 h-3.5" />
+                        {t.shareImage}
+                      </button>
                       {exportButton('md', <Download className="w-3.5 h-3.5" />, t.md)}
                       {exportButton('pdf', <FileDown className="w-3.5 h-3.5" />, t.pdf)}
                       {exportButton('epub', <BookOpen className="w-3.5 h-3.5" />, t.epub)}
@@ -845,6 +916,18 @@ export default function App() {
       </main>
 
       {demoOpen && <DemoModal lang={lang} closeLabel={t.closeDemo} onClose={() => setDemoOpen(false)} />}
+
+      {imageOpen && doc && (
+        <Suspense fallback={null}>
+          <ImageShareModal
+            doc={doc}
+            t={t}
+            locale={locale}
+            dark={dark}
+            onClose={() => setImageOpen(false)}
+          />
+        </Suspense>
+      )}
 
       {bannerLang && (
         <div

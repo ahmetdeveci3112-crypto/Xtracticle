@@ -10,9 +10,9 @@ const home: SitePage = {
   isHome: true,
   title: 'X記事ダウンローダー｜記事・スレッドをPDF・Markdownで保存 | Xtracticle',
   description:
-    'X（旧Twitter）の記事・スレッド・ポストをPDF、Markdown、EPUB（Kindle）、テキストで保存できる無料ツール。リンクを貼るだけで画像付きのきれいなファイルに。登録・ログイン不要。',
+    'X（旧Twitter）の記事・スレッド・ポストをシェア画像（PNG）、PDF、Markdown、EPUB（Kindle）、テキストで保存できる無料ツール。リンクを貼るだけで画像付きのきれいなファイルに。登録・ログイン不要。',
   h1: 'X記事ダウンローダー',
-  sub: 'X（旧Twitter）の記事・スレッド・ポストをPDF、Markdown、EPUB、テキストで保存。無料・ログイン不要。',
+  sub: 'X（旧Twitter）の記事・スレッド・ポストをシェア画像、PDF、Markdown、EPUB、テキストで保存。無料・ログイン不要。',
   primary: 'pdf',
   nav: 'X記事ダウンローダー',
   sections: `
@@ -21,8 +21,8 @@ const home: SitePage = {
   ${steps([
     '<strong>ポストのリンクをコピー</strong> — Xで<em>「共有 → リンクをコピー」</em>。スレッドならどのポストでもOK。',
     '<strong>上の欄に貼り付け</strong> — 記事・スレッド・ポストを1〜2秒で取得します。',
-    '<strong>形式を選ぶ</strong> — PDF、Markdown、EPUB/Kindle、画像付きZIP、テキスト。',
-    '<strong>完了</strong> — コピーやObsidianへの送信、読み上げもできます。',
+    '<strong>形式を選ぶ</strong> — シェア画像（PNG）、PDF、Markdown、EPUB/Kindle、画像付きZIP、テキスト。',
+    '<strong>完了</strong> — スマホからそのまま画像カードを共有したり、コピーやObsidianへの送信、読み上げもできます。',
   ])}
   <p>まずは結果を見てみたい方は<a href="${EXAMPLE}">サンプル記事</a>をどうぞ。</p>
 </section>
@@ -30,6 +30,7 @@ const home: SitePage = {
 <section>
   <h2>必要な形式がそろっています</h2>
   <div class="xt-grid">
+    <div><h3>シェア画像（PNG）</h3><p>スマホで見やすい縦長1枚画像または分割カード。投稿者・日時・元リンク・QRコード付きで、ライト／ダーク／ウォームの3テーマに対応。</p></div>
     <div><h3><a href="/ja/x-kiji-pdf">X記事をPDFで保存</a></h3><p>A4サイズで印刷にも対応。画像、出典リンク、ページ番号付き。</p></div>
     <div><h3><a href="/ja/x-kiji-markdown">X記事をMarkdownに変換</a></h3><p>見出し・太字・リンク・リスト・引用・画像をそのまま保持。YAMLフロントマターにも対応。</p></div>
     <div><h3><a href="/ja/x-kiji-epub-kindle">X記事をEPUB / Kindleで読む</a></h3><p>長い記事をKindle、Kobo、Apple Booksで。画像も電子書籍に埋め込まれます。</p></div>

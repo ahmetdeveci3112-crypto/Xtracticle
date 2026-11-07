@@ -1,7 +1,7 @@
 <div align="center">
   <img width="80" height="80" src="public/icon-192.png" alt="Xtracticle Logo"/>
   <h1>Xtracticle</h1>
-  <p><strong>Download X (Twitter) Articles, threads & posts as PDF, Markdown, EPUB/Kindle, text or a ZIP with images.</strong></p>
+  <p><strong>Download X (Twitter) Articles, threads & posts as shareable images, PDF, Markdown, EPUB/Kindle, text or a ZIP with images.</strong></p>
   <p>Free, open source, no login required.</p>
 
   <p>
@@ -33,6 +33,7 @@
 ### Export formats
 | Format | What you get |
 |--------|--------------|
+| **Share Image (PNG)** | Mobile-ready long image or multi-card carousel (Light / Dark / Warm themes) with author header, timestamp, source URL, QR code, and native mobile share sheet (`navigator.share`). |
 | **PDF** | A4, print-ready; title/author/date/source header, images, page numbers, clickable source link. Rendered page by page so long articles never produce blank PDFs and lines are never cut. |
 | **Markdown** | Headings, bold/italic/strikethrough, links, nested lists, quotes, code, dividers, images, video thumbnails. Optional YAML front-matter (Obsidian properties, Hugo/Jekyll/Astro). |
 | **EPUB 3** | Reflowable e-book with embedded images and metadata — Kindle (Send to Kindle), Kobo, Apple Books. |
