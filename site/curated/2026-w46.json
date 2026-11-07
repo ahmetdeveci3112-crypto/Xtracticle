@@ -1,0 +1,52 @@
+{
+  "week": "2026-W46",
+  "published": "2026-11-07",
+  "intro": "Five long reads people saved with Xtracticle this week — a Chinese step-by-step guide to making AI films with Claude Code and Seedance, DeepSeek's case for always-on super-agents, Addy Osmani on staying sharp when agents do the work, Dan Koe on attention as the business to build, and a recipe for cutting CI from 40 minutes to 2.",
+  "items": [
+    {
+      "id": "2118317430665613741",
+      "handle": "EianLu",
+      "author": "Eian",
+      "title": "Claude code/Codex+Seedance AI视频：从一个想法到成片的全流程",
+      "lang": "zh",
+      "topic": "AI video",
+      "summary": "A full workflow for turning an idea into a finished AI short film, with Claude Code as the director calling Codex for images and Seedance for video, built around one rule: catch mistakes in the script or the still frame, because every second of regenerated video costs money."
+    },
+    {
+      "id": "2116857257245987236",
+      "handle": "DeepSeekHarness",
+      "author": "DeepSeek Harness",
+      "title": "Exploring Super-agent Design: Towards a More Autonomous Agent System",
+      "lang": "en",
+      "topic": "Agent architecture",
+      "summary": "The DeepSeek Harness team argues that agents tied to one chat session hit the limit of human attention, and sketches a \"super-agent\" that keeps its context across sessions and channels and works on several tasks at once."
+    },
+    {
+      "id": "2117512471930167377",
+      "handle": "addyosmani",
+      "author": "Addy Osmani",
+      "title": "Critical thinking when agents do the work",
+      "lang": "en",
+      "topic": "Engineering practice",
+      "summary": "Addy Osmani describes how people slide from delegating work to agents into \"cognitive surrender\", where output that looks right goes unchecked, and suggests habits for keeping your own judgment in the loop."
+    },
+    {
+      "id": "2117664712532123680",
+      "handle": "thedankoe",
+      "author": "DAN KOE",
+      "title": "The most lucrative AI business to start in 2027",
+      "lang": "en",
+      "topic": "Creator business",
+      "summary": "Dan Koe argues that capturing attention is the skill every business will pay for as more people start personal brands, and lays out how to learn it on social media, either for your own business or as a one-person creative team for others."
+    },
+    {
+      "id": "2116291924219060319",
+      "handle": "owengretzinger",
+      "author": "owen",
+      "title": "How I made our CI 20x faster (steal this)",
+      "lang": "en",
+      "topic": "Developer tooling",
+      "summary": "Owen Gretzinger lists the concrete changes that took his team's CI from 40 minutes to 2 — faster hosted runners, Oxlint, quicker typecheckers, sharding tests onto bigger machines and not reloading the app for every test file — written so a coding agent can apply them to your repo."
+    }
+  ]
+}
