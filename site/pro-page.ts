@@ -373,7 +373,7 @@ if(ts){var tf=ts.querySelector('form'),thi=tf.querySelector('input[name=handle]'
 tf.addEventListener('submit',function(e){e.preventDefault();var h=clean(thi.value),m=tem.value.trim();
 if(!h){wsay(tmo,TC.err.bad_handle,false);try{thi.focus()}catch(x){}return;}if(!m){wsay(tmo,TC.err.bad_email,false);try{tem.focus()}catch(x){}return;}
 tbt.disabled=true;wsay(tmo,TC.starting,true);
-api('POST','/api/watch/trial',{handle:h,email:m,mode:'both'}).then(function(x){tbt.disabled=false;
+api('POST','/api/watch/trial',{handle:h,email:m,mode:'both',lang:(location.pathname.split('/')[1]||'en').length===2?location.pathname.split('/')[1]:'en'}).then(function(x){tbt.disabled=false;
 if(x.s===201&&x.b&&x.b.status){g('trial_start',{ok:true,place:'pro_page'});var dn=el('div','xt-trial-sent');dn.setAttribute('role','status');
 dn.appendChild(el('p','xt-trial-when',tpl(TC.sent,{email:iso(x.b.email||m),handle:iso('@'+(x.b.handle||h))})));dn.appendChild(el('p','xt-watch-hint',TC.sentHint));
 tf.parentNode.replaceChild(dn,tf);return;}

@@ -1,4 +1,5 @@
 import type { CfEmailBinding, WatchEnv } from './db';
+import { PRO_PATHS, isMailLang, mailCopy, type MailCopy } from './mail-copy';
 
 /**
  * Outbound e-mail for Watch (verification links, daily digests). Cloudflare Email Service
@@ -123,132 +124,132 @@ export interface DigestItem {
 export interface DigestTrial {
   daysLeft: number;
   manageToken: string;
+  /** Site language the trial was started in (trials.lang); English when missing. */
+  lang?: string;
 }
 
 /** Where a trial user manages the trial (the SPA reads the token from the hash; it never reaches the server or analytics). */
-export const trialManageUrl = (origin: string, manageToken: string) => `${origin}/pro#t=${manageToken}`;
+export const trialManageUrl = (origin: string, manageToken: string, lang?: string) => `${origin}${proUrlPath(lang)}#t=${manageToken}`;
 
-function itemLines(i: DigestItem): string[] {
-  const lines = [`• ${i.title} (${i.detectedAt.slice(0, 16).replace('T', ' ')} UTC)`];
+const proUrlPath = (lang?: string | null) => PRO_PATHS[isMailLang(lang) ? lang : 'en'];
+const unsubHeaders = (unsub: string) => ({ 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' });
+const at = (handle: string) => '@' + handle;
+/** Arabic mail reads right to left. */
+const dirWrap = (lang: string | null | undefined, html: string) => (lang === 'ar' ? `<div dir="rtl" style="text-align:right">${html}</div>` : html);
+const bold = (handle: string) => `<b>@${escapeHtml(handle)}</b>`;
+
+/** The event title in the reader's language (the stored title is English). */
+function itemTitle(i: DigestItem, c: MailCopy): string {
+  const f = (c.title as Record<string, ((h: string) => string) | undefined>)[i.type];
+  return f ? f(at(i.handle)) : i.title;
+}
+
+function itemLines(i: DigestItem, c: MailCopy): string[] {
+  const lines = [`• ${itemTitle(i, c)} (${i.detectedAt.slice(0, 16).replace('T', ' ')} UTC)`];
   if (i.text) lines.push(`  ${i.text}`);
   if (i.url) lines.push(`  ${i.url}`);
-  if (i.wayback) lines.push(`  Wayback copy: ${i.wayback}`);
+  if (i.wayback) lines.push(`  ${c.waybackCopy}: ${i.wayback}`);
   if (i.markdownUrl) lines.push(`  Markdown: ${i.markdownUrl}`);
   lines.push('');
   return lines;
 }
 
-function itemBlock(i: DigestItem): string {
+function itemBlock(i: DigestItem, c: MailCopy): string {
   return (
-    `<li style="margin:0 0 14px"><b>${escapeHtml(i.title)}</b> <span style="color:#666">${escapeHtml(i.detectedAt.slice(0, 16).replace('T', ' '))} UTC</span>` +
+    `<li style="margin:0 0 14px"><b>${escapeHtml(itemTitle(i, c))}</b> <span style="color:#666">${escapeHtml(i.detectedAt.slice(0, 16).replace('T', ' '))} UTC</span>` +
     (i.text ? `<br>${escapeHtml(i.text)}` : '') +
     (i.url ? `<br><a href="${escapeHtml(i.url)}">${escapeHtml(i.url)}</a>` : '') +
-    (i.wayback ? `<br><a href="${escapeHtml(i.wayback)}">Wayback copy</a>` : '') +
+    (i.wayback ? `<br><a href="${escapeHtml(i.wayback)}">${escapeHtml(c.waybackCopy)}</a>` : '') +
     (i.markdownUrl ? `${i.wayback ? ' · ' : '<br>'}<a href="${escapeHtml(i.markdownUrl)}">Markdown</a>` : '') +
     '</li>'
   );
 }
 
 export function digestEmail(origin: string, items: DigestItem[], unsubToken: string, trial?: DigestTrial): Omit<EmailMessage, 'to'> {
+  const c = mailCopy(trial?.lang);
   const unsub = `${origin}/api/watch/unsubscribe/${unsubToken}`;
-  const manage = trial ? trialManageUrl(origin, trial.manageToken) : `${origin}/pro`;
-  const handles = [...new Set(items.map(i => '@' + i.handle))].join(', ');
-  const lines: string[] = [`Xtracticle Watch: ${items.length} event${items.length === 1 ? '' : 's'} for ${handles}.`, ''];
+  const pro = `${origin}${proUrlPath(trial?.lang)}`;
+  const manage = trial ? trialManageUrl(origin, trial.manageToken, trial.lang) : `${origin}/pro`;
+  const manageLabel = trial ? c.manageTrial : c.manageWatches;
+  const handles = [...new Set(items.map(i => at(i.handle)))].join(', ');
+  const lines: string[] = [c.digestIntro(items.length, handles), ''];
   const blocks: string[] = [];
   for (const i of items) {
-    lines.push(...itemLines(i));
-    blocks.push(itemBlock(i));
+    lines.push(...itemLines(i, c));
+    blocks.push(itemBlock(i, c));
   }
-  let trialLine = '';
-  if (trial) {
-    trialLine = `Trial: ${trial.daysLeft} day${trial.daysLeft === 1 ? '' : 's'} left — keep watching with Pro: ${origin}/pro`;
-    lines.push(trialLine, '');
-  }
-  lines.push(`${trial ? 'Manage your trial' : 'Manage your watches'}: ${manage}`, `Stop these e-mails: ${unsub}`);
+  if (trial) lines.push(`${c.trialLeft(trial.daysLeft)} — ${c.keepWithPro}: ${pro}`, '');
+  lines.push(`${manageLabel}: ${manage}`, `${c.stopEmails}: ${unsub}`);
   const html =
-    `<p>Xtracticle Watch: ${items.length} event${items.length === 1 ? '' : 's'} for ${escapeHtml(handles)}.</p>` +
+    `<p>${escapeHtml(c.digestIntro(items.length, handles))}</p>` +
     `<ul style="padding-left:18px">${blocks.join('')}</ul>` +
-    (trial ? `<p><b>${escapeHtml(trialLine.replace(/ — .*$/, ''))}</b> — <a href="${escapeHtml(origin)}/pro">keep watching with Pro</a></p>` : '') +
-    `<p style="color:#666;font-size:13px"><a href="${escapeHtml(manage)}">${trial ? 'Manage your trial' : 'Manage your watches'}</a> · <a href="${escapeHtml(unsub)}">Stop these e-mails</a></p>`;
-  return {
-    subject: `Watch digest: ${items.length} event${items.length === 1 ? '' : 's'} for ${handles}`,
-    text: lines.join('\n'),
-    html,
-    headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
-  };
+    (trial ? `<p><b>${escapeHtml(c.trialLeft(trial.daysLeft))}</b> — <a href="${escapeHtml(pro)}">${escapeHtml(c.keepWithPro)}</a></p>` : '') +
+    `<p style="color:#666;font-size:13px"><a href="${escapeHtml(manage)}">${escapeHtml(manageLabel)}</a> · <a href="${escapeHtml(unsub)}">${escapeHtml(c.stopEmails)}</a></p>`;
+  return { subject: c.digestSubject(items.length, handles), text: lines.join('\n'), html: dirWrap(trial?.lang, html), headers: unsubHeaders(unsub) };
 }
 
-/* ─── Trial e-mails ─── */
+/* ─── Trial e-mails (language: trials.lang, see mail-copy.ts) ─── */
 
-export function trialVerificationEmail(origin: string, handle: string, days: number, verifyToken: string, manageToken: string): Omit<EmailMessage, 'to'> {
+export function trialVerificationEmail(origin: string, handle: string, days: number, verifyToken: string, manageToken: string, lang?: string): Omit<EmailMessage, 'to'> {
+  const c = mailCopy(lang);
   const link = `${origin}/api/watch/trial/verify/${verifyToken}`;
-  const manage = trialManageUrl(origin, manageToken);
-  const text = [
-    `Confirm this address to start your free ${days}-day Xtracticle Watch trial for @${handle}.`,
-    '',
-    link,
-    '',
-    'The link works for 24 hours. Nothing is checked and nothing is sent until you confirm. If you did not ask for this, ignore this message.',
-    '',
-    `After confirming, you can see what the trial caught, change what it watches or end it here: ${manage}`,
-  ].join('\n');
+  const manage = trialManageUrl(origin, manageToken, lang);
+  const text = [c.verifyIntro(days, at(handle)), '', link, '', c.verifyNote, '', `${c.verifyManageText}: ${manage}`].join('\n');
   const html =
-    `<p>Confirm this address to start your free ${days}-day Xtracticle Watch trial for <b>@${escapeHtml(handle)}</b>.</p>` +
-    `<p><a href="${escapeHtml(link)}">Confirm e-mail address and start the trial</a></p>` +
-    `<p style="color:#666;font-size:13px">The link works for 24 hours. Nothing is checked and nothing is sent until you confirm. If you did not ask for this, ignore this message.</p>` +
-    `<p style="color:#666;font-size:13px">After confirming, you can see what the trial caught, change what it watches or end it <a href="${escapeHtml(manage)}">here</a>.</p>`;
-  return { subject: `Confirm your Xtracticle Watch trial for @${handle}`, text, html };
+    `<p>${escapeHtml(c.verifyIntro(days, '\u0000')).replace('\u0000', bold(handle))}</p>` +
+    `<p><a href="${escapeHtml(link)}">${escapeHtml(c.verifyCta)}</a></p>` +
+    `<p style="color:#666;font-size:13px">${escapeHtml(c.verifyNote)}</p>` +
+    `<p style="color:#666;font-size:13px">${escapeHtml(c.verifyManageHtml('\u0000')).replace('\u0000', `<a href="${escapeHtml(manage)}">${escapeHtml(c.here)}</a>`)}</p>`;
+  return { subject: c.verifySubject(at(handle)), text, html: dirWrap(lang, html) };
 }
 
-export function trialReminderEmail(origin: string, handle: string, daysLeft: number, endsAt: string, caught: number, manageToken: string, unsubToken: string): Omit<EmailMessage, 'to'> {
+export function trialReminderEmail(
+  origin: string,
+  handle: string,
+  daysLeft: number,
+  endsAt: string,
+  caught: number,
+  manageToken: string,
+  unsubToken: string,
+  lang?: string,
+): Omit<EmailMessage, 'to'> {
+  const c = mailCopy(lang);
   const unsub = `${origin}/api/watch/unsubscribe/${unsubToken}`;
-  const manage = trialManageUrl(origin, manageToken);
+  const pro = `${origin}${proUrlPath(lang)}`;
+  const manage = trialManageUrl(origin, manageToken, lang);
   const when = endsAt.slice(0, 16).replace('T', ' ') + ' UTC';
-  const dayWord = `${daysLeft} day${daysLeft === 1 ? '' : 's'}`;
+  const caughtText = caught === 0 ? c.none : c.events(caught);
   const text = [
-    `Your free Xtracticle Watch trial for @${handle} ends in ${dayWord} (${when}). So far it caught ${caught} event${caught === 1 ? '' : 's'}.`,
+    c.reminderIntro(at(handle), daysLeft, when, caughtText),
     '',
-    `Keep watching @${handle} and up to 4 more accounts with Xtracticle Pro: ${origin}/pro`,
+    `${c.reminderCta(at(handle))}: ${pro}`,
     '',
-    `Trial status, mode and ending it early: ${manage}`,
-    `Stop these e-mails: ${unsub}`,
+    `${c.reminderManage}: ${manage}`,
+    `${c.stopEmails}: ${unsub}`,
   ].join('\n');
   const html =
-    `<p>Your free Xtracticle Watch trial for <b>@${escapeHtml(handle)}</b> ends in <b>${dayWord}</b> (${escapeHtml(when)}). So far it caught ${caught} event${caught === 1 ? '' : 's'}.</p>` +
-    `<p><a href="${escapeHtml(origin)}/pro">Keep watching @${escapeHtml(handle)} and up to 4 more accounts with Xtracticle Pro</a></p>` +
-    `<p style="color:#666;font-size:13px"><a href="${escapeHtml(manage)}">Manage your trial</a> · <a href="${escapeHtml(unsub)}">Stop these e-mails</a></p>`;
-  return {
-    subject: `Your Watch trial for @${handle} ends in ${dayWord}`,
-    text,
-    html,
-    headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
-  };
+    `<p>${escapeHtml(c.reminderIntro('\u0000', daysLeft, when, caughtText)).replace('\u0000', bold(handle))}</p>` +
+    `<p><a href="${escapeHtml(pro)}">${escapeHtml(c.reminderCta(at(handle)))}</a></p>` +
+    `<p style="color:#666;font-size:13px"><a href="${escapeHtml(manage)}">${escapeHtml(c.manageTrial)}</a> · <a href="${escapeHtml(unsub)}">${escapeHtml(c.stopEmails)}</a></p>`;
+  return { subject: c.reminderSubject(at(handle), daysLeft), text, html: dirWrap(lang, html), headers: unsubHeaders(unsub) };
 }
 
-export function trialEndedEmail(origin: string, handle: string, items: DigestItem[], total: number, unsubToken: string): Omit<EmailMessage, 'to'> {
+export function trialEndedEmail(origin: string, handle: string, items: DigestItem[], total: number, unsubToken: string, lang?: string): Omit<EmailMessage, 'to'> {
+  const c = mailCopy(lang);
   const unsub = `${origin}/api/watch/unsubscribe/${unsubToken}`;
-  const caught = total === 0 ? 'no events' : `${total} event${total === 1 ? '' : 's'}`;
-  const lines = [`Your free Xtracticle Watch trial for @${handle} has ended; the account is no longer checked.`, '', `During the trial Watch caught ${caught}${items.length ? ':' : '.'}`, ''];
-  for (const i of items) lines.push(...itemLines(i));
-  if (total > items.length) lines.push(`… and ${total - items.length} more.`, '');
-  lines.push(
-    `Keep watching @${handle} with Xtracticle Pro: ${origin}/pro`,
-    `Events are kept for 90 days after they were detected, so everything above stays visible if you add @${handle} with Pro.`,
-    '',
-    `Stop these e-mails: ${unsub}`,
-  );
+  const pro = `${origin}${proUrlPath(lang)}`;
+  const caught = total === 0 ? c.none : c.events(total);
+  const lines = [c.endedIntro(at(handle)), '', c.endedCaught(caught, items.length > 0), ''];
+  for (const i of items) lines.push(...itemLines(i, c));
+  if (total > items.length) lines.push(c.more(total - items.length), '');
+  lines.push(`${c.endedCta(at(handle))}: ${pro}`, c.endedNote(at(handle)), '', `${c.stopEmails}: ${unsub}`);
   const html =
-    `<p>Your free Xtracticle Watch trial for <b>@${escapeHtml(handle)}</b> has ended; the account is no longer checked.</p>` +
-    `<p>During the trial Watch caught ${caught}${items.length ? ':' : '.'}</p>` +
-    (items.length ? `<ul style="padding-left:18px">${items.map(itemBlock).join('')}</ul>` : '') +
-    (total > items.length ? `<p>… and ${total - items.length} more.</p>` : '') +
-    `<p><a href="${escapeHtml(origin)}/pro">Keep watching @${escapeHtml(handle)} with Xtracticle Pro</a><br>` +
-    `<span style="color:#666;font-size:13px">Events are kept for 90 days after they were detected, so everything above stays visible if you add @${escapeHtml(handle)} with Pro.</span></p>` +
-    `<p style="color:#666;font-size:13px"><a href="${escapeHtml(unsub)}">Stop these e-mails</a></p>`;
-  return {
-    subject: `Your Watch trial for @${handle} has ended`,
-    text: lines.join('\n'),
-    html,
-    headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
-  };
+    `<p>${escapeHtml(c.endedIntro('\u0000')).replace('\u0000', bold(handle))}</p>` +
+    `<p>${escapeHtml(c.endedCaught(caught, items.length > 0))}</p>` +
+    (items.length ? `<ul style="padding-left:18px">${items.map(i => itemBlock(i, c)).join('')}</ul>` : '') +
+    (total > items.length ? `<p>${escapeHtml(c.more(total - items.length))}</p>` : '') +
+    `<p><a href="${escapeHtml(pro)}">${escapeHtml(c.endedCta(at(handle)))}</a><br>` +
+    `<span style="color:#666;font-size:13px">${escapeHtml(c.endedNote(at(handle)))}</span></p>` +
+    `<p style="color:#666;font-size:13px"><a href="${escapeHtml(unsub)}">${escapeHtml(c.stopEmails)}</a></p>`;
+  return { subject: c.endedSubject(at(handle)), text: lines.join('\n'), html: dirWrap(lang, html), headers: unsubHeaders(unsub) };
 }

@@ -30,7 +30,8 @@ import {
   type WatchMode,
   type WatchRow,
 } from './db';
-import { emailSender, publicOrigin, trialEndedEmail, trialReminderEmail, trialVerificationEmail, type DigestItem } from './email';
+import { emailSender, publicOrigin, trialEndedEmail, trialReminderEmail, trialVerificationEmail, type DigestItem, type DigestTrial } from './email';
+import { PRO_PATHS, isMailLang } from './mail-copy';
 import { eventTitle, eventView, toFeedEvent } from './feed';
 import { lookupProfile, seedHandle } from './poll';
 
@@ -91,8 +92,8 @@ const byManageToken = (db: D1Database, token: string) => db.prepare('SELECT * FR
 /** The SPA sends this header; without it a trial could be started from any page on the web. */
 const fromSite = (request: Request) => request.headers.get('X-Xt-Client') === 'web';
 
-const redirect = (q: string, hash = '') =>
-  new Response(null, { status: 302, headers: { Location: `/pro?trial=${q}${hash}`, 'Cache-Control': 'no-store' } });
+const redirect = (q: string, hash = '', lang?: string | null) =>
+  new Response(null, { status: 302, headers: { Location: `${PRO_PATHS[isMailLang(lang) ? lang : 'en']}?trial=${q}${hash}`, 'Cache-Control': 'no-store' } });
 
 function daysLeft(expiresAt: string | null, now = Date.now()): number | null {
   if (!expiresAt) return null;
@@ -169,6 +170,7 @@ async function start(request: Request, env: WatchEnv, db: D1Database): Promise<R
   if (!MODES.includes(mode)) return json({ error: 'bad_mode' }, 422);
   const email = typeof body.email === 'string' ? normalizeEmail(body.email) : '';
   if (!EMAIL_RE.test(email)) return json({ error: 'bad_email' }, 422);
+  const lang = isMailLang(body.lang) ? body.lang : 'en';
 
   // One trial per address, ever; a pending request blocks a second one until it is verified or expires.
   const emailHash = await hashTrialEmail(email, env.PRO_COOKIE_SECRET);
@@ -202,13 +204,14 @@ async function start(request: Request, env: WatchEnv, db: D1Database): Promise<R
     reminder_sent_at: null,
     ended_at: null,
     end_reason: null,
+    lang,
   };
   try {
     await db
       .prepare(
-        'INSERT INTO trials (id, email_hash, email, handle, mode, status, verify_token, verify_expires_at, manage_token, unsub_token, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO trials (id, email_hash, email, handle, mode, status, verify_token, verify_expires_at, manage_token, unsub_token, created_at, lang) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       )
-      .bind(t.id, t.email_hash, t.email, t.handle, t.mode, t.status, t.verify_token, t.verify_expires_at, t.manage_token, t.unsub_token, t.created_at)
+      .bind(t.id, t.email_hash, t.email, t.handle, t.mode, t.status, t.verify_token, t.verify_expires_at, t.manage_token, t.unsub_token, t.created_at, t.lang)
       .run();
   } catch (err) {
     // Two requests racing on the same address: the unique index decides.
@@ -222,7 +225,7 @@ async function start(request: Request, env: WatchEnv, db: D1Database): Promise<R
   // Awaited (not waitUntil): a failed send is reported and the request is taken back so the address can retry.
   const sender = emailSender(env);
   if (sender) {
-    const r = await sender.send({ to: email, ...trialVerificationEmail(publicOrigin(env), handle, TRIAL_DAYS, t.verify_token!, t.manage_token) });
+    const r = await sender.send({ to: email, ...trialVerificationEmail(publicOrigin(env), handle, TRIAL_DAYS, t.verify_token!, t.manage_token, t.lang) });
     console.log(JSON.stringify({ watch: 'trial_verify_mail', ok: r.ok, error: r.error }));
     if (!r.ok) {
       await db.prepare('DELETE FROM trials WHERE id = ?').bind(t.id).run();
@@ -243,14 +246,14 @@ async function verify(request: Request, env: WatchEnv, db: D1Database, token: st
   if (!t) return redirect('verify_failed');
   if (!t.verify_expires_at || t.verify_expires_at < nowIso()) {
     await db.prepare("DELETE FROM trials WHERE id = ? AND status = 'pending'").bind(t.id).run();
-    return redirect('verify_failed');
+    return redirect('verify_failed', '', t.lang);
   }
-  if (disabled(env)) return redirect('disabled');
+  if (disabled(env)) return redirect('disabled', '', t.lang);
   // The cap counts pending requests too at start; at verification only what actually gets polled.
-  if ((await liveCount(db, ['active'])) >= trialMax(env)) return redirect('full');
+  if ((await liveCount(db, ['active'])) >= trialMax(env)) return redirect('full', '', t.lang);
   if (await db.prepare('SELECT 1 AS x FROM blocklist WHERE handle = ?').bind(t.handle).first()) {
     await db.prepare("DELETE FROM trials WHERE id = ? AND status = 'pending'").bind(t.id).run();
-    return redirect('verify_failed');
+    return redirect('verify_failed', '', t.lang);
   }
 
   const now = nowIso();
@@ -289,12 +292,12 @@ async function verify(request: Request, env: WatchEnv, db: D1Database, token: st
     // The same link opened twice at once: the first click created the watch (UNIQUE key_hash+handle).
     if (/UNIQUE/i.test(String(err))) {
       const again = await db.prepare('SELECT status FROM trials WHERE id = ?').bind(t.id).first<{ status: string }>();
-      if (again?.status === 'active') return redirect('verified', `#t=${t.manage_token}`);
+      if (again?.status === 'active') return redirect('verified', `#t=${t.manage_token}`, t.lang);
     }
     throw err;
   }
   console.log(JSON.stringify({ watch: 'trial_verified', handle: t.handle, mode: t.mode, seeded, shared: !!known }));
-  return redirect('verified', `#t=${t.manage_token}`);
+  return redirect('verified', `#t=${t.manage_token}`, t.lang);
 }
 
 async function view(db: D1Database, token: string, origin: string): Promise<Response> {
@@ -416,7 +419,7 @@ export async function trialLifecycle(db: D1Database, env: WatchEnv, now = Date.n
       console.log(JSON.stringify({ watch: 'trial_ended_mail', skipped: 'no e-mail sender configured', handle: t.handle, events: total }));
       continue;
     }
-    const r = await sender.send({ to: t.email, ...trialEndedEmail(origin, t.handle, events.map(toItem), total, t.unsub_token) });
+    const r = await sender.send({ to: t.email, ...trialEndedEmail(origin, t.handle, events.map(toItem), total, t.unsub_token, t.lang) });
     console.log(JSON.stringify({ watch: 'trial_ended_mail', handle: t.handle, ok: r.ok, error: r.error, events: total }));
   }
 
@@ -436,14 +439,18 @@ export async function trialLifecycle(db: D1Database, env: WatchEnv, now = Date.n
       console.log(JSON.stringify({ watch: 'trial_reminder_mail', skipped: 'no e-mail sender configured', handle: t.handle, daysLeft: left, events: caught }));
       continue;
     }
-    const r = await sender.send({ to: t.email!, ...trialReminderEmail(origin, t.handle, left, t.expires_at!, caught, t.manage_token, t.unsub_token) });
+    const r = await sender.send({ to: t.email!, ...trialReminderEmail(origin, t.handle, left, t.expires_at!, caught, t.manage_token, t.unsub_token, t.lang) });
     console.log(JSON.stringify({ watch: 'trial_reminder_mail', handle: t.handle, ok: r.ok, error: r.error }));
   }
   return { ended, reminded };
 }
 
 /** For the digest: days left and manage token per trial watch id (only active trials). */
-export async function activeTrialsByWatch(db: D1Database, now = Date.now()): Promise<Map<string, { daysLeft: number; manageToken: string }>> {
-  const rows = (await db.prepare("SELECT watch_id, expires_at, manage_token FROM trials WHERE status = 'active' AND watch_id IS NOT NULL").all<{ watch_id: string; expires_at: string; manage_token: string }>()).results;
-  return new Map(rows.map(r => [r.watch_id, { daysLeft: daysLeft(r.expires_at, now) ?? 0, manageToken: r.manage_token }]));
+export async function activeTrialsByWatch(db: D1Database, now = Date.now()): Promise<Map<string, DigestTrial>> {
+  const rows = (
+    await db
+      .prepare("SELECT watch_id, expires_at, manage_token, lang FROM trials WHERE status = 'active' AND watch_id IS NOT NULL")
+      .all<{ watch_id: string; expires_at: string; manage_token: string; lang: string }>()
+  ).results;
+  return new Map(rows.map(r => [r.watch_id, { daysLeft: daysLeft(r.expires_at, now) ?? 0, manageToken: r.manage_token, lang: r.lang }]));
 }

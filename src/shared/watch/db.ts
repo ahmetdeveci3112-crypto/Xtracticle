@@ -126,6 +126,8 @@ export interface TrialRow {
   reminder_sent_at: string | null;
   ended_at: string | null;
   end_reason: TrialEndReason | null;
+  /** Site language the trial was started from (migrations/0003_trial_lang.sql); picks the e-mail language and the /pro page. */
+  lang: string;
 }
 
 export const HANDLE_RE = /^[A-Za-z0-9_]{1,15}$/;

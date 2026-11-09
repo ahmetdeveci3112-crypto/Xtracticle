@@ -119,7 +119,8 @@ export default function ArchivePanel({
       const res = await fetch('/api/watch/trial', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Xt-Client': 'web' },
-        body: JSON.stringify({ handle, email, mode: 'both' }),
+        // The page's language picks the e-mail language and the /pro page the confirmation link opens.
+        body: JSON.stringify({ handle, email, mode: 'both', lang: t.proPath.split('/')[1] === 'pro' ? 'en' : t.proPath.split('/')[1] }),
       });
       const body = await res.json().catch(() => null);
       if (res.status === 201) {
