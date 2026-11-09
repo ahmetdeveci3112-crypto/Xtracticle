@@ -502,6 +502,31 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 
+/* ─── Home pages: quiet Pro block after the steps (site/home-pro.ts) ─── */
+.xt-content .xt-home-pro {
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background-color: var(--bg-secondary);
+}
+.xt-content .xt-home-pro h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+.xt-content .xt-home-pro p { margin-bottom: 0.6rem; }
+.xt-content .xt-home-pro ul { margin-bottom: 0.9rem; }
+.xt-content .xt-home-pro li { margin-bottom: 0.3rem; font-size: 0.95rem; line-height: 1.6; }
+.xt-home-pro-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+.xt-content .xt-home-pro-price { margin: 0; font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+.xt-content .xt-home-pro .xt-btn { margin-top: 0; }
+.xt-content .xt-home-pro .xt-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.xt-has-pro .xt-home-pro { display: none; }
+
 /* ─── /pro page: price cards and the license-key form (site/pro-page.ts) ─── */
 .xt-pricing {
   display: grid;

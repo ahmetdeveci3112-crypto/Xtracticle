@@ -35,6 +35,9 @@ function withHandle(s: string, handle: string) {
   return s.split('@{handle}').flatMap((part, i) => (i ? [<bdi key={i} dir="ltr">@{handle}</bdi>, part] : [part]));
 }
 
+/** Handles whose free Watch card was already counted as seen (once per handle per page load). */
+const watchCardSeen = new Set<string>();
+
 const CLIENT_TIMEOUT_MS = 60_000;
 const SLOW_AFTER_MS = 8_000;
 
@@ -49,12 +52,15 @@ export default function ArchivePanel({
   onOpenPost,
   onDownloadLatest,
   pro = false,
+  proKnown = true,
 }: {
   handle: string;
   t: Strings;
   locale: string;
   /** Xtracticle Pro: the Worker returns every collected post and the CSV can be downloaded. */
   pro?: boolean;
+  /** False while the Pro status is still being checked: no free-user promotion until it is known. */
+  proKnown?: boolean;
   onOpenPost: (id: string, handle: string) => void;
   /** Opens batch mode with this account's latest posts (works without the Wayback list). */
   onDownloadLatest?: (handle: string) => void;
@@ -162,8 +168,18 @@ export default function ArchivePanel({
   const manageLink = (
     <a href={`${t.proPath}#watch`} className={linkClass} style={{ color: 'var(--text-primary)' }}>{t.watchManage}</a>
   );
-  // Pro: one click watches the account for deleted posts. Free: a quiet link to the Watch section of /pro.
-  const watchRow = pro ? (
+  // Free users: a small card that explains Watch and links to the Watch section of /pro.
+  const showFreeCard = !pro && proKnown && !!data;
+  useEffect(() => {
+    const key = handle.toLowerCase();
+    if (showFreeCard && !watchCardSeen.has(key)) {
+      watchCardSeen.add(key);
+      track('watch_cta', { action: 'view' });
+    }
+  }, [showFreeCard, handle]);
+
+  // Pro: one click watches the account for deleted posts (unchanged behaviour, now inside the card).
+  const proWatch =
     watch.kind === 'ok' || watch.kind === 'exists' ? (
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1" role="status" style={{ color: 'var(--text-primary)' }}>
         <Check className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
@@ -186,7 +202,7 @@ export default function ArchivePanel({
               : <Eye className="w-3.5 h-3.5" aria-hidden="true" />}
             <span>{withHandle(t.watchCta, handle)}</span>
           </button>
-          <span>{t.watchHint}</span>
+          <span style={{ color: 'var(--text-secondary)' }}>{t.watchHint}</span>
         </div>
         {watch.kind === 'error' && (
           <p role="alert" style={{ color: 'var(--error-text)' }}>
@@ -194,20 +210,34 @@ export default function ArchivePanel({
           </p>
         )}
       </div>
-    )
-  ) : (
-    <p>
-      <a
-        href={`${t.proPath}#watch`}
-        className={`${linkClass} inline-flex items-center gap-1.5`}
-        style={{ color: 'var(--text-secondary)' }}
-        onClick={() => track('watch_cta_click', { pro: false })}
-      >
-        <Eye className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-        <span>{withHandle(t.watchFree, handle)}</span>
-      </a>
-    </p>
-  );
+    );
+
+  const cardStyle = { backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)' };
+  const watchCard = pro ? (
+    <div className="p-3 rounded-lg text-xs" style={cardStyle}>{proWatch}</div>
+  ) : showFreeCard ? (
+    <aside
+      aria-labelledby={`xt-watch-card-${handle}`}
+      className="flex items-start gap-3 p-3 rounded-lg"
+      style={cardStyle}
+    >
+      <Eye className="w-4 h-4 shrink-0 mt-0.5" style={{ color: 'var(--text-primary)' }} aria-hidden="true" />
+      <div className="min-w-0 flex-1 space-y-1">
+        <h3 id={`xt-watch-card-${handle}`} className="font-semibold text-sm break-words" style={{ color: 'var(--text-primary)' }}>
+          {withHandle(t.watchCardTitle, handle)}
+        </h3>
+        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{t.watchCardText}</p>
+        <a
+          href={`${t.proPath}#watch`}
+          className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold focus-ring btn-primary whitespace-nowrap"
+          style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+          onClick={() => track('watch_cta', { action: 'click' })}
+        >
+          {t.watchCardCta}
+        </a>
+      </div>
+    </aside>
+  ) : null;
 
   const fallback = (
     <a
@@ -305,6 +335,7 @@ export default function ArchivePanel({
 
       {data && data.posts.length > 0 && (
         <>
+          {watchCard && <div className="mx-4 mb-3">{watchCard}</div>}
           {data.partial && (
             <p
               className="mx-4 mb-3 px-3 py-2 rounded-lg flex items-start gap-2"
@@ -371,6 +402,7 @@ export default function ArchivePanel({
             ))}
           </ul>
 
+          {(showTeaser || data.stale) && (
           <div className="p-4 space-y-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
             {showTeaser && (
               <div className="space-y-2">
@@ -388,11 +420,11 @@ export default function ArchivePanel({
                 </a>
               </div>
             )}
-            {watchRow}
             {data.stale && (
               <p>{t.archiveStale.replace('{date}', new Date(data.fetchedAt).toLocaleDateString(locale))}</p>
             )}
           </div>
+          )}
           {tipOn && !pro && (
             <div className="px-4 pb-4">
               <TipRow t={t} place="archive_panel" short onHide={() => setTipOn(false)} />
@@ -401,9 +433,9 @@ export default function ArchivePanel({
         </>
       )}
 
-      {data && data.posts.length === 0 && (
+      {data && data.posts.length === 0 && (watchCard || data.stale) && (
         <div className="px-4 pb-4 space-y-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-          {watchRow}
+          {watchCard}
           {data.stale && <p>{t.archiveStale.replace('{date}', new Date(data.fetchedAt).toLocaleDateString(locale))}</p>}
         </div>
       )}

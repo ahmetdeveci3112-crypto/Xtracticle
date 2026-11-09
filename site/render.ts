@@ -2,6 +2,7 @@ import { coffeeUrl, sponsorsUrl } from '../src/shared/support';
 import { PAGES, SITE, GITHUB_URL, type Lang, type SitePage } from './pages';
 import { langTag } from './blocks';
 import { latestPicks } from './curated';
+import { homeProBlock } from './home-pro';
 
 /**
  * Fills the markers in index.html for one page:
@@ -305,9 +306,10 @@ function picksTeaser(page: SitePage): string {
 }
 
 function content(page: SitePage): string {
-  const teaser = picksTeaser(page);
-  const cut = teaser ? page.sections.indexOf('</section>') : -1;
-  const sections = cut >= 0 ? page.sections.slice(0, cut + 10) + teaser + page.sections.slice(cut + 10) : page.sections;
+  // Home pages: the Pro block, then the picks teaser, both right after the first ("How to download") section.
+  const extra = (page.isHome ? homeProBlock(page.lang) : '') + picksTeaser(page);
+  const cut = extra ? page.sections.indexOf('</section>') : -1;
+  const sections = cut >= 0 ? page.sections.slice(0, cut + 10) + extra + page.sections.slice(cut + 10) : page.sections;
   const body = sections + faqHtml(page);
   return (body.trim() ? `<div class="xt-content">${body}</div>\n` : '') + footer(page);
 }
@@ -318,8 +320,10 @@ function config(page: SitePage): string {
   // Runs before first paint:
   //  1. a visitor who explicitly picked a language earlier is sent to this page's version in it
   //     (never on first visit, never for crawlers, only on the page's own URL — not status pages);
-  //  2. clicks on language links count as an explicit pick.
-  return `<script>window.__XT__=${inlineJson(cfg)};(function(){var K='xtracticle_lang',c=window.__XT__;try{var p=JSON.parse(localStorage.getItem(K)||'null');if(p&&p!==c.lang&&c.alternates[p]&&location.pathname===c.path&&!/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent))location.replace(c.alternates[p]+location.search+location.hash)}catch(e){}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-set-lang]');if(a)try{localStorage.setItem(K,JSON.stringify(a.getAttribute('data-set-lang')))}catch(e){}})})()</script>`;
+  //  2. clicks on language links count as an explicit pick;
+  //  3. a visitor with the xt_pro_hint cookie gets html.xt-has-pro (hides Pro promotion on static pages);
+  //  4. clicks on static links with data-track="event_name" are sent to GA as that event.
+  return `<script>window.__XT__=${inlineJson(cfg)};(function(){var K='xtracticle_lang',c=window.__XT__,d=document;try{if(/(^|;\\s*)xt_pro_hint=/.test(d.cookie))d.documentElement.classList.add('xt-has-pro')}catch(e){}d.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-track]');if(a)try{window.gtag('event',a.getAttribute('data-track'),{lang:c.lang,page:c.page})}catch(e){}});try{var p=JSON.parse(localStorage.getItem(K)||'null');if(p&&p!==c.lang&&c.alternates[p]&&location.pathname===c.path&&!/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent))location.replace(c.alternates[p]+location.search+location.hash)}catch(e){}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-set-lang]');if(a)try{localStorage.setItem(K,JSON.stringify(a.getAttribute('data-set-lang')))}catch(e){}})})()</script>`;
 }
 
 export function renderPage(template: string, page: SitePage): string {

@@ -650,6 +650,7 @@ export default function App() {
                     t={t}
                     locale={locale}
                     pro={pro.pro}
+                    proKnown={!pro.loading}
                     onOpenPost={(id, handle) => {
                       const input = `https://x.com/${handle}/status/${id}`;
                       setUrl(input);
