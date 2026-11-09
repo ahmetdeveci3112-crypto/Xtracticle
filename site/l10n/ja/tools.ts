@@ -374,6 +374,8 @@ const deletedFinder: SitePage = {
     '<strong>「取得」を押す：</strong>XtracticleがWayback Machineに、そのアカウントの保存済みポストをすべて問い合わせます。アーカイブの応答が遅いため、最大1分ほどかかることがあります。',
     '<strong>スナップショットを開く：</strong>保存済みのポストが最大50件、新しい順に日付付きで表示されます。<em>「スナップショットを開く」</em>で保存されたコピーを、<em>「Xで取得を試す」</em>でそのポストがまだXにあるかを確認できます。',
   ])}
+  <p><strong>次の削除も逃したくないなら。</strong>アーカイブにあるのは、誰かが保存したものだけです。<a href="/ja/deleted-tweet-tracker">削除ツイート監視</a>は
+  アカウントを1時間ごとに確認し、これから削除されるポストの本文を保存します。</p>
 </section>
 
 <section>
@@ -413,7 +415,7 @@ const deletedFinder: SitePage = {
       <tr><td>向いている用途</td><td>あるアカウントの過去の投稿を一度確かめる</td><td>特定のアカウントを継続的に見張る</td></tr>
     </tbody>
   </table></div>
-  <p>最新50件では足りない場合は、<a href="/ja/pro">Xtracticle Pro</a>で、Wayback Machineが保存しているそのアカウントのポストをすべて（最大1,500件）表示し、CSVに書き出せます。年払いなら月あたり3ドルから、または買い切り59ドルです。Proには<a href="/ja/pro#watch">Watch</a>も含まれます。公開アカウントを最大5件（買い切りプランは2件）1時間ごとに確認し、削除されたポストの本文を保存してフィードやメールのまとめでお届けします。</p>
+  <p>最新50件では足りない場合は、<a href="/ja/pro">Xtracticle Pro</a>で、Wayback Machineが保存しているそのアカウントのポストをすべて（最大1,500件）表示し、CSVに書き出せます。年払いなら月あたり3ドルから、または買い切り59ドルです。Proには<a href="/ja/deleted-tweet-tracker">削除ツイート監視のWatch</a>も含まれます。公開アカウントを最大5件（買い切りプランは2件）1時間ごとに確認し、削除されたポストの本文を保存してフィードやメールのまとめでお届けします。</p>
 </section>
 
 <section>
@@ -439,4 +441,91 @@ ${privacy('ja')}`,
   ],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, mcp, privacyPage];
+/* ─── 削除ツイート監視 ─── */
+
+const deletedTracker: SitePage = {
+  id: 'ja-deleted-tracker',
+  group: 'deleted-tracker',
+  path: '/ja/deleted-tweet-tracker',
+  file: 'ja/deleted-tweet-tracker.html',
+  lang: 'ja',
+  title: '削除ツイート監視｜消されたポストを保存して通知 | Xtracticle',
+  description:
+    '公開Xアカウントを最大5件監視。ポストが削除されると本文を保存し、RSSやメールで通知します。月額5ドル、Xログイン不要。',
+  h1: '削除ツイート監視',
+  sub: '公開されているX（旧Twitter）のアカウントを監視して、削除されたポストをすべて保存します。まず@ユーザー名を入力して、すでに保存されているポストを確認できます。',
+  primary: 'md',
+  nav: '削除ツイート監視',
+  sections: `
+<section>
+  <p><strong>削除されたツイートを見られるのは、消える前に誰かがコピーを残していた場合だけです。</strong>Xtracticle Watchは、そのコピーを残すための機能です。
+  公開アカウントを追加すると、Xtracticleがそのアカウントの最新ポストを1時間ごとに読み取ります。確認済みのポストがあとからXで見つからなくなると、
+  ポストの本文・日付・メディアのリンクが、Wayback Machineのコピーがあればそれも添えて、専用フィードと毎日のメールに届きます。</p>
+  <h2>アカウントの削除ツイートを監視する手順</h2>
+  ${steps([
+    '<strong>Xtracticle Proを入手：</strong><a href="/ja/pro">Proのページ</a>から購入します。支払いはGumroadが処理し、ライセンスキーがメールで届きます。Xtracticleのアカウント登録もXへのログインも不要です。',
+    '<strong>アカウントを追加：</strong><a href="/ja/pro#watch">Proのページ</a>で<code>@ユーザー名</code>を入力し、監視する対象（削除されたポスト、新しいポスト、またはその両方）を選びます。',
+    '<strong>通知の受け取り方を選ぶ：</strong>監視ごとに、リーダー向けの専用RSS / JSONフィードが用意されます。メールアドレスを追加すると、変更点を1日1回のまとめメールで受け取れます。',
+  ])}
+  <p>お支払いの前に、上の欄でアカウントを入力してみてください。無料の検索で、Wayback Machineがそのアカウントについてすでに保存しているポストが一覧になるので、
+  監視を始める前に何が投稿され、何が削除されたかを確認できます。</p>
+</section>
+
+<section>
+  <h2>Watchで検出できるもの・できないもの</h2>
+  <ul>
+    <li><strong>アカウントを追加したあとに削除されたポスト。</strong>Watchはアカウントの最新ポスト約40件のスナップショットを保持し、1時間ごとに比較します。見つからなくなったポストは、削除として扱う前にXで改めて確認するため、タイムラインの表示が遅いだけでは誤検知しません。</li>
+    <li><strong>監視を始める前に削除されたポストは対象外。</strong>その場合は、Wayback Machineを検索する<a href="/ja/deleted-tweet-finder">削除されたツイートを探す</a>ツールを使ってください。</li>
+    <li><strong>数分で削除されたポストは対象外。</strong>1時間ごとの2回の確認の間に投稿されて削除されたポストは、検出されません。</li>
+    <li><strong>公開アカウントのみ。</strong>アカウントが非公開になったり退会・削除されたりすると、監視は一時停止し、その旨の通知が1回届きます。</li>
+    <li><strong>新しいポストも通知。</strong>監視を<em>新規</em>または<em>両方</em>に設定すれば、フォローしなくても、アカウントが投稿したときに同じフィードで知らせます。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Xtracticle Watchと他の監視サービスの比較</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle Pro</th><th>一般的な有料の監視サービス</th></tr></thead>
+    <tbody>
+      <tr><td>料金</td><td>5アカウントで月額5ドルまたは年額36ドル・2アカウントで買い切り59ドル</td><td>1アカウントあたり月額約9ドル（TrackTweets、執筆時点）</td></tr>
+      <tr><td>登録</td><td>不要。ライセンスキーだけで、Xログインも連携も不要</td><td>アカウント登録とサブスクリプション</td></tr>
+      <tr><td>通知</td><td>専用RSS / JSONフィード、毎日のメールまとめ</td><td>サービスによる</td></tr>
+      <tr><td>過去の削除</td><td>アカウントのWayback Machine保存分すべて（最大1,500件）とCSV</td><td>たいてい開始日以降のみ</td></tr>
+      <tr><td>そのほか</td><td>200リンクの一括保存、MCP / APIキー、クレジット表記なしのPDF</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p><a href="/ja/pro">Xtracticle Proと料金を見る</a>。サイトのほかの機能であるポスト、スレッド、記事の保存は、これからも無料です。</p>
+</section>
+
+<section>
+  <h2>削除ツイート監視はどんな人が使う？</h2>
+  <ul>
+    <li><strong>ジャーナリストや研究者：</strong>著名人・企業・公式アカウントの発言を、あとで削除されても記録として残したい人。</li>
+    <li><strong>ブランドやコミュニティの担当者：</strong>競合やパートナーの告知を追っている人。</li>
+    <li><strong>公開の論争を追っている人：</strong>あとからポストが消えがちな場面で。</li>
+  </ul>
+  <p>Watchが読むのは、アカウントが公開している内容、つまりx.comで誰でも見られるポストだけです。Xにログインすることはなく、非公開アカウントも見えません。
+  保存される内容や、アカウントの除外を依頼する方法は<a href="/ja/privacy">プライバシーのページ</a>をご覧ください。</p>
+</section>
+
+<section>
+  <h2>あわせて読みたい</h2>
+  <ul>
+    <li><a href="/ja/deleted-tweet-finder">削除されたツイートを探す</a>：アカウントの保存済みポストをWayback Machineで検索（無料）。</li>
+    <li><a href="/ja/guides/how-to-see-deleted-tweets">削除されたツイートを見る方法</a>：コピーが残っていそうな場所と、効果のない方法。</li>
+    <li><a href="/ja/guides/find-tweets-on-wayback-machine">Wayback Machineでツイートを探す方法</a>：手作業での検索とワイルドカードURL。</li>
+  </ul>
+</section>
+
+${privacy('ja')}`,
+  faq: [
+    { q: '誰かがツイートを削除したときに通知を受け取れますか？', a: 'はい。公開アカウントをXtracticle Watch（Xtracticle Proの機能）に追加してください。アカウントを1時間ごとに確認し、確認済みのポストが削除されると、本文付きで専用RSSフィードと毎日のまとめメールに追加します。' },
+    { q: '削除はどのくらい早く検出されますか？', a: 'アカウントはおよそ1時間に1回確認されます。フィードは削除後の次回の確認で更新され、まとめメールは1日1回届きます。' },
+    { q: '監視を始める前に削除されたツイートも見られますか？', a: 'Watchでは見られません。そのポストを一度も確認していないためです。Wayback Machineに保存されたポスト（あとで削除されたものも含む）を一覧にする、無料の削除ツイート検索をお使いください。' },
+    { q: 'Xのアカウントでログインする必要はありますか？', a: 'いいえ。XtracticleがXのログイン情報を求めることはありません。Proは、支払い後にGumroadからメールで届くライセンスキーで有効になります。' },
+    { q: '何アカウントまで監視できますか？', a: '月額・年額プランでは公開アカウントを5件、買い切りのライフタイムプランでは2件までです。アカウントはProのページでいつでも入れ替えられます。' },
+    { q: '鍵アカウントでも使えますか？', a: 'いいえ。非公開のポストは公開されていないため読めません。監視中のアカウントが非公開になると、監視は一時停止し、通知が1回届きます。' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, mcp, privacyPage];

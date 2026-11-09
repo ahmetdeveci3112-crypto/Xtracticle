@@ -209,7 +209,7 @@ function head(page: SitePage): string {
 /** Mirrors the React header markup/classes so hydration causes no layout shift. */
 function shell(page: SitePage): string {
   const { button } = UI[page.lang];
-  const placeholder = page.group === 'deleted-finder' ? PROFILE_PLACEHOLDER[page.lang] : UI[page.lang].placeholder;
+  const placeholder = page.group === 'deleted-finder' || page.group === 'deleted-tracker' ? PROFILE_PLACEHOLDER[page.lang] : UI[page.lang].placeholder;
   const home = homeOf(page.lang).path;
   return `<main class="max-w-3xl mx-auto px-5 pt-16 pb-8 md:pt-24">
         <header class="mb-10 text-center">

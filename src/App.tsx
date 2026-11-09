@@ -43,8 +43,8 @@ declare global {
   }
 }
 const PAGE: PageConfig = (typeof window !== 'undefined' && window.__XT__) || {};
-/** Deleted Tweet Finder pages (id `deleted-finder`, `tr-deleted-finder`, …) ask for an account, not a post. */
-const ACCOUNT_INPUT = /(^|-)deleted-finder$/.test(PAGE.page || '');
+/** Deleted Tweet Finder and Tracker pages (id `deleted-finder`, `tr-deleted-tracker`, …) ask for an account, not a post. */
+const ACCOUNT_INPUT = /(^|-)deleted-(finder|tracker)$/.test(PAGE.page || '');
 
 /* ─── Persistence ─── */
 interface HistoryItem {

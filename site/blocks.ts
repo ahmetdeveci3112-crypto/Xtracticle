@@ -189,48 +189,55 @@ const PRIVACY: Record<Lang, { h2: string; p: string }> = {
 };
 
 /** Points readers of the deleted-post guides to the lookup built into the tool above. */
-const ARCHIVE_CHECK: Record<Lang, { h2: string; p: string; note: string; tool: string }> = {
+const ARCHIVE_CHECK: Record<Lang, { h2: string; p: string; note: string; tool: string; track?: string }> = {
   en: {
     h2: 'Quick check: search the archives for one post',
     p: 'Paste the link of the deleted post (<code>x.com/username/status/…</code>) into the box at the top of this page and press Extract. If X no longer serves it, Xtracticle shows one-click searches for that exact post on the Wayback Machine and archive.today. Paste a profile link (<code>x.com/username</code>) instead to list every archived post of that account on the Wayback Machine. Xtracticle then shows the account’s archived posts right here, newest first, with a link to each snapshot. A profile link also lets you download the account’s latest 20 posts as one ZIP.',
     note: 'A search can come back empty: archives only hold copies someone made before the post was deleted.',
     tool: 'For an account-wide search there is also a dedicated <a href="/deleted-tweet-finder">Deleted Tweet Finder</a> page.',
+    track: 'To catch an account’s future deletions, the <a href="/deleted-tweet-tracker">deleted tweet tracker</a> watches it every hour and keeps the post’s text.',
   },
   tr: {
     h2: 'Hızlı kontrol: tek bir gönderiyi arşivlerde arayın',
     p: 'Silinen gönderinin linkini (<code>x.com/kullanici/status/…</code>) bu sayfanın üstündeki kutuya yapıştırıp Çıkar’a basın. X gönderiyi artık göstermiyorsa Xtracticle, o gönderiyi Wayback Machine’de ve archive.today’de tek tıkla aramanız için linkler gösterir. Bunun yerine bir profil linki (<code>x.com/kullanici</code>) yapıştırırsanız o hesabın Wayback Machine’deki tüm arşivlenmiş gönderilerinin listesine ulaşırsınız. Xtracticle bu gönderileri en yeniden eskiye doğru doğrudan burada, her biri arşiv kopyasının linkiyle listeler. Profil linkiyle o hesabın son 20 gönderisini tek bir ZIP olarak da indirebilirsiniz.',
     note: 'Arama boş dönebilir: arşivlerde yalnızca gönderi silinmeden önce birinin aldığı kopyalar bulunur.',
     tool: 'Bir hesabın tamamında arama yapmak için ayrı bir <a href="/tr/silinen-tweetleri-bulma">silinen tweetleri bulma</a> sayfası da var.',
+    track: 'Bir hesabın bundan sonraki silmelerini yakalamak için <a href="/tr/silinen-tweet-takibi">silinen tweet takibi</a> hesabı saatte bir kontrol eder ve gönderinin metnini saklar.',
   },
   es: {
     h2: 'Comprobación rápida: busca un post en los archivos',
     p: 'Pega el enlace del post borrado (<code>x.com/usuario/status/…</code>) en el cuadro de arriba y pulsa Extraer. Si X ya no lo muestra, Xtracticle te ofrece búsquedas de ese post exacto en Wayback Machine y archive.today con un clic. Si pegas un enlace de perfil (<code>x.com/usuario</code>), verás la lista de todos los posts archivados de esa cuenta en Wayback Machine. Xtracticle muestra esos posts archivados aquí mismo, del más reciente al más antiguo, con un enlace a cada captura. Con un enlace de perfil también puedes descargar los últimos 20 posts de la cuenta en un solo ZIP.',
     note: 'La búsqueda puede no dar resultados: los archivos solo guardan copias que alguien hizo antes de que se borrara el post.',
     tool: 'Para buscar en toda una cuenta también tienes una página dedicada: el <a href="/es/buscador-de-tweets-borrados">buscador de tweets borrados</a>.',
+    track: 'Para no perderte los próximos borrados de una cuenta, el <a href="/es/rastreador-de-tweets-borrados">rastreador de tweets borrados</a> la revisa cada hora y guarda el texto del post.',
   },
   pt: {
     h2: 'Verificação rápida: procure um post nos arquivos',
     p: 'Cole o link do post apagado (<code>x.com/usuario/status/…</code>) na caixa no topo desta página e toque em Extrair. Se o X não mostra mais o post, o Xtracticle oferece buscas por esse post exato na Wayback Machine e no archive.today com um clique. Se colar um link de perfil (<code>x.com/usuario</code>), você vê a lista de todos os posts arquivados dessa conta na Wayback Machine. O Xtracticle mostra esses posts arquivados aqui mesmo, do mais recente ao mais antigo, com um link para cada captura. Com um link de perfil, você também pode baixar os últimos 20 posts da conta em um único ZIP.',
     note: 'A busca pode voltar vazia: os arquivos só guardam cópias feitas por alguém antes de o post ser apagado.',
     tool: 'Para buscar em uma conta inteira, há também uma página própria: o <a href="/pt/localizador-de-tweets-apagados">localizador de tweets apagados</a>.',
+    track: 'Para não perder as próximas exclusões de uma conta, o <a href="/pt/rastreador-de-tweets-apagados">rastreador de tweets apagados</a> a verifica a cada hora e guarda o texto do post.',
   },
   ja: {
     h2: 'すぐ試せる：ポストをアーカイブで検索',
     p: '削除されたポストのリンク（<code>x.com/ユーザー名/status/…</code>）をこのページ上部の入力欄に貼り付けて「取得」を押してください。Xで表示できなくなっている場合、そのポストをWayback Machineとarchive.todayで検索するリンクがワンクリックで表示されます。プロフィールのリンク（<code>x.com/ユーザー名</code>）を貼り付けると、そのアカウントでWayback Machineに保存されているポストの一覧を開けます。一覧はこのページ上に新しい順で表示され、各スナップショットへのリンクも付きます。プロフィールのリンクからは、そのアカウントの最新20件のポストを1つのZIPでダウンロードすることもできます。',
     note: '検索結果が空のこともあります。アーカイブにあるのは、削除される前に誰かが保存したコピーだけです。',
     tool: 'アカウント全体を調べるための専用ページ「<a href="/ja/deleted-tweet-finder">削除されたツイートを探す</a>」もあります。',
+    track: '今後の削除を逃さないためには、「<a href="/ja/deleted-tweet-tracker">削除ツイート監視</a>」がアカウントを1時間ごとに確認し、ポストの本文を保存します。',
   },
   zh: {
     h2: '快速查询：在存档中搜索某条帖子',
     p: '把已删除帖子的链接（<code>x.com/用户名/status/…</code>）粘贴到本页顶部的输入框，然后点击“提取”。如果 X 已无法显示该帖子，Xtracticle 会给出一键在 Wayback Machine 和 archive.today 中搜索这条帖子的链接。若粘贴的是个人主页链接（<code>x.com/用户名</code>），则可打开该账号在 Wayback Machine 中所有已存档帖子的列表。Xtracticle 会直接在本页按从新到旧的顺序列出这些存档帖子，并附上每个快照的链接。粘贴个人主页链接后，还可以把该账号最新的 20 条帖子打包成一个 ZIP 下载。',
     note: '搜索结果可能为空：存档里只有帖子被删除前有人保存过的副本。',
     tool: '如需按账号整体查找，也可以使用专门的<a href="/zh/deleted-tweet-finder">已删除推文查找</a>页面。',
+    track: '如果想留住某个账号今后删除的帖子，<a href="/zh/deleted-tweet-tracker">删推监控</a>会每小时检查一次并保存帖子正文。',
   },
   ar: {
     h2: 'فحص سريع: ابحث عن منشور في الأرشيفات',
     p: 'الصق رابط المنشور المحذوف (<code>x.com/username/status/…</code>) في المربع أعلى هذه الصفحة واضغط «استخراج». إذا لم يعد X يعرض المنشور، يعرض لك Xtracticle روابط للبحث عن هذا المنشور بالتحديد في Wayback Machine وarchive.today بنقرة واحدة. وإذا لصقت رابط ملف شخصي (<code>x.com/username</code>) فستفتح قائمة بكل منشورات ذلك الحساب المؤرشفة في Wayback Machine. يعرض Xtracticle هذه المنشورات المؤرشفة هنا مباشرةً، من الأحدث إلى الأقدم، مع رابط لكل لقطة. ويتيح لك رابط الملف الشخصي أيضًا تنزيل أحدث 20 منشورًا للحساب في ملف ZIP واحد.',
     note: 'قد لا يعثر البحث على شيء: الأرشيفات لا تحفظ إلا النسخ التي التقطها أحدهم قبل حذف المنشور.',
     tool: 'وللبحث في حساب كامل توجد أيضًا صفحة مخصصة: <a href="/ar/deleted-tweet-finder">البحث عن التغريدات المحذوفة</a>.',
+    track: 'ولالتقاط ما سيحذفه حساب ما مستقبلًا، تفحص صفحة <a href="/ar/deleted-tweet-tracker">تتبع التغريدات المحذوفة</a> الحساب كل ساعة وتحفظ نص المنشور.',
   },
 };
 
@@ -240,7 +247,8 @@ export function archiveCheck(lang: Lang): string {
 <section>
   <h2>${c.h2}</h2>
   <p>${c.p}</p>
-  <p>${c.note} ${c.tool}</p>
+  <p>${c.note} ${c.tool}</p>${c.track ? `
+  <p>${c.track}</p>` : ''}
 </section>`;
 }
 

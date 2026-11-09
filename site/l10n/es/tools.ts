@@ -389,6 +389,8 @@ const deletedFinder: SitePage = {
     '<strong>Pulsa Extraer.</strong> Xtracticle pide a Wayback Machine todos los posts de esa cuenta que tenga guardados. El archivo es lento, así que puede tardar hasta un minuto.',
     '<strong>Abre una captura.</strong> La lista muestra hasta 50 posts archivados, del más reciente al más antiguo, con su fecha. <em>Abrir captura</em> enseña la copia archivada y <em>Probar el post en X</em> comprueba si el post sigue publicado.',
   ])}
+  <p><strong>¿Quieres pillar el próximo?</strong> El archivo solo tiene lo que alguien guardó. El <a href="/es/rastreador-de-tweets-borrados">rastreador de tweets borrados</a>
+  vigila una cuenta cada hora y guarda el texto de cualquier post que borre a partir de ahora.</p>
 </section>
 
 <section>
@@ -429,7 +431,7 @@ const deletedFinder: SitePage = {
     </tbody>
   </table></div>
   <p>¿Necesitas más que los 50 más recientes? <a href="/es/pro">Xtracticle Pro</a> muestra todos los posts archivados que Wayback Machine guarda
-  de una cuenta (hasta 1500) y los exporta a CSV. Desde 3 $ al mes con pago anual, o 59 $ una sola vez. Pro incluye además <a href="/es/pro#watch">Watch</a>:
+  de una cuenta (hasta 1500) y los exporta a CSV. Desde 3 $ al mes con pago anual, o 59 $ una sola vez. Pro incluye además <a href="/es/rastreador-de-tweets-borrados">Watch, un rastreador de tweets borrados</a>:
   revisa cada hora hasta 5 cuentas públicas (2 en el plan de por vida) y guarda el texto de cualquier post que se elimine, como feed o resumen por correo.</p>
 </section>
 
@@ -456,4 +458,91 @@ ${privacy('es')}`,
   ],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, mcp, privacyPage];
+/* ─── Rastreador de tweets borrados ─── */
+
+const deletedTracker: SitePage = {
+  id: 'es-deleted-tracker',
+  group: 'deleted-tracker',
+  path: '/es/rastreador-de-tweets-borrados',
+  file: 'es/rastreador-de-tweets-borrados.html',
+  lang: 'es',
+  title: 'Rastreador de tweets borrados: avisos al borrar | Xtracticle',
+  description:
+    'Vigila hasta 5 cuentas públicas de X. Si una borra un post, Xtracticle guarda su texto y te avisa por RSS o correo. 5 $ al mes, sin login en X.',
+  h1: 'Rastreador de tweets borrados',
+  sub: 'Vigila una cuenta pública de X (Twitter) y guarda una copia de cada post que borre. Empieza escribiendo el @usuario para ver qué hay ya archivado.',
+  primary: 'md',
+  nav: 'Rastreador de tweets borrados',
+  sections: `
+<section>
+  <p><strong>Un tweet borrado solo se puede ver si alguien guardó una copia antes de que desapareciera.</strong> Xtracticle Watch es esa copia.
+  Añade una cuenta pública y Xtracticle lee sus posts más recientes cada hora. Cuando un post que ya había visto desaparece de X, recibes
+  su texto, su fecha y los enlaces a sus archivos multimedia, más una copia de Wayback Machine si existe, en un feed privado y en un correo diario.</p>
+  <h2>Cómo rastrear los tweets que borra una cuenta</h2>
+  ${steps([
+    '<strong>Consigue Xtracticle Pro</strong> en la <a href="/es/pro">página de Pro</a>. El pago lo gestiona Gumroad y la clave de licencia llega por correo. Sin cuenta de Xtracticle y sin login en X.',
+    '<strong>Añade la cuenta:</strong> en la <a href="/es/pro#watch">página de Pro</a>, escribe su <code>@usuario</code> y elige qué seguir: posts borrados, posts nuevos o ambos.',
+    '<strong>Elige cómo enterarte.</strong> Cada vigilancia tiene un feed RSS / JSON privado para tu lector. Añade un correo para recibir un resumen diario de todo lo que cambió.',
+  ])}
+  <p>Antes de pagar, escribe la cuenta arriba. La búsqueda gratuita lista lo que Wayback Machine ya archivó de ella, así que puedes ver
+  qué se publicó, y qué se borró, antes de empezar a vigilarla.</p>
+</section>
+
+<section>
+  <h2>Qué detecta Watch y qué no</h2>
+  <ul>
+    <li><strong>Posts borrados después de añadir la cuenta.</strong> Watch guarda una instantánea de los ~40 posts más recientes de la cuenta y compara cada hora. Un post que desaparece se vuelve a comprobar en X antes de contar como borrado, así que una cronología lenta no provoca falsas alarmas.</li>
+    <li><strong>No los borrados antes de empezar.</strong> Para esos, usa el <a href="/es/buscador-de-tweets-borrados">buscador de tweets borrados</a>, que busca en Wayback Machine.</li>
+    <li><strong>No los borrados a los pocos minutos.</strong> Un post que se publica y se borra entre dos comprobaciones horarias no llega a verse.</li>
+    <li><strong>Solo cuentas públicas.</strong> Si una cuenta pasa a ser privada o se desactiva, la vigilancia se pausa y recibes un único aviso.</li>
+    <li><strong>También posts nuevos.</strong> Configura la vigilancia en <em>nuevos</em> o <em>ambos</em> y el mismo feed te avisa cuando la cuenta publica, sin tener que seguirla.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>¿Xtracticle Watch u otro rastreador?</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle Pro</th><th>Rastreador de pago habitual</th></tr></thead>
+    <tbody>
+      <tr><td>Precio</td><td>5 $ al mes o 36 $ al año para 5 cuentas · 59 $ una vez para 2</td><td>Unos 9 $ al mes por cuenta (TrackTweets, en el momento de escribir esto)</td></tr>
+      <tr><td>Registro</td><td>Ninguno. Una clave de licencia, sin login en X ni nada conectado</td><td>Cuenta y suscripción</td></tr>
+      <tr><td>Avisos</td><td>Feed RSS / JSON privado, resumen diario por correo</td><td>Varía</td></tr>
+      <tr><td>Borrados anteriores</td><td>Archivo completo de Wayback de la cuenta (hasta 1500 posts) con CSV</td><td>Normalmente solo desde el día en que empiezas</td></tr>
+      <tr><td>Incluye además</td><td>Guardado por lotes de 200 enlaces, clave MCP / API, PDF sin la línea de crédito</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p><a href="/es/pro">Consulta Xtracticle Pro y sus precios</a>. Guardar posts, hilos y Artículos en el resto del sitio sigue siendo gratis.</p>
+</section>
+
+<section>
+  <h2>Quién usa un rastreador de tweets borrados</h2>
+  <ul>
+    <li><strong>Periodistas e investigadores</strong> que necesitan un registro de lo que dijo un personaje público, una empresa o una cuenta oficial, aunque luego lo retire.</li>
+    <li><strong>Responsables de marca y de comunidad</strong> que siguen los anuncios de competidores y socios.</li>
+    <li><strong>Quien sigue una polémica pública</strong> en la que los posts suelen desaparecer después.</li>
+  </ul>
+  <p>Watch solo lee lo que una cuenta publica abiertamente, los mismos posts que cualquiera ve en x.com. Nunca inicia sesión en X y no ve
+  cuentas privadas. Consulta la <a href="/es/privacidad">página de privacidad</a> para saber qué se almacena y cómo pedir que se excluya una cuenta.</p>
+</section>
+
+<section>
+  <h2>Más información</h2>
+  <ul>
+    <li><a href="/es/buscador-de-tweets-borrados">Buscador de tweets borrados</a>: busca en Wayback Machine los posts archivados de una cuenta, gratis.</li>
+    <li><a href="/es/guias/como-ver-tweets-borrados">Cómo ver tweets borrados</a>: dónde puede quedar una copia y qué no funciona nunca.</li>
+    <li><a href="/es/guias/encontrar-tweets-en-wayback-machine">Cómo encontrar tweets en la Wayback Machine</a>: búsquedas manuales y URL con comodines.</li>
+  </ul>
+</section>
+
+${privacy('es')}`,
+  faq: [
+    { q: '¿Puedo recibir un aviso cuando alguien borra un tweet?', a: 'Sí. Añade la cuenta pública a Xtracticle Watch (parte de Xtracticle Pro). Revisa la cuenta cada hora y, cuando se borra un post que ya había visto, lo añade a tu feed RSS privado y a tu resumen diario por correo con el texto del post.' },
+    { q: '¿Con qué rapidez detecta el rastreador un borrado?', a: 'Las cuentas se revisan cada hora aproximadamente. El feed se actualiza en la siguiente revisión tras el borrado; el resumen por correo sale una vez al día.' },
+    { q: '¿Puede mostrar tweets borrados antes de empezar a rastrear?', a: 'Watch no, porque nunca los vio. Usa el buscador de tweets borrados gratuito, que lista los posts archivados en Wayback Machine, incluidos los que se borraron después.' },
+    { q: '¿Tengo que iniciar sesión con mi cuenta de X?', a: 'No. Xtracticle nunca te pide el login de X. Pro se activa con una clave de licencia que Gumroad te envía por correo tras el pago.' },
+    { q: '¿Cuántas cuentas puedo rastrear?', a: 'Cinco cuentas públicas con el plan mensual o anual y dos con el plan de por vida de pago único. Puedes cambiar de cuentas en cualquier momento en la página de Pro.' },
+    { q: '¿Funciona con cuentas privadas?', a: 'No. Los posts protegidos no son públicos, así que no se pueden leer. Si una cuenta vigilada pasa a ser privada, la vigilancia se pausa y recibes un único aviso.' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, mcp, privacyPage];

@@ -401,6 +401,8 @@ const deletedFinder: SitePage = {
     '<strong>Çıkar’a basın.</strong> Xtracticle, Wayback Machine’e o hesabın kaydedilmiş tüm gönderilerini sorar. Arşiv yavaş çalıştığı için bu bir dakikayı bulabilir.',
     '<strong>Arşiv kopyasını açın.</strong> Listede tarihleriyle birlikte en fazla 50 arşivlenmiş gönderi, en yeniden eskiye görünür. <em>Arşiv kopyasını aç</em> kaydedilmiş hâli gösterir; <em>Canlı gönderiyi dene</em> gönderinin X’te hâlâ durup durmadığını kontrol eder.',
   ])}
+  <p><strong>Bir sonrakini kaçırmak istemiyor musunuz?</strong> Arşivde yalnızca birinin kaydettikleri var. <a href="/tr/silinen-tweet-takibi">Silinen tweet takibi</a>,
+  bir hesabı her saat kontrol eder ve bundan sonra sildiği gönderilerin metnini saklar.</p>
 </section>
 
 <section>
@@ -441,7 +443,7 @@ const deletedFinder: SitePage = {
     </tbody>
   </table></div>
   <p>En yeni 50 gönderi yetmiyor mu? <a href="/tr/pro">Xtracticle Pro</a>, Wayback Machine’in bir hesap için sakladığı tüm arşivlenmiş gönderileri
-  (1.500’e kadar) gösterir ve CSV olarak dışa aktarır. Yıllık ödemede ayda 3 $’dan başlar ya da tek seferlik 59 $. Pro’da <a href="/tr/pro#watch">Watch</a> da var:
+  (1.500’e kadar) gösterir ve CSV olarak dışa aktarır. Yıllık ödemede ayda 3 $’dan başlar ya da tek seferlik 59 $. Pro’da <a href="/tr/silinen-tweet-takibi">Watch, yani silinen tweet takibi</a> de var:
   herkese açık 5 hesaba kadar (ömür boyu planda 2) her saat bakar ve silinen gönderilerin metnini saklar; akış ya da e-posta özeti olarak size ulaşır.</p>
 </section>
 
@@ -468,4 +470,91 @@ ${privacy('tr')}`,
   ],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, mcp, privacyPage];
+/* ─── Silinen tweet takibi ─── */
+
+const deletedTracker: SitePage = {
+  id: 'tr-deleted-tracker',
+  group: 'deleted-tracker',
+  path: '/tr/silinen-tweet-takibi',
+  file: 'tr/silinen-tweet-takibi.html',
+  lang: 'tr',
+  title: 'Silinen Tweet Takibi: Tweet Silinince Bildirim Al | Xtracticle',
+  description:
+    'Herkese açık 5 X hesabını izleyin. Biri gönderi silince Xtracticle metni saklar, RSS veya e-postayla haber verir. Ayda 5 $, X girişi yok.',
+  h1: 'Silinen Tweet Takibi',
+  sub: 'Herkese açık bir X (Twitter) hesabını izleyin ve sildiği her gönderinin kopyasını saklayın. Başlamak için @kullanıcıadını yazıp şimdiye dek neyin arşivlendiğine bakın.',
+  primary: 'md',
+  nav: 'Silinen Tweet Takibi',
+  sections: `
+<section>
+  <p><strong>Silinen bir tweeti görmek için, kaybolmadan önce birinin kopyasını almış olması gerekir.</strong> Xtracticle Watch o kopyadır.
+  Herkese açık bir hesap ekleyin; Xtracticle en yeni gönderilerine her saat bakar. Daha önce gördüğü bir gönderi X’ten kaybolursa
+  gönderinin metni, tarihi ve medya linkleri, varsa Wayback Machine kopyasıyla birlikte özel bir akışa ve günlük e-postaya düşer.</p>
+  <h2>Bir hesabın sildiği tweetler nasıl takip edilir?</h2>
+  ${steps([
+    '<strong>Xtracticle Pro’yu alın:</strong> <a href="/tr/pro">Pro sayfasından</a> satın alabilirsiniz. Ödemeyi Gumroad alır, lisans anahtarınız e-postayla gelir. Xtracticle hesabı yok, X girişi yok.',
+    '<strong>Hesabı ekleyin:</strong> <a href="/tr/pro#watch">Pro sayfasında</a> <code>@kullaniciadi</code> yazın ve neyi izleyeceğinizi seçin: silinen gönderiler, yeni gönderiler ya da ikisi.',
+    '<strong>Haberi nasıl alacağınızı seçin.</strong> Her takibin okuyucunuz için özel bir RSS / JSON akışı vardır. Değişen her şeyin günde bir kez özetlenmesi için e-posta adresi ekleyin.',
+  ])}
+  <p>Ödemeden önce hesabı yukarıya yazın. Ücretsiz arama, Wayback Machine’in o hesap için zaten arşivlediklerini listeler; böylece takibe başlamadan önce
+  neyin paylaşıldığını ve silindiğini görebilirsiniz.</p>
+</section>
+
+<section>
+  <h2>Watch neyi yakalar, neyi yakalayamaz?</h2>
+  <ul>
+    <li><strong>Hesabı ekledikten sonra silinen gönderileri.</strong> Watch, hesabın en yeni ~40 gönderisinin bir anlık görüntüsünü tutar ve her saat karşılaştırır. Kaybolan bir gönderi, silinmiş sayılmadan önce X’te bir kez daha kontrol edilir; yavaş açılan bir zaman akışı yanlış alarm üretmez.</li>
+    <li><strong>Takibe başlamadan önce silinenleri değil.</strong> Onlar için Wayback Machine’de arama yapan <a href="/tr/silinen-tweetleri-bulma">Silinen Tweetleri Bulma</a> aracını kullanın.</li>
+    <li><strong>Dakikalar içinde silinenleri değil.</strong> Saatlik iki kontrol arasında yayımlanıp silinen gönderi hiç görülmez.</li>
+    <li><strong>Yalnızca herkese açık hesaplar.</strong> Hesap gizliye alınır veya kapatılırsa takip durur ve bunu söyleyen tek bir bildirim gelir.</li>
+    <li><strong>Yeni gönderiler de.</strong> Takibi <em>yeni</em> ya da <em>ikisi</em> olarak ayarlarsanız hesabı takip etmeden, hesap paylaşım yaptığında aynı akıştan haberiniz olur.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Xtracticle Watch mı, başka bir takip servisi mi?</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle Pro</th><th>Tipik ücretli takip servisi</th></tr></thead>
+    <tbody>
+      <tr><td>Fiyat</td><td>5 hesap için ayda 5 $ veya yılda 36 $ · 2 hesap için tek seferlik 59 $</td><td>Hesap başına ayda yaklaşık 9 $ (TrackTweets, yazının yazıldığı tarihte)</td></tr>
+      <tr><td>Kayıt</td><td>Yok. Bir lisans anahtarı; X girişi yok, bağlanan bir şey yok</td><td>Hesap ve abonelik</td></tr>
+      <tr><td>Bildirim</td><td>Özel RSS / JSON akışı, günlük e-posta özeti</td><td>Değişir</td></tr>
+      <tr><td>Geçmişte silinenler</td><td>Hesabın tam Wayback arşivi (1.500 gönderiye kadar) ve CSV</td><td>Genelde yalnızca başladığınız günden itibaren</td></tr>
+      <tr><td>Ayrıca dahil</td><td>200 linke kadar toplu kaydetme, MCP / API anahtarı, kredi satırı olmayan PDF’ler</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p><a href="/tr/pro">Xtracticle Pro’yu ve fiyatlarını görün</a>. Sitenin geri kalanında gönderi, flood ve Makale kaydetmek ücretsiz kalır.</p>
+</section>
+
+<section>
+  <h2>Silinen tweet takibini kimler kullanır?</h2>
+  <ul>
+    <li><strong>Gazeteciler ve araştırmacılar:</strong> bir kamu figürünün, şirketin ya da resmî hesabın sonradan silse bile ne söylediğini kayda geçirmek isteyenler.</li>
+    <li><strong>Marka ve topluluk yöneticileri:</strong> rakiplerin ve ortakların duyurularını izleyenler.</li>
+    <li><strong>Herkese açık bir tartışmayı izleyenler:</strong> gönderilerin sonradan kaybolmaya meyilli olduğu durumlarda.</li>
+  </ul>
+  <p>Watch yalnızca hesabın herkese açık yayımladığı, x.com’da herkesin görebildiği gönderileri okur. X’e hiç giriş yapmaz, gizli hesapları göremez.
+  Nelerin saklandığı ve bir hesabın kapsam dışı bırakılmasının nasıl isteneceği için <a href="/tr/gizlilik">gizlilik sayfasına</a> bakın.</p>
+</section>
+
+<section>
+  <h2>Daha fazlası</h2>
+  <ul>
+    <li><a href="/tr/silinen-tweetleri-bulma">Silinen Tweetleri Bulma</a>: bir hesabın arşivlenmiş gönderilerini Wayback Machine’de arayın, ücretsiz.</li>
+    <li><a href="/tr/rehberler/silinen-tweetleri-gorme">Silinen tweetler nasıl görülür?</a> Bir kopyanın bulunabileceği her yer ve asla işe yaramayan yöntemler.</li>
+    <li><a href="/tr/rehberler/wayback-machine-tweet-bulma">Wayback Machine’de tweet nasıl bulunur?</a> Elle arama ve joker karakterli URL’ler.</li>
+  </ul>
+</section>
+
+${privacy('tr')}`,
+  faq: [
+    { q: 'Biri tweet sildiğinde bildirim alabilir miyim?', a: 'Evet. Herkese açık hesabı Xtracticle Watch’a ekleyin (Xtracticle Pro’nun parçası). Hesabı her saat kontrol eder; daha önce gördüğü bir gönderi silindiğinde gönderinin metniyle birlikte özel RSS akışınıza ve günlük e-posta özetinize ekler.' },
+    { q: 'Takip, silinmeyi ne kadar hızlı fark eder?', a: 'Hesaplar yaklaşık saatte bir kontrol edilir. Akış, silinmeden sonraki ilk kontrolde güncellenir; e-posta özeti günde bir kez gider.' },
+    { q: 'Takibe başlamadan önce silinen tweetleri gösterebilir mi?', a: 'Watch gösteremez, çünkü onları hiç görmedi. Wayback Machine’in arşivlediği, sonradan silinenler dahil gönderileri listeleyen ücretsiz Silinen Tweetleri Bulma aracını kullanın.' },
+    { q: 'X hesabımla giriş yapmam gerekir mi?', a: 'Hayır. Xtracticle X girişinizi hiç istemez. Pro, ödemeden sonra Gumroad’ın e-postayla gönderdiği lisans anahtarıyla açılır.' },
+    { q: 'Kaç hesabı takip edebilirim?', a: 'Aylık veya yıllık planda herkese açık beş hesap, tek seferlik ömür boyu planda iki hesap. Hesapları Pro sayfasından istediğiniz zaman değiştirebilirsiniz.' },
+    { q: 'Gizli hesaplarda çalışır mı?', a: 'Hayır. Korumalı gönderiler herkese açık olmadığı için okunamaz. İzlenen bir hesap gizliye alınırsa takip durur ve tek bir bildirim gelir.' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, mcp, privacyPage];

@@ -380,6 +380,8 @@ const deletedFinder: SitePage = {
     '<strong>Toque em Extrair.</strong> O Xtracticle pede à Wayback Machine todos os posts dessa conta que ela capturou. O arquivo é lento, então isso pode levar até um minuto.',
     '<strong>Abra uma captura.</strong> A lista mostra até 50 posts arquivados, do mais recente ao mais antigo, com a data. <em>Abrir captura</em> mostra a cópia arquivada e <em>Tentar o post no X</em> verifica se o post ainda está no ar.',
   ])}
+  <p><strong>Quer pegar o próximo?</strong> O arquivo só tem o que alguém salvou. O <a href="/pt/rastreador-de-tweets-apagados">rastreador de tweets apagados</a>
+  monitora uma conta a cada hora e guarda o texto de qualquer post que ela apagar a partir de agora.</p>
 </section>
 
 <section>
@@ -420,7 +422,7 @@ const deletedFinder: SitePage = {
     </tbody>
   </table></div>
   <p>Precisa de mais do que os 50 mais recentes? O <a href="/pt/pro">Xtracticle Pro</a> mostra todos os posts arquivados que o Wayback Machine
-  guarda de uma conta (até 1.500) e exporta tudo em CSV. A partir de US$ 3 por mês no plano anual, ou US$ 59 uma única vez. O Pro também inclui o <a href="/pt/pro#watch">Watch</a>:
+  guarda de uma conta (até 1.500) e exporta tudo em CSV. A partir de US$ 3 por mês no plano anual, ou US$ 59 uma única vez. O Pro também inclui o <a href="/pt/rastreador-de-tweets-apagados">Watch, um rastreador de tweets apagados</a>:
   ele verifica até 5 contas públicas a cada hora (2 no vitalício) e guarda o texto de qualquer post apagado, entregue como feed ou resumo por e-mail.</p>
 </section>
 
@@ -447,4 +449,91 @@ ${privacy('pt')}`,
   ],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, mcp, privacyPt];
+/* ─── Rastreador de tweets apagados ─── */
+
+const deletedTracker: SitePage = {
+  id: 'pt-deleted-tracker',
+  group: 'deleted-tracker',
+  path: '/pt/rastreador-de-tweets-apagados',
+  file: 'pt/rastreador-de-tweets-apagados.html',
+  lang: 'pt',
+  title: 'Rastreador de tweets apagados: aviso quando apagam | Xtracticle',
+  description:
+    'Monitore até 5 contas públicas do X. Quando uma apaga um post, o Xtracticle guarda o texto e avisa por RSS ou e-mail. US$ 5 por mês, sem login no X.',
+  h1: 'Rastreador de tweets apagados',
+  sub: 'Monitore uma conta pública do X (Twitter) e guarde uma cópia de cada post que ela apagar. Comece digitando o @usuário para ver o que já está arquivado.',
+  primary: 'md',
+  nav: 'Rastreador de tweets apagados',
+  sections: `
+<section>
+  <p><strong>Um tweet apagado só pode ser visto se alguém guardou uma cópia antes de ele sumir.</strong> O Xtracticle Watch é essa cópia.
+  Adicione uma conta pública e o Xtracticle lê os posts mais recentes dela a cada hora. Quando um post que ele já tinha visto some do X, você recebe
+  o texto, a data e os links de mídia do post, mais uma cópia da Wayback Machine quando existir, em um feed privado e em um e-mail diário.</p>
+  <h2>Como rastrear os tweets que uma conta apaga</h2>
+  ${steps([
+    '<strong>Assine o Xtracticle Pro</strong> na <a href="/pt/pro">página do Pro</a>. O pagamento é feito pelo Gumroad e a chave de licença chega por e-mail. Sem conta no Xtracticle e sem login no X.',
+    '<strong>Adicione a conta:</strong> na <a href="/pt/pro#watch">página do Pro</a>, digite o <code>@usuario</code> e escolha o que acompanhar: posts apagados, posts novos ou os dois.',
+    '<strong>Escolha como ser avisado.</strong> Cada monitoramento tem um feed RSS / JSON privado para o seu leitor. Adicione um e-mail para receber um resumo diário de tudo o que mudou.',
+  ])}
+  <p>Antes de pagar, digite a conta acima. A busca gratuita lista o que a Wayback Machine já arquivou dela, assim você vê
+  o que foi publicado, e apagado, antes de começar a monitorar.</p>
+</section>
+
+<section>
+  <h2>O que o Watch pega e o que não pega</h2>
+  <ul>
+    <li><strong>Posts apagados depois que você adiciona a conta.</strong> O Watch guarda um retrato dos ~40 posts mais recentes da conta e compara a cada hora. Um post que some é conferido mais uma vez no X antes de contar como apagado, então uma timeline lenta não gera falso alarme.</li>
+    <li><strong>Não os apagados antes de você começar.</strong> Para esses, use o <a href="/pt/localizador-de-tweets-apagados">localizador de tweets apagados</a>, que busca na Wayback Machine.</li>
+    <li><strong>Não os apagados em poucos minutos.</strong> Um post publicado e apagado entre duas verificações de hora em hora nunca é visto.</li>
+    <li><strong>Só contas públicas.</strong> Se uma conta ficar privada ou for desativada, o monitoramento pausa e você recebe um único aviso.</li>
+    <li><strong>Posts novos também.</strong> Configure o monitoramento como <em>novos</em> ou <em>ambos</em> e o mesmo feed avisa quando a conta publica, sem precisar segui-la.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Xtracticle Watch ou outro rastreador?</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle Pro</th><th>Rastreador pago comum</th></tr></thead>
+    <tbody>
+      <tr><td>Preço</td><td>US$ 5 por mês ou US$ 36 por ano para 5 contas · US$ 59 uma vez para 2</td><td>Cerca de US$ 9 por mês por conta (TrackTweets, no momento em que escrevemos)</td></tr>
+      <tr><td>Cadastro</td><td>Nenhum. Uma chave de licença, sem login no X e sem nada conectado</td><td>Conta e assinatura</td></tr>
+      <tr><td>Avisos</td><td>Feed RSS / JSON privado, resumo diário por e-mail</td><td>Varia</td></tr>
+      <tr><td>Exclusões passadas</td><td>Arquivo completo da Wayback da conta (até 1.500 posts) com CSV</td><td>Em geral só a partir do dia em que você começa</td></tr>
+      <tr><td>Também incluso</td><td>Salvamento em lote de 200 links, chave MCP / API, PDFs sem a linha de crédito</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p><a href="/pt/pro">Veja o Xtracticle Pro e os preços</a>. Salvar posts, threads e Artigos no resto do site continua grátis.</p>
+</section>
+
+<section>
+  <h2>Quem usa um rastreador de tweets apagados</h2>
+  <ul>
+    <li><strong>Jornalistas e pesquisadores</strong> que precisam de um registro do que uma figura pública, uma empresa ou uma conta oficial disse, mesmo que depois seja removido.</li>
+    <li><strong>Gestores de marca e de comunidade</strong> que acompanham os anúncios de concorrentes e parceiros.</li>
+    <li><strong>Quem acompanha uma polêmica pública</strong> em que os posts costumam sumir depois.</li>
+  </ul>
+  <p>O Watch só lê o que a conta publica abertamente, os mesmos posts que qualquer pessoa vê em x.com. Ele nunca faz login no X e não enxerga
+  contas privadas. Veja a <a href="/pt/privacidade">página de privacidade</a> para saber o que é armazenado e como pedir que uma conta seja excluída.</p>
+</section>
+
+<section>
+  <h2>Saiba mais</h2>
+  <ul>
+    <li><a href="/pt/localizador-de-tweets-apagados">Localizador de tweets apagados</a>: busque na Wayback Machine os posts arquivados de uma conta, grátis.</li>
+    <li><a href="/pt/guias/ver-tweets-apagados">Como ver tweets apagados</a>: onde uma cópia pode existir e o que nunca funciona.</li>
+    <li><a href="/pt/guias/encontrar-tweets-no-wayback-machine">Como encontrar tweets na Wayback Machine</a>: buscas manuais e URLs com curinga.</li>
+  </ul>
+</section>
+
+${privacy('pt')}`,
+  faq: [
+    { q: 'Posso ser avisado quando alguém apagar um tweet?', a: 'Sim. Adicione a conta pública ao Xtracticle Watch (parte do Xtracticle Pro). Ele verifica a conta a cada hora e, quando um post que já tinha visto é apagado, o inclui no seu feed RSS privado e no resumo diário por e-mail, com o texto do post.' },
+    { q: 'Com que rapidez o rastreador percebe uma exclusão?', a: 'As contas são verificadas cerca de uma vez por hora. O feed é atualizado na verificação seguinte à exclusão; o resumo por e-mail sai uma vez por dia.' },
+    { q: 'Ele mostra tweets apagados antes de eu começar a rastrear?', a: 'O Watch não, porque nunca os viu. Use o localizador de tweets apagados gratuito, que lista os posts arquivados pela Wayback Machine, inclusive os apagados depois.' },
+    { q: 'Preciso entrar com minha conta do X?', a: 'Não. O Xtracticle nunca pede seu login do X. O Pro é liberado com uma chave de licença que o Gumroad envia por e-mail depois do pagamento.' },
+    { q: 'Quantas contas posso rastrear?', a: 'Cinco contas públicas no plano mensal ou anual e duas no plano vitalício de pagamento único. Você pode trocar as contas a qualquer momento na página do Pro.' },
+    { q: 'Funciona com contas privadas?', a: 'Não. Posts protegidos não são públicos, então não podem ser lidos. Se uma conta monitorada ficar privada, o monitoramento pausa e você recebe um único aviso.' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, mcp, privacyPt];

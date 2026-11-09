@@ -201,6 +201,8 @@ const deletedFinder: SitePage = {
     '<strong>Press Extract.</strong> Xtracticle asks the Wayback Machine for every post of that account it has captured. The archive is slow, so this can take up to a minute.',
     '<strong>Open a snapshot.</strong> The list shows up to 50 archived posts, newest first, with their dates. <em>Open snapshot</em> shows the archived copy; <em>Try live post</em> checks whether the post is still on X.',
   ])}
+  <p><strong>Want to catch the next one?</strong> The archive only has what someone saved. The <a href="/deleted-tweet-tracker">deleted tweet tracker</a>
+  watches an account every hour and keeps the text of any post it deletes from now on.</p>
 </section>
 
 <section>
@@ -241,7 +243,7 @@ const deletedFinder: SitePage = {
     </tbody>
   </table></div>
   <p>Need more than the newest 50? <a href="/pro">Xtracticle Pro</a> shows every archived post the Wayback Machine holds for an account
-  (up to 1,500) and exports it as CSV. From $3 a month billed yearly, or $59 once. Pro also includes <a href="/pro#watch">Watch</a>:
+  (up to 1,500) and exports it as CSV. From $3 a month billed yearly, or $59 once. Pro also includes <a href="/deleted-tweet-tracker">Watch, a deleted tweet tracker</a>:
   it checks up to 5 public accounts every hour (2 on lifetime) and keeps the text of any post that gets deleted, delivered as a feed or an e-mail digest.</p>
 </section>
 
@@ -268,4 +270,94 @@ ${privacy('en')}`,
   ],
 };
 
-export const TOOL_PAGES_EN: SitePage[] = [unroll, tweetpdf, deletedFinder];
+/**
+ * Deleted Tweet Tracker: the "ongoing monitoring" intent (deleted tweet tracker / alert / monitor),
+ * which is what Xtracticle Pro's Watch does. The hero tool takes an account like the finder page; the
+ * archive panel it opens carries the Watch card for free users (ArchivePanel).
+ */
+const deletedTracker: SitePage = {
+  id: 'deleted-tracker',
+  group: 'deleted-tracker',
+  path: '/deleted-tweet-tracker',
+  file: 'deleted-tweet-tracker.html',
+  lang: 'en',
+  title: 'Deleted Tweet Tracker: Get Alerts When Tweets Are Deleted | Xtracticle',
+  description:
+    'Watch up to 5 public X accounts. When one deletes a post, Xtracticle keeps its text and tells you by RSS or e-mail. $5 a month, no X login.',
+  h1: 'Deleted Tweet Tracker',
+  sub: 'Watch a public X (Twitter) account and keep a copy of every post it deletes. Start by typing the @username to see what is already archived.',
+  primary: 'md',
+  nav: 'Deleted Tweet Tracker',
+  sections: `
+<section>
+  <p><strong>A deleted tweet can only be seen if someone kept a copy before it disappeared.</strong> Xtracticle Watch is that copy.
+  Add a public account and Xtracticle reads its newest posts every hour. When a post it has seen is later gone from X, you get the
+  post’s text, date and media links, plus a Wayback Machine copy when one exists, in a private feed and a daily e-mail.</p>
+  <h2>How to track an account’s deleted tweets</h2>
+  ${steps([
+    '<strong>Get Xtracticle Pro</strong> on the <a href="/pro">Pro page</a>. Payment is handled by Gumroad and your license key arrives by e-mail. No Xtracticle account, no X login.',
+    '<strong>Add the account</strong>: on the <a href="/pro#watch">Pro page</a>, type its <code>@username</code> and choose what to track: deleted posts, new posts, or both.',
+    '<strong>Pick how you hear about it.</strong> Every watch has a private RSS / JSON feed for your reader. Add an e-mail address for one daily digest of everything that changed.',
+  ])}
+  <p>Before you pay, type the account above. The free lookup lists what the Wayback Machine already archived for it, so you can see
+  what was posted, and deleted, before you started watching.</p>
+</section>
+
+<section>
+  <h2>What Watch catches, and what it can’t</h2>
+  <ul>
+    <li><strong>Posts deleted after you add the account.</strong> Watch keeps a snapshot of the account’s ~40 newest posts and compares every hour. A post that vanishes is checked once more against X before it counts as deleted, so a slow timeline doesn’t trigger false alarms.</li>
+    <li><strong>Not posts deleted before you started.</strong> For those, use the <a href="/deleted-tweet-finder">Deleted Tweet Finder</a>, which searches the Wayback Machine.</li>
+    <li><strong>Not posts deleted within minutes.</strong> A post that is published and deleted between two hourly checks is never seen.</li>
+    <li><strong>Public accounts only.</strong> If an account goes private or is deactivated, the watch pauses and you get one notice saying so.</li>
+    <li><strong>New posts, too.</strong> Set a watch to <em>new</em> or <em>both</em> and the same feed tells you when the account posts, without following it.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Xtracticle Watch or another tracker?</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Xtracticle Pro</th><th>Typical paid tracker</th></tr></thead>
+    <tbody>
+      <tr><td>Price</td><td>$5 a month or $36 a year for 5 accounts · $59 once for 2</td><td>About $9 a month per account (TrackTweets, at the time of writing)</td></tr>
+      <tr><td>Sign-up</td><td>None. A license key, no X login, nothing connected</td><td>Account and subscription</td></tr>
+      <tr><td>Alerts</td><td>Private RSS / JSON feed, daily e-mail digest</td><td>Varies</td></tr>
+      <tr><td>Past deletions</td><td>Full Wayback archive of the account (up to 1,500 posts) with CSV</td><td>Usually only from the day you start</td></tr>
+      <tr><td>Also included</td><td>Batch saves of 200 links, MCP / API key, PDFs without the credit line</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p><a href="/pro">See Xtracticle Pro and its prices</a>. Saving posts, threads and Articles on the rest of the site stays free.</p>
+</section>
+
+<section>
+  <h2>Who uses a deleted tweet tracker</h2>
+  <ul>
+    <li><strong>Journalists and researchers</strong> who need a record of what a public figure, company or official account said, even if it is later removed.</li>
+    <li><strong>Brand and community managers</strong> keeping an eye on competitors’ and partners’ announcements.</li>
+    <li><strong>Anyone following a public dispute</strong> where posts tend to vanish after the fact.</li>
+  </ul>
+  <p>Watch only reads what an account publishes openly, the same posts anyone can see on x.com. It never logs in to X and never sees
+  private accounts. See the <a href="/privacy">privacy page</a> for what is stored and how to ask for an account to be excluded.</p>
+</section>
+
+<section>
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="/deleted-tweet-finder">Deleted Tweet Finder</a>: search the Wayback Machine for an account’s archived posts, free.</li>
+    <li><a href="/guides/how-to-see-deleted-tweets">How to see deleted tweets</a>: every place a copy might exist, and what never works.</li>
+    <li><a href="/guides/find-tweets-on-wayback-machine">How to find tweets on the Wayback Machine</a>: manual searches and wildcard URLs.</li>
+  </ul>
+</section>
+
+${privacy('en')}`,
+  faq: [
+    { q: 'Can I get notified when someone deletes a tweet?', a: 'Yes. Add the public account to Xtracticle Watch (part of Xtracticle Pro). It checks the account every hour and, when a post it has seen is deleted, adds it to your private RSS feed and your daily e-mail digest with the post’s text.' },
+    { q: 'How fast does the tracker notice a deletion?', a: 'Accounts are checked about once an hour. The feed updates on the next check after the deletion; the e-mail digest goes out once a day.' },
+    { q: 'Can it show tweets deleted before I started tracking?', a: 'Watch can’t, because it never saw them. Use the free Deleted Tweet Finder, which lists posts the Wayback Machine archived, including ones deleted later.' },
+    { q: 'Do I need to log in with my X account?', a: 'No. Xtracticle never asks for your X login. Pro is unlocked with a license key that Gumroad e-mails you after payment.' },
+    { q: 'How many accounts can I track?', a: 'Five public accounts on the monthly or yearly plan, two on the one-time lifetime plan. You can swap accounts at any time on the Pro page.' },
+    { q: 'Does it work for private accounts?', a: 'No. Protected posts are not public, so they can’t be read. If a watched account turns private, the watch pauses and you get one notice.' },
+  ],
+};
+
+export const TOOL_PAGES_EN: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker];
