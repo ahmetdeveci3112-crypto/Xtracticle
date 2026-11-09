@@ -9,14 +9,14 @@ export const privacyPage: SitePage = {
   lang: 'en',
   title: 'Privacy Policy | Xtracticle',
   description:
-    'How Xtracticle handles data: no accounts, no stored posts, files built in your browser, anonymous analytics, and what the MCP server and API log.',
+    'How Xtracticle handles data: no accounts, files built in your browser, anonymous analytics, what the MCP server and API log, and what Pro Watch stores.',
   h1: 'Privacy Policy',
-  sub: 'Short version: no accounts, no uploads, and we don’t keep the posts you save.',
+  sub: 'Short version: no accounts, no uploads, and we don’t keep the posts you save. Only the Pro Watch feature stores data, and only for 90 days.',
   primary: 'pdf',
   nav: 'Privacy',
   sections: `
 <section>
-  <p><em>Last updated: October 3, 2026.</em> This policy covers xtracticle.com, its Markdown API (<code>/api/markdown/…</code>)
+  <p><em>Last updated: November 9, 2026.</em> This policy covers xtracticle.com, its Markdown API (<code>/api/markdown/…</code>)
   and its MCP server (<code>/mcp</code>). Xtracticle is a free, open-source project; the
   <a href="${GITHUB}" rel="noopener">source code</a> shows exactly what it does.</p>
 </section>
@@ -24,7 +24,7 @@ export const privacyPage: SitePage = {
 <section>
   <h2>What we don’t collect</h2>
   <ul>
-    <li>No accounts, logins, e-mail addresses or payment details.</li>
+    <li>No accounts or logins. Payments for Pro are handled by Gumroad; we only receive the license key. An e-mail address is stored only if a Pro user turns on Watch e-mail digests (see below).</li>
     <li>No uploads: PDF, EPUB, ZIP and other files are built in your browser and never sent to us.</li>
     <li>We don’t sell or share personal data, and we don’t use advertising trackers.</li>
   </ul>
@@ -55,6 +55,29 @@ export const privacyPage: SitePage = {
   <h2>Stored in your browser</h2>
   <p>Your recent links, theme and language choice are saved in your browser’s local storage only. Clear your browser data to
   remove them.</p>
+</section>
+
+<section>
+  <h2>Pro Watch (account monitoring)</h2>
+  <p>Watch is a Pro feature: a Pro user adds public X accounts to a watch list, and we check each one about once an hour to
+  report new and deleted posts. It is the only part of Xtracticle that stores data over time.</p>
+  <ul>
+    <li><strong>About a watched account:</strong> its most recent public posts (about the last 40): text, date, post ID and
+    links to media. Media files are not downloaded. The content of a post we detected as deleted is kept so the Pro user can read
+    it. Stored posts and detected events are deleted 90 days after we last saw the post or after the event was detected.</li>
+    <li><strong>About the Pro user:</strong> a one-way hash of the license key (never the key itself), the watched account names,
+    the chosen mode, a private feed token for the RSS/JSON feed, and an e-mail address only if you turn on the daily digest
+    (confirmed by a link we send). Notification records are kept for 90 days.</li>
+    <li><strong>Limits:</strong> public accounts only (watching stops if an account becomes protected), about one check per hour,
+    5 accounts per membership and 2 per lifetime license.</li>
+    <li><strong>Opting out:</strong> if your account is being watched and you want it to stop, <a href="${GITHUB}/issues" rel="noopener">open an
+    issue on GitHub</a> or message @DvciAhmet on X with the account name. We add it to a blocklist, delete its stored posts and remove
+    it from all watch lists within 7 days.</li>
+    <li><strong>Deleting your watches:</strong> removing an account from your list on the Pro page deletes that watch right away;
+    every e-mail has a one-click unsubscribe link.</li>
+    <li><strong>Who receives data:</strong> Cloudflare stores the watch data, runs the checks and sends the digest e-mails
+    (Cloudflare Email Service). Posts are fetched through the FxTwitter API. We don’t sell this data or use it for advertising.</li>
+  </ul>
 </section>
 
 <section>

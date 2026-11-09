@@ -10,7 +10,9 @@ import type { FxEnv } from '../fx';
 export interface WatchEnv extends ProEnv, FxEnv {
   /** D1 binding (wrangler.json `d1_databases`). Missing = Watch answers 503 and the cron does nothing. */
   WATCH_DB?: D1Database;
-  /** Resend API key (secret). Unset = e-mails are logged and skipped. */
+  /** Cloudflare Email Service binding (wrangler.json `send_email`). Preferred sender when present. */
+  EMAIL?: CfEmailBinding;
+  /** Resend API key (secret). Fallback sender when the EMAIL binding is missing; neither = e-mails are logged and skipped. */
   RESEND_API_KEY?: string;
   /** From address for Watch e-mails, e.g. "Xtracticle <watch@xtracticle.com>". */
   WATCH_EMAIL_FROM?: string;
@@ -20,6 +22,18 @@ export interface WatchEnv extends ProEnv, FxEnv {
   WATCH_PUBLIC_ORIGIN?: string;
   /** Testing only: replaces https://web.archive.org for the Wayback copy lookup. */
   CDX_BASE_URL?: string;
+}
+
+/** The part of the Cloudflare Email Service `send_email` binding we use (structured send). */
+export interface CfEmailBinding {
+  send(message: {
+    to: string;
+    from: string | { email: string; name?: string };
+    subject: string;
+    text?: string;
+    html?: string;
+    headers?: Record<string, string>;
+  }): Promise<{ messageId?: string }>;
 }
 
 export type WatchMode = 'deleted' | 'new' | 'both';

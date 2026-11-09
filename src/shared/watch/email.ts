@@ -1,9 +1,8 @@
-import type { WatchEnv } from './db';
+import type { CfEmailBinding, WatchEnv } from './db';
 
 /**
- * Outbound e-mail for Watch (verification links, daily digests). One provider today, Resend's
- * HTTP API; the interface is kept so a Cloudflare Email Service `send_email` binding can be
- * added as a second implementation without touching the callers.
+ * Outbound e-mail for Watch (verification links, daily digests). Cloudflare Email Service
+ * (`send_email` binding EMAIL) when bound, Resend's HTTP API as a fallback.
  */
 
 export interface EmailMessage {
@@ -45,10 +44,44 @@ export function resendSender(apiKey: string, from: string): EmailSender {
   };
 }
 
-/** The configured sender, or null when RESEND_API_KEY is unset (callers log and skip). */
+/** "Name <addr@host>" → { name, email }; a bare address stays as is. */
+function parseFrom(from: string): { email: string; name?: string } {
+  const m = from.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
+  return m ? { email: m[2], name: m[1] || undefined } : { email: from.trim() };
+}
+
+/** Cloudflare Email Service (Workers Paid; the sending domain must be onboarded in the dashboard). */
+export function cloudflareSender(binding: CfEmailBinding, from: string): EmailSender {
+  const sender = parseFrom(from);
+  return {
+    name: 'cloudflare',
+    async send(msg) {
+      const base = { to: msg.to, from: sender, subject: msg.subject, text: msg.text, html: msg.html };
+      try {
+        const r = await binding.send(msg.headers ? { ...base, headers: msg.headers } : base);
+        return { ok: true, id: r?.messageId };
+      } catch (err: any) {
+        // A header the service does not allow (e.g. List-Unsubscribe): send once more without custom headers.
+        if (msg.headers && typeof err?.code === 'string' && err.code.startsWith('E_HEADER')) {
+          try {
+            const r = await binding.send(base);
+            return { ok: true, id: r?.messageId };
+          } catch (err2: any) {
+            return { ok: false, error: `cloudflare ${err2?.code || ''}: ${err2?.message || String(err2)}` };
+          }
+        }
+        return { ok: false, error: `cloudflare ${err?.code || ''}: ${err?.message || String(err)}` };
+      }
+    },
+  };
+}
+
+/** The configured sender: the Cloudflare EMAIL binding, else Resend, else null (callers log and skip). */
 export function emailSender(env: WatchEnv): EmailSender | null {
-  if (!env.RESEND_API_KEY) return null;
-  return resendSender(env.RESEND_API_KEY, env.WATCH_EMAIL_FROM || DEFAULT_FROM);
+  const from = env.WATCH_EMAIL_FROM || DEFAULT_FROM;
+  if (env.EMAIL) return cloudflareSender(env.EMAIL, from);
+  if (env.RESEND_API_KEY) return resendSender(env.RESEND_API_KEY, from);
+  return null;
 }
 
 export const publicOrigin = (env: WatchEnv) => (env.WATCH_PUBLIC_ORIGIN || 'https://xtracticle.com').replace(/\/+$/, '');

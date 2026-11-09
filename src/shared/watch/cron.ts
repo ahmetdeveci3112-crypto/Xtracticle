@@ -180,7 +180,7 @@ async function dailyDigest(db: D1Database, env: WatchEnv, scheduledTime: number)
   const sender = emailSender(env);
   if (!sender) {
     const events = [...groups.values()].reduce((n, g) => n + g.items.length, 0);
-    console.log(JSON.stringify({ watch: 'digest', skipped: 'RESEND_API_KEY unset', recipients: groups.size, events }));
+    console.log(JSON.stringify({ watch: 'digest', skipped: 'no e-mail sender configured', recipients: groups.size, events }));
     return `skipped:${groups.size}`;
   }
   let sent = 0;

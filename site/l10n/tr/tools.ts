@@ -287,14 +287,14 @@ const privacyPage: SitePage = {
   lang: 'tr',
   title: 'Gizlilik Politikası | Xtracticle',
   description:
-    'Xtracticle verileri nasıl işler: hesap yok, gönderiler saklanmaz, dosyalar tarayıcınızda oluşur, analizler anonimdir; MCP sunucusu ve API neyi kaydeder.',
+    'Xtracticle verileri nasıl işler: hesap yok, dosyalar tarayıcınızda oluşur, analizler anonimdir; MCP sunucusu ve API neyi kaydeder, Pro Watch neyi saklar.',
   h1: 'Gizlilik Politikası',
-  sub: 'Kısaca: hesap yok, dosya yüklemesi yok ve kaydettiğiniz gönderileri saklamıyoruz.',
+  sub: 'Kısaca: hesap yok, dosya yüklemesi yok ve kaydettiğiniz gönderileri saklamıyoruz. Yalnızca Pro Watch özelliği veri saklar, o da 90 gün.',
   primary: 'pdf',
   nav: 'Gizlilik',
   sections: `
 <section>
-  <p><em>Son güncelleme: 3 Ekim 2026.</em> Bu politika xtracticle.com'u, Markdown API’sini (<code>/api/markdown/…</code>)
+  <p><em>Son güncelleme: 9 Kasım 2026.</em> Bu politika xtracticle.com'u, Markdown API’sini (<code>/api/markdown/…</code>)
   ve MCP sunucusunu (<code>/mcp</code>) kapsar. Xtracticle ücretsiz, açık kaynaklı bir projedir;
   <a href="${GITHUB}" rel="noopener">kaynak kodu</a> tam olarak ne yaptığını gösterir.</p>
 </section>
@@ -302,7 +302,7 @@ const privacyPage: SitePage = {
 <section>
   <h2>Toplamadığımız veriler</h2>
   <ul>
-    <li>Hesap, giriş, e-posta adresi veya ödeme bilgisi yok.</li>
+    <li>Hesap ya da giriş yok. Pro ödemelerini Gumroad alır; bize yalnızca lisans anahtarı ulaşır. E-posta adresi yalnızca bir Pro kullanıcısı Watch e-posta özetini açarsa saklanır (aşağıya bakın).</li>
     <li>Yükleme yok: PDF, EPUB, ZIP ve diğer dosyalar tarayıcınızda oluşturulur, bize hiç gönderilmez.</li>
     <li>Kişisel verileri satmıyor ya da paylaşmıyoruz; reklam izleyicisi kullanmıyoruz.</li>
   </ul>
@@ -333,6 +333,29 @@ const privacyPage: SitePage = {
   <h2>Tarayıcınızda saklananlar</h2>
   <p>Son kullandığınız linkler, tema ve dil seçiminiz yalnızca tarayıcınızın yerel depolamasında tutulur. Silmek için tarayıcı verilerinizi
   temizleyin.</p>
+</section>
+
+<section>
+  <h2>Pro Watch (hesap takibi)</h2>
+  <p>Watch bir Pro özelliğidir: Pro kullanıcı herkese açık X hesaplarını izleme listesine ekler, biz de her birini yaklaşık saatte
+  bir kontrol ederek yeni ve silinen gönderileri bildiririz. Xtracticle'ın zaman içinde veri saklayan tek bölümü budur.</p>
+  <ul>
+    <li><strong>İzlenen hesap hakkında:</strong> son herkese açık gönderileri (yaklaşık son 40): metin, tarih, gönderi kimliği ve
+    medya bağlantıları. Medya dosyaları indirilmez. Silindiğini tespit ettiğimiz bir gönderinin içeriği, Pro kullanıcı okuyabilsin
+    diye saklanır. Saklanan gönderiler ve olaylar, gönderiyi son gördüğümüz ya da olayı tespit ettiğimiz tarihten 90 gün sonra silinir.</li>
+    <li><strong>Pro kullanıcı hakkında:</strong> lisans anahtarının tek yönlü özeti (anahtarın kendisi asla), izlenen hesap adları,
+    seçilen mod, RSS/JSON akışı için özel bir akış anahtarı ve yalnızca günlük özeti açarsanız (gönderdiğimiz bağlantıyla onaylanan)
+    e-posta adresiniz. Bildirim kayıtları 90 gün tutulur.</li>
+    <li><strong>Sınırlar:</strong> yalnızca herkese açık hesaplar (hesap gizliye geçerse izleme durur), yaklaşık saatte bir kontrol,
+    üyelik başına 5, ömür boyu lisans başına 2 hesap.</li>
+    <li><strong>İzlenmek istemiyorsanız:</strong> hesap adını yazarak <a href="${GITHUB}/issues" rel="noopener">GitHub'da bir issue açın</a>
+    ya da X'te @DvciAhmet'e mesaj gönderin. Hesabı engel listesine ekler, saklanan gönderilerini siler ve 7 gün içinde tüm izleme
+    listelerinden çıkarırız.</li>
+    <li><strong>İzlemelerinizi silmek:</strong> Pro sayfasında bir hesabı listeden kaldırmak o izlemeyi hemen siler; her e-postada
+    tek tıkla abonelikten çıkma bağlantısı vardır.</li>
+    <li><strong>Veriyi kimler alır:</strong> izleme verisini Cloudflare saklar, kontrolleri çalıştırır ve özet e-postalarını gönderir
+    (Cloudflare Email Service). Gönderiler FxTwitter API ile alınır. Bu veriyi satmıyor, reklam için kullanmıyoruz.</li>
+  </ul>
 </section>
 
 <section>

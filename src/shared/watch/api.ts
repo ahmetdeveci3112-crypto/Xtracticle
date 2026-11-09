@@ -244,7 +244,7 @@ async function patch(
           else await send;
           verificationSent = true;
         } else {
-          console.log(JSON.stringify({ watch: 'verify_mail', skipped: 'RESEND_API_KEY unset' }));
+          console.log(JSON.stringify({ watch: 'verify_mail', skipped: 'no e-mail sender configured' }));
           verificationSent = false;
         }
       }

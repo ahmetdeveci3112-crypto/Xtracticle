@@ -8,7 +8,12 @@
     {
       "binding": "WATCH_DB",
       "database_name": "xtracticle-watch",
-      "database_id": "REPLACE_WITH_REAL_ID"
+      "database_id": "868dda1b-730a-4d60-b521-339fd55a652b"
+    }
+  ],
+  "send_email": [
+    {
+      "name": "EMAIL"
     }
   ],
   "triggers": {
@@ -17,6 +22,7 @@
     ]
   },
   "vars": {
+    "WATCH_EMAIL_FROM": "Xtracticle <watch@xtracticle.com>",
     "GUMROAD_PRODUCT_MEMBERSHIP": "zRyxi6_UZTOjng_IESQhkA==",
     "GUMROAD_PRODUCT_LIFETIME": "hGyDc5sjkcwOajGlD00fsQ==",
     "GUMROAD_URL_MONTHLY": "https://gumroad.com/checkout?product=jjhcgr&option=097Q4L16dycOtUBN5f2LrQ%3D%3D&recurrence=monthly&quantity=1",
