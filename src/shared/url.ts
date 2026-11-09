@@ -34,8 +34,8 @@ export function parsePath(pathname: string): { id: string; handle?: string } | n
 
 /** What a non-post input looks like, for the error message and analytics. Never returns the input itself. */
 export type InputKind =
-  | { kind: 'profile'; handle: string }
-  | { kind: 'empty' | 'x_other' | 'non_x_url' | 'text' };
+  | { kind: 'profile'; handle: string; bare?: boolean }
+  | { kind: 'empty' | 'x_other' | 'non_x_url' | 'text' | 'text_cjk' };
 
 const RESERVED = new Set([
   'i', 'home', 'explore', 'search', 'notifications', 'messages', 'settings', 'hashtag', 'compose', 'intent',
@@ -43,14 +43,26 @@ const RESERVED = new Set([
 ]);
 const X_URL_RE = new RegExp(`(?:https?:\\/\\/)?(?:(?:www|mobile)\\.)?(?<![\\w-])${HOSTS}(?:\\/(?:#!\\/)?([A-Za-z0-9_]{1,15}))?(?=[\\/?#\\s]|$)`, 'i');
 
-export function classifyInput(input: string): InputKind {
-  const text = (input || '').trim();
+const CJK_RE = /[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af\uff00-\uffef]/;
+
+/**
+ * `bareHandle`: treat a lone word that is a valid username ("elonmusk") as a
+ * profile. Only for the single-link box, where a one-word entry is almost
+ * always an account; batch mode splits on whitespace, so it stays strict.
+ */
+export function classifyInput(input: string, opts: { bareHandle?: boolean } = {}): InputKind {
+  // Full-width ＠ (Japanese/Chinese keyboards) counts as @.
+  const text = (input || '').trim().replace(/^\uFF20/, '@');
   if (!text) return { kind: 'empty' };
-  const handleOnly = text.match(/^@([A-Za-z0-9_]{1,15})$/);
+  const handleOnly = text.match(/^@\s?([A-Za-z0-9_]{1,15})$/);
   if (handleOnly) return { kind: 'profile', handle: handleOnly[1] };
+  if (opts.bareHandle && /^(?=[0-9]*[A-Za-z_])[A-Za-z0-9_]{1,15}$/.test(text) && !RESERVED.has(text.toLowerCase())) {
+    return { kind: 'profile', handle: text, bare: true };
+  }
   const m = text.match(X_URL_RE);
   if (m) return m[1] && !RESERVED.has(m[1].toLowerCase()) ? { kind: 'profile', handle: m[1] } : { kind: 'x_other' };
-  return /https?:\/\/|www\./i.test(text) ? { kind: 'non_x_url' } : { kind: 'text' };
+  if (/https?:\/\/|www\./i.test(text)) return { kind: 'non_x_url' };
+  return { kind: CJK_RE.test(text) ? 'text_cjk' : 'text' };
 }
 
 /** Approximate post date from the ID (snowflake), or null for pre-2010 IDs. */

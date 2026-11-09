@@ -222,11 +222,11 @@ export default function App() {
     const parsed = parseInput(input);
     if (!parsed) {
       // Only the shape of the input is tracked, never the input itself.
-      const shape = classifyInput(input);
+      const shape = classifyInput(input, { bareHandle: true });
       if (shape.kind === 'profile') {
         // Instead of only an error: list the account's archived posts right here.
         setArchive({ handle: shape.handle, n: Date.now() });
-        track('profile_input', { input: 'profile' });
+        track('profile_input', { input: shape.bare ? 'bare_handle' : 'profile' });
       } else {
         setError({ msg: t.invalidLink });
         track('extract_error', { reason: 'invalid_link', input: shape.kind });

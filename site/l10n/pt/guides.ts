@@ -202,9 +202,9 @@ ${privacy('pt')}`,
 const deleted = guide({
   slug: 'recover-deleted-tweets',
   pslug: 'recuperar-tweets-apagados',
-  title: 'Como recuperar tweets apagados: 4 lugares para procurar (2026) | Xtracticle',
+  title: 'Recuperar tweets apagados (2026): buscador grátis + 4 lugares para ver | Xtracticle',
   description:
-    'Recupere posts apagados do X (Twitter): seu arquivo de dados antigo, Wayback Machine, archive.today e prints. Cole o link e busque nos arquivos com um clique.',
+    'Apagou um tweet ou procura o de outra pessoa? Digite um @usuario e veja os posts arquivados dessa conta no Wayback Machine, ou confira seu arquivo de dados do X. Grátis, sem login.',
   h1: 'Dá para recuperar tweets apagados?',
   sub: 'Às vezes, mas raramente pelo próprio X. Veja as opções que existem, o quanto cada uma é confiável e como evitar precisar delas.',
   primary: 'zip',

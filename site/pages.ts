@@ -453,9 +453,9 @@ const alternative: SitePage = {
   path: '/thread-reader-app-alternative',
   file: 'thread-reader-app-alternative.html',
   lang: 'en',
-  title: 'Free Thread Reader App Alternative — PDF, Markdown & X Articles | Xtracticle',
+  title: 'Thread Reader App Alternative: Unroll Threads to PDF, Free & No Login | Xtracticle',
   description:
-    'Looking for a Thread Reader App alternative? Xtracticle unrolls X threads and saves X Articles as PDF, Markdown, EPUB or text for free — no bot mention, no ads, no login.',
+    'Unroll any X thread without mentioning a bot: paste the link and get the whole thread as PDF, Markdown or EPUB in seconds. X Articles too. Free, no ads, no login.',
   h1: 'A Free Thread Reader App Alternative',
   sub: 'Unroll X threads and save X Articles as PDF, Markdown, EPUB or text — free, no bot mention, no ads, no login.',
   primary: 'pdf',

@@ -10,7 +10,7 @@ const en = {
   /** Input placeholder on the Deleted Tweet Finder pages (they expect an account, not a post). */
   profilePlaceholder: 'Paste a profile link or @username…',
   extract: 'Extract',
-  invalidLink: 'Please enter a valid X post link, e.g. https://x.com/user/status/123…',
+  invalidLink: 'Paste an X post link (e.g. https://x.com/user/status/123…) or a @username to see its archived posts.',
   articleLink:
     'That is an article-reader link (x.com/i/article/…). Open the article on X, tap Share → Copy link, and paste the post link (x.com/user/status/…).',
   fetchError: 'Could not fetch this post. It may be deleted, age-restricted, or from a private account.',
@@ -121,7 +121,7 @@ const tr: typeof en = {
   placeholder: 'Bir X gönderi linki yapıştırın…',
   profilePlaceholder: 'Bir profil linki veya @kullanıcıadı yapıştırın…',
   extract: 'Çıkar',
-  invalidLink: 'Geçerli bir X gönderi linki girin, örn. https://x.com/kullanici/status/123…',
+  invalidLink: 'Bir X gönderi linki (örn. https://x.com/kullanici/status/123…) ya da arşivlenmiş gönderileri için @kullaniciadi yapıştırın.',
   articleLink:
     'Bu bir makale okuyucu linki (x.com/i/article/…). Makaleyi X’te açıp Paylaş → Linki kopyala deyin ve gönderi linkini (x.com/kullanici/status/…) yapıştırın.',
   fetchError: 'Gönderi alınamadı. Silinmiş, yaş kısıtlamalı veya gizli bir hesaba ait olabilir.',
@@ -232,7 +232,7 @@ const es: typeof en = {
   placeholder: 'Pega el enlace de un post de X…',
   profilePlaceholder: 'Pega el enlace de un perfil o un @usuario…',
   extract: 'Extraer',
-  invalidLink: 'Introduce un enlace válido de un post de X, p. ej. https://x.com/usuario/status/123…',
+  invalidLink: 'Pega un enlace de un post de X (p. ej. https://x.com/usuario/status/123…) o un @usuario para ver sus posts archivados.',
   articleLink:
     'Ese es un enlace del lector de artículos (x.com/i/article/…). Abre el artículo en X, toca Compartir → Copiar enlace y pega el enlace del post (x.com/usuario/status/…).',
   fetchError: 'No se pudo obtener el post. Puede estar eliminado, tener restricción de edad o ser de una cuenta privada.',
@@ -343,7 +343,7 @@ const pt: typeof en = {
   placeholder: 'Cole o link de um post do X…',
   profilePlaceholder: 'Cole o link de um perfil ou um @usuário…',
   extract: 'Extrair',
-  invalidLink: 'Digite um link válido de post do X, ex.: https://x.com/usuario/status/123…',
+  invalidLink: 'Cole um link de post do X (ex.: https://x.com/usuario/status/123…) ou um @usuario para ver os posts arquivados.',
   articleLink:
     'Esse é um link do leitor de artigos (x.com/i/article/…). Abra o artigo no X, toque em Compartilhar → Copiar link e cole o link do post (x.com/usuario/status/…).',
   fetchError: 'Não foi possível obter o post. Ele pode ter sido apagado, ter restrição de idade ou ser de uma conta privada.',
@@ -454,7 +454,7 @@ const ja: typeof en = {
   placeholder: 'Xのポストのリンクを貼り付け…',
   profilePlaceholder: 'プロフィールのリンクか@ユーザー名を貼り付け…',
   extract: '取得',
-  invalidLink: '有効なXのポストのリンクを入力してください（例：https://x.com/user/status/123…）',
+  invalidLink: 'Xのポストのリンク（例：https://x.com/user/status/123…）か、アーカイブされたポストを探す場合は @ユーザー名 を入力してください。',
   articleLink:
     'これは記事リーダーのリンク（x.com/i/article/…）です。Xで記事を開き、「共有 → リンクをコピー」でポストのリンク（x.com/user/status/…）を取得して貼り付けてください。',
   fetchError: 'ポストを取得できませんでした。削除済み、年齢制限付き、または非公開アカウントの可能性があります。',
@@ -565,7 +565,7 @@ const zh: typeof en = {
   placeholder: '粘贴 X 帖子链接…',
   profilePlaceholder: '粘贴个人主页链接或 @用户名…',
   extract: '提取',
-  invalidLink: '请输入有效的 X 帖子链接，例如 https://x.com/user/status/123…',
+  invalidLink: '请粘贴 X 帖子链接（例如 https://x.com/user/status/123…），或输入 @用户名 查看其存档帖子。',
   articleLink:
     '这是文章阅读器链接（x.com/i/article/…）。请在 X 上打开该文章，点击“分享 → 复制链接”，然后粘贴帖子链接（x.com/user/status/…）。',
   fetchError: '无法获取该帖子。它可能已被删除、有年龄限制，或来自私密账号。',
@@ -676,7 +676,7 @@ const ar: typeof en = {
   placeholder: 'الصق رابط منشور من X…',
   profilePlaceholder: 'الصق رابط ملف شخصي أو اسم مستخدم مع @…',
   extract: 'استخراج',
-  invalidLink: 'يرجى إدخال رابط منشور صالح من X، مثل https://x.com/user/status/123…',
+  invalidLink: 'الصق رابط منشور من X (مثل https://x.com/user/status/123…) أو ‎@اسم_المستخدم لعرض منشوراته المؤرشفة.',
   articleLink:
     'هذا رابط قارئ المقالات (x.com/i/article/…). افتح المقالة في X، واضغط «مشاركة ← نسخ الرابط»، ثم الصق رابط المنشور (x.com/user/status/…).',
   fetchError: 'تعذّر جلب هذا المنشور. ربما حُذف، أو عليه قيد عمري، أو هو من حساب خاص.',

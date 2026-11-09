@@ -47,9 +47,9 @@ const guide = (g: GuideInput): SitePage => ({
 
 const whatAre = guide({
   slug: 'what-are-x-articles',
-  title: 'X Articles Explained: What They Are and Who Can Post | Xtracticle',
+  title: 'What Are X Articles? Who Can Post, Limits & How to Save One | Xtracticle',
   description:
-    'X Articles are long-form posts on X with headings, images and links. Who can publish them (Premium), how they differ from threads, and how to save one as PDF.',
+    'X Articles are long-form posts on X with headings, images and links. Who can publish them (Premium), length limits, how they differ from threads, and how to save any article as a PDF for free.',
   h1: 'What Are X Articles?',
   sub: 'X Articles are long-form, formatted posts published directly on X — here is who can write them, how they differ from threads, and how to keep a copy.',
   primary: 'pdf',
@@ -197,9 +197,9 @@ ${privacy('en')}`,
 
 const deleted = guide({
   slug: 'recover-deleted-tweets',
-  title: 'How to Recover Deleted Tweets: 4 Places to Check (2026) | Xtracticle',
+  title: 'Recover Deleted Tweets (2026): Free Archive Finder + 4 Places to Check | Xtracticle',
   description:
-    'Recover deleted X (Twitter) posts: your old data archive, the Wayback Machine, archive.today and screenshots. Paste the link to search the archives in one click.',
+    'Deleted a tweet, or looking for someone else’s? Type a @username to list that account’s archived posts from the Wayback Machine, or check your X data archive. Free, no login.',
   h1: 'Can You Recover Deleted Tweets?',
   sub: 'Sometimes, but rarely from X itself. Here are the options that exist, how reliable each is, and how to avoid needing them.',
   primary: 'zip',
@@ -571,9 +571,9 @@ ${privacy('en')}`,
 
 const writeArticle = guide({
   slug: 'how-to-write-x-article',
-  title: 'How to Write and Publish an Article on X | Xtracticle',
+  title: 'How to Write an Article on X (2026): Step-by-Step Guide | Xtracticle',
   description:
-    'How to write an article on X: who can publish, where the composer is, formatting and cover image, editing after publishing, and how to back it up.',
+    'Where to find the Articles composer on X, who can publish (Premium), formatting and cover image, editing after you publish, and how to back up your article as PDF or Markdown.',
   h1: 'How to Write and Publish an Article on X',
   sub: 'From eligibility to the publish button: what you need, what the editor offers, and how to keep a copy of your finished piece.',
   primary: 'md',

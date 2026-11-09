@@ -222,9 +222,9 @@ ${privacy('es')}`,
 
 const deleted = guide({
   slug: 'recuperar-tweets-borrados',
-  title: 'Cómo recuperar tweets borrados: 4 sitios donde buscar (2026) | Xtracticle',
+  title: 'Recuperar tweets borrados (2026): buscador gratis + 4 sitios donde mirar | Xtracticle',
   description:
-    'Recupera posts borrados de X (Twitter): tu archivo de datos antiguo, Wayback Machine, archive.today y capturas. Pega el enlace y busca en los archivos con un clic.',
+    '¿Borraste un tweet o buscas uno ajeno? Escribe un @usuario y verás los posts archivados de esa cuenta en Wayback Machine, o revisa tu archivo de datos de X. Gratis, sin registro.',
   h1: '¿Se pueden recuperar tweets borrados?',
   sub: 'A veces, pero rara vez desde el propio X. Estas son las opciones que existen, qué tan fiable es cada una y cómo evitar necesitarlas.',
   primary: 'zip',
