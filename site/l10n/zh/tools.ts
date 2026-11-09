@@ -415,9 +415,9 @@ const deletedTracker: SitePage = {
   file: 'zh/deleted-tweet-tracker.html',
   lang: 'zh',
   title: '删推监控：推文被删后自动保存并提醒 | Xtracticle',
-  description: '监控最多 5 个公开 X 账号。帖子一被删除，Xtracticle 就保存原文，并通过 RSS 或邮件通知你。每月 5 美元，无需登录 X。',
+  description: '免费监控一个公开 X 账号 14 天。帖子一被删除，Xtracticle 就保存原文，并通过 RSS 或邮件通知你。无需绑卡，无需登录 X。',
   h1: '删推监控',
-  sub: '监控一个公开的 X（推特）账号，保存它删除的每一条帖子。先输入 @用户名，看看已经有哪些存档。',
+  sub: '监控一个公开的 X（推特）账号，保存它删除的每一条帖子。免费试用 14 天：输入 @用户名，再填写你的邮箱。',
   primary: 'md',
   nav: '删推监控',
   sections: `
@@ -427,12 +427,12 @@ const deletedTracker: SitePage = {
   这条帖子的文字、日期和媒体链接；如果 Wayback Machine 有副本，也会一并附上。</p>
   <h2>如何监控账号删除的推文</h2>
   ${steps([
-    '<strong>获取 Xtracticle Pro：</strong>在 <a href="/zh/pro">Pro 页面</a>购买。付款由 Gumroad 处理，许可证密钥会发到你的邮箱。无需 Xtracticle 账号，也无需登录 X。',
-    '<strong>添加账号：</strong>在 <a href="/zh/pro#watch">Pro 页面</a>输入它的 <code>@用户名</code>，并选择要监控的内容：已删除的帖子、新帖子，或两者都要。',
-    '<strong>选择接收方式。</strong>每个监控都有一个专属的 RSS / JSON 订阅源，可放进你的阅读器。再添加一个邮箱，就能每天收到一封汇总所有变化的邮件。',
+    '<strong>开始免费试用。</strong>在上方输入账号的 <code>@用户名</code>，在其存档帖子下方的 Watch 框里填写邮箱，然后点击我们发给你的确认链接。14 天内可监控 1 个账号：无需绑卡，无需 Xtracticle 账号，无需登录 X。',
+    '<strong>选择想了解的内容。</strong>链接会打开你的试用页面，里面有一个可放进阅读器的专属 RSS / JSON 订阅源；可选择已删除的帖子、新帖子，或两者都要。一有变化，就会向你确认过的邮箱发送每日摘要邮件。',
+    '<strong>用 Pro 继续监控。</strong>14 天结束后，监控会自动停止。<a href="/zh/pro">Xtracticle Pro</a> 可以让监控持续下去，最多监控 5 个账号（终身版为 2 个）。付款由 Gumroad 处理，许可证密钥会发到你的邮箱。',
   ])}
-  <p>付款之前，先在上方输入账号。免费查找会列出 Wayback Machine 已为该账号存档的帖子，
-  这样你就能看到在开始监控之前它发过什么、删过什么。</p>
+  <p>同样的查找也会列出 Wayback Machine 已为该账号存档的帖子，
+  所以你还能看到在开始监控之前它发过什么、删过什么。</p>
 </section>
 
 <section>
@@ -452,6 +452,7 @@ const deletedTracker: SitePage = {
     <thead><tr><th></th><th>Xtracticle Pro</th><th>常见的付费监控服务</th></tr></thead>
     <tbody>
       <tr><td>价格</td><td>5 个账号：每月 5 美元或每年 36 美元 · 2 个账号：一次性 59 美元</td><td>每个账号每月约 9 美元（TrackTweets，撰写本文时）</td></tr>
+      <tr><td>免费试用</td><td>14 天，1 个账号，仅需邮箱确认，无需绑卡</td><td>因服务而异</td></tr>
       <tr><td>注册</td><td>无需注册。只需一个许可证密钥，无需登录 X，也不关联任何账号</td><td>需要账号和订阅</td></tr>
       <tr><td>提醒</td><td>专属 RSS / JSON 订阅源，每日邮件摘要</td><td>因服务而异</td></tr>
       <tr><td>过去的删除</td><td>该账号完整的 Wayback 存档（最多 1500 条）及 CSV</td><td>通常只从你开始监控的那天算起</td></tr>
@@ -484,6 +485,7 @@ const deletedTracker: SitePage = {
 ${privacy('zh')}`,
   faq: [
     { q: '有人删除推文时，我能收到通知吗？', a: '可以。把这个公开账号添加到 Xtracticle Watch（Xtracticle Pro 的一部分）。它每小时检查一次账号，一旦之前见过的帖子被删除，就会把带有帖子文字的记录加入你的专属 RSS 订阅源和每日邮件摘要。' },
+    { q: '有免费试用吗？', a: '有。可免费监控一个公开账号 14 天：在上方输入账号，填写你的邮箱，然后点击我们发给你的确认链接。无需绑卡，也不需要许可证密钥；每个邮箱地址只能试用一次，不会扣任何费用：试用结束后，监控会自动停止。若要继续监控，或同时监控最多 5 个账号，请获取 Xtracticle Pro。' },
     { q: '监控多快能发现删除？', a: '账号大约每小时检查一次。删除之后的下一次检查时订阅源就会更新；邮件摘要每天发送一次。' },
     { q: '能看到开始监控之前被删的推文吗？', a: 'Watch 不能，因为它从没见过那些帖子。请使用免费的已删除推文查找，它会列出 Wayback Machine 存档的帖子，包括之后才被删除的。' },
     { q: '需要用我的 X 账号登录吗？', a: '不需要。Xtracticle 从不索要你的 X 登录信息。付款后，Gumroad 会通过邮件把许可证密钥发给你，用它即可解锁 Pro。' },

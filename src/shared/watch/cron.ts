@@ -1,22 +1,28 @@
 import type { D1Database } from '@cloudflare/workers-types';
-import { blocklistStatements, isoAgo, marks, nowIso, typesForMode, RETENTION_DAYS, type EventRow, type WatchEnv, type WatchRow } from './db';
-import { digestEmail, emailSender, publicOrigin, type DigestItem } from './email';
+import { blocklistStatements, isTrialKeyHash, isoAgo, marks, nowIso, typesForMode, RETENTION_DAYS, type EventRow, type WatchEnv, type WatchRow } from './db';
+import { digestEmail, emailSender, publicOrigin, type DigestItem, type DigestTrial } from './email';
 import { eventTitle, toFeedEvent } from './feed';
 import { excerpt, postUrl } from './db';
 import { anyWantsNew, insertEvent, lookupProfile, pollHandle } from './poll';
+import { activeTrialsByWatch, trialHousekeeping, trialLifecycle } from './trial';
 import { fxBase } from '../fx';
 
 /**
  * The Watch cron (every 5 minutes, wrangler.json `triggers.crons`):
  *   1. blocklist enforcement and retention pruning (cheap, bounded statements);
- *   2. up to WATCH_BATCH handles whose watches were polled more than 55 minutes ago, oldest first;
- *   3. once a day from 07:00 UTC, the e-mail digest for every verified address.
+ *   2. up to WATCH_BATCH handles whose watches were polled more than 55 minutes ago, oldest first
+ *      (trial watches included: they are ordinary rows, and a handle is polled once however many watch it);
+ *   3. trial lifecycle: expiries (watch removed, "trial ended" e-mail) and day-12 reminders (trial.ts);
+ *   4. once a day from 07:00 UTC, the e-mail digest for every verified address (trial digests carry a countdown).
  * Every step is idempotent: a run cut short by the CPU limit is simply resumed by the next one.
  */
 
 const POLL_AFTER_MS = 55 * 60 * 1000;
 const DEFAULT_BATCH = 5;
 const MAX_BATCH = 50;
+/** Wall-clock budget for the polling loop: a run must be over well before the next trigger (5 min) and the
+ *  15-minute cron limit. Handles not reached are not claimed and wait for the next run. */
+const POLL_BUDGET_MS = 3 * 60 * 1000;
 const PRUNE_ROWS = 500;
 const DIGEST_HOUR_UTC = 7;
 /** Events older than this are not mailed (the feed still has them). */
@@ -32,9 +38,10 @@ export async function runWatchCron(env: WatchEnv, scheduledTime = Date.now()): P
   const started = Date.now();
   try {
     await housekeeping(db);
-    const polled = await pollBatch(db, env);
+    const polled = await pollBatch(db, env, started);
+    const trials = await trialLifecycle(db, env);
     const digest = await dailyDigest(db, env, scheduledTime);
-    console.log(JSON.stringify({ watch: 'cron', polled, digest, ms: Date.now() - started }));
+    console.log(JSON.stringify({ watch: 'cron', polled, trials, digest, ms: Date.now() - started }));
   } catch (err) {
     // Logged here because a thrown scheduled handler only shows "exception" in the dashboard.
     console.log(JSON.stringify({ watch: 'cron', error: err instanceof Error ? `${err.message}\n${err.stack}` : String(err), ms: Date.now() - started }));
@@ -52,6 +59,7 @@ async function housekeeping(db: D1Database): Promise<void> {
     db.prepare(`DELETE FROM events WHERE rowid IN (SELECT rowid FROM events WHERE detected_at < ? LIMIT ${PRUNE_ROWS})`).bind(cutoff),
     db.prepare(`DELETE FROM notifications WHERE rowid IN (SELECT rowid FROM notifications WHERE sent_at < ? LIMIT ${PRUNE_ROWS})`).bind(cutoff),
     db.prepare('DELETE FROM email_tokens WHERE expires_at < ?').bind(nowIso()),
+    ...trialHousekeeping(db),
   ]);
 }
 
@@ -62,7 +70,7 @@ interface Due {
   fail_count: number;
 }
 
-async function pollBatch(db: D1Database, env: WatchEnv): Promise<Record<string, string>> {
+async function pollBatch(db: D1Database, env: WatchEnv, started = Date.now()): Promise<Record<string, string>> {
   const batch = Math.min(MAX_BATCH, Math.max(1, parseInt(env.WATCH_BATCH || '', 10) || DEFAULT_BATCH));
   const due = (
     await db
@@ -78,6 +86,10 @@ async function pollBatch(db: D1Database, env: WatchEnv): Promise<Record<string, 
 
   const outcome: Record<string, string> = {};
   for (const d of due) {
+    if (Date.now() - started > POLL_BUDGET_MS) {
+      outcome[d.handle] = 'deferred';
+      continue;
+    }
     const now = nowIso();
     // Claim first: a run killed mid-poll must not make the next run start over on the same handle.
     await db.prepare("UPDATE watches SET last_polled_at = ? WHERE handle = ? AND status = 'active'").bind(now, d.handle).run();
@@ -133,8 +145,9 @@ async function dailyDigest(db: D1Database, env: WatchEnv, scheduledTime: number)
   const origin = publicOrigin(env);
   const since = isoAgo(DIGEST_WINDOW_MS);
 
-  // One message per (license, address), covering all of its watches.
-  const groups = new Map<string, { email: string; unsub: string; items: DigestItem[]; sent: { watchId: string; eventId: string }[] }>();
+  // One message per (license, address), covering all of its watches. A trial is one watch under its own key_hash.
+  const trials = watches.some(w => isTrialKeyHash(w.key_hash)) ? await activeTrialsByWatch(db, scheduledTime) : new Map<string, DigestTrial>();
+  const groups = new Map<string, { email: string; unsub: string; trial?: DigestTrial; items: DigestItem[]; sent: { watchId: string; eventId: string }[] }>();
   for (const w of watches) {
     const types = typesForMode(w.mode);
     const events = (
@@ -150,7 +163,7 @@ async function dailyDigest(db: D1Database, env: WatchEnv, scheduledTime: number)
     if (!events.length) continue;
     const gk = `${w.key_hash}\n${w.email!.toLowerCase()}`;
     let g = groups.get(gk);
-    if (!g) groups.set(gk, (g = { email: w.email!, unsub: w.unsub_token, items: [], sent: [] }));
+    if (!g) groups.set(gk, (g = { email: w.email!, unsub: w.unsub_token, trial: trials.get(w.id), items: [], sent: [] }));
     for (const row of events) {
       const e = toFeedEvent(row);
       g.items.push({
@@ -160,7 +173,8 @@ async function dailyDigest(db: D1Database, env: WatchEnv, scheduledTime: number)
         text: e.payload.text ? excerpt(e.payload.text, 280) : '',
         url: e.postId ? postUrl(e.handle, e.postId) : undefined,
         wayback: e.payload.wayback,
-        markdownUrl: e.postId ? `${origin}/api/watch/event/${e.id}.md` : undefined,
+        // Trial users hold no Pro identity: their Markdown links carry the feed token.
+        markdownUrl: e.postId ? `${origin}/api/watch/event/${e.id}.md${isTrialKeyHash(w.key_hash) ? `?feed=${w.feed_token}` : ''}` : undefined,
         detectedAt: e.detectedAt,
       });
       g.sent.push({ watchId: w.id, eventId: e.id });
@@ -186,7 +200,7 @@ async function dailyDigest(db: D1Database, env: WatchEnv, scheduledTime: number)
   let sent = 0;
   let failed = 0;
   for (const g of groups.values()) {
-    const r = await sender.send({ to: g.email, ...digestEmail(origin, g.items, g.unsub) });
+    const r = await sender.send({ to: g.email, ...digestEmail(origin, g.items, g.unsub, g.trial) });
     if (!r.ok) {
       failed++;
       console.log(JSON.stringify({ watch: 'digest', ok: false, error: r.error }));

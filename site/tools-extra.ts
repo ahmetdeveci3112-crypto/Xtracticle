@@ -283,9 +283,9 @@ const deletedTracker: SitePage = {
   lang: 'en',
   title: 'Deleted Tweet Tracker: Get Alerts When Tweets Are Deleted | Xtracticle',
   description:
-    'Watch up to 5 public X accounts. When one deletes a post, Xtracticle keeps its text and tells you by RSS or e-mail. $5 a month, no X login.',
+    'Watch a public X account free for 14 days. When it deletes a post, Xtracticle keeps its text and tells you by RSS or e-mail. No card, no X login.',
   h1: 'Deleted Tweet Tracker',
-  sub: 'Watch a public X (Twitter) account and keep a copy of every post it deletes. Start by typing the @username to see what is already archived.',
+  sub: 'Watch a public X (Twitter) account and keep a copy of every post it deletes. Try it free for 14 days: type the @username, then enter your e-mail.',
   primary: 'md',
   nav: 'Deleted Tweet Tracker',
   sections: `
@@ -295,12 +295,12 @@ const deletedTracker: SitePage = {
   post’s text, date and media links, plus a Wayback Machine copy when one exists, in a private feed and a daily e-mail.</p>
   <h2>How to track an account’s deleted tweets</h2>
   ${steps([
-    '<strong>Get Xtracticle Pro</strong> on the <a href="/pro">Pro page</a>. Payment is handled by Gumroad and your license key arrives by e-mail. No Xtracticle account, no X login.',
-    '<strong>Add the account</strong>: on the <a href="/pro#watch">Pro page</a>, type its <code>@username</code> and choose what to track: deleted posts, new posts, or both.',
-    '<strong>Pick how you hear about it.</strong> Every watch has a private RSS / JSON feed for your reader. Add an e-mail address for one daily digest of everything that changed.',
+    '<strong>Start the free trial.</strong> Type the account’s <code>@username</code> above, enter your e-mail address in the Watch box under its archived posts and click the confirmation link we send. One account for 14 days: no card, no Xtracticle account, no X login.',
+    '<strong>Pick what you hear about.</strong> The link opens your trial page with a private RSS / JSON feed for your reader; choose deleted posts, new posts, or both. When something changes, a daily e-mail digest goes to the address you confirmed.',
+    '<strong>Keep watching with Pro.</strong> When the 14 days are over, the watch simply stops. <a href="/pro">Xtracticle Pro</a> keeps it going and watches up to 5 accounts (2 on the lifetime plan). Payment is handled by Gumroad and your license key arrives by e-mail.',
   ])}
-  <p>Before you pay, type the account above. The free lookup lists what the Wayback Machine already archived for it, so you can see
-  what was posted, and deleted, before you started watching.</p>
+  <p>The same lookup lists what the Wayback Machine already archived for the account, so you can also see what was posted, and deleted,
+  before you started watching.</p>
 </section>
 
 <section>
@@ -320,6 +320,7 @@ const deletedTracker: SitePage = {
     <thead><tr><th></th><th>Xtracticle Pro</th><th>Typical paid tracker</th></tr></thead>
     <tbody>
       <tr><td>Price</td><td>$5 a month or $36 a year for 5 accounts · $59 once for 2</td><td>About $9 a month per account (TrackTweets, at the time of writing)</td></tr>
+      <tr><td>Free trial</td><td>14 days, 1 account, e-mail confirmation only, no card</td><td>Varies</td></tr>
       <tr><td>Sign-up</td><td>None. A license key, no X login, nothing connected</td><td>Account and subscription</td></tr>
       <tr><td>Alerts</td><td>Private RSS / JSON feed, daily e-mail digest</td><td>Varies</td></tr>
       <tr><td>Past deletions</td><td>Full Wayback archive of the account (up to 1,500 posts) with CSV</td><td>Usually only from the day you start</td></tr>
@@ -352,6 +353,7 @@ const deletedTracker: SitePage = {
 ${privacy('en')}`,
   faq: [
     { q: 'Can I get notified when someone deletes a tweet?', a: 'Yes. Add the public account to Xtracticle Watch (part of Xtracticle Pro). It checks the account every hour and, when a post it has seen is deleted, adds it to your private RSS feed and your daily e-mail digest with the post’s text.' },
+    { q: 'Is there a free trial?', a: 'Yes. Watch one public account free for 14 days: type it above, enter your e-mail address and click the confirmation link we send. No card and no license key are needed, there is one trial per e-mail address, and nothing is charged: when the trial ends, the watch simply stops. To keep watching, or to watch up to 5 accounts, get Xtracticle Pro.' },
     { q: 'How fast does the tracker notice a deletion?', a: 'Accounts are checked about once an hour. The feed updates on the next check after the deletion; the e-mail digest goes out once a day.' },
     { q: 'Can it show tweets deleted before I started tracking?', a: 'Watch can’t, because it never saw them. Use the free Deleted Tweet Finder, which lists posts the Wayback Machine archived, including ones deleted later.' },
     { q: 'Do I need to log in with my X account?', a: 'No. Xtracticle never asks for your X login. Pro is unlocked with a license key that Gumroad e-mails you after payment.' },

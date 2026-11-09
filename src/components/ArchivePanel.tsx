@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Archive, Check, Download, ExternalLink, Eye, FileSpreadsheet, Info, Loader2, RotateCcw, Zap } from 'lucide-react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Archive, Check, Download, ExternalLink, Eye, FileSpreadsheet, Info, Loader2, Mail, RotateCcw, Zap } from 'lucide-react';
 import type { Strings } from '../i18n';
 import { waybackProfile } from '../shared/url';
 import { track } from '../lib/analytics';
@@ -30,10 +30,41 @@ type State = { kind: 'loading' } | { kind: 'failed' } | { kind: 'done'; data: Ar
 /** "Watch @handle" (Pro): POST /api/watch from the panel. */
 type WatchState = { kind: 'idle' } | { kind: 'working' } | { kind: 'ok' } | { kind: 'exists' } | { kind: 'error'; msg: string };
 
+/** Free Watch trial (POST /api/watch/trial, docs/watch-api.md "Trial"): e-mail form inside the free-user card. */
+type TrialState =
+  | { kind: 'idle' }
+  | { kind: 'working' }
+  | { kind: 'sent'; email: string }
+  | { kind: 'error'; code: TrialErr };
+type TrialErr = keyof Strings['watchTrialErr'];
+interface TrialConfig { available: boolean; full: boolean; disabled: boolean; days: number }
+
 /** Puts the handle into "@{handle}" as an isolated left-to-right run, so the @ stays in front in Arabic. */
 function withHandle(s: string, handle: string) {
   return s.split('@{handle}').flatMap((part, i) => (i ? [<bdi key={i} dir="ltr">@{handle}</bdi>, part] : [part]));
 }
+
+/** Fills {name} placeholders with nodes; "@{handle}" and "{email}" become isolated LTR runs. */
+function fill(s: string, vals: Record<string, string>): ReactNode[] {
+  return s.split(/(@?\{\w+\})/).map((part, i) => {
+    const m = part.match(/^(@?)\{(\w+)\}$/);
+    if (!m || !(m[2] in vals)) return part;
+    const v = m[1] + vals[m[2]];
+    return m[2] === 'handle' || m[2] === 'email' ? <bdi key={i} dir="ltr">{v}</bdi> : v;
+  });
+}
+
+/** GET /api/watch/trial/config, fetched once per page load and only when a free-user card is shown. */
+let trialConfig: Promise<TrialConfig | null> | null = null;
+function loadTrialConfig() {
+  trialConfig ??= fetch('/api/watch/trial/config', { headers: { 'X-Xt-Client': 'web' } })
+    .then(r => (r.ok ? r.json() : null))
+    .then(c => (c && typeof c.available === 'boolean' ? { ...c, days: Number(c.days) || 14 } : null))
+    .catch(() => null);
+  return trialConfig;
+}
+
+const TRIAL_ERRORS = new Set<string>(['trial_used', 'trial_pending', 'bad_email', 'not_found', 'protected', 'blocklisted', 'rate', 'trial_full', 'trial_disabled', 'mail_failed', 'upstream']);
 
 /** Handles whose free Watch card was already counted as seen (once per handle per page load). */
 const watchCardSeen = new Set<string>();
@@ -71,6 +102,40 @@ export default function ArchivePanel({
   const teaserTracked = useRef(false);
   const [tipOn, setTipOn] = useState(() => tipAllowed(pro));
   const [watch, setWatch] = useState<WatchState>({ kind: 'idle' });
+  const [trialCfg, setTrialCfg] = useState<TrialConfig | null | undefined>(undefined);
+  const [trial, setTrial] = useState<TrialState>({ kind: 'idle' });
+  const [trialEmail, setTrialEmail] = useState('');
+
+  async function startTrial() {
+    if (trial.kind === 'working') return;
+    const email = trialEmail.trim();
+    if (!email) {
+      setTrial({ kind: 'error', code: 'bad_email' });
+      return;
+    }
+    setTrial({ kind: 'working' });
+    let code: TrialErr = 'generic';
+    try {
+      const res = await fetch('/api/watch/trial', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Xt-Client': 'web' },
+        body: JSON.stringify({ handle, email, mode: 'both' }),
+      });
+      const body = await res.json().catch(() => null);
+      if (res.status === 201) {
+        setTrial({ kind: 'sent', email: typeof body?.email === 'string' ? body.email : email });
+        track('trial_start', { ok: true, place: 'archive_panel' });
+        return;
+      }
+      const err: string = typeof body?.error === 'string' ? body.error : String(res.status);
+      if (TRIAL_ERRORS.has(err)) code = err as TrialErr;
+      else if (res.status === 429) code = 'rate';
+      track('trial_start', { ok: false, error: err, place: 'archive_panel' });
+    } catch {
+      track('trial_start', { ok: false, error: 'network', place: 'archive_panel' });
+    }
+    setTrial({ kind: 'error', code });
+  }
 
   async function startWatch() {
     setWatch({ kind: 'working' });
@@ -168,15 +233,25 @@ export default function ArchivePanel({
   const manageLink = (
     <a href={`${t.proPath}#watch`} className={linkClass} style={{ color: 'var(--text-primary)' }}>{t.watchManage}</a>
   );
-  // Free users: a small card that explains Watch and links to the Watch section of /pro.
+  // Free users: a small card that explains Watch; with the free trial open it carries the trial form.
   const showFreeCard = !pro && proKnown && !!data;
   useEffect(() => {
+    if (!showFreeCard) return;
+    let live = true;
+    loadTrialConfig().then(c => live && setTrialCfg(c));
+    return () => { live = false; };
+  }, [showFreeCard]);
+  const trialOpen = !!trialCfg && trialCfg.available && !trialCfg.full && !trialCfg.disabled;
+  useEffect(() => {
     const key = handle.toLowerCase();
-    if (showFreeCard && !watchCardSeen.has(key)) {
+    // Counted once the trial config is known, so the view says which card was seen.
+    if (showFreeCard && trialCfg !== undefined && !watchCardSeen.has(key)) {
       watchCardSeen.add(key);
-      track('watch_cta', { action: 'view' });
+      track('watch_cta', { action: 'view', trial: trialOpen });
     }
-  }, [showFreeCard, handle]);
+  }, [showFreeCard, handle, trialCfg, trialOpen]);
+  // A new account in the same panel starts with an empty form.
+  useEffect(() => setTrial({ kind: 'idle' }), [handle]);
 
   // Pro: one click watches the account for deleted posts (unchanged behaviour, now inside the card).
   const proWatch =
@@ -212,6 +287,82 @@ export default function ArchivePanel({
       </div>
     );
 
+  const days = String(trialCfg?.days ?? 14);
+  const seePro = (
+    <a
+      href={`${t.proPath}#watch`}
+      className={linkClass}
+      style={{ color: 'var(--text-primary)' }}
+      onClick={() => track('watch_cta', { action: 'click', trial: true })}
+    >
+      {t.watchCardCta}
+    </a>
+  );
+  const trialForm =
+    trial.kind === 'sent' ? (
+      <div className="mt-2 space-y-1" role="status">
+        <p className="flex items-start gap-2 text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+          <Mail className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
+          <span className="min-w-0 break-words">{fill(t.watchTrialSent, { email: trial.email, handle })}</span>
+        </p>
+        <p className="text-xs leading-relaxed ps-6" style={{ color: 'var(--text-secondary)' }}>{t.watchTrialSentHint}</p>
+      </div>
+    ) : (
+      // Not a <form>: the panel sits inside the hero form (App.tsx), and nested forms submit the outer one.
+      <div className="mt-2 space-y-1.5">
+        <label htmlFor={`xt-trial-email-${handle}`} className="sr-only">{t.watchTrialEmail}</label>
+        <div className="flex flex-wrap gap-2">
+          <input
+            id={`xt-trial-email-${handle}`}
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            maxLength={254}
+            required
+            dir="ltr"
+            placeholder={t.watchTrialEmail}
+            value={trialEmail}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                startTrial();
+              }
+            }}
+            onChange={e => {
+              setTrialEmail(e.target.value);
+              if (trial.kind === 'error') setTrial({ kind: 'idle' });
+            }}
+            aria-invalid={trial.kind === 'error' && trial.code === 'bad_email'}
+            aria-describedby={trial.kind === 'error' ? `xt-trial-msg-${handle}` : undefined}
+            className="flex-[1_1_12rem] min-w-0 px-3 py-1.5 rounded-lg text-sm focus-ring"
+            style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+          />
+          <button
+            type="button"
+            onClick={startTrial}
+            disabled={trial.kind === 'working'}
+            aria-busy={trial.kind === 'working'}
+            className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold focus-ring btn-primary disabled:opacity-60 max-w-full"
+            style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+          >
+            {trial.kind === 'working'
+              ? <Loader2 className="w-3.5 h-3.5 shrink-0 animate-spin" aria-hidden="true" />
+              : <Eye className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />}
+            <span className="break-words text-start">{fill(t.watchTrialCta, { handle, days })}</span>
+          </button>
+        </div>
+        {trial.kind === 'error' && (
+          <p id={`xt-trial-msg-${handle}`} role="alert" className="text-xs leading-relaxed" style={{ color: 'var(--error-text)' }}>
+            {t.watchTrialErr[trial.code]}
+            {trial.code === 'trial_used' && <>{' '}{seePro}</>}
+          </p>
+        )}
+        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>
+          {t.watchTrialAfter}{' '}{!(trial.kind === 'error' && trial.code === 'trial_used') && seePro}
+        </p>
+      </div>
+    );
+
   const cardStyle = { backgroundColor: 'var(--bg-primary)', border: '1px solid var(--border)' };
   const watchCard = pro ? (
     <div className="p-3 rounded-lg text-xs" style={cardStyle}>{proWatch}</div>
@@ -226,15 +377,24 @@ export default function ArchivePanel({
         <h3 id={`xt-watch-card-${handle}`} className="font-semibold text-sm break-words" style={{ color: 'var(--text-primary)' }}>
           {withHandle(t.watchCardTitle, handle)}
         </h3>
-        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{t.watchCardText}</p>
-        <a
-          href={`${t.proPath}#watch`}
-          className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold focus-ring btn-primary whitespace-nowrap"
-          style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
-          onClick={() => track('watch_cta', { action: 'click' })}
-        >
-          {t.watchCardCta}
-        </a>
+        {trialOpen ? (
+          <>
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{fill(t.watchTrialText, { days })}</p>
+            {trialForm}
+          </>
+        ) : (
+          <>
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{t.watchCardText}</p>
+            <a
+              href={`${t.proPath}#watch`}
+              className="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold focus-ring btn-primary whitespace-nowrap"
+              style={{ backgroundColor: 'var(--accent)', color: 'var(--bg-primary)' }}
+              onClick={() => track('watch_cta', { action: 'click' })}
+            >
+              {t.watchCardCta}
+            </a>
+          </>
+        )}
       </div>
     </aside>
   ) : null;

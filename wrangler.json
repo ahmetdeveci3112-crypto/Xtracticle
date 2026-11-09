@@ -23,6 +23,8 @@
   },
   "vars": {
     "WATCH_EMAIL_FROM": "Xtracticle <watch@xtracticle.com>",
+    "WATCH_BATCH": "20",
+    "WATCH_TRIAL_MAX": "300",
     "GUMROAD_PRODUCT_MEMBERSHIP": "zRyxi6_UZTOjng_IESQhkA==",
     "GUMROAD_PRODUCT_LIFETIME": "hGyDc5sjkcwOajGlD00fsQ==",
     "GUMROAD_URL_MONTHLY": "https://gumroad.com/checkout?product=jjhcgr&option=097Q4L16dycOtUBN5f2LrQ%3D%3D&recurrence=monthly&quantity=1",
@@ -68,6 +70,14 @@
       "namespace_id": "1003",
       "simple": {
         "limit": 40,
+        "period": 60
+      }
+    },
+    {
+      "name": "TRIAL_LIMITER",
+      "namespace_id": "1004",
+      "simple": {
+        "limit": 3,
         "period": 60
       }
     }

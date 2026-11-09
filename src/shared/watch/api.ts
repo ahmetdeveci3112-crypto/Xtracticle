@@ -1,18 +1,20 @@
 import type { D1Database, D1PreparedStatement } from '@cloudflare/workers-types';
 import { fxBase } from '../fx';
 import {
+  EMAIL_RE,
   HANDLE_RE,
   MODES,
+  RECENT_EVENTS,
   TOKEN_RE,
   blocklistStatements,
   identify,
-  isoAgo,
+  isTrialKeyHash,
   json,
-  marks,
   newId,
   nowIso,
   randomToken,
-  typesForMode,
+  readBody,
+  recentEvents,
   watchLimit,
   type EventRow,
   type WatchEnv,
@@ -23,6 +25,7 @@ import {
 import { emailSender, publicOrigin, verificationEmail } from './email';
 import { eventMarkdown, eventView, jsonFeed, rssFeed, toFeedEvent } from './feed';
 import { lookupProfile, seedHandle } from './poll';
+import { handleTrial } from './trial';
 
 /**
  * /api/watch/* — Xtracticle Pro account monitoring (contract: docs/watch-api.md).
@@ -34,17 +37,16 @@ import { lookupProfile, seedHandle } from './poll';
  *   GET    /api/watch/verify/:token        e-mail confirmation link (redirects to /pro)
  *   GET    /api/watch/unsubscribe/:token   confirmation page; POST = one-click unsubscribe
  *   GET    /api/watch/feed/:token.xml|json RSS 2.0 / JSON Feed (the token is the secret)
- *   GET    /api/watch/event/:id.md         a stored post as Markdown (Pro, must watch the handle)
+ *   GET    /api/watch/event/:id.md         a stored post as Markdown (Pro, must watch the handle;
+ *                                          or ?feed=<feed token> of a watch on the handle — trial feeds)
+ *   /api/watch/trial/*                     free trial, no license (src/shared/watch/trial.ts)
  *
  * Identity: the Pro cookie (plus X-Xt-Client: web) or Authorization: Bearer <license key>.
  * Returns null for any other path so the Worker continues routing.
  */
 
-const RECENT_EVENTS = 20;
 const FEED_EVENTS = 50;
-const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,190}\.[A-Za-z]{2,}$/;
 const VERIFY_HOURS = 24;
-const MAX_BODY = 4096;
 
 export async function handleWatch(request: Request, env: WatchEnv, waitUntil?: (p: Promise<unknown>) => void): Promise<Response | null> {
   const url = new URL(request.url);
@@ -57,12 +59,25 @@ export async function handleWatch(request: Request, env: WatchEnv, waitUntil?: (
   if ((m = path.match(/^\/api\/watch\/feed\/([^/.]+)\.(xml|json)$/))) return feed(request, db, url.origin, m[1], m[2] as 'xml' | 'json');
   if ((m = path.match(/^\/api\/watch\/verify\/([^/]+)$/))) return verify(request, db, m[1]);
   if ((m = path.match(/^\/api\/watch\/unsubscribe\/([^/]+)$/))) return unsubscribe(request, db, m[1]);
+  if (/^\/api\/watch\/trial(?:\/|$)/.test(path)) return handleTrial(request, env, db, path, url);
+  // A feed token proves access to the handle's events (used by trial views and trial feeds).
+  const feedToken = url.searchParams.get('feed');
+  if (feedToken && (m = path.match(/^\/api\/watch\/event\/([^/.]+)\.md$/))) {
+    if (!TOKEN_RE.test(feedToken)) return json({ error: 'not_found' }, 404);
+    return eventMd(request, db, m[1], handle =>
+      db.prepare('SELECT 1 AS x FROM watches WHERE feed_token = ? AND handle = ? LIMIT 1').bind(feedToken, handle).first(),
+    );
+  }
 
   const who = await identify(request, env);
   if (!who.ok || !who.id) return json({ error: who.error || 'forbidden' }, who.status || 403);
   const id = who.id;
 
-  if ((m = path.match(/^\/api\/watch\/event\/([^/.]+)\.md$/))) return eventMd(request, db, id, m[1]);
+  if ((m = path.match(/^\/api\/watch\/event\/([^/.]+)\.md$/))) {
+    return eventMd(request, db, m[1], handle =>
+      db.prepare('SELECT 1 AS x FROM watches WHERE key_hash = ? AND handle = ? LIMIT 1').bind(id.keyHash, handle).first(),
+    );
+  }
   if (path === '/api/watch') {
     if (request.method === 'GET') return list(db, id, url.origin);
     if (request.method === 'POST') return create(request, db, env, id, url.origin);
@@ -77,27 +92,6 @@ export async function handleWatch(request: Request, env: WatchEnv, waitUntil?: (
 }
 
 /* ─── Helpers ─── */
-
-async function readBody(request: Request): Promise<any | null> {
-  try {
-    const text = await request.text();
-    if (text.length > MAX_BODY) return null;
-    const body = text ? JSON.parse(text) : {};
-    return body && typeof body === 'object' ? body : null;
-  } catch {
-    return null;
-  }
-}
-
-async function recentEvents(db: D1Database, handle: string, mode: WatchMode, limit: number): Promise<EventRow[]> {
-  const types = typesForMode(mode);
-  return (
-    await db
-      .prepare(`SELECT * FROM events WHERE handle = ? AND type IN (${marks(types.length)}) ORDER BY detected_at DESC LIMIT ?`)
-      .bind(handle, ...types, limit)
-      .all<EventRow>()
-  ).results;
-}
 
 function watchView(origin: string, w: WatchRow, events: EventRow[]) {
   return {
@@ -303,14 +297,20 @@ async function unsubscribe(request: Request, db: D1Database, token: string): Pro
   }
   if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   const w = await db.prepare('SELECT * FROM watches WHERE unsub_token = ?').bind(token).first<WatchRow>();
-  if (!w) return json({ error: 'not_found' }, 404);
-  if (w.email) {
+  if (!w) {
+    // A trial whose watch is already gone (the "trial ended" e-mail): the token lives on in trials.
+    const t = await db.prepare('UPDATE trials SET email = NULL WHERE unsub_token = ? AND email IS NOT NULL').bind(token).run();
+    if (!t.meta.changes && !(await db.prepare('SELECT 1 AS x FROM trials WHERE unsub_token = ?').bind(token).first())) return json({ error: 'not_found' }, 404);
+    console.log(JSON.stringify({ watch: 'unsubscribe', trial: true }));
+  } else if (w.email) {
     await db.batch([
       db.prepare('UPDATE watches SET email = NULL, email_verified = 0 WHERE key_hash = ? AND lower(email) = lower(?)').bind(w.key_hash, w.email),
       db.prepare('DELETE FROM email_tokens WHERE watch_id IN (SELECT id FROM watches WHERE key_hash = ?)').bind(w.key_hash),
+      // Trial: the reminder and "trial ended" e-mails read the address from trials.
+      db.prepare('UPDATE trials SET email = NULL WHERE unsub_token = ?').bind(token),
     ]);
   }
-  console.log(JSON.stringify({ watch: 'unsubscribe', handle: w.handle }));
+  if (w) console.log(JSON.stringify({ watch: 'unsubscribe', handle: w.handle }));
   const wantsHtml = (request.headers.get('Accept') || '').includes('text/html');
   if (wantsHtml) {
     return new Response(
@@ -328,7 +328,9 @@ async function feed(request: Request, db: D1Database, origin: string, token: str
   if (!w) return json({ error: 'not_found' }, 404);
   const events = (await recentEvents(db, w.handle, w.mode, FEED_EVENTS)).map(toFeedEvent);
   const feedUrl = `${origin}/api/watch/feed/${token}.${format}`;
-  const body = format === 'xml' ? rssFeed(origin, w.handle, feedUrl, events) : jsonFeed(origin, w.handle, feedUrl, events);
+  // Trial users hold no Pro identity: their Markdown links carry the feed token instead.
+  const md = isTrialKeyHash(w.key_hash) ? `?feed=${token}` : '';
+  const body = format === 'xml' ? rssFeed(origin, w.handle, feedUrl, events, md) : jsonFeed(origin, w.handle, feedUrl, events, md);
   return new Response(request.method === 'HEAD' ? null : body, {
     headers: {
       'Content-Type': format === 'xml' ? 'application/rss+xml; charset=utf-8' : 'application/feed+json; charset=utf-8',
@@ -338,12 +340,11 @@ async function feed(request: Request, db: D1Database, origin: string, token: str
   });
 }
 
-async function eventMd(request: Request, db: D1Database, id: WatchIdentity, eventId: string): Promise<Response> {
+async function eventMd(request: Request, db: D1Database, eventId: string, owns: (handle: string) => Promise<unknown>): Promise<Response> {
   if (request.method !== 'GET' && request.method !== 'HEAD') return json({ error: 'method_not_allowed' }, 405);
   const e = await db.prepare('SELECT * FROM events WHERE id = ?').bind(eventId).first<EventRow>();
   if (!e) return json({ error: 'not_found' }, 404);
-  const owns = await db.prepare('SELECT 1 AS x FROM watches WHERE key_hash = ? AND handle = ? LIMIT 1').bind(id.keyHash, e.handle).first();
-  if (!owns) return json({ error: 'not_found' }, 404);
+  if (!(await owns(e.handle))) return json({ error: 'not_found' }, 404);
   const md = eventMarkdown(toFeedEvent(e));
   if (!md) return json({ error: 'no_content' }, 404);
   return new Response(request.method === 'HEAD' ? null : md.markdown, {

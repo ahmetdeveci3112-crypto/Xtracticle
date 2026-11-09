@@ -22,6 +22,17 @@ export interface WatchEnv extends ProEnv, FxEnv {
   WATCH_PUBLIC_ORIGIN?: string;
   /** Testing only: replaces https://web.archive.org for the Wayback copy lookup. */
   CDX_BASE_URL?: string;
+  /** Free trial: live trials (pending + active) allowed at once (default 300). Full = POST /api/watch/trial answers trial_full. */
+  WATCH_TRIAL_MAX?: string;
+  /** Kill switch: "1" stops new trials (config.available = false, POST and verify refuse). Running trials continue. */
+  WATCH_TRIAL_DISABLED?: string;
+  /** Per-IP limiter for POST /api/watch/trial (wrangler.json `ratelimits`, 3 per 60 s). */
+  TRIAL_LIMITER?: RateLimiter;
+}
+
+/** The part of a Workers `ratelimits` binding we use (structural: src/shared is also compiled by the frontend tsconfig). */
+export interface RateLimiter {
+  limit(options: { key: string }): Promise<{ success: boolean }>;
 }
 
 /** The part of the Cloudflare Email Service `send_email` binding we use (structured send). */
@@ -93,11 +104,47 @@ export interface PostPayload {
   wayback?: string;
 }
 
+export type TrialStatus = 'pending' | 'active' | 'ended';
+export type TrialEndReason = 'expired' | 'user';
+
+/** migrations/0002_trials.sql */
+export interface TrialRow {
+  id: string;
+  email_hash: string;
+  email: string | null;
+  handle: string;
+  mode: WatchMode;
+  status: TrialStatus;
+  verify_token: string | null;
+  verify_expires_at: string | null;
+  manage_token: string;
+  unsub_token: string;
+  watch_id: string | null;
+  created_at: string;
+  verified_at: string | null;
+  expires_at: string | null;
+  reminder_sent_at: string | null;
+  ended_at: string | null;
+  end_reason: TrialEndReason | null;
+}
+
 export const HANDLE_RE = /^[A-Za-z0-9_]{1,15}$/;
+export const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,190}\.[A-Za-z]{2,}$/;
 export const MODES: WatchMode[] = ['deleted', 'new', 'both'];
 export const RETENTION_DAYS = 90;
 export const LIMIT_MEMBERSHIP = 5;
 export const LIMIT_LIFETIME = 2;
+/** Free trial: one account, 14 days; the verification link lives 24 h. */
+export const TRIAL_DAYS = 14;
+export const TRIAL_ACCOUNTS = 1;
+export const TRIAL_VERIFY_HOURS = 24;
+export const TRIAL_MAX_DEFAULT = 300;
+/** watches.key_hash of a trial watch: this prefix + trials.id. License hashes are hex, so they never collide. */
+export const TRIAL_KEY_PREFIX = 'trial:';
+export const trialKeyHash = (trialId: string) => TRIAL_KEY_PREFIX + trialId;
+export const isTrialKeyHash = (keyHash: string) => keyHash.startsWith(TRIAL_KEY_PREFIX);
+/** Events a watch shows in GET /api/watch and in the trial view. */
+export const RECENT_EVENTS = 20;
 
 export const nowIso = () => new Date().toISOString();
 export const isoAgo = (ms: number, now = Date.now()) => new Date(now - ms).toISOString();
@@ -158,6 +205,12 @@ export async function hashLicenseKey(key: string, secret: string): Promise<strin
   return hex;
 }
 
+/** Trial e-mails: lower-cased and trimmed (nothing more: the one-trial rule is a courtesy limit, not a wall). */
+export const normalizeEmail = (email: string) => email.trim().toLowerCase();
+
+/** HMAC of the normalized address under the same derived key, domain-separated from license hashes. Hex. */
+export const hashTrialEmail = (email: string, secret: string) => hashLicenseKey(`trial-email:${normalizeEmail(email)}`, secret);
+
 export interface WatchIdentity {
   keyHash: string;
   plan: ProPlan;
@@ -202,6 +255,36 @@ export function json(body: unknown, status = 200, extra: Record<string, string> 
 
 /** `?, ?, ?` for an IN (...) list. */
 export const marks = (n: number) => Array.from({ length: n }, () => '?').join(', ');
+
+const MAX_BODY = 4096;
+
+/** The JSON body of a request as a plain object; null when missing, too large or not an object. */
+export async function readBody(request: Request): Promise<any | null> {
+  try {
+    const text = await request.text();
+    if (text.length > MAX_BODY) return null;
+    const body = text ? JSON.parse(text) : {};
+    return body && typeof body === 'object' ? body : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The handle's latest events that a watch in `mode` receives, newest first; `since`/`until` bound detected_at (trial views). */
+export async function recentEvents(db: D1Database, handle: string, mode: WatchMode, limit: number, since?: string | null, until?: string | null): Promise<EventRow[]> {
+  const types = typesForMode(mode);
+  const bounds = (since ? ' AND detected_at >= ?' : '') + (until ? ' AND detected_at <= ?' : '');
+  const args: (string | number)[] = [handle, ...types];
+  if (since) args.push(since);
+  if (until) args.push(until);
+  args.push(limit);
+  return (
+    await db
+      .prepare(`SELECT * FROM events WHERE handle = ? AND type IN (${marks(types.length)})${bounds} ORDER BY detected_at DESC LIMIT ?`)
+      .bind(...args)
+      .all<EventRow>()
+  ).results;
+}
 
 export function parsePayload(e: Pick<EventRow, 'payload_json'>): Partial<PostPayload> {
   try {

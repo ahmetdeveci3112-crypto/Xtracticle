@@ -302,7 +302,7 @@ const privacyPage: SitePage = {
 <section>
   <h2>Toplamadığımız veriler</h2>
   <ul>
-    <li>Hesap ya da giriş yok. Pro ödemelerini Gumroad alır; bize yalnızca lisans anahtarı ulaşır. E-posta adresi yalnızca bir Pro kullanıcısı Watch e-posta özetini açarsa saklanır (aşağıya bakın).</li>
+    <li>Hesap ya da giriş yok. Pro ödemelerini Gumroad alır; bize yalnızca lisans anahtarı ulaşır. E-posta adresi yalnızca bir Pro kullanıcısı Watch e-posta özetini açarsa ya da biri Watch denemesi başlatırsa saklanır (aşağıya bakın).</li>
     <li>Yükleme yok: PDF, EPUB, ZIP ve diğer dosyalar tarayıcınızda oluşturulur, bize hiç gönderilmez.</li>
     <li>Kişisel verileri satmıyor ya da paylaşmıyoruz; reklam izleyicisi kullanmıyoruz.</li>
   </ul>
@@ -348,6 +348,9 @@ const privacyPage: SitePage = {
     e-posta adresiniz. Bildirim kayıtları 90 gün tutulur.</li>
     <li><strong>Sınırlar:</strong> yalnızca herkese açık hesaplar (hesap gizliye geçerse izleme durur), yaklaşık saatte bir kontrol,
     üyelik başına 5, ömür boyu lisans başına 2 hesap.</li>
+    <li><strong>Ücretsiz deneme:</strong> deneme, lisans olmadan tek bir hesabı 14 gün izler. Onayladığınız e-posta adresini deneme
+    sürdüğü sürece saklarız (deneme bitince silinir; abonelikten çıkarsanız hemen silinir); adresin tek yönlü özetini ise her adresin
+    bir deneme başlatabilmesi için tutarız.</li>
     <li><strong>İzlenmek istemiyorsanız:</strong> hesap adını yazarak <a href="${GITHUB}/issues" rel="noopener">GitHub'da bir issue açın</a>
     ya da X'te @DvciAhmet'e mesaj gönderin. Hesabı engel listesine ekler, saklanan gönderilerini siler ve 7 gün içinde tüm izleme
     listelerinden çıkarırız.</li>
@@ -480,9 +483,9 @@ const deletedTracker: SitePage = {
   lang: 'tr',
   title: 'Silinen Tweet Takibi: Tweet Silinince Bildirim Al | Xtracticle',
   description:
-    'Herkese açık 5 X hesabını izleyin. Biri gönderi silince Xtracticle metni saklar, RSS veya e-postayla haber verir. Ayda 5 $, X girişi yok.',
+    'Herkese açık bir X hesabını 14 gün ücretsiz izleyin. Gönderi silinince Xtracticle metni saklar, RSS veya e-postayla haber verir. Kart yok, X girişi yok.',
   h1: 'Silinen Tweet Takibi',
-  sub: 'Herkese açık bir X (Twitter) hesabını izleyin ve sildiği her gönderinin kopyasını saklayın. Başlamak için @kullanıcıadını yazıp şimdiye dek neyin arşivlendiğine bakın.',
+  sub: 'Herkese açık bir X (Twitter) hesabını izleyin ve sildiği her gönderinin kopyasını saklayın. 14 gün ücretsiz deneyin: @kullanıcıadını yazın, ardından e-posta adresinizi girin.',
   primary: 'md',
   nav: 'Silinen Tweet Takibi',
   sections: `
@@ -492,12 +495,12 @@ const deletedTracker: SitePage = {
   gönderinin metni, tarihi ve medya linkleri, varsa Wayback Machine kopyasıyla birlikte özel bir akışa ve günlük e-postaya düşer.</p>
   <h2>Bir hesabın sildiği tweetler nasıl takip edilir?</h2>
   ${steps([
-    '<strong>Xtracticle Pro’yu alın:</strong> <a href="/tr/pro">Pro sayfasından</a> satın alabilirsiniz. Ödemeyi Gumroad alır, lisans anahtarınız e-postayla gelir. Xtracticle hesabı yok, X girişi yok.',
-    '<strong>Hesabı ekleyin:</strong> <a href="/tr/pro#watch">Pro sayfasında</a> <code>@kullaniciadi</code> yazın ve neyi izleyeceğinizi seçin: silinen gönderiler, yeni gönderiler ya da ikisi.',
-    '<strong>Haberi nasıl alacağınızı seçin.</strong> Her takibin okuyucunuz için özel bir RSS / JSON akışı vardır. Değişen her şeyin günde bir kez özetlenmesi için e-posta adresi ekleyin.',
+    '<strong>Ücretsiz denemeyi başlatın.</strong> Hesabın <code>@kullaniciadi</code> bilgisini yukarıya yazın, arşivlenmiş gönderilerinin altındaki Watch kutusuna e-posta adresinizi girin ve gönderdiğimiz onay linkine tıklayın. Tek hesap, 14 gün: kart yok, Xtracticle hesabı yok, X girişi yok.',
+    '<strong>Neyi bilmek istediğinizi seçin.</strong> Link, okuyucunuz için size özel RSS / JSON akışının bulunduğu deneme sayfanızı açar; silinen gönderileri, yeni gönderileri ya da ikisini seçin. Bir şey değiştiğinde onayladığınız adrese günlük e-posta özeti gelir.',
+    '<strong>Pro ile izlemeye devam edin.</strong> 14 gün dolduğunda izleme kendiliğinden durur. <a href="/tr/pro">Xtracticle Pro</a> izlemeyi sürdürür ve 5 hesaba kadar (ömür boyu planda 2) izler. Ödemeyi Gumroad alır, lisans anahtarınız e-postayla gelir.',
   ])}
-  <p>Ödemeden önce hesabı yukarıya yazın. Ücretsiz arama, Wayback Machine’in o hesap için zaten arşivlediklerini listeler; böylece takibe başlamadan önce
-  neyin paylaşıldığını ve silindiğini görebilirsiniz.</p>
+  <p>Aynı arama, Wayback Machine’in o hesap için zaten arşivlediklerini de listeler; böylece takibe başlamadan önce neyin paylaşıldığını
+  ve silindiğini de görebilirsiniz.</p>
 </section>
 
 <section>
@@ -517,6 +520,7 @@ const deletedTracker: SitePage = {
     <thead><tr><th></th><th>Xtracticle Pro</th><th>Tipik ücretli takip servisi</th></tr></thead>
     <tbody>
       <tr><td>Fiyat</td><td>5 hesap için ayda 5 $ veya yılda 36 $ · 2 hesap için tek seferlik 59 $</td><td>Hesap başına ayda yaklaşık 9 $ (TrackTweets, yazının yazıldığı tarihte)</td></tr>
+      <tr><td>Ücretsiz deneme</td><td>14 gün, 1 hesap, yalnızca e-posta onayı, kart yok</td><td>Değişir</td></tr>
       <tr><td>Kayıt</td><td>Yok. Bir lisans anahtarı; X girişi yok, bağlanan bir şey yok</td><td>Hesap ve abonelik</td></tr>
       <tr><td>Bildirim</td><td>Özel RSS / JSON akışı, günlük e-posta özeti</td><td>Değişir</td></tr>
       <tr><td>Geçmişte silinenler</td><td>Hesabın tam Wayback arşivi (1.500 gönderiye kadar) ve CSV</td><td>Genelde yalnızca başladığınız günden itibaren</td></tr>
@@ -549,6 +553,7 @@ const deletedTracker: SitePage = {
 ${privacy('tr')}`,
   faq: [
     { q: 'Biri tweet sildiğinde bildirim alabilir miyim?', a: 'Evet. Herkese açık hesabı Xtracticle Watch’a ekleyin (Xtracticle Pro’nun parçası). Hesabı her saat kontrol eder; daha önce gördüğü bir gönderi silindiğinde gönderinin metniyle birlikte özel RSS akışınıza ve günlük e-posta özetinize ekler.' },
+    { q: 'Ücretsiz deneme var mı?', a: 'Evet. Herkese açık bir hesabı 14 gün ücretsiz izleyin: hesabı yukarıya yazın, e-posta adresinizi girin ve gönderdiğimiz onay linkine tıklayın. Kart da lisans anahtarı da gerekmez; her e-posta adresine bir deneme hakkı vardır ve hiçbir ücret alınmaz: deneme bitince izleme kendiliğinden durur. İzlemeye devam etmek ya da 5 hesaba kadar izlemek için Xtracticle Pro’yu alın.' },
     { q: 'Takip, silinmeyi ne kadar hızlı fark eder?', a: 'Hesaplar yaklaşık saatte bir kontrol edilir. Akış, silinmeden sonraki ilk kontrolde güncellenir; e-posta özeti günde bir kez gider.' },
     { q: 'Takibe başlamadan önce silinen tweetleri gösterebilir mi?', a: 'Watch gösteremez, çünkü onları hiç görmedi. Wayback Machine’in arşivlediği, sonradan silinenler dahil gönderileri listeleyen ücretsiz Silinen Tweetleri Bulma aracını kullanın.' },
     { q: 'X hesabımla giriş yapmam gerekir mi?', a: 'Hayır. Xtracticle X girişinizi hiç istemez. Pro, ödemeden sonra Gumroad’ın e-postayla gönderdiği lisans anahtarıyla açılır.' },

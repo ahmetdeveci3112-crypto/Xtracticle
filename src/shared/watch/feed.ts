@@ -41,8 +41,11 @@ export function eventTitle(e: FeedEvent): string {
   }
 }
 
-/** The public view of an event used by GET /api/watch and the JSON feed. */
-export function eventView(origin: string, e: FeedEvent) {
+/**
+ * The public view of an event used by GET /api/watch, the trial view and the feeds.
+ * `md` is appended to the Markdown link (`?feed=<token>` for trial users, who hold no Pro identity); null = no link.
+ */
+export function eventView(origin: string, e: FeedEvent, md: string | null = '') {
   return {
     id: e.id,
     type: e.type,
@@ -53,17 +56,17 @@ export function eventView(origin: string, e: FeedEvent) {
     createdAt: e.payload.createdAt || null,
     url: e.postId ? postUrl(e.handle, e.postId) : `https://x.com/${e.handle}`,
     wayback: e.payload.wayback || null,
-    markdownUrl: e.postId ? `${origin}/api/watch/event/${e.id}.md` : null,
+    markdownUrl: e.postId && md !== null ? `${origin}/api/watch/event/${e.id}.md${md}` : null,
     media: e.payload.media || null,
   };
 }
 
 const xml = (s: string) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[c]!);
 
-export function rssFeed(origin: string, handle: string, feedUrl: string, events: FeedEvent[]): string {
+export function rssFeed(origin: string, handle: string, feedUrl: string, events: FeedEvent[], md = ''): string {
   const items = events
     .map(e => {
-      const v = eventView(origin, e);
+      const v = eventView(origin, e, md);
       const desc = [v.text, v.wayback ? `Wayback copy: ${v.wayback}` : '', v.markdownUrl ? `Markdown: ${v.markdownUrl}` : ''].filter(Boolean).join('\n\n');
       return (
         '    <item>\n' +
@@ -93,7 +96,7 @@ export function rssFeed(origin: string, handle: string, feedUrl: string, events:
   );
 }
 
-export function jsonFeed(origin: string, handle: string, feedUrl: string, events: FeedEvent[]): string {
+export function jsonFeed(origin: string, handle: string, feedUrl: string, events: FeedEvent[], md = ''): string {
   return JSON.stringify(
     {
       version: 'https://jsonfeed.org/version/1.1',
@@ -102,7 +105,7 @@ export function jsonFeed(origin: string, handle: string, feedUrl: string, events
       feed_url: feedUrl,
       description: `Deleted and new posts of @${handle}, detected by Xtracticle Watch.`,
       items: events.map(e => {
-        const v = eventView(origin, e);
+        const v = eventView(origin, e, md);
         return {
           id: e.id,
           url: v.url,

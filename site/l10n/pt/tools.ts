@@ -459,9 +459,9 @@ const deletedTracker: SitePage = {
   lang: 'pt',
   title: 'Rastreador de tweets apagados: aviso quando apagam | Xtracticle',
   description:
-    'Monitore até 5 contas públicas do X. Quando uma apaga um post, o Xtracticle guarda o texto e avisa por RSS ou e-mail. US$ 5 por mês, sem login no X.',
+    'Monitore uma conta pública do X grátis por 14 dias. Quando ela apaga um post, o Xtracticle guarda o texto e avisa por RSS ou e-mail. Sem cartão e sem login no X.',
   h1: 'Rastreador de tweets apagados',
-  sub: 'Monitore uma conta pública do X (Twitter) e guarde uma cópia de cada post que ela apagar. Comece digitando o @usuário para ver o que já está arquivado.',
+  sub: 'Monitore uma conta pública do X (Twitter) e guarde uma cópia de cada post que ela apagar. Teste grátis por 14 dias: digite o @usuário e depois o seu e-mail.',
   primary: 'md',
   nav: 'Rastreador de tweets apagados',
   sections: `
@@ -471,11 +471,11 @@ const deletedTracker: SitePage = {
   o texto, a data e os links de mídia do post, mais uma cópia da Wayback Machine quando existir, em um feed privado e em um e-mail diário.</p>
   <h2>Como rastrear os tweets que uma conta apaga</h2>
   ${steps([
-    '<strong>Assine o Xtracticle Pro</strong> na <a href="/pt/pro">página do Pro</a>. O pagamento é feito pelo Gumroad e a chave de licença chega por e-mail. Sem conta no Xtracticle e sem login no X.',
-    '<strong>Adicione a conta:</strong> na <a href="/pt/pro#watch">página do Pro</a>, digite o <code>@usuario</code> e escolha o que acompanhar: posts apagados, posts novos ou os dois.',
-    '<strong>Escolha como ser avisado.</strong> Cada monitoramento tem um feed RSS / JSON privado para o seu leitor. Adicione um e-mail para receber um resumo diário de tudo o que mudou.',
+    '<strong>Comece o teste grátis.</strong> Digite acima o <code>@usuario</code> da conta, informe seu e-mail na caixa do Watch abaixo dos posts arquivados e clique no link de confirmação que enviamos. Uma conta por 14 dias: sem cartão, sem conta no Xtracticle, sem login no X.',
+    '<strong>Escolha o que quer saber.</strong> O link abre sua página de teste, com um feed RSS / JSON privado para o seu leitor; escolha posts apagados, posts novos ou os dois. Quando algo muda, um resumo diário chega ao e-mail que você confirmou.',
+    '<strong>Continue monitorando com o Pro.</strong> Passados os 14 dias, o monitoramento simplesmente para. O <a href="/pt/pro">Xtracticle Pro</a> o mantém e monitora até 5 contas (2 no plano vitalício). O pagamento é feito pelo Gumroad e a chave de licença chega por e-mail.',
   ])}
-  <p>Antes de pagar, digite a conta acima. A busca gratuita lista o que a Wayback Machine já arquivou dela, assim você vê
+  <p>A mesma busca lista o que a Wayback Machine já arquivou da conta, então você também vê
   o que foi publicado, e apagado, antes de começar a monitorar.</p>
 </section>
 
@@ -496,6 +496,7 @@ const deletedTracker: SitePage = {
     <thead><tr><th></th><th>Xtracticle Pro</th><th>Rastreador pago comum</th></tr></thead>
     <tbody>
       <tr><td>Preço</td><td>US$ 5 por mês ou US$ 36 por ano para 5 contas · US$ 59 uma vez para 2</td><td>Cerca de US$ 9 por mês por conta (TrackTweets, no momento em que escrevemos)</td></tr>
+      <tr><td>Teste grátis</td><td>14 dias, 1 conta, só confirmação por e-mail, sem cartão</td><td>Varia</td></tr>
       <tr><td>Cadastro</td><td>Nenhum. Uma chave de licença, sem login no X e sem nada conectado</td><td>Conta e assinatura</td></tr>
       <tr><td>Avisos</td><td>Feed RSS / JSON privado, resumo diário por e-mail</td><td>Varia</td></tr>
       <tr><td>Exclusões passadas</td><td>Arquivo completo da Wayback da conta (até 1.500 posts) com CSV</td><td>Em geral só a partir do dia em que você começa</td></tr>
@@ -528,6 +529,7 @@ const deletedTracker: SitePage = {
 ${privacy('pt')}`,
   faq: [
     { q: 'Posso ser avisado quando alguém apagar um tweet?', a: 'Sim. Adicione a conta pública ao Xtracticle Watch (parte do Xtracticle Pro). Ele verifica a conta a cada hora e, quando um post que já tinha visto é apagado, o inclui no seu feed RSS privado e no resumo diário por e-mail, com o texto do post.' },
+    { q: 'Existe teste grátis?', a: 'Sim. Monitore uma conta pública grátis por 14 dias: digite-a acima, informe seu e-mail e clique no link de confirmação que enviamos. Não é preciso cartão nem chave de licença, há um teste por endereço de e-mail e nada é cobrado: quando o teste termina, o monitoramento simplesmente para. Para continuar monitorando, ou para monitorar até 5 contas, assine o Xtracticle Pro.' },
     { q: 'Com que rapidez o rastreador percebe uma exclusão?', a: 'As contas são verificadas cerca de uma vez por hora. O feed é atualizado na verificação seguinte à exclusão; o resumo por e-mail sai uma vez por dia.' },
     { q: 'Ele mostra tweets apagados antes de eu começar a rastrear?', a: 'O Watch não, porque nunca os viu. Use o localizador de tweets apagados gratuito, que lista os posts arquivados pela Wayback Machine, inclusive os apagados depois.' },
     { q: 'Preciso entrar com minha conta do X?', a: 'Não. O Xtracticle nunca pede seu login do X. O Pro é liberado com uma chave de licença que o Gumroad envia por e-mail depois do pagamento.' },

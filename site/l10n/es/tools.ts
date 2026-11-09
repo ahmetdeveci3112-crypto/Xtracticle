@@ -468,9 +468,9 @@ const deletedTracker: SitePage = {
   lang: 'es',
   title: 'Rastreador de tweets borrados: avisos al borrar | Xtracticle',
   description:
-    'Vigila hasta 5 cuentas públicas de X. Si una borra un post, Xtracticle guarda su texto y te avisa por RSS o correo. 5 $ al mes, sin login en X.',
+    'Vigila una cuenta pública de X gratis durante 14 días. Si borra un post, Xtracticle guarda su texto y te avisa por RSS o correo. Sin tarjeta ni login en X.',
   h1: 'Rastreador de tweets borrados',
-  sub: 'Vigila una cuenta pública de X (Twitter) y guarda una copia de cada post que borre. Empieza escribiendo el @usuario para ver qué hay ya archivado.',
+  sub: 'Vigila una cuenta pública de X (Twitter) y guarda una copia de cada post que borre. Pruébalo gratis 14 días: escribe el @usuario y luego tu correo.',
   primary: 'md',
   nav: 'Rastreador de tweets borrados',
   sections: `
@@ -480,11 +480,11 @@ const deletedTracker: SitePage = {
   su texto, su fecha y los enlaces a sus archivos multimedia, más una copia de Wayback Machine si existe, en un feed privado y en un correo diario.</p>
   <h2>Cómo rastrear los tweets que borra una cuenta</h2>
   ${steps([
-    '<strong>Consigue Xtracticle Pro</strong> en la <a href="/es/pro">página de Pro</a>. El pago lo gestiona Gumroad y la clave de licencia llega por correo. Sin cuenta de Xtracticle y sin login en X.',
-    '<strong>Añade la cuenta:</strong> en la <a href="/es/pro#watch">página de Pro</a>, escribe su <code>@usuario</code> y elige qué seguir: posts borrados, posts nuevos o ambos.',
-    '<strong>Elige cómo enterarte.</strong> Cada vigilancia tiene un feed RSS / JSON privado para tu lector. Añade un correo para recibir un resumen diario de todo lo que cambió.',
+    '<strong>Empieza la prueba gratuita.</strong> Escribe arriba el <code>@usuario</code> de la cuenta, introduce tu correo en el cuadro de Watch que aparece bajo sus posts archivados y haz clic en el enlace de confirmación que te enviamos. Una cuenta durante 14 días: sin tarjeta, sin cuenta de Xtracticle, sin login en X.',
+    '<strong>Elige de qué quieres enterarte.</strong> El enlace abre tu página de prueba con un feed RSS / JSON privado para tu lector; elige posts borrados, posts nuevos o ambos. Cuando algo cambia, un resumen diario llega al correo que confirmaste.',
+    '<strong>Sigue vigilando con Pro.</strong> Al terminar los 14 días, la vigilancia simplemente se detiene. <a href="/es/pro">Xtracticle Pro</a> la mantiene y vigila hasta 5 cuentas (2 con el plan de por vida). El pago lo gestiona Gumroad y la clave de licencia llega por correo.',
   ])}
-  <p>Antes de pagar, escribe la cuenta arriba. La búsqueda gratuita lista lo que Wayback Machine ya archivó de ella, así que puedes ver
+  <p>La misma búsqueda lista lo que Wayback Machine ya archivó de la cuenta, así que también puedes ver
   qué se publicó, y qué se borró, antes de empezar a vigilarla.</p>
 </section>
 
@@ -505,6 +505,7 @@ const deletedTracker: SitePage = {
     <thead><tr><th></th><th>Xtracticle Pro</th><th>Rastreador de pago habitual</th></tr></thead>
     <tbody>
       <tr><td>Precio</td><td>5 $ al mes o 36 $ al año para 5 cuentas · 59 $ una vez para 2</td><td>Unos 9 $ al mes por cuenta (TrackTweets, en el momento de escribir esto)</td></tr>
+      <tr><td>Prueba gratuita</td><td>14 días, 1 cuenta, solo confirmación por correo, sin tarjeta</td><td>Varía</td></tr>
       <tr><td>Registro</td><td>Ninguno. Una clave de licencia, sin login en X ni nada conectado</td><td>Cuenta y suscripción</td></tr>
       <tr><td>Avisos</td><td>Feed RSS / JSON privado, resumen diario por correo</td><td>Varía</td></tr>
       <tr><td>Borrados anteriores</td><td>Archivo completo de Wayback de la cuenta (hasta 1500 posts) con CSV</td><td>Normalmente solo desde el día en que empiezas</td></tr>
@@ -537,6 +538,7 @@ const deletedTracker: SitePage = {
 ${privacy('es')}`,
   faq: [
     { q: '¿Puedo recibir un aviso cuando alguien borra un tweet?', a: 'Sí. Añade la cuenta pública a Xtracticle Watch (parte de Xtracticle Pro). Revisa la cuenta cada hora y, cuando se borra un post que ya había visto, lo añade a tu feed RSS privado y a tu resumen diario por correo con el texto del post.' },
+    { q: '¿Hay prueba gratuita?', a: 'Sí. Vigila una cuenta pública gratis durante 14 días: escríbela arriba, introduce tu correo y haz clic en el enlace de confirmación que te enviamos. No hace falta tarjeta ni clave de licencia, hay una prueba por dirección de correo y no se cobra nada: al terminar la prueba, la vigilancia simplemente se detiene. Para seguir vigilando, o para vigilar hasta 5 cuentas, consigue Xtracticle Pro.' },
     { q: '¿Con qué rapidez detecta el rastreador un borrado?', a: 'Las cuentas se revisan cada hora aproximadamente. El feed se actualiza en la siguiente revisión tras el borrado; el resumen por correo sale una vez al día.' },
     { q: '¿Puede mostrar tweets borrados antes de empezar a rastrear?', a: 'Watch no, porque nunca los vio. Usa el buscador de tweets borrados gratuito, que lista los posts archivados en Wayback Machine, incluidos los que se borraron después.' },
     { q: '¿Tengo que iniciar sesión con mi cuenta de X?', a: 'No. Xtracticle nunca te pide el login de X. Pro se activa con una clave de licencia que Gumroad te envía por correo tras el pago.' },

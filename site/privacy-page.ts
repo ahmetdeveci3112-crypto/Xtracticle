@@ -24,7 +24,7 @@ export const privacyPage: SitePage = {
 <section>
   <h2>What we don’t collect</h2>
   <ul>
-    <li>No accounts or logins. Payments for Pro are handled by Gumroad; we only receive the license key. An e-mail address is stored only if a Pro user turns on Watch e-mail digests (see below).</li>
+    <li>No accounts or logins. Payments for Pro are handled by Gumroad; we only receive the license key. An e-mail address is stored only if a Pro user turns on Watch e-mail digests or someone starts a Watch trial (see below).</li>
     <li>No uploads: PDF, EPUB, ZIP and other files are built in your browser and never sent to us.</li>
     <li>We don’t sell or share personal data, and we don’t use advertising trackers.</li>
   </ul>
@@ -70,6 +70,9 @@ export const privacyPage: SitePage = {
     (confirmed by a link we send). Notification records are kept for 90 days.</li>
     <li><strong>Limits:</strong> public accounts only (watching stops if an account becomes protected), about one check per hour,
     5 accounts per membership and 2 per lifetime license.</li>
+    <li><strong>Free trial:</strong> a trial watches one account for 14 days without a license. We store the e-mail address you
+    confirm for as long as the trial runs (it is deleted when the trial ends, or at once if you unsubscribe) and a one-way hash
+    of that address, which we keep so that each address can start one trial.</li>
     <li><strong>Opting out:</strong> if your account is being watched and you want it to stop, <a href="${GITHUB}/issues" rel="noopener">open an
     issue on GitHub</a> or message @DvciAhmet on X with the account name. We add it to a blocklist, delete its stored posts and remove
     it from all watch lists within 7 days.</li>

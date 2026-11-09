@@ -774,5 +774,32 @@ body {
 .xt-content .xt-watch-full { margin-top: 0.5rem; font-size: 0.85rem; }
 .xt-content .xt-watch .xt-pro-msg { margin-top: 0.4rem; min-height: 0; }
 
+/* Free Watch trial on /pro: "Your free trial" card (#t=<token>) and the start form (filled by the /pro script). */
+.xt-trial-card, .xt-trial-start {
+  margin: 1.25rem 0;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background-color: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.xt-trial-card { border-color: var(--text-primary); box-shadow: var(--shadow-sm); }
+.xt-trial-card[hidden], .xt-trial-start[hidden] { display: none; }
+.xt-has-pro .xt-trial-start { display: none; }
+.xt-trial-card [data-trial-body] { display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; }
+.xt-content .xt-watch.xt-trial-card .xt-pro-now-h { margin: 0 0 0.25rem; }
+.xt-content .xt-trial-start h3 { margin: 0 0 0.25rem; }
+.xt-content .xt-trial-start > p { font-size: 0.9rem; line-height: 1.6; }
+.xt-content .xt-trial-when { font-size: 0.95rem; line-height: 1.5; color: var(--text-primary); overflow-wrap: anywhere; }
+.xt-trial-start .xt-watch-add { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.5rem; }
+.xt-trial-start .xt-watch-add label { margin: 0.25rem 0 0; }
+.xt-trial-keep { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+.xt-content .xt-trial-keep .xt-btn { margin-top: 0; }
+.xt-content .xt-trial-keep .xt-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.xt-trial-sent { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.5rem; }
+
 /* Footer coffee icon (site/render.ts). */
 .xt-footer .xt-coffee-ico { display: inline-block; width: 0.95em; height: 0.95em; vertical-align: -0.12em; margin-inline-end: 0.25em; }

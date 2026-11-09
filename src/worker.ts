@@ -19,6 +19,8 @@ export interface Env extends WatchEnv {
   AGENT_IP_LIMITER?: RateLimit;
   /** Shared budget for all agent traffic (one key), so AI clients can't use up the Workers quota the site needs. */
   AGENT_GLOBAL_LIMITER?: RateLimit;
+  /** 3 requests / 60 s per client IP on POST /api/watch/trial (declared in WatchEnv; listed here for the overview). */
+  TRIAL_LIMITER?: RateLimit;
   /** Kill switch: set to "1" in the Cloudflare dashboard (Workers → Settings → Variables) to turn off /mcp and /api/markdown. */
   AGENTS_DISABLED?: string;
   /** Kill switch: set to "1" to turn off /api/archive/:handle (Wayback lookups for a profile link). */

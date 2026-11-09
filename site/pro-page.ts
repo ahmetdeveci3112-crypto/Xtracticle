@@ -67,6 +67,8 @@ export interface ProCopy {
   yourPlan: string;
   /** "Watch" manager inside the Pro-active card (serialized into a data attribute for the inline script). */
   watch: WatchCopy;
+  /** Free Watch trial: start form for non-Pro visitors and the "Your free trial" card (#t=<manage token>). */
+  trial: TrialCopy;
   faqH2?: string;
   faq: FAQ[];
 }
@@ -142,6 +144,60 @@ export interface WatchCopy {
   verifyFailed: string;
 }
 
+/**
+ * Text of the free Watch trial on /pro (docs/watch-api.md, "Trial"). Placeholders: {handle} (with the @),
+ * {email}, {date}, {n}, {days}. Plain text only (textContent / confirm()); startH, startIntro, startNote are HTML-escaped.
+ */
+export interface TrialCopy {
+  /** Notices for /pro?trial=… (the verification link in the e-mail redirects there). */
+  notice: { verified: string; verify_failed: string; full: string; disabled: string };
+  h: string;
+  loading: string;
+  failed: string;
+  invalid: string;
+  status: { pending: string; active: string; ended: string };
+  pending: string;
+  daysLeft: string;
+  lastDay: string;
+  endedOn: string;
+  endedNote: string;
+  noEventsEnded: string;
+  keep: string;
+  keepNote: string;
+  end: string;
+  cancelRequest: string;
+  confirmEnd: string;
+  confirmCancel: string;
+  ended: string;
+  cancelled: string;
+  startH: string;
+  startIntro: string;
+  handleLabel: string;
+  emailLabel: string;
+  start: string;
+  starting: string;
+  sent: string;
+  sentHint: string;
+  startNote: string;
+  err: {
+    trial_used: string;
+    trial_pending: string;
+    trial_full: string;
+    trial_disabled: string;
+    trial_ended: string;
+    mail_failed: string;
+    bad_email: string;
+    bad_handle: string;
+    not_found: string;
+    protected: string;
+    blocklisted: string;
+    upstream: string;
+    rate: string;
+    network: string;
+    generic: string;
+  };
+}
+
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 const PATHS: Record<Lang, string> = { en: '/pro', tr: '/tr/pro', es: '/es/pro', pt: '/pt/pro', ja: '/ja/pro', zh: '/zh/pro', ar: '/ar/pro' };
@@ -168,6 +224,10 @@ if(!u){return;}b.href=u;if(!b.parentNode.classList.contains('xt-price-current'))
 var wn=document.getElementById('xt-watch-notice'),wv=q.get('watch');
 if(wn&&(wv==='verified'||wv==='verify_failed')){wn.textContent=wn.getAttribute(wv==='verified'?'data-ok':'data-fail');wn.hidden=false;
 try{q['delete']('watch');var qs=q.toString();history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+location.hash)}catch(e){}}
+var tcd=document.getElementById('xt-trial-card'),TC=null,tv=q.get('trial'),ts=document.getElementById('xt-trial-start'),tok='',tbody,tviewed=false;
+if(tcd){try{TC=JSON.parse(tcd.getAttribute('data-copy'))}catch(e){tcd=null}}
+if(wn&&TC&&tv&&TC.notice.hasOwnProperty(tv)){wn.textContent=TC.notice[tv];wn.hidden=false;g('trial_notice',{kind:tv});
+try{q['delete']('trial');var tq=q.toString();history.replaceState(null,'',location.pathname+(tq?'?'+tq:'')+location.hash)}catch(e){}}
 var wb=document.getElementById('xt-watch'),WC=null,wlim=0,wcount=0,wviewed=false,wl,wcnt,wst,wun,wf,wfi,wfm,wfb,wfo,wfull;
 if(wb){try{WC=JSON.parse(wb.getAttribute('data-copy'))}catch(e){wb=null}}
 if(wb){wl=wb.querySelector('[data-watch-list]');wcnt=wb.querySelector('[data-watch-count]');wst=wb.querySelector('[data-watch-state]');wun=wb.querySelector('[data-watch-unavail]');
@@ -204,6 +264,14 @@ var o=URL.createObjectURL(b),a=document.createElement('a');a.href=o;a.download=n
 }).catch(function(){wsay(msg,WC.err.generic,false)});}
 function link(t,u,c){var a=el('a',c||null,t);a.href=u;a.target='_blank';a.rel='noopener noreferrer nofollow';return a;}
 function mini(t,c){var b=el('button','xt-watch-mini'+(c?' '+c:''),t);b.type='button';return b;}
+function feeds(rss,jf){var fd=el('p','xt-watch-feeds');fd.appendChild(el('span','xt-watch-label',WC.feed));
+[['rss',rss,'RSS'],['json',jf,'JSON Feed']].forEach(function(f){if(!f[1])return;var s=el('span','xt-watch-feed'),cb=mini(WC.copy);
+cb.setAttribute('aria-label',WC.copy+': '+f[2]);cb.addEventListener('click',function(){copy(f[1],cb,f[0])});s.appendChild(link(f[2],f[1]));s.appendChild(cb);fd.appendChild(s);});return fd;}
+function evs(list,hd,msg){var ul=el('ul','xt-watch-events');list.forEach(function(e){var r=el('li'),h=el('p','xt-watch-ev-h');h.appendChild(el('strong',null,WC.events[e.type]||e.type));h.appendChild(el('span',null,fmt(e.detectedAt)));r.appendChild(h);
+if(e.text){var tx=e.text.length>160?e.text.slice(0,159)+String.fromCharCode(8230):e.text,tp=el('p','xt-watch-ev-t',tx);tp.setAttribute('dir','auto');r.appendChild(tp);}
+var lk=el('p','xt-watch-ev-l');if(e.url)lk.appendChild(link(WC.onX,e.url));if(e.wayback)lk.appendChild(link(WC.archived,e.wayback));
+if(e.markdownUrl){var ma=el('a',null,WC.markdown);ma.href=e.markdownUrl;ma.addEventListener('click',function(x){x.preventDefault();md(e.markdownUrl,hd+'-'+(e.postId||e.id)+'.md',msg)});lk.appendChild(ma);}
+if(lk.firstChild)r.appendChild(lk);ul.appendChild(r);});return ul;}
 function item(w,after){var li=el('li','xt-watch-item'),at='@'+w.handle,u='/api/watch/'+encodeURIComponent(w.id);
 var top=el('div','xt-watch-top'),ha=link(at,'https://x.com/'+encodeURIComponent(w.handle),'xt-watch-handle');ha.setAttribute('dir','ltr');top.appendChild(ha);
 top.appendChild(el('span','xt-watch-badge'+(w.status==='active'?' on':''),WC.status[w.status]||w.status));li.appendChild(top);
@@ -211,18 +279,11 @@ if(w.status!=='active'&&WC.statusNote[w.status])li.appendChild(el('p','xt-watch-
 var meta=el('p','xt-watch-meta');meta.appendChild(el('span',null,WC.modes[w.mode]||w.mode));
 meta.appendChild(el('span',null,w.lastPolledAt?tpl(WC.lastCheck,{date:fmt(w.lastPolledAt)}):WC.notChecked));
 meta.appendChild(el('span',null,!w.email?WC.emailNone:tpl(w.emailVerified?WC.emailOk:WC.emailPending,{email:iso(w.email)})));li.appendChild(meta);
-var fd=el('p','xt-watch-feeds');fd.appendChild(el('span','xt-watch-label',WC.feed));
-[['rss',w.feedUrl,'RSS'],['json',w.jsonFeedUrl,'JSON Feed']].forEach(function(f){if(!f[1])return;var s=el('span','xt-watch-feed'),cb=mini(WC.copy);
-cb.setAttribute('aria-label',WC.copy+': '+f[2]);cb.addEventListener('click',function(){copy(f[1],cb,f[0])});s.appendChild(link(f[2],f[1]));s.appendChild(cb);fd.appendChild(s);});
-li.appendChild(fd);li.appendChild(el('p','xt-watch-hint',WC.feedNote));
+li.appendChild(feeds(w.feedUrl,w.jsonFeedUrl));li.appendChild(el('p','xt-watch-hint',WC.feedNote));
 var msg=el('p','xt-pro-msg');msg.setAttribute('role','status');msg.setAttribute('aria-live','polite');
 var ev=(w.recent||[]).slice(0,5);li.appendChild(el('p','xt-watch-sub',WC.recent));
 if(!ev.length)li.appendChild(el('p','xt-watch-hint',WC.noEvents));
-else{var ul=el('ul','xt-watch-events');ev.forEach(function(e){var r=el('li'),h=el('p','xt-watch-ev-h');h.appendChild(el('strong',null,WC.events[e.type]||e.type));h.appendChild(el('span',null,fmt(e.detectedAt)));r.appendChild(h);
-if(e.text){var tx=e.text.length>160?e.text.slice(0,159)+String.fromCharCode(8230):e.text,tp=el('p','xt-watch-ev-t',tx);tp.setAttribute('dir','auto');r.appendChild(tp);}
-var lk=el('p','xt-watch-ev-l');if(e.url)lk.appendChild(link(WC.onX,e.url));if(e.wayback)lk.appendChild(link(WC.archived,e.wayback));
-if(e.markdownUrl){var ma=el('a',null,WC.markdown);ma.href=e.markdownUrl;ma.addEventListener('click',function(x){x.preventDefault();md(e.markdownUrl,w.handle+'-'+(e.postId||e.id)+'.md',msg)});lk.appendChild(ma);}
-if(lk.firstChild)r.appendChild(lk);ul.appendChild(r);});li.appendChild(ul);}
+else li.appendChild(evs(ev,w.handle,msg));
 var ct=el('div','xt-watch-ctrl'),ml=el('label','xt-watch-mode'),sel=el('select');ml.appendChild(el('span',null,WC.modeLabel));
 ['deleted','new','both'].forEach(function(m){var o=el('option',null,WC.modes[m]);o.value=m;if(m===w.mode)o.selected=true;sel.appendChild(o);});ml.appendChild(sel);ct.appendChild(ml);
 var eb=mini(WC.emailBtn),rb=mini(WC.remove,'xt-watch-del');eb.setAttribute('aria-expanded','false');ct.appendChild(eb);ct.appendChild(rb);li.appendChild(ct);
@@ -256,6 +317,69 @@ var er=(x.b&&x.b.error)||String(x.s);if(x.s===503&&er==='watch_unavailable'){wun
 if(er==='limit_reached'&&x.b.limit){wlim=x.b.limit;wcountUp();}
 wsay(wfo,tpl(errText(x,true),{handle:iso('@'+h)}),false);g('watch_add_error',{error:er});
 }).catch(function(){wfb.disabled=false;wsay(wfo,WC.err.network,false);g('watch_add_error',{error:'network'});});});
+function terr(x){var e=x.b&&x.b.error;if(e&&TC.err.hasOwnProperty(e))return TC.err[e];return x.s===429?TC.err.rate:TC.err.generic;}
+function tstate(t){tbody.innerHTML='';var p=el('p','xt-watch-state',t);p.setAttribute('role','status');tbody.appendChild(p);}
+function tforget(){tok='';try{sessionStorage.removeItem('xt_trial_t')}catch(e){}}
+function tload(after){tcd.hidden=false;if(!after)tstate(TC.loading);
+api('GET','/api/watch/trial/'+encodeURIComponent(tok)).then(function(x){
+if(x.s===404){tforget();tstate(TC.invalid);tstart();return;}
+if(x.s!==200||!x.b||!x.b.status){tstate(TC.failed);return;}
+trender(x.b,after);if(!tviewed){tviewed=true;g('trial_view',{status:x.b.status});}
+}).catch(function(){tstate(TC.failed);});}
+function trender(t,after){tbody.innerHTML='';var at='@'+t.handle,w=t.watch,on=t.status==='active';
+var top=el('div','xt-watch-top'),ha=link(at,'https://x.com/'+encodeURIComponent(t.handle),'xt-watch-handle');ha.setAttribute('dir','ltr');top.appendChild(ha);
+top.appendChild(el('span','xt-watch-badge'+(on?' on':''),TC.status[t.status]||t.status));tbody.appendChild(top);
+var wh=t.status==='pending'?tpl(TC.pending,{email:iso(t.email||''),days:t.days||14}):on?(t.daysLeft>1?tpl(TC.daysLeft,{n:t.daysLeft,date:fmt(t.expiresAt)}):tpl(TC.lastDay,{date:fmt(t.expiresAt)})):tpl(TC.endedOn,{date:fmt(t.endedAt)});
+tbody.appendChild(el('p','xt-trial-when',wh));
+if(on&&w&&w.status!=='active'&&WC.statusNote[w.status])tbody.appendChild(el('p','xt-watch-note',WC.statusNote[w.status]));
+if(t.status==='ended')tbody.appendChild(el('p','xt-watch-hint',TC.endedNote));
+var msg=el('p','xt-pro-msg');msg.setAttribute('role','status');msg.setAttribute('aria-live','polite');var sel=null;
+if(on){var meta=el('p','xt-watch-meta');meta.appendChild(el('span',null,WC.modes[t.mode]||t.mode));
+meta.appendChild(el('span',null,w&&w.lastPolledAt?tpl(WC.lastCheck,{date:fmt(w.lastPolledAt)}):WC.notChecked));
+meta.appendChild(el('span',null,t.email?tpl(WC.emailOk,{email:iso(t.email)}):WC.emailNone));tbody.appendChild(meta);
+if(w){tbody.appendChild(feeds(w.feedUrl,w.jsonFeedUrl));tbody.appendChild(el('p','xt-watch-hint',WC.feedNote));}}
+if(t.status!=='pending'){var ev=(t.recent||[]).slice(0,10);tbody.appendChild(el('p','xt-watch-sub',WC.recent));
+if(!ev.length)tbody.appendChild(el('p','xt-watch-hint',on?WC.noEvents:TC.noEventsEnded));else tbody.appendChild(evs(ev,t.handle,msg));}
+var ct=el('div','xt-watch-ctrl');
+if(on){var ml=el('label','xt-watch-mode');sel=el('select');ml.appendChild(el('span',null,WC.modeLabel));
+['deleted','new','both'].forEach(function(m){var o=el('option',null,WC.modes[m]);o.value=m;if(m===t.mode)o.selected=true;sel.appendChild(o);});ml.appendChild(sel);ct.appendChild(ml);
+sel.addEventListener('change',function(){var nv=sel.value,ov=t.mode;sel.disabled=true;
+api('PATCH','/api/watch/trial/'+encodeURIComponent(tok),{mode:nv}).then(function(x){sel.disabled=false;
+if(x.s===200&&x.b&&x.b.status){g('trial_mode',{mode:nv});trender(x.b,{t:WC.modeSaved,good:true,focus:'mode'});return;}
+sel.value=ov;if(x.b&&x.b.error==='trial_ended'){tload({t:TC.err.trial_ended,good:false});return;}wsay(msg,terr(x),false);})
+.catch(function(){sel.disabled=false;sel.value=ov;wsay(msg,TC.err.network,false);});});}
+if(t.status!=='ended'){var eb=mini(on?TC.end:TC.cancelRequest,'xt-watch-del');ct.appendChild(eb);
+eb.addEventListener('click',function(){if(!window.confirm(on?tpl(TC.confirmEnd,{handle:at}):TC.confirmCancel))return;eb.disabled=true;
+api('DELETE','/api/watch/trial/'+encodeURIComponent(tok)).then(function(x){eb.disabled=false;
+if(x.s===200&&x.b&&x.b.ok){g('trial_end',{from:t.status});if(x.b.status==='cancelled'){tforget();tstate(TC.cancelled);tstart();return;}tload({t:TC.ended,good:true});return;}
+if(x.s===404){tforget();tstate(TC.invalid);tstart();return;}wsay(msg,terr(x),false);})
+.catch(function(){eb.disabled=false;wsay(msg,TC.err.network,false);});});}
+if(ct.firstChild)tbody.appendChild(ct);
+if(t.status!=='pending'){var kp=el('div','xt-trial-keep'),ka=el('a','xt-btn',TC.keep);ka.href='#pricing';ka.addEventListener('click',function(){g('trial_keep_click',{status:t.status})});
+kp.appendChild(ka);kp.appendChild(el('p','xt-watch-hint',tpl(TC.keepNote,{handle:iso(at)})));tbody.appendChild(kp);}
+tbody.appendChild(msg);
+if(after){wsay(msg,after.t,after.good);if(after.focus==='mode'&&sel)setTimeout(function(){try{sel.focus()}catch(e){}},0);}}
+function tstart(){if(!ts||!TC||tok)return;
+fetch('/api/watch/trial/config').then(function(r){return r.json()}).then(function(c){
+if(!c||!c.available||c.full||c.disabled||tok)return;if(document.documentElement.classList.contains('xt-has-pro'))return;
+var pa=document.getElementById('xt-pro-active');if(pa&&!pa.hidden)return;ts.hidden=false;g('trial_cta',{action:'view',place:'pro_page'});}).catch(function(){});}
+if(tcd&&TC&&WC){tbody=tcd.querySelector('[data-trial-body]');
+function thash(ev){var hm=/^#t=([A-Za-z0-9_-]{16,128})$/.exec(location.hash);if(!hm)return false;tok=hm[1];try{sessionStorage.setItem('xt_trial_t',tok)}catch(e){}
+try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}if(ts)ts.hidden=true;tviewed=false;tload();
+if(ev)try{tcd.scrollIntoView({block:'start'})}catch(e){}return true;}
+if(!thash()){try{tok=sessionStorage.getItem('xt_trial_t')||''}catch(e){}if(!/^[A-Za-z0-9_-]{16,128}$/.test(tok))tok='';if(tok)tload();}
+window.addEventListener('hashchange',thash);
+if(ts){var tf=ts.querySelector('form'),thi=tf.querySelector('input[name=handle]'),tem=tf.querySelector('input[name=email]'),tbt=tf.querySelector('button'),tmo=tf.querySelector('[role=status]');
+tf.addEventListener('submit',function(e){e.preventDefault();var h=clean(thi.value),m=tem.value.trim();
+if(!h){wsay(tmo,TC.err.bad_handle,false);try{thi.focus()}catch(x){}return;}if(!m){wsay(tmo,TC.err.bad_email,false);try{tem.focus()}catch(x){}return;}
+tbt.disabled=true;wsay(tmo,TC.starting,true);
+api('POST','/api/watch/trial',{handle:h,email:m,mode:'both'}).then(function(x){tbt.disabled=false;
+if(x.s===201&&x.b&&x.b.status){g('trial_start',{ok:true,place:'pro_page'});var dn=el('div','xt-trial-sent');dn.setAttribute('role','status');
+dn.appendChild(el('p','xt-trial-when',tpl(TC.sent,{email:iso(x.b.email||m),handle:iso('@'+(x.b.handle||h))})));dn.appendChild(el('p','xt-watch-hint',TC.sentHint));
+tf.parentNode.replaceChild(dn,tf);return;}
+var er=(x.b&&x.b.error)||String(x.s);g('trial_start',{ok:false,error:er,place:'pro_page'});wsay(tmo,terr(x),false);})
+.catch(function(){tbt.disabled=false;wsay(tmo,TC.err.network,false);g('trial_start',{ok:false,error:'network',place:'pro_page'});});});
+tstart();}}
 var f=document.getElementById('xt-pro-form');if(!f)return;
 var out=f.querySelector('[role=status]'),inp=f.querySelector('input'),btn=f.querySelector('button'),d=f.dataset;
 function say(t,good){out.textContent=t;out.className='xt-pro-msg '+(good?'ok':'err');}
@@ -266,7 +390,7 @@ if(!t){t=document.createElement('span');t.className='xt-price-tag';t.textContent
 else if(c.classList.contains('xt-price-current')){c.classList.remove('xt-price-current');b.removeAttribute('tabindex');if(t)t.parentNode.removeChild(t);if(b.getAttribute('href')!=='#')b.removeAttribute('aria-disabled');}});}
 function show(p,scroll){if(!card)return;var n=card.dataset[p];
 card.querySelector('[data-plan-line]').textContent=(n?n+' \\u00b7 ':'')+card.dataset.on;
-card.hidden=false;if(box)box.hidden=true;mark(p);wload();
+card.hidden=false;if(box)box.hidden=true;if(ts)ts.hidden=true;mark(p);wload();
 if(!scroll&&location.hash==='#watch'&&wb){try{wb.scrollIntoView({block:'start'})}catch(e){}}
 if(scroll){var still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 card.scrollIntoView({behavior:still?'auto':'smooth',block:'center'});try{card.focus({preventScroll:true})}catch(e){}}}
@@ -316,6 +440,34 @@ function watchBox(w: WatchCopy): string {
         <p class="xt-pro-msg" role="status" aria-live="polite"></p>
       </form>
     </div>`;
+}
+
+/** "Your free trial" card (filled by the inline script when the URL carries #t=<manage token>). */
+function trialCard(c: ProCopy): string {
+  const copy = { ...c.trial, startH: undefined, startIntro: undefined, startNote: undefined, handleLabel: undefined, emailLabel: undefined, start: undefined };
+  return `<div id="xt-trial-card" class="xt-watch xt-trial-card" role="region" aria-labelledby="xt-trial-h" hidden data-copy="${esc(JSON.stringify(copy))}">
+    <p class="xt-pro-now-h" id="xt-trial-h">${esc(c.trial.h)}</p>
+    <div data-trial-body></div>
+  </div>`;
+}
+
+/** Free-trial start form in the Watch feature area; shown by the script only when GET /api/watch/trial/config says available. */
+function trialStart(t: TrialCopy): string {
+  return `<div id="xt-trial-start" class="xt-watch xt-trial-start" role="region" aria-labelledby="xt-trial-start-h" hidden>
+    <h3 id="xt-trial-start-h">${esc(t.startH)}</h3>
+    <p>${esc(t.startIntro)}</p>
+    <form class="xt-watch-add" autocomplete="on" novalidate>
+      <label for="xt-trial-handle">${esc(t.handleLabel)}</label>
+      <div class="xt-pro-row"><input id="xt-trial-handle" name="handle" type="text" spellcheck="false" autocapitalize="none" autocomplete="off" placeholder="@username" maxlength="100" required dir="ltr" /></div>
+      <label for="xt-trial-email">${esc(t.emailLabel)}</label>
+      <div class="xt-pro-row">
+        <input id="xt-trial-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" maxlength="254" required dir="ltr" />
+        <button type="submit">${esc(t.start)}</button>
+      </div>
+      <p class="xt-watch-hint">${esc(t.startNote)}</p>
+      <p class="xt-pro-msg" role="status" aria-live="polite"></p>
+    </form>
+  </div>`;
 }
 
 export function proPage(lang: Lang, c: ProCopy): SitePage {
@@ -382,9 +534,11 @@ export function proPage(lang: Lang, c: ProCopy): SitePage {
     sections: `
 <section>
   <p id="xt-watch-notice" class="xt-pro-success" role="status" hidden data-ok="${esc(c.watch.verified)}" data-fail="${esc(c.watch.verifyFailed)}"></p>
+  ${trialCard(c)}
   <p>${c.pitch}</p>
   <h2>${esc(c.featuresH2)}</h2>
   <ul class="xt-pro-features">${c.features.map(f => `<li>${f}</li>`).join('')}</ul>
+  ${trialStart(c.trial)}
 </section>
 
 <section id="pricing">
@@ -538,12 +692,66 @@ export const PRO_EN: ProCopy = {
     verified: 'Your e-mail address is confirmed. The daily Watch digest will arrive there.',
     verifyFailed: 'This confirmation link no longer works (each link works once, for 24 hours). Set the address again on the watch to get a new one.',
   },
+  trial: {
+    notice: {
+      verified: 'Your e-mail address is confirmed and the free trial has started. From now on the account is checked about every hour.',
+      verify_failed: 'This trial link no longer works (each link works once, for 24 hours). Start the trial again to get a new one.',
+      full: 'All free trial places are taken right now, so your trial could not start yet. Your request stays open for 24 hours: open the link in the e-mail again later.',
+      disabled: 'Free trials are paused right now, so your trial could not start yet. Your request stays open for 24 hours: open the link in the e-mail again later.',
+    },
+    h: 'Your free trial',
+    loading: 'Loading your trial…',
+    failed: 'Your trial could not be loaded. Please reload the page in a minute.',
+    invalid: 'This trial link is not valid. Open the newest link from your Xtracticle e-mail.',
+    status: { pending: 'Waiting for confirmation', active: 'Free trial', ended: 'Ended' },
+    pending: 'Click the link we sent to {email} to start the {days} days. The link works for 24 hours.',
+    daysLeft: '{n} days left · ends {date}',
+    lastDay: 'Last day · ends {date}',
+    endedOn: 'Ended {date}.',
+    endedNote: 'The watch has stopped and its feed links no longer work. Events found during the trial are kept for 90 days after they were detected.',
+    noEventsEnded: 'Nothing was detected during the trial.',
+    keep: 'Keep watching with Pro',
+    keepNote: 'Pro watches up to 5 accounts, from $3/month. Add {handle} there and the events found during the trial show up in its list.',
+    end: 'End trial',
+    cancelRequest: 'Cancel request',
+    confirmEnd: 'End the free trial for {handle} now? The watch stops, its feed links stop working, and this e-mail address cannot start another trial.',
+    confirmCancel: 'Cancel this trial request? Nothing has been watched yet, and you can start again.',
+    ended: 'Your trial has ended. Nothing more is checked or mailed.',
+    cancelled: 'Request cancelled. You can start a new trial with this address.',
+    startH: 'Try Watch free for 14 days',
+    startIntro: 'Watch one public account for 14 days. No card, no license key: enter the account and your e-mail address, click the link we send you, and the trial starts.',
+    handleLabel: 'Account to watch',
+    emailLabel: 'Your e-mail address',
+    start: 'Start free trial',
+    starting: 'Checking the account…',
+    sent: 'Check your inbox at {email} — confirm to start watching {handle}.',
+    sentHint: 'The link works for 24 hours. Nothing is watched or mailed until you click it.',
+    startNote: 'One trial per e-mail address. Nothing is charged: when the 14 days are over, the watch simply stops.',
+    err: {
+      trial_used: 'This address has already had its free trial (one per address). To keep watching, pick a plan under Pricing.',
+      trial_pending: 'We already sent a confirmation link to this address. Check your inbox and spam folder; the link works for 24 hours.',
+      trial_full: 'All free trial places are taken right now. Please try again in a few days.',
+      trial_disabled: 'Free trials are paused right now. Please try again later.',
+      trial_ended: 'This trial has already ended.',
+      mail_failed: 'The confirmation e-mail could not be sent. Check the address and try again.',
+      bad_email: 'Please enter a valid e-mail address.',
+      bad_handle: 'That does not look like an X username.',
+      not_found: 'No X account with this name was found.',
+      protected: 'This account is protected. Watch only works with public accounts.',
+      blocklisted: 'The owner of this account asked not to be watched, so it cannot be added.',
+      upstream: 'X could not be reached just now. Please try again in a minute.',
+      rate: 'Too many attempts. Please wait a minute and try again.',
+      network: 'Network error — please check your connection and try again.',
+      generic: 'Something went wrong. Please try again.',
+    },
+  },
   faq: [
     { q: 'How do I get my license key?', a: 'Right after checkout Gumroad shows your license key on the receipt page and e-mails it to you (it is also on the product’s download page on Gumroad). Paste it into the form on this page and Pro is active in that browser.' },
     { q: 'Do I need an account?', a: 'No. Xtracticle has no accounts. The key is the only thing we check; it is stored encrypted in a cookie on your device for 30 days at a time and renews itself as long as your plan is active.' },
     { q: 'On how many devices does a key work?', a: 'On every device you use: enter the same key in each browser. The key is checked once a day, so it keeps working as long as your plan is active.' },
     { q: 'Can I cancel?', a: 'Yes, anytime, from the “Manage membership” link in your Gumroad receipt or subscription e-mail. Pro stays active until the end of the period you paid for. The lifetime plan is a single payment with nothing to cancel.' },
     { q: 'Is there a refund?', a: 'Yes: 14 days, no questions asked. Open an issue on GitHub or message @DvciAhmet on X and the payment is refunded.' },
+    { q: 'Is there a free trial?', a: 'Yes, for Watch: one public account for 14 days, free. Enter the account and your e-mail address on this page or under an account’s archived posts in the Deleted Tweet Tracker, then click the confirmation link we send; the 14 days start with that click. No card and no license key are needed, and nothing is charged: when the trial is over the watch simply stops (you get one e-mail two days before and one at the end). There is one trial per e-mail address. To keep watching, or to watch up to 5 accounts, get Pro.' },
     { q: 'How does Watch notice a deleted post, and how quickly?', a: 'Once an hour Xtracticle reads the latest ~40 public posts of each watched account and compares them with the previous check. A post that is missing is looked up again, and only when X confirms it no longer exists is it reported as deleted, with the text saved earlier. So a deletion shows up within about an hour. A post that is published and deleted between two checks, or one older than the latest ~40, cannot be caught.' },
     { q: 'What does “public accounts only” mean? Can an account owner opt out?', a: 'Watch reads only what anyone can see on X without logging in. Protected accounts cannot be added, and if a watched account becomes protected, its checks stop. Saved post text is kept for 90 days. If you own an account and do not want it watched, write to us through the contact on the privacy page (xtracticle.com/privacy): the account is blocked from Watch and everything saved about it is deleted.' },
     { q: 'Is Watch included in the lifetime plan?', a: 'Yes. The lifetime plan watches 2 accounts; the monthly and yearly plans watch 5. You can swap accounts at any time.' },
