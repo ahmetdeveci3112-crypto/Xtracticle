@@ -32,7 +32,7 @@ export const PRO_TR: ProCopy = {
   yearlyNote: 'Ayda 3 $’a gelir; %40 indirim.',
   lifetimeNote: 'İlk 100 alıcı için lansman fiyatı. Bir kez ödeyin, hep sizin olsun.',
   buy: 'Pro’ya geç',
-  soon: 'Pro neredeyse hazır. Satış birkaç gün içinde açılıyor; o zamana kadar bu sayfadaki her şey ücretsiz.',
+  soon: 'Ödeme şu anda geçici olarak kullanılamıyor. Lütfen biraz sonra tekrar deneyin. Bu sayfadaki diğer her şey çalışmaya devam ediyor.',
   checkoutHint:
     'Ödemeleri <a href="https://gumroad.com" rel="noopener">Gumroad</a> alır (kart, Apple Pay, Google Pay). Lisans anahtarınız ödemenin hemen ardından fiş sayfasında görünür ve Gumroad’dan e-postayla da gelir; Xtracticle’da hesap açılmaz.',
   keyH2: 'Anahtarınız var mı? Buraya girin',
@@ -45,7 +45,7 @@ export const PRO_TR: ProCopy = {
   msgInvalid: 'Bu anahtar tanınmadı. Yazım hatası olup olmadığını veya aboneliğin sona erip ermediğini kontrol edin.',
   msgLimit: 'Bu anahtar çok fazla kez etkinleştirildi. Anahtarı siz satın aldıysanız GitHub’dan ya da X’te @DvciAhmet üzerinden bize ulaşın, sayacı sıfırlayalım.',
   msgUpstream: 'Lisans sunucusu yanıt vermedi. Lütfen bir dakika sonra tekrar deneyin.',
-  msgUnavailable: 'Pro henüz açılmadı. Lütfen birkaç gün sonra tekrar bakın.',
+  msgUnavailable: 'Pro etkinleştirme şu anda geçici olarak kullanılamıyor. Lütfen biraz sonra tekrar deneyin.',
   msgRate: 'Çok fazla deneme yapıldı. Birkaç saniye bekleyip tekrar deneyin.',
   msgNetwork: 'Ağ hatası — bağlantınızı kontrol edip tekrar deneyin.',
   success: 'Ödemeniz alındı, teşekkürler! Lisans anahtarınız Gumroad fişinizde ve Gumroad’dan gelen e-postada. Pro’yu açmak için aşağıya yapıştırın.',

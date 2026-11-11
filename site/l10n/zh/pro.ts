@@ -32,7 +32,7 @@ export const PRO_ZH: ProCopy = {
   yearlyNote: '折合每月 3 美元，省 40%。',
   lifetimeNote: '前 100 位购买者的首发价。付一次，永久使用。',
   buy: '开通 Pro',
-  soon: 'Pro 即将上线，几天内开放购买。在此之前，本页所有功能仍然免费。',
+  soon: '结账功能暂时不可用，请稍后再试。本页其他功能仍可正常使用。',
   checkoutHint:
     '付款由 <a href="https://gumroad.com" rel="noopener">Gumroad</a> 处理（银行卡、Apple Pay、Google Pay）。付款后，许可密钥会立即显示在收据页面上，并由 Gumroad 发送到你的邮箱；Xtracticle 不会创建任何账号。',
   keyH2: '已有密钥？在这里输入',
@@ -45,7 +45,7 @@ export const PRO_ZH: ProCopy = {
   msgInvalid: '无法识别此密钥。请检查是否有输入错误，或订阅是否已结束。',
   msgLimit: '此密钥的启用次数过多。如果你是购买者，请通过 GitHub 或在 X 上联系 @DvciAhmet，我们会为你重置。',
   msgUpstream: '许可服务器没有响应。请一分钟后重试。',
-  msgUnavailable: 'Pro 尚未开放。请几天后再来看看。',
+  msgUnavailable: 'Pro 激活功能暂时不可用，请稍后再试。',
   msgRate: '尝试次数过多。请等待几秒后重试。',
   msgNetwork: '网络错误——请检查连接后重试。',
   success: '已收到付款，谢谢！你的许可密钥在 Gumroad 收据页面和 Gumroad 发来的邮件中。把它粘贴到下方即可开启 Pro。',

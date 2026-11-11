@@ -215,7 +215,7 @@ g('pro_view',{lang:document.documentElement.lang});
 var q=new URLSearchParams(location.search),ok=document.getElementById('xt-pro-success');
 if(q.get('status')==='success'&&ok){ok.hidden=false;g('pro_checkout_success');}
 var btns=document.querySelectorAll('.xt-price a[data-plan]'),soon=document.getElementById('xt-pro-soon');
-function off(){if(soon)soon.hidden=false;}
+function off(){if(soon){soon.textContent=soon.getAttribute('data-text')||'';soon.hidden=false;}}
 fetch('/api/pro/config').then(function(r){return r.json()}).then(function(c){
 if(!c||!c.available){off();return;}
 btns.forEach(function(b){var p=b.getAttribute('data-plan'),u=c.checkout&&c.checkout[p];
@@ -553,7 +553,7 @@ export function proPage(lang: Lang, c: ProCopy): SitePage {
     ${card(c.yearly, PRICES.yearly, c.perYear, c.yearlyNote, 'yearly', c.buy, true)}
     ${card(c.lifetime, PRICES.lifetime, c.once, c.lifetimeNote, 'lifetime', c.buy)}
   </div>
-  <p id="xt-pro-soon" class="xt-pro-soon" hidden>${esc(c.soon)}</p>
+  <p id="xt-pro-soon" class="xt-pro-soon" data-text="${esc(c.soon)}" hidden></p>
   <p class="xt-pro-hint">${c.checkoutHint}</p>
 </section>
 
@@ -601,7 +601,7 @@ export const PRO_EN: ProCopy = {
   yearlyNote: 'That is $3 a month — 40% off.',
   lifetimeNote: 'Launch price for the first 100 buyers. Pay once, keep it forever.',
   buy: 'Get Pro',
-  soon: 'Pro is almost ready. Checkout opens in a few days — everything on this page stays free until then.',
+  soon: 'Checkout is temporarily unavailable. Please try again in a little while. Everything else on this page keeps working.',
   checkoutHint:
     'Payments are handled by <a href="https://gumroad.com" rel="noopener">Gumroad</a> (card, Apple Pay, Google Pay). Your license key is shown on the receipt page right after paying and also arrives by e-mail from Gumroad — no account on Xtracticle is created.',
   keyH2: 'Already have a key? Enter it here',
@@ -614,7 +614,7 @@ export const PRO_EN: ProCopy = {
   msgInvalid: 'This key was not recognized. Check for typos or whether the subscription has ended.',
   msgLimit: 'This key has been activated too many times. If you are the buyer, contact us via GitHub or @DvciAhmet on X and we’ll reset it.',
   msgUpstream: 'The license server did not answer. Please try again in a minute.',
-  msgUnavailable: 'Pro is not open yet. Please check back in a few days.',
+  msgUnavailable: 'Pro activation is temporarily unavailable. Please try again in a little while.',
   msgRate: 'Too many attempts. Please wait a few seconds and try again.',
   msgNetwork: 'Network error — please check your connection and try again.',
   success: 'Payment received — thank you! Your license key is on your Gumroad receipt and in the e-mail from Gumroad. Paste it below to switch Pro on.',

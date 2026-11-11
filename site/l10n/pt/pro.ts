@@ -32,7 +32,7 @@ export const PRO_PT: ProCopy = {
   yearlyNote: 'Dá US$ 3 por mês: 40% de desconto.',
   lifetimeNote: 'Preço de lançamento para os 100 primeiros compradores. Pague uma vez e fique com ele para sempre.',
   buy: 'Assinar o Pro',
-  soon: 'O Pro está quase pronto. As vendas abrem em alguns dias; até lá, tudo nesta página continua grátis.',
+  soon: 'O pagamento está temporariamente indisponível. Tente novamente daqui a pouco. Todo o resto desta página continua funcionando.',
   checkoutHint:
     'Os pagamentos são processados pela <a href="https://gumroad.com" rel="noopener">Gumroad</a> (cartão, Apple Pay, Google Pay). Sua chave de licença aparece na página do recibo logo após o pagamento e também chega por e-mail da Gumroad; nenhuma conta é criada no Xtracticle.',
   keyH2: 'Já tem uma chave? Digite aqui',
@@ -45,7 +45,7 @@ export const PRO_PT: ProCopy = {
   msgInvalid: 'Esta chave não foi reconhecida. Confira se há erros de digitação ou se a assinatura terminou.',
   msgLimit: 'Esta chave já foi ativada vezes demais. Se você é o comprador, fale conosco pelo GitHub ou com @DvciAhmet no X e nós a redefinimos.',
   msgUpstream: 'O servidor de licenças não respondeu. Tente novamente em um minuto.',
-  msgUnavailable: 'O Pro ainda não abriu. Volte em alguns dias.',
+  msgUnavailable: 'A ativação do Pro está temporariamente indisponível. Tente novamente daqui a pouco.',
   msgRate: 'Muitas tentativas. Aguarde alguns segundos e tente de novo.',
   msgNetwork: 'Erro de rede: verifique sua conexão e tente novamente.',
   success: 'Pagamento recebido, obrigado! Sua chave de licença está no recibo da Gumroad e no e-mail da Gumroad. Cole-a abaixo para ativar o Pro.',
