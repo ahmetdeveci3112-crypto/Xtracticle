@@ -38,9 +38,9 @@ const home: SitePage = {
   isHome: true,
   title: 'X Article Downloader: X Article to PDF, Markdown & EPUB | Xtracticle',
   description:
-    'Download X (Twitter) articles, threads and posts as PDF, Markdown, EPUB/Kindle or text. Paste a link, get a clean PDF with images in seconds — free, no login.',
+    'Download X (Twitter) articles, threads and posts as shareable images, PDF, Markdown, EPUB/Kindle or text. Paste a link, get a clean image card or PDF in seconds — free, no login.',
   h1: 'X Article Downloader',
-  sub: 'Download X (Twitter) articles, threads and posts as PDF, Markdown, EPUB or text — free, no login.',
+  sub: 'Download X (Twitter) articles, threads and posts as shareable images, PDF, Markdown, EPUB or text — free, no login.',
   primary: 'md',
   nav: 'X Article Downloader',
   sections: `
@@ -49,8 +49,8 @@ const home: SitePage = {
   ${steps([
     '<strong>Copy the post link</strong> — on X tap <em>Share → Copy link</em>. Any post of a thread works.',
     '<strong>Paste it above</strong> — Xtracticle fetches the article, thread or post in a second or two.',
-    '<strong>Pick a format</strong> — PDF, Markdown, EPUB/Kindle, ZIP with images or plain text.',
-    '<strong>Done</strong> — or copy it, send it to Obsidian, or listen to it read aloud.',
+    '<strong>Pick a format</strong> — Share Image (PNG), PDF, Markdown, EPUB/Kindle, ZIP with images or plain text.',
+    '<strong>Done</strong> — share the image card straight from your phone, copy it, send it to Obsidian, or listen to it read aloud.',
   ])}
   <p>Want to see the result first? <a href="${EXAMPLE}">Open an example X article</a>.</p>
   <p>Looking for one thing? <a href="/x-article-to-pdf">Convert an X article to PDF</a>, <a href="/unroll-twitter-thread">unroll a Twitter thread</a>
@@ -60,6 +60,7 @@ const home: SitePage = {
 <section>
   <h2>Every format you need</h2>
   <div class="xt-grid">
+    <div><h3>Shareable Image (PNG)</h3><p>Mobile-friendly long image or multi-card carousel with author header, timestamp, source URL, QR code and Light / Dark / Warm themes.</p></div>
     <div><h3><a href="/x-article-to-pdf">X article to PDF</a></h3><p>A4, print-ready, images inline, source link and page numbers on every page.</p></div>
     <div><h3><a href="/x-article-to-markdown">X article to Markdown</a></h3><p>Headings, bold, links, lists, quotes and images preserved. Optional YAML front-matter.</p></div>
     <div><h3><a href="/x-article-to-epub">X article to EPUB / Kindle</a></h3><p>Read long articles on Kindle, Kobo or Apple Books — images embedded.</p></div>
@@ -89,6 +90,7 @@ ${shortcuts('en')}
     <thead><tr><th></th><th>Xtracticle</th><th>Thread Reader App</th><th>Screenshots / copy-paste</th></tr></thead>
     <tbody>
       <tr><td>X Articles (long-form)</td><td>✅ Full formatting</td><td>❌ Not supported</td><td>⚠️ Manual</td></tr>
+      <tr><td>Shareable image card (PNG)</td><td>✅ Long image &amp; multi-card</td><td>❌</td><td>⚠️ Cropped screenshots</td></tr>
       <tr><td>Free PDF</td><td>✅</td><td>Premium ($3/mo)</td><td>⚠️ Images only</td></tr>
       <tr><td>Markdown / Obsidian</td><td>✅</td><td>❌</td><td>❌</td></tr>
       <tr><td>EPUB / Kindle</td><td>✅</td><td>❌</td><td>❌</td></tr>

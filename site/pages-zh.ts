@@ -8,21 +8,21 @@ const home: SitePage = {
   file: 'zh/index.html',
   lang: 'zh',
   isHome: true,
-  title: 'X 文章下载器：推特长文、推文串保存为 PDF 和 Markdown | Xtracticle',
+  title: 'X 文章下载器：推特长文、推文串保存为分享长图、PDF 和 Markdown | Xtracticle',
   description:
-    '免费下载 X（推特）文章、推文串和帖子，支持导出 PDF、Markdown、EPUB/Kindle 和纯文本。粘贴链接即可获得带图片的干净文件，无需登录，开源。',
+    '免费下载 X（推特）文章、推文串和帖子，支持生成高清分享长图、导出 PDF、Markdown、EPUB/Kindle 和纯文本。粘贴链接即可一键生成精美分享卡片或带图文档，无需登录，开源。',
   h1: 'X 文章下载器',
-  sub: '下载 X（推特）文章、推文串和帖子，支持 PDF、Markdown、EPUB 和纯文本——免费，无需登录。',
+  sub: '下载 X（推特）文章、推文串和帖子，支持生成高清分享图片、PDF、Markdown、EPUB 和纯文本——免费，无需登录。',
   primary: 'md',
   nav: 'X 文章下载器',
   sections: `
 <section>
-  <h2>如何下载 X 文章</h2>
+  <h2>如何下载或分享 X 文章与推文</h2>
   ${steps([
-    '<strong>复制帖子链接</strong>——在 X 上点击 <em>分享 → 复制链接</em>。推文串中的任意一条帖子都可以。',
+    '<strong>复制帖子链接</strong>——在 X 上点击 <em>分享 → 复制链接</em>（或直接通过 iOS 快捷指令分享）。推文串中的任意一条帖子都可以。',
     '<strong>粘贴到上方输入框</strong>——Xtracticle 只需一两秒就能获取文章、推文串或帖子。',
-    '<strong>选择格式</strong>——PDF、Markdown、EPUB/Kindle、ZIP + 图片或纯文本。',
-    '<strong>完成</strong>——也可以直接复制、发送到 Obsidian，或让它朗读给你听。',
+    '<strong>选择格式</strong>——生成分享图（PNG 长图/多图卡片）、PDF、Markdown、EPUB/Kindle、ZIP + 图片或纯文本。',
+    '<strong>完成</strong>——在手机上一键直接转发高清图片卡片、复制到剪贴板、发送到 Obsidian，或让它朗读给你听。',
   ])}
   <p>想先看看效果？<a href="${EXAMPLE}">打开一篇 X 文章示例</a>。</p>
 </section>
@@ -30,6 +30,7 @@ const home: SitePage = {
 <section>
   <h2>你需要的格式，一应俱全</h2>
   <div class="xt-grid">
+    <div><h3>生成分享图片（PNG）</h3><p>专为手机阅读定制的高清长图或分页多图卡片，头部带原作者、时间与原帖地址，底部带二维码，支持浅色/深色/暖色护眼主题与 iOS 原生一键转发。</p></div>
     <div><h3><a href="/zh/x-article-to-pdf">X 文章转 PDF</a></h3><p>A4 版式，可直接打印，图片内嵌，每页都有来源链接和页码。</p></div>
     <div><h3><a href="/zh/x-article-to-markdown">X 文章转 Markdown</a></h3><p>保留标题、粗体、链接、列表、引用和图片，可选添加 YAML front-matter。</p></div>
     <div><h3><a href="/zh/x-article-to-epub">X 文章转 EPUB / Kindle</a></h3><p>在 Kindle、Kobo 或 Apple Books 上阅读长文——图片已内嵌。</p></div>
@@ -56,6 +57,7 @@ ${shortcuts('zh')}
     <thead><tr><th></th><th>Xtracticle</th><th>Thread Reader App</th><th>截图 / 复制粘贴</th></tr></thead>
     <tbody>
       <tr><td>X 文章（长文）</td><td>✅ 完整保留格式</td><td>❌ 不支持</td><td>⚠️ 需手动处理</td></tr>
+      <tr><td>高清分享长图 / 卡片（PNG）</td><td>✅ 一图到底 &amp; 多主题</td><td>❌</td><td>⚠️ 需多张截图拼接</td></tr>
       <tr><td>免费 PDF</td><td>✅</td><td>Premium（3 美元/月）</td><td>⚠️ 只有图片</td></tr>
       <tr><td>Markdown / Obsidian</td><td>✅</td><td>❌</td><td>❌</td></tr>
       <tr><td>EPUB / Kindle</td><td>✅</td><td>❌</td><td>❌</td></tr>
