@@ -53,6 +53,7 @@ export const PRO_ES: ProCopy = {
   activeIn: 'activo en este navegador',
   nowH3: 'Qué puedes hacer ahora',
   now: [
+    { title: 'Vigilar una cuenta', text: 'Guarda el texto de las publicaciones que borra una cuenta y te avisa por correo o feed. Configúralo abajo', href: '#xt-watch' },
     { title: 'Buscador de tweets borrados', text: 'La lista completa de publicaciones archivadas de cualquier cuenta, con exportación a CSV', href: '/es/buscador-de-tweets-borrados' },
     { title: 'Modo por lotes', text: 'Hasta 200 enlaces en un solo ZIP', href: '/es/?mode=batch' },
     { title: 'Clave MCP / API', text: 'Usa tu clave de licencia como token Bearer para tener límites más altos', href: '/es/servidor-mcp' },

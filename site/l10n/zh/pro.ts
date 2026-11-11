@@ -53,6 +53,7 @@ export const PRO_ZH: ProCopy = {
   activeIn: '已在此浏览器中启用',
   nowH3: '现在你可以',
   now: [
+    { title: '监控账号', text: '保存账号删除的帖子原文，并通过邮件或订阅源通知你。在下方设置', href: '#xt-watch' },
     { title: '已删除推文查找', text: '查看任意账号的完整存档帖子列表，并导出 CSV', href: '/zh/deleted-tweet-finder' },
     { title: '批量模式', text: '一个 ZIP 最多 200 个链接', href: '/zh/?mode=batch' },
     { title: 'MCP / API 密钥', text: '把许可证密钥作为 Bearer 令牌使用，享受更高的额度', href: '/zh/mcp-server' },

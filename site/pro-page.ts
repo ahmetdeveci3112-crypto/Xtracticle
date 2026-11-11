@@ -246,6 +246,10 @@ if(!add&&e==='not_found')return WC.err.generic;var t=e&&WC.err.hasOwnProperty(e)
 function wcountUp(){var full=wlim>0&&wcount>=wlim;wcnt.textContent=wlim?tpl(WC.count,{n:wcount,limit:wlim}):'';
 wfull.hidden=!full;wfull.textContent=full?tpl(WC.full,{limit:wlim}):'';wfb.disabled=full;wfi.disabled=full;wfm.disabled=full;
 wst.hidden=wcount>0;if(!wcount)wst.textContent=WC.empty;}
+function wprefill(){if(wcount||wfi.value||wfi.disabled)return;var lh='';try{lh=localStorage.getItem('xt_last_handle')||''}catch(e){}
+lh=clean(lh);if(/^[A-Za-z0-9_]{1,15}$/.test(lh)){wfi.value='@'+lh;g('watch_prefill');}}
+document.querySelectorAll('a[href="#xt-watch"]').forEach(function(a){a.addEventListener('click',function(e){if(!wb)return;e.preventDefault();g('watch_now_click',{prefilled:!!(wfi&&wfi.value)});
+try{wb.scrollIntoView({block:'start'})}catch(x){}if(!wf.hidden&&!wfi.disabled)try{wfi.focus({preventScroll:true})}catch(x){}});});
 function wunavail(){wun.hidden=false;wst.hidden=true;wf.hidden=true;wcnt.textContent='';wl.innerHTML='';}
 function wclear(){if(!wb)return;wl.innerHTML='';wcount=0;wlim=0;wcnt.textContent='';wsay(wfo,'',true);wf.hidden=true;wst.hidden=false;wst.textContent=WC.loading;}
 function wload(){if(!wb)return;wun.hidden=true;wst.hidden=false;wst.textContent=WC.loading;
@@ -253,6 +257,7 @@ api('GET','/api/watch').then(function(x){
 if(x.s===503&&x.b&&x.b.error==='watch_unavailable'){wunavail();return;}
 if(x.s!==200||!x.b||!x.b.watches){wst.textContent=x.s===402||x.s===401?WC.err.pro_required:WC.failed;return;}
 wlim=x.b.limit||0;wl.innerHTML='';wcount=0;x.b.watches.forEach(function(w){wl.appendChild(item(w));wcount++;});wf.hidden=false;wcountUp();
+wprefill();
 if(!wviewed){wviewed=true;g('watch_view',{count:wcount,limit:wlim});}
 }).catch(function(){wst.textContent=WC.failed;});}
 function copy(t,b,k){function done(){b.textContent=WC.copied;setTimeout(function(){b.textContent=WC.copy},2000);g('watch_feed_copy',{kind:k});}
@@ -617,6 +622,7 @@ export const PRO_EN: ProCopy = {
   activeIn: 'active in this browser',
   nowH3: 'What you can do now',
   now: [
+    { title: 'Watch an account', text: 'Keeps the text of posts an account deletes and tells you by e-mail or feed. Set it up below', href: '#xt-watch' },
     { title: 'Deleted Tweet Finder', text: 'The full archived-post list of any account, with CSV export', href: '/deleted-tweet-finder' },
     { title: 'Batch mode', text: 'Up to 200 links in one ZIP', href: '/?mode=batch' },
     { title: 'MCP / API key', text: 'Use your license key as a Bearer token for higher limits', href: '/mcp-server' },

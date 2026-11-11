@@ -53,6 +53,7 @@ export const PRO_JA: ProCopy = {
   activeIn: 'このブラウザで有効',
   nowH3: '今すぐできること',
   now: [
+    { title: 'アカウントを監視', text: 'アカウントが削除した投稿の本文を保存し、メールやフィードでお知らせします。下で設定できます', href: '#xt-watch' },
     { title: '削除されたツイート検索', text: 'どのアカウントでもアーカイブ済み投稿を全件表示、CSVで書き出し', href: '/ja/deleted-tweet-finder' },
     { title: '一括モード', text: '最大200リンクを1つのZIPに', href: '/ja/?mode=batch' },
     { title: 'MCP / APIキー', text: 'ライセンスキーをBearerトークンとして使うと上限が引き上げられます', href: '/ja/mcp-server' },

@@ -53,6 +53,7 @@ export const PRO_TR: ProCopy = {
   activeIn: 'bu tarayıcıda etkin',
   nowH3: 'Şimdi neler yapabilirsiniz?',
   now: [
+    { title: 'Bir hesabı takip et', text: 'Hesabın sildiği gönderilerin metnini saklar, size e-posta veya akışla bildirir. Aşağıdan kurun', href: '#xt-watch' },
     { title: 'Silinen Tweetleri Bulma', text: 'Herhangi bir hesabın arşivlenmiş gönderilerinin tam listesi ve CSV dışa aktarma', href: '/tr/silinen-tweetleri-bulma' },
     { title: 'Toplu mod', text: 'Tek ZIP’te 200 linke kadar', href: '/tr/?mode=batch' },
     { title: 'MCP / API anahtarı', text: 'Daha yüksek sınırlar için lisans anahtarınızı Bearer token olarak kullanın', href: '/tr/mcp-sunucusu' },

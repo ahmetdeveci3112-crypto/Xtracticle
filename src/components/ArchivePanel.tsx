@@ -222,6 +222,11 @@ export default function ArchivePanel({
   }, [handle, attempt, pro]);
 
   const data = state.kind === 'done' ? state.data : null;
+  // Remembered only in this browser: /pro pre-fills its Watch form with the last account looked up here.
+  useEffect(() => {
+    if (!data) return;
+    try { localStorage.setItem('xt_last_handle', handle); } catch { /* private mode */ }
+  }, [data, handle]);
   // "Showing 50 of N": only when there really are more than we list.
   const showTeaser = !pro && !!data && (data.total > data.shown || (data.truncated && data.shown >= 50));
   useEffect(() => {

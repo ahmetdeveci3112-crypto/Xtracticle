@@ -53,6 +53,7 @@ export const PRO_PT: ProCopy = {
   activeIn: 'ativo neste navegador',
   nowH3: 'O que você pode fazer agora',
   now: [
+    { title: 'Monitorar uma conta', text: 'Guarda o texto dos posts que uma conta apaga e avisa você por e-mail ou feed. Configure abaixo', href: '#xt-watch' },
     { title: 'Localizador de tweets apagados', text: 'A lista completa de posts arquivados de qualquer conta, com exportação em CSV', href: '/pt/localizador-de-tweets-apagados' },
     { title: 'Modo em lote', text: 'Até 200 links em um único ZIP', href: '/pt/?mode=batch' },
     { title: 'Chave MCP / API', text: 'Use sua chave de licença como token Bearer para ter limites maiores', href: '/pt/servidor-mcp' },
