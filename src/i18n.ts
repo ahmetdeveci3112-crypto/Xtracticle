@@ -79,6 +79,16 @@ const en = {
   watchTrialSent: 'Check your inbox at {email} — confirm to start watching @{handle}.',
   watchTrialSentHint: 'The link works for 24 hours. Nothing is watched or mailed until you click it.',
   watchTrialAfter: 'Afterwards, Pro keeps watching up to 5 accounts from $3/month.',
+  /** Under the "check your inbox" note and with trial_pending: {sender} is the From address. */
+  watchTrialFrom: 'The e-mail comes from {sender}. If it is not in your inbox, check Spam or Promotions.',
+  watchTrialResend: 'Resend e-mail',
+  watchTrialResent: 'Sent again to {email}.',
+  watchTrialResendErr: {
+    resend_wait: 'Please wait two minutes before asking for another e-mail.',
+    resend_limit: 'The confirmation e-mail was already sent three times. If none arrived, check the address or try another one.',
+    not_pending: 'There is no unconfirmed trial request for this address. It may be confirmed already, or the request expired: start the trial again.',
+    generic: 'The e-mail could not be sent again. Please try again in a minute.',
+  },
   watchTrialErr: {
     trial_used: 'This address has already had its free trial (one per address).',
     trial_pending: 'We already sent a confirmation link to this address. Check your inbox and spam folder; the link works for 24 hours.',
@@ -226,6 +236,15 @@ const tr: typeof en = {
   watchTrialSent: 'Gelen kutunuza bakın ({email}): linki onayladığınızda @{handle} izlenmeye başlar.',
   watchTrialSentHint: 'Link 24 saat geçerlidir. Siz tıklayana kadar hiçbir hesap izlenmez, hiçbir e-posta gönderilmez.',
   watchTrialAfter: 'Deneme bitince Pro, ayda 3 $’dan başlayan fiyatla 5 hesaba kadar izlemeyi sürdürür.',
+  watchTrialFrom: 'E-posta {sender} adresinden gelir. Gelen kutunuzda yoksa Spam veya Promosyonlar klasörüne bakın.',
+  watchTrialResend: 'E-postayı tekrar gönder',
+  watchTrialResent: '{email} adresine tekrar gönderildi.',
+  watchTrialResendErr: {
+    resend_wait: 'Yeni bir e-posta istemeden önce lütfen iki dakika bekleyin.',
+    resend_limit: 'Onay e-postası zaten üç kez gönderildi. Hiçbiri gelmediyse adresi kontrol edin ya da başka bir adres deneyin.',
+    not_pending: 'Bu adres için onay bekleyen bir deneme isteği yok. İstek zaten onaylanmış ya da süresi dolmuş olabilir: denemeyi yeniden başlatın.',
+    generic: 'E-posta tekrar gönderilemedi. Lütfen bir dakika sonra tekrar deneyin.',
+  },
   watchTrialErr: {
     trial_used: 'Bu adresle ücretsiz deneme zaten kullanıldı (her adrese bir deneme).',
     trial_pending: 'Bu adrese zaten bir onay linki gönderdik. Gelen kutunuza ve spam klasörüne bakın; link 24 saat geçerlidir.',
@@ -373,6 +392,15 @@ const es: typeof en = {
   watchTrialSent: 'Revisa tu bandeja de entrada ({email}): confirma y empezaremos a seguir a @{handle}.',
   watchTrialSentHint: 'El enlace vale 24 horas. No se sigue ninguna cuenta ni se envía nada hasta que hagas clic.',
   watchTrialAfter: 'Después, Pro sigue vigilando hasta 5 cuentas desde 3 $/mes.',
+  watchTrialFrom: 'El correo llega desde {sender}. Si no está en la bandeja de entrada, revisa Spam o Promociones.',
+  watchTrialResend: 'Reenviar el correo',
+  watchTrialResent: 'Enviado de nuevo a {email}.',
+  watchTrialResendErr: {
+    resend_wait: 'Espera dos minutos antes de pedir otro correo.',
+    resend_limit: 'El correo de confirmación ya se envió tres veces. Si no ha llegado ninguno, revisa la dirección o prueba con otra.',
+    not_pending: 'No hay ninguna solicitud de prueba sin confirmar para esta dirección. Puede que ya esté confirmada o que haya caducado: vuelve a empezar la prueba.',
+    generic: 'No se pudo reenviar el correo. Inténtalo de nuevo en un minuto.',
+  },
   watchTrialErr: {
     trial_used: 'Esta dirección ya usó su prueba gratuita (una por dirección).',
     trial_pending: 'Ya enviamos un enlace de confirmación a esta dirección. Revisa la bandeja de entrada y el spam; el enlace vale 24 horas.',
@@ -520,6 +548,15 @@ const pt: typeof en = {
   watchTrialSent: 'Veja sua caixa de entrada ({email}): confirme para começar a acompanhar @{handle}.',
   watchTrialSentHint: 'O link vale por 24 horas. Nada é acompanhado nem enviado até você clicar.',
   watchTrialAfter: 'Depois, o Pro continua acompanhando até 5 contas a partir de US$ 3/mês.',
+  watchTrialFrom: 'O e-mail vem de {sender}. Se não estiver na caixa de entrada, veja Spam ou Promoções.',
+  watchTrialResend: 'Reenviar e-mail',
+  watchTrialResent: 'Enviado de novo para {email}.',
+  watchTrialResendErr: {
+    resend_wait: 'Espere dois minutos antes de pedir outro e-mail.',
+    resend_limit: 'O e-mail de confirmação já foi enviado três vezes. Se nenhum chegou, confira o endereço ou tente outro.',
+    not_pending: 'Não há pedido de teste sem confirmação para este endereço. Ele pode já ter sido confirmado ou ter expirado: comece o teste de novo.',
+    generic: 'Não foi possível reenviar o e-mail. Tente de novo em um minuto.',
+  },
   watchTrialErr: {
     trial_used: 'Este endereço já usou o teste grátis (um por endereço).',
     trial_pending: 'Já enviamos um link de confirmação para este endereço. Veja a caixa de entrada e o spam; o link vale por 24 horas.',
@@ -667,6 +704,15 @@ const ja: typeof en = {
   watchTrialSent: '{email} の受信トレイをご確認ください。確認すると @{handle} のウォッチが始まります。',
   watchTrialSentHint: 'リンクの有効期限は24時間です。クリックするまで、ウォッチもメール送信も行いません。',
   watchTrialAfter: 'お試し後は、Pro（月3ドルから）で最大5アカウントのウォッチを続けられます。',
+  watchTrialFrom: 'メールは {sender} から届きます。受信トレイに見当たらない場合は、迷惑メールフォルダやプロモーションタブをご確認ください。',
+  watchTrialResend: 'メールを再送する',
+  watchTrialResent: '{email} に再送しました。',
+  watchTrialResendErr: {
+    resend_wait: '再送は2分ほど待ってからお試しください。',
+    resend_limit: '確認メールはすでに3回送信しました。届いていない場合は、アドレスをご確認いただくか、別のアドレスをお試しください。',
+    not_pending: 'このアドレスで確認待ちのお試しリクエストはありません。すでに確認済みか、有効期限が切れた可能性があります。もう一度お試しを始めてください。',
+    generic: 'メールを再送できませんでした。1分ほどしてからもう一度お試しください。',
+  },
   watchTrialErr: {
     trial_used: 'このメールアドレスでは無料お試しをすでに利用済みです（1アドレスにつき1回）。',
     trial_pending: 'このアドレスには確認リンクを送信済みです。受信トレイと迷惑メールフォルダをご確認ください（有効期限は24時間）。',
@@ -814,6 +860,15 @@ const zh: typeof en = {
   watchTrialSent: '请查看 {email} 的收件箱，确认后即开始监控 @{handle}。',
   watchTrialSentHint: '链接 24 小时内有效。点击之前，不会监控任何账号，也不会发送任何邮件。',
   watchTrialAfter: '试用结束后，Pro 每月 3 美元起，可继续监控最多 5 个账号。',
+  watchTrialFrom: '邮件来自 {sender}。如果收件箱里没有，请查看垃圾邮件或推广邮件文件夹。',
+  watchTrialResend: '重新发送 e-mail',
+  watchTrialResent: '已重新发送到 {email}。',
+  watchTrialResendErr: {
+    resend_wait: '请等两分钟后再请求新的邮件。',
+    resend_limit: '确认邮件已经发送了三次。如果一封都没收到，请检查地址或换一个地址。',
+    not_pending: '这个地址没有待确认的试用申请。可能已经确认过，或者申请已过期：请重新开始试用。',
+    generic: '无法重新发送邮件。请过一分钟再试。',
+  },
   watchTrialErr: {
     trial_used: '这个邮箱地址已经用过免费试用（每个地址一次）。',
     trial_pending: '我们已向这个地址发送过确认链接。请查看收件箱和垃圾邮件文件夹；链接 24 小时内有效。',
@@ -961,6 +1016,15 @@ const ar: typeof en = {
   watchTrialSent: 'افحص بريدك الوارد ({email}): أكّد لتبدأ مراقبة @{handle}.',
   watchTrialSentHint: 'الرابط صالح لمدة 24 ساعة. لا نراقب أي حساب ولا نرسل أي بريد قبل أن تنقر عليه.',
   watchTrialAfter: 'بعد التجربة، يواصل Pro مراقبة ما يصل إلى 5 حسابات بدءًا من 3 دولارات شهريًا.',
+  watchTrialFrom: 'تصل الرسالة من {sender}. إذا لم تجدها في البريد الوارد، فافحص مجلد الرسائل غير المرغوب فيها أو العروض الترويجية.',
+  watchTrialResend: 'إعادة إرسال الرسالة',
+  watchTrialResent: 'أُعيد الإرسال إلى {email}.',
+  watchTrialResendErr: {
+    resend_wait: 'انتظر دقيقتين قبل طلب رسالة أخرى.',
+    resend_limit: 'أُرسلت رسالة التأكيد ثلاث مرات بالفعل. إذا لم تصلك أي منها، فتحقق من العنوان أو جرّب عنوانًا آخر.',
+    not_pending: 'لا يوجد طلب تجربة غير مؤكد لهذا العنوان. ربما تأكد بالفعل أو انتهت صلاحيته: ابدأ التجربة من جديد.',
+    generic: 'تعذّرت إعادة إرسال الرسالة. حاول مجددًا بعد دقيقة.',
+  },
   watchTrialErr: {
     trial_used: 'استُخدمت التجربة المجانية لهذا العنوان من قبل (تجربة واحدة لكل عنوان).',
     trial_pending: 'أرسلنا بالفعل رابط تأكيد إلى هذا العنوان. افحص البريد الوارد ومجلد الرسائل غير المرغوب فيها؛ الرابط صالح لمدة 24 ساعة.',

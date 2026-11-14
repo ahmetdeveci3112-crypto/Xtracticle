@@ -1,5 +1,5 @@
 import type { CfEmailBinding, WatchEnv } from './db';
-import { PRO_PATHS, isMailLang, mailCopy, type MailCopy } from './mail-copy';
+import { FINDER_PATHS, PRO_PATHS, isMailLang, mailCopy, type MailCopy } from './mail-copy';
 
 /**
  * Outbound e-mail for Watch (verification links, daily digests). Cloudflare Email Service
@@ -137,6 +137,13 @@ const at = (handle: string) => '@' + handle;
 /** Arabic mail reads right to left. */
 const dirWrap = (lang: string | null | undefined, html: string) => (lang === 'ar' ? `<div dir="rtl" style="text-align:right">${html}</div>` : html);
 const bold = (handle: string) => `<b>@${escapeHtml(handle)}</b>`;
+/** Escapes a copy string built with '\u0000' in place of the handle and puts the bold handle there. */
+const withBold = (s: string, handle: string) => escapeHtml(s).replace('\u0000', bold(handle));
+const utc = (iso: string) => iso.slice(0, 16).replace('T', ' ') + ' UTC';
+/** The Pro line of the trial e-mails: link text, then the prices (yearly first). */
+const proText = (c: MailCopy, cta: string, pro: string) => [`${cta}: ${pro}`, c.proPrice];
+const proHtml = (c: MailCopy, cta: string, pro: string) =>
+  `<p><a href="${escapeHtml(pro)}">${escapeHtml(cta)}</a><br><span style="color:#666;font-size:13px">${escapeHtml(c.proPrice)}</span></p>`;
 
 /** The event title in the reader's language (the stored title is English). */
 function itemTitle(i: DigestItem, c: MailCopy): string {
@@ -222,14 +229,14 @@ export function trialReminderEmail(
   const text = [
     c.reminderIntro(at(handle), daysLeft, when, caughtText),
     '',
-    `${c.reminderCta(at(handle))}: ${pro}`,
+    ...proText(c, c.reminderCta(at(handle)), pro),
     '',
     `${c.reminderManage}: ${manage}`,
     `${c.stopEmails}: ${unsub}`,
   ].join('\n');
   const html =
     `<p>${escapeHtml(c.reminderIntro('\u0000', daysLeft, when, caughtText)).replace('\u0000', bold(handle))}</p>` +
-    `<p><a href="${escapeHtml(pro)}">${escapeHtml(c.reminderCta(at(handle)))}</a></p>` +
+    proHtml(c, c.reminderCta(at(handle)), pro) +
     `<p style="color:#666;font-size:13px"><a href="${escapeHtml(manage)}">${escapeHtml(c.manageTrial)}</a> · <a href="${escapeHtml(unsub)}">${escapeHtml(c.stopEmails)}</a></p>`;
   return { subject: c.reminderSubject(at(handle), daysLeft), text, html: dirWrap(lang, html), headers: unsubHeaders(unsub) };
 }
@@ -242,14 +249,107 @@ export function trialEndedEmail(origin: string, handle: string, items: DigestIte
   const lines = [c.endedIntro(at(handle)), '', c.endedCaught(caught, items.length > 0), ''];
   for (const i of items) lines.push(...itemLines(i, c));
   if (total > items.length) lines.push(c.more(total - items.length), '');
-  lines.push(`${c.endedCta(at(handle))}: ${pro}`, c.endedNote(at(handle)), '', `${c.stopEmails}: ${unsub}`);
+  lines.push(...proText(c, c.endedCta(at(handle)), pro), c.endedNote(at(handle)), '', `${c.stopEmails}: ${unsub}`);
   const html =
     `<p>${escapeHtml(c.endedIntro('\u0000')).replace('\u0000', bold(handle))}</p>` +
     `<p>${escapeHtml(c.endedCaught(caught, items.length > 0))}</p>` +
     (items.length ? `<ul style="padding-left:18px">${items.map(i => itemBlock(i, c)).join('')}</ul>` : '') +
     (total > items.length ? `<p>${escapeHtml(c.more(total - items.length))}</p>` : '') +
     `<p><a href="${escapeHtml(pro)}">${escapeHtml(c.endedCta(at(handle)))}</a><br>` +
+    `<span style="color:#666;font-size:13px">${escapeHtml(c.proPrice)}</span><br>` +
     `<span style="color:#666;font-size:13px">${escapeHtml(c.endedNote(at(handle)))}</span></p>` +
     `<p style="color:#666;font-size:13px"><a href="${escapeHtml(unsub)}">${escapeHtml(c.stopEmails)}</a></p>`;
   return { subject: c.endedSubject(at(handle)), text: lines.join('\n'), html: dirWrap(lang, html), headers: unsubHeaders(unsub) };
+}
+
+/** Where the visitor looks for posts deleted before the trial: the Deleted Tweet Finder with the account's archive opened (`?url=`). */
+export const finderUrl = (origin: string, handle: string, lang?: string | null) =>
+  `${origin}${FINDER_PATHS[isMailLang(lang) ? lang : 'en']}?url=${encodeURIComponent(`https://x.com/${handle}`)}`;
+
+/** Right after verification: what is watched, how often, what triggers an e-mail, and where to look for older deletions. */
+export function trialWelcomeEmail(
+  origin: string,
+  handle: string,
+  mode: 'deleted' | 'new' | 'both',
+  posts: number,
+  endsAt: string,
+  manageToken: string,
+  unsubToken: string,
+  lang?: string,
+): Omit<EmailMessage, 'to'> {
+  const c = mailCopy(lang);
+  const unsub = `${origin}/api/watch/unsubscribe/${unsubToken}`;
+  const pro = `${origin}${proUrlPath(lang)}`;
+  const manage = trialManageUrl(origin, manageToken, lang);
+  const finder = finderUrl(origin, handle, lang);
+  const when = utc(endsAt);
+  const h = at(handle);
+  const trigger = c.welcomeTrigger[mode] || c.welcomeTrigger.both;
+  const text = [
+    c.welcomeIntro(h, when),
+    '',
+    c.welcomeBaseline(h, posts),
+    '',
+    trigger(h),
+    c.welcomeQuiet,
+    '',
+    c.welcomeOlder(h),
+    `${c.finderCta(h)}: ${finder}`,
+    '',
+    ...proText(c, c.proCta(h), pro),
+    '',
+    `${c.manageTrial}: ${manage}`,
+    `${c.stopEmails}: ${unsub}`,
+  ].join('\n');
+  const html =
+    `<p>${withBold(c.welcomeIntro('\u0000', when), handle)}</p>` +
+    `<p>${withBold(c.welcomeBaseline('\u0000', posts), handle)}</p>` +
+    `<p>${withBold(trigger('\u0000'), handle)}<br>${escapeHtml(c.welcomeQuiet)}</p>` +
+    `<p>${withBold(c.welcomeOlder('\u0000'), handle)}<br><a href="${escapeHtml(finder)}">${escapeHtml(c.finderCta(h))}</a></p>` +
+    proHtml(c, c.proCta(h), pro) +
+    `<p style="color:#666;font-size:13px"><a href="${escapeHtml(manage)}">${escapeHtml(c.manageTrial)}</a> · <a href="${escapeHtml(unsub)}">${escapeHtml(c.stopEmails)}</a></p>`;
+  return { subject: c.welcomeSubject(h), text, html: dirWrap(lang, html), headers: unsubHeaders(unsub) };
+}
+
+/** Day 7: posts tracked, last check, what was caught so far (up to `items`, of `total`), days left. */
+export function trialCheckinEmail(
+  origin: string,
+  handle: string,
+  posts: number,
+  lastPolledAt: string | null,
+  items: DigestItem[],
+  total: number,
+  daysLeft: number,
+  endsAt: string,
+  manageToken: string,
+  unsubToken: string,
+  lang?: string,
+): Omit<EmailMessage, 'to'> {
+  const c = mailCopy(lang);
+  const unsub = `${origin}/api/watch/unsubscribe/${unsubToken}`;
+  const pro = `${origin}${proUrlPath(lang)}`;
+  const manage = trialManageUrl(origin, manageToken, lang);
+  const h = at(handle);
+  const last = c.checkinLast(lastPolledAt ? utc(lastPolledAt) : null);
+  const left = c.checkinLeft(daysLeft, utc(endsAt));
+  const lines = [c.checkinIntro(h, posts), last, ''];
+  if (total > 0) {
+    lines.push(c.checkinCaught(c.events(total)), '');
+    for (const i of items) lines.push(...itemLines(i, c));
+    if (total > items.length) lines.push(c.more(total - items.length), '');
+  } else {
+    lines.push(c.checkinQuiet, '');
+  }
+  lines.push(left, '', ...proText(c, c.proCta(h), pro), '', `${c.manageTrial}: ${manage}`, `${c.stopEmails}: ${unsub}`);
+  const html =
+    `<p>${withBold(c.checkinIntro('\u0000', posts), handle)}<br>${escapeHtml(last)}</p>` +
+    (total > 0
+      ? `<p>${escapeHtml(c.checkinCaught(c.events(total)))}</p>` +
+        `<ul style="padding-left:18px">${items.map(i => itemBlock(i, c)).join('')}</ul>` +
+        (total > items.length ? `<p>${escapeHtml(c.more(total - items.length))}</p>` : '')
+      : `<p>${escapeHtml(c.checkinQuiet)}</p>`) +
+    `<p><b>${escapeHtml(left)}</b></p>` +
+    proHtml(c, c.proCta(h), pro) +
+    `<p style="color:#666;font-size:13px"><a href="${escapeHtml(manage)}">${escapeHtml(c.manageTrial)}</a> · <a href="${escapeHtml(unsub)}">${escapeHtml(c.stopEmails)}</a></p>`;
+  return { subject: c.checkinSubject(h), text: lines.join('\n'), html: dirWrap(lang, html), headers: unsubHeaders(unsub) };
 }

@@ -1,5 +1,5 @@
 /**
- * Text of the Watch trial e-mails (verification, digest, day-12 reminder, "trial ended") per site language.
+ * Text of the Watch trial e-mails (verification, welcome, digest, day-7 check-in, day-12 reminder, "trial ended") per site language.
  * The language is the page the trial was started from (trials.lang, migrations/0003_trial_lang.sql).
  * Paid-license digests have no language yet and use English.
  *
@@ -13,6 +13,17 @@ export const isMailLang = (v: unknown): v is MailLang => typeof v === 'string' &
 
 /** The /pro page of each language (same paths as site/pro-page.ts). */
 export const PRO_PATHS: Record<MailLang, string> = { en: '/pro', tr: '/tr/pro', es: '/es/pro', pt: '/pt/pro', ja: '/ja/pro', zh: '/zh/pro', ar: '/ar/pro' };
+
+/** The Deleted Tweet Finder page of each language (site/tools-extra.ts, site/l10n/<lang>/tools.ts). `?url=` opens an account's archive there. */
+export const FINDER_PATHS: Record<MailLang, string> = {
+  en: '/deleted-tweet-finder',
+  tr: '/tr/silinen-tweetleri-bulma',
+  es: '/es/buscador-de-tweets-borrados',
+  pt: '/pt/localizador-de-tweets-apagados',
+  ja: '/ja/deleted-tweet-finder',
+  zh: '/zh/deleted-tweet-finder',
+  ar: '/ar/deleted-tweet-finder',
+};
 
 export interface MailCopy {
   /** Event titles in the item list. */
@@ -53,6 +64,28 @@ export interface MailCopy {
   more: (n: number) => string;
   endedCta: (h: string) => string;
   endedNote: (h: string) => string;
+  /* Pro line (welcome, check-in, reminder, ended): prices of site/pro-page.ts, yearly first. */
+  proCta: (h: string) => string;
+  proPrice: string;
+  /* Welcome (right after verification). `when` is the end time, e.g. "2026-11-28 10:05 UTC". */
+  welcomeSubject: (h: string) => string;
+  welcomeIntro: (h: string, when: string) => string;
+  /** `n` = posts stored for the handle; 0 when the first poll has not run yet. */
+  welcomeBaseline: (h: string, n: number) => string;
+  welcomeTrigger: { deleted: (h: string) => string; new: (h: string) => string; both: (h: string) => string };
+  welcomeQuiet: string;
+  welcomeOlder: (h: string) => string;
+  /** Link text to the Deleted Tweet Finder for the handle. */
+  finderCta: (h: string) => string;
+  /* Day-7 check-in */
+  checkinSubject: (h: string) => string;
+  checkinIntro: (h: string, n: number) => string;
+  /** `when` is null when the account was not polled yet. */
+  checkinLast: (when: string | null) => string;
+  /** The list of events follows. */
+  checkinCaught: (caught: string) => string;
+  checkinQuiet: string;
+  checkinLeft: (d: number, when: string) => string;
 }
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
@@ -92,6 +125,28 @@ const en: MailCopy = {
   more: n => `… and ${n} more.`,
   endedCta: h => `Keep watching ${h} with Xtracticle Pro`,
   endedNote: h => `Events are kept for 90 days after they were detected, so everything above stays visible if you add ${h} with Pro.`,
+  proCta: h => `Keep watching ${h} after the trial with Xtracticle Pro`,
+  proPrice: '$36/year (= $3/month) or $5/month',
+  welcomeSubject: h => `Watch is on for ${h}`,
+  welcomeIntro: (h, when) => `Your free Xtracticle Watch trial for ${h} has started. It runs until ${when}.`,
+  welcomeBaseline: (h, n) =>
+    n > 0
+      ? `We stored the latest ${plural(n, 'post', 'posts')} of ${h} as the starting point. The account is checked about once an hour.`
+      : `The first check of ${h} runs within the next hour; the posts it finds become the starting point. After that the account is checked about once an hour.`,
+  welcomeTrigger: {
+    deleted: h => `You get an e-mail when ${h} deletes one of its posts.`,
+    new: h => `You get an e-mail when ${h} publishes a new post.`,
+    both: h => `You get an e-mail when ${h} deletes a post or publishes a new one.`,
+  },
+  welcomeQuiet: 'Changes are collected into one e-mail a day, sent around 07:00 UTC. No e-mail means nothing changed.',
+  welcomeOlder: h => `Watch sees changes from now on, not posts ${h} deleted before today. Some of those may still be in the Wayback Machine.`,
+  finderCta: h => `Look for posts ${h} deleted earlier`,
+  checkinSubject: h => `7 days of Watch for ${h}`,
+  checkinIntro: (h, n) => `Your Watch trial for ${h} has been running for 7 days. Watch tracks ${plural(n, 'post', 'posts')} of the account.`,
+  checkinLast: when => (when ? `Last check: ${when}.` : 'The account has not been checked yet.'),
+  checkinCaught: c => `So far it caught ${c}:`,
+  checkinQuiet: 'Nothing has changed so far. A quiet week is normal: most accounts rarely delete posts. Watch keeps checking about once an hour.',
+  checkinLeft: (d, when) => `${plural(d, 'day', 'days')} left; the trial ends ${when}.`,
 };
 
 const tr: MailCopy = {
@@ -129,6 +184,28 @@ const tr: MailCopy = {
   more: n => `… ve ${n} olay daha.`,
   endedCta: h => `${h} hesabını Xtracticle Pro ile izlemeye devam edin`,
   endedNote: h => `Olaylar yakalandıktan sonra 90 gün saklanır; ${h} hesabını Pro ile eklerseniz yukarıdakilerin hepsi görünmeye devam eder.`,
+  proCta: h => `Deneme bitince ${h} hesabını Xtracticle Pro ile izlemeye devam edin`,
+  proPrice: 'Yılda 36 $ (ayda 3 $’a denk gelir) ya da ayda 5 $',
+  welcomeSubject: h => `${h} için Watch açık`,
+  welcomeIntro: (h, when) => `${h} için ücretsiz Xtracticle Watch denemeniz başladı. Deneme ${when} tarihine kadar sürüyor.`,
+  welcomeBaseline: (h, n) =>
+    n > 0
+      ? `${h} hesabının son ${n} gönderisini başlangıç noktası olarak kaydettik. Hesap yaklaşık saatte bir kontrol ediliyor.`
+      : `${h} hesabının ilk kontrolü bir saat içinde yapılacak; bulunan gönderiler başlangıç noktası olacak. Sonrasında hesap yaklaşık saatte bir kontrol ediliyor.`,
+  welcomeTrigger: {
+    deleted: h => `${h} gönderilerinden birini sildiğinde size e-posta gelir.`,
+    new: h => `${h} yeni bir gönderi paylaştığında size e-posta gelir.`,
+    both: h => `${h} bir gönderisini sildiğinde ya da yeni bir gönderi paylaştığında size e-posta gelir.`,
+  },
+  welcomeQuiet: 'Değişiklikler günde tek bir e-postada toplanır ve 07:00 UTC civarında gönderilir. E-posta gelmemesi hiçbir şeyin değişmediği anlamına gelir.',
+  welcomeOlder: h => `Watch bundan sonraki değişiklikleri görür; ${h} hesabının bugünden önce sildiği gönderiler kapsam dışındadır. Bunların bir kısmı Wayback Machine’de duruyor olabilir.`,
+  finderCta: h => `${h} hesabının daha önce sildiği gönderileri arayın`,
+  checkinSubject: h => `${h} için Watch’ın ilk 7 günü`,
+  checkinIntro: (h, n) => `${h} için Watch denemeniz 7 gündür çalışıyor. Watch bu hesabın ${n} gönderisini takip ediyor.`,
+  checkinLast: when => (when ? `Son kontrol: ${when}.` : 'Hesap henüz kontrol edilmedi.'),
+  checkinCaught: c => `Şimdiye kadar ${c} yakaladı:`,
+  checkinQuiet: 'Şimdiye kadar hiçbir şey değişmedi. Sessiz bir hafta normaldir: çoğu hesap gönderilerini nadiren siler. Watch yaklaşık saatte bir kontrol etmeye devam ediyor.',
+  checkinLeft: (d, when) => `${d} gün kaldı; deneme ${when} tarihinde bitiyor.`,
 };
 
 const es: MailCopy = {
@@ -166,6 +243,28 @@ const es: MailCopy = {
   more: n => `… y ${n} más.`,
   endedCta: h => `Sigue vigilando ${h} con Xtracticle Pro`,
   endedNote: h => `Los eventos se guardan 90 días desde que se detectan, así que todo lo anterior seguirá visible si añades ${h} con Pro.`,
+  proCta: h => `Sigue vigilando ${h} después de la prueba con Xtracticle Pro`,
+  proPrice: '36 $/año (= 3 $/mes) o 5 $/mes',
+  welcomeSubject: h => `Watch ya vigila ${h}`,
+  welcomeIntro: (h, when) => `Tu prueba gratuita de Xtracticle Watch para ${h} ha empezado. Dura hasta el ${when}.`,
+  welcomeBaseline: (h, n) =>
+    n > 0
+      ? `Guardamos ${n === 1 ? 'la última publicación' : `las últimas ${n} publicaciones`} de ${h} como punto de partida. La cuenta se comprueba más o menos cada hora.`
+      : `La primera comprobación de ${h} se hará en la próxima hora; las publicaciones que encuentre serán el punto de partida. Después, la cuenta se comprueba más o menos cada hora.`,
+  welcomeTrigger: {
+    deleted: h => `Recibirás un e-mail cuando ${h} elimine una de sus publicaciones.`,
+    new: h => `Recibirás un e-mail cuando ${h} publique algo nuevo.`,
+    both: h => `Recibirás un e-mail cuando ${h} elimine una publicación o publique una nueva.`,
+  },
+  welcomeQuiet: 'Los cambios se reúnen en un solo e-mail al día, que sale hacia las 07:00 UTC. Si no recibes nada, es que no ha cambiado nada.',
+  welcomeOlder: h => `Watch ve los cambios a partir de ahora, no las publicaciones que ${h} eliminó antes de hoy. Algunas pueden seguir en la Wayback Machine.`,
+  finderCta: h => `Buscar publicaciones que ${h} eliminó antes`,
+  checkinSubject: h => `7 días de Watch para ${h}`,
+  checkinIntro: (h, n) => `Tu prueba de Watch para ${h} lleva 7 días en marcha. Watch sigue ${plural(n, 'publicación', 'publicaciones')} de la cuenta.`,
+  checkinLast: when => (when ? `Última comprobación: ${when}.` : 'La cuenta aún no se ha comprobado.'),
+  checkinCaught: c => `Hasta ahora ha detectado ${c}:`,
+  checkinQuiet: 'Hasta ahora no ha cambiado nada. Una semana tranquila es normal: la mayoría de las cuentas casi nunca eliminan publicaciones. Watch sigue comprobando más o menos cada hora.',
+  checkinLeft: (d, when) => `${d === 1 ? 'Queda' : 'Quedan'} ${plural(d, 'día', 'días')}; la prueba termina el ${when}.`,
 };
 
 const pt: MailCopy = {
@@ -203,6 +302,28 @@ const pt: MailCopy = {
   more: n => `… e mais ${n}.`,
   endedCta: h => `Continue acompanhando ${h} com o Xtracticle Pro`,
   endedNote: h => `Os eventos ficam guardados por 90 dias depois de detectados, então tudo acima continua visível se você adicionar ${h} com o Pro.`,
+  proCta: h => `Continue acompanhando ${h} depois do teste com o Xtracticle Pro`,
+  proPrice: 'US$ 36/ano (= US$ 3/mês) ou US$ 5/mês',
+  welcomeSubject: h => `O Watch está ativo para ${h}`,
+  welcomeIntro: (h, when) => `Seu teste grátis do Xtracticle Watch para ${h} começou. Ele vai até ${when}.`,
+  welcomeBaseline: (h, n) =>
+    n > 0
+      ? `Guardamos ${n === 1 ? 'o último post' : `os últimos ${n} posts`} de ${h} como ponto de partida. A conta é verificada mais ou menos a cada hora.`
+      : `A primeira verificação de ${h} acontece na próxima hora; os posts encontrados serão o ponto de partida. Depois disso, a conta é verificada mais ou menos a cada hora.`,
+  welcomeTrigger: {
+    deleted: h => `Você recebe um e-mail quando ${h} apaga um dos seus posts.`,
+    new: h => `Você recebe um e-mail quando ${h} publica um post novo.`,
+    both: h => `Você recebe um e-mail quando ${h} apaga um post ou publica um novo.`,
+  },
+  welcomeQuiet: 'As mudanças são reunidas em um único e-mail por dia, enviado por volta das 07:00 UTC. Se nenhum e-mail chegar, nada mudou.',
+  welcomeOlder: h => `O Watch vê as mudanças daqui para frente, não os posts que ${h} apagou antes de hoje. Alguns deles podem estar no Wayback Machine.`,
+  finderCta: h => `Procurar posts que ${h} apagou antes`,
+  checkinSubject: h => `7 dias de Watch para ${h}`,
+  checkinIntro: (h, n) => `Seu teste do Watch para ${h} está rodando há 7 dias. O Watch acompanha ${plural(n, 'post', 'posts')} da conta.`,
+  checkinLast: when => (when ? `Última verificação: ${when}.` : 'A conta ainda não foi verificada.'),
+  checkinCaught: c => `Até agora ele encontrou ${c}:`,
+  checkinQuiet: 'Até agora nada mudou. Uma semana tranquila é normal: a maioria das contas raramente apaga posts. O Watch continua verificando mais ou menos a cada hora.',
+  checkinLeft: (d, when) => `${d === 1 ? 'Resta' : 'Restam'} ${plural(d, 'dia', 'dias')}; o teste termina em ${when}.`,
 };
 
 const ja: MailCopy = {
@@ -240,6 +361,28 @@ const ja: MailCopy = {
   more: n => `…ほか${n}件。`,
   endedCta: h => `${h} をXtracticle Proでウォッチし続ける`,
   endedNote: h => `イベントは検出から90日間保存されるため、${h} をProで追加すれば、上記はすべて引き続き表示されます。`,
+  proCta: h => `お試し後も ${h} をXtracticle Proでウォッチし続ける`,
+  proPrice: '年額36ドル（月あたり3ドル）または月額5ドル',
+  welcomeSubject: h => `${h} のウォッチを開始しました`,
+  welcomeIntro: (h, when) => `${h} の無料Xtracticle Watchお試しが始まりました。お試し期間は${when}までです。`,
+  welcomeBaseline: (h, n) =>
+    n > 0
+      ? `${h} の最新${n}件の投稿を起点として保存しました。このアカウントは約1時間ごとに確認されます。`
+      : `${h} の最初の確認は1時間以内に行われ、そのとき見つかった投稿が起点になります。その後は約1時間ごとに確認されます。`,
+  welcomeTrigger: {
+    deleted: h => `${h} が投稿を削除すると、メールでお知らせします。`,
+    new: h => `${h} が新しく投稿すると、メールでお知らせします。`,
+    both: h => `${h} が投稿を削除したり新しく投稿したりすると、メールでお知らせします。`,
+  },
+  welcomeQuiet: '変更は1日1通のメールにまとめて、07:00 UTCごろにお送りします。メールが届かない場合は、何も変わっていないということです。',
+  welcomeOlder: h => `Watchが検出するのはこれからの変更で、${h} が今日より前に削除した投稿は対象外です。その一部はWayback Machineに残っている場合があります。`,
+  finderCta: h => `${h} が以前に削除した投稿を探す`,
+  checkinSubject: h => `${h} のWatch、7日間のご報告`,
+  checkinIntro: (h, n) => `${h} のWatchお試しは開始から7日が経ちました。現在、このアカウントの投稿${n}件を追跡しています。`,
+  checkinLast: when => (when ? `最終確認：${when}。` : 'このアカウントはまだ確認されていません。'),
+  checkinCaught: c => `これまでに検出したのは${c}です：`,
+  checkinQuiet: 'これまでのところ変化はありません。静かな1週間はよくあることで、ほとんどのアカウントは投稿をめったに削除しません。Watchは引き続き約1時間ごとに確認します。',
+  checkinLeft: (d, when) => `残り${d}日です。お試しは${when}に終了します。`,
 };
 
 const zh: MailCopy = {
@@ -277,6 +420,28 @@ const zh: MailCopy = {
   more: n => `……还有 ${n} 个事件。`,
   endedCta: h => `用 Xtracticle Pro 继续监控 ${h}`,
   endedNote: h => `事件会从检测时起保留 90 天，所以如果你用 Pro 添加 ${h}，上面的内容仍然可见。`,
+  proCta: h => `试用结束后，用 Xtracticle Pro 继续监控 ${h}`,
+  proPrice: '每年 36 美元（相当于每月 3 美元）或每月 5 美元',
+  welcomeSubject: h => `Watch 已开始监控 ${h}`,
+  welcomeIntro: (h, when) => `你为 ${h} 申请的免费 Xtracticle Watch 试用已经开始，持续到 ${when}。`,
+  welcomeBaseline: (h, n) =>
+    n > 0
+      ? `我们已保存 ${h} 最新的 ${n} 条帖子作为起点。该账号大约每小时检查一次。`
+      : `${h} 的第一次检查会在一小时内进行，届时找到的帖子将作为起点。之后该账号大约每小时检查一次。`,
+  welcomeTrigger: {
+    deleted: h => `${h} 删除帖子时，你会收到 e-mail。`,
+    new: h => `${h} 发布新帖子时，你会收到 e-mail。`,
+    both: h => `${h} 删除帖子或发布新帖子时，你会收到 e-mail。`,
+  },
+  welcomeQuiet: '变化会汇总成每天一封 e-mail，大约在 07:00 UTC 发出。没有收到 e-mail，就说明没有任何变化。',
+  welcomeOlder: h => `Watch 只能发现从现在开始的变化，无法发现 ${h} 在今天之前删除的帖子。其中一些可能仍保存在 Wayback Machine 中。`,
+  finderCta: h => `查找 ${h} 以前删除的帖子`,
+  checkinSubject: h => `${h} 的 Watch 试用已满 7 天`,
+  checkinIntro: (h, n) => `你为 ${h} 申请的 Watch 试用已经运行了 7 天。Watch 正在跟踪该账号的 ${n} 条帖子。`,
+  checkinLast: when => (when ? `最近一次检查：${when}。` : '该账号还没有被检查过。'),
+  checkinCaught: c => `到目前为止，它发现了 ${c}：`,
+  checkinQuiet: '到目前为止没有任何变化。平静的一周很正常：大多数账号很少删除帖子。Watch 会继续大约每小时检查一次。',
+  checkinLeft: (d, when) => `还剩 ${d} 天，试用将于 ${when} 结束。`,
 };
 
 /** Arabic day count with correct number agreement; `gen` is the genitive form (after a preposition). */
@@ -320,6 +485,28 @@ const ar: MailCopy = {
   more: n => `… و${n} من الأحداث الأخرى.`,
   endedCta: h => `تابع مراقبة ${h} مع Xtracticle Pro`,
   endedNote: h => `تُحفظ الأحداث 90 يومًا من وقت اكتشافها، لذا يبقى كل ما سبق ظاهرًا إذا أضفت ${h} مع Pro.`,
+  proCta: h => `تابع مراقبة ${h} بعد التجربة مع Xtracticle Pro`,
+  proPrice: '36 دولارًا سنويًا (أي 3 دولارات شهريًا) أو 5 دولارات شهريًا',
+  welcomeSubject: h => `بدأ Watch مراقبة ${h}`,
+  welcomeIntro: (h, when) => `بدأت تجربة Xtracticle Watch المجانية الخاصة بـ ${h}، وتستمر حتى ${when}.`,
+  welcomeBaseline: (h, n) =>
+    n > 0
+      ? `حفظنا أحدث منشورات ${h} كنقطة بداية (عددها ${n}). يُفحص الحساب مرة كل ساعة تقريبًا.`
+      : `سيُجرى أول فحص للحساب ${h} خلال الساعة القادمة، وستكون المنشورات التي يجدها نقطة البداية. بعد ذلك يُفحص الحساب مرة كل ساعة تقريبًا.`,
+  welcomeTrigger: {
+    deleted: h => `ستصلك رسالة عندما يحذف ${h} أحد منشوراته.`,
+    new: h => `ستصلك رسالة عندما ينشر ${h} منشورًا جديدًا.`,
+    both: h => `ستصلك رسالة عندما يحذف ${h} منشورًا أو ينشر منشورًا جديدًا.`,
+  },
+  welcomeQuiet: 'تُجمع التغييرات في رسالة واحدة يوميًا تُرسل نحو الساعة 07:00 UTC. إذا لم تصلك رسالة، فهذا يعني أن شيئًا لم يتغير.',
+  welcomeOlder: h => `يرصد Watch التغييرات من الآن فصاعدًا، ولا يشمل المنشورات التي حذفها ${h} قبل اليوم. قد يكون بعضها محفوظًا في Wayback Machine.`,
+  finderCta: h => `ابحث عن المنشورات التي حذفها ${h} سابقًا`,
+  checkinSubject: h => `سبعة أيام من Watch للحساب ${h}`,
+  checkinIntro: (h, n) => `مضت 7 أيام على تجربة Watch الخاصة بـ ${h}. عدد منشورات الحساب التي يتتبعها Watch: ${n}.`,
+  checkinLast: when => (when ? `آخر فحص: ${when}.` : 'لم يُفحص الحساب بعد.'),
+  checkinCaught: c => `ما رصدته التجربة حتى الآن هو ${c}:`,
+  checkinQuiet: 'لم يتغير شيء حتى الآن. الأسبوع الهادئ أمر طبيعي: معظم الحسابات نادرًا ما تحذف منشوراتها. يواصل Watch الفحص مرة كل ساعة تقريبًا.',
+  checkinLeft: (d, when) => `المتبقي ${arDays(d)}؛ تنتهي التجربة في ${when}.`,
 };
 
 export const MAIL_COPY: Record<MailLang, MailCopy> = { en, tr, es, pt, ja, zh, ar };

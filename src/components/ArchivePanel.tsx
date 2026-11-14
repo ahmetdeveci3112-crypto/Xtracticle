@@ -37,6 +37,13 @@ type TrialState =
   | { kind: 'sent'; email: string }
   | { kind: 'error'; code: TrialErr };
 type TrialErr = keyof Strings['watchTrialErr'];
+/** POST /api/watch/trial/resend for the address the confirmation went to (after a start, or when it answered trial_pending). */
+type ResendState = { kind: 'idle' } | { kind: 'working' } | { kind: 'ok' } | { kind: 'error'; code: ResendErr };
+type ResendErr = keyof Strings['watchTrialResendErr'] | 'rate';
+/** Sender of the trial e-mails (wrangler.json WATCH_EMAIL_FROM). */
+const TRIAL_SENDER = 'watch@xtracticle.com';
+/** The Resend button rests this long after each click (the Worker allows one resend per 2 minutes, 3 sends in all). */
+const RESEND_LOCK_MS = 60_000;
 interface TrialConfig { available: boolean; full: boolean; disabled: boolean; days: number }
 
 /** Puts the handle into "@{handle}" as an isolated left-to-right run, so the @ stays in front in Arabic. */
@@ -44,13 +51,13 @@ function withHandle(s: string, handle: string) {
   return s.split('@{handle}').flatMap((part, i) => (i ? [<bdi key={i} dir="ltr">@{handle}</bdi>, part] : [part]));
 }
 
-/** Fills {name} placeholders with nodes; "@{handle}" and "{email}" become isolated LTR runs. */
+/** Fills {name} placeholders with nodes; "@{handle}", "{email}" and "{sender}" become isolated LTR runs. */
 function fill(s: string, vals: Record<string, string>): ReactNode[] {
   return s.split(/(@?\{\w+\})/).map((part, i) => {
     const m = part.match(/^(@?)\{(\w+)\}$/);
     if (!m || !(m[2] in vals)) return part;
     const v = m[1] + vals[m[2]];
-    return m[2] === 'handle' || m[2] === 'email' ? <bdi key={i} dir="ltr">{v}</bdi> : v;
+    return m[2] === 'handle' || m[2] === 'email' || m[2] === 'sender' ? <bdi key={i} dir="ltr">{v}</bdi> : v;
   });
 }
 
@@ -105,6 +112,39 @@ export default function ArchivePanel({
   const [trialCfg, setTrialCfg] = useState<TrialConfig | null | undefined>(undefined);
   const [trial, setTrial] = useState<TrialState>({ kind: 'idle' });
   const [trialEmail, setTrialEmail] = useState('');
+  const [resend, setResend] = useState<ResendState>({ kind: 'idle' });
+  const [resendLocked, setResendLocked] = useState(false);
+  const resendTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(resendTimer.current), []);
+
+  async function resendTrial(email: string) {
+    if (resendLocked || !email) return;
+    setResendLocked(true);
+    clearTimeout(resendTimer.current);
+    resendTimer.current = setTimeout(() => setResendLocked(false), RESEND_LOCK_MS);
+    setResend({ kind: 'working' });
+    let code: ResendErr = 'generic';
+    try {
+      const res = await fetch('/api/watch/trial/resend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Xt-Client': 'web' },
+        body: JSON.stringify({ email }),
+      });
+      const body = await res.json().catch(() => null);
+      if (res.status === 200 && body?.status === 'resent') {
+        setResend({ kind: 'ok' });
+        track('trial_resend', { ok: true, place: 'archive_panel' });
+        return;
+      }
+      const err: string = typeof body?.error === 'string' ? body.error : String(res.status);
+      if (err in t.watchTrialResendErr) code = err as ResendErr;
+      else if (res.status === 429) code = 'rate';
+      track('trial_resend', { ok: false, error: err, place: 'archive_panel' });
+    } catch {
+      track('trial_resend', { ok: false, error: 'network', place: 'archive_panel' });
+    }
+    setResend({ kind: 'error', code });
+  }
 
   async function startTrial() {
     if (trial.kind === 'working') return;
@@ -114,6 +154,7 @@ export default function ArchivePanel({
       return;
     }
     setTrial({ kind: 'working' });
+    setResend({ kind: 'idle' });
     let code: TrialErr = 'generic';
     try {
       const res = await fetch('/api/watch/trial', {
@@ -257,7 +298,10 @@ export default function ArchivePanel({
     }
   }, [showFreeCard, handle, trialCfg, trialOpen]);
   // A new account in the same panel starts with an empty form.
-  useEffect(() => setTrial({ kind: 'idle' }), [handle]);
+  useEffect(() => {
+    setTrial({ kind: 'idle' });
+    setResend({ kind: 'idle' });
+  }, [handle]);
 
   // Pro: one click watches the account for deleted posts (unchanged behaviour, now inside the card).
   const proWatch =
@@ -304,6 +348,35 @@ export default function ArchivePanel({
       {t.watchCardCta}
     </a>
   );
+  const resendEmail = trial.kind === 'sent' ? trial.email : trialEmail.trim();
+  const trialFrom = (
+    <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{fill(t.watchTrialFrom, { sender: TRIAL_SENDER })}</p>
+  );
+  const resendRow = (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+      <button
+        type="button"
+        onClick={() => resendTrial(resendEmail)}
+        disabled={resendLocked}
+        aria-busy={resend.kind === 'working'}
+        className={`${rowBtn} disabled:opacity-60`}
+        style={rowBtnStyle}
+      >
+        {resend.kind === 'working'
+          ? <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+          : <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />}
+        <span>{t.watchTrialResend}</span>
+      </button>
+      {resend.kind === 'ok' && (
+        <span role="status" className="min-w-0 break-words" style={{ color: 'var(--text-primary)' }}>{fill(t.watchTrialResent, { email: resendEmail })}</span>
+      )}
+      {resend.kind === 'error' && (
+        <span role="alert" className="min-w-0 break-words" style={{ color: 'var(--error-text)' }}>
+          {resend.code === 'rate' ? t.watchTrialErr.rate : t.watchTrialResendErr[resend.code]}
+        </span>
+      )}
+    </div>
+  );
   const trialForm =
     trial.kind === 'sent' ? (
       <div className="mt-2 space-y-1" role="status">
@@ -312,6 +385,10 @@ export default function ArchivePanel({
           <span className="min-w-0 break-words">{fill(t.watchTrialSent, { email: trial.email, handle })}</span>
         </p>
         <p className="text-xs leading-relaxed ps-6" style={{ color: 'var(--text-secondary)' }}>{t.watchTrialSentHint}</p>
+        <div className="ps-6 space-y-1.5">
+          {trialFrom}
+          {resendRow}
+        </div>
       </div>
     ) : (
       // Not a <form>: the panel sits inside the hero form (App.tsx), and nested forms submit the outer one.
@@ -362,6 +439,12 @@ export default function ArchivePanel({
             {t.watchTrialErr[trial.code]}
             {trial.code === 'trial_used' && <>{' '}{seePro}</>}
           </p>
+        )}
+        {trial.kind === 'error' && trial.code === 'trial_pending' && (
+          <>
+            {trialFrom}
+            {resendRow}
+          </>
         )}
         <p className="text-xs leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>
           {t.watchTrialAfter}{' '}{!(trial.kind === 'error' && trial.code === 'trial_used') && seePro}

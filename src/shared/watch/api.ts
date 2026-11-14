@@ -59,7 +59,7 @@ export async function handleWatch(request: Request, env: WatchEnv, waitUntil?: (
   if ((m = path.match(/^\/api\/watch\/feed\/([^/.]+)\.(xml|json)$/))) return feed(request, db, url.origin, m[1], m[2] as 'xml' | 'json');
   if ((m = path.match(/^\/api\/watch\/verify\/([^/]+)$/))) return verify(request, db, m[1]);
   if ((m = path.match(/^\/api\/watch\/unsubscribe\/([^/]+)$/))) return unsubscribe(request, db, m[1]);
-  if (/^\/api\/watch\/trial(?:\/|$)/.test(path)) return handleTrial(request, env, db, path, url);
+  if (/^\/api\/watch\/trial(?:\/|$)/.test(path)) return handleTrial(request, env, db, path, url, waitUntil);
   // A feed token proves access to the handle's events (used by trial views and trial feeds).
   const feedToken = url.searchParams.get('feed');
   if (feedToken && (m = path.match(/^\/api\/watch\/event\/([^/.]+)\.md$/))) {

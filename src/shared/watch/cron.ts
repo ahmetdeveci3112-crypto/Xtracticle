@@ -12,7 +12,7 @@ import { fxBase } from '../fx';
  *   1. blocklist enforcement and retention pruning (cheap, bounded statements);
  *   2. up to WATCH_BATCH handles whose watches were polled more than 55 minutes ago, oldest first
  *      (trial watches included: they are ordinary rows, and a handle is polled once however many watch it);
- *   3. trial lifecycle: expiries (watch removed, "trial ended" e-mail) and day-12 reminders (trial.ts);
+ *   3. trial lifecycle: expiries (watch removed, "trial ended" e-mail), day-12 reminders and day-7 check-ins (trial.ts);
  *   4. once a day from 07:00 UTC, the e-mail digest for every verified address (trial digests carry a countdown).
  * Every step is idempotent: a run cut short by the CPU limit is simply resumed by the next one.
  */

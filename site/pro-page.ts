@@ -178,6 +178,11 @@ export interface TrialCopy {
   starting: string;
   sent: string;
   sentHint: string;
+  /** Under the "check your inbox" note and with trial_pending; {sender} is the From address. */
+  sentFrom: string;
+  /** Button that asks POST /api/watch/trial/resend for the same link again; `resent` confirms it ({email}). */
+  resend: string;
+  resent: string;
   startNote: string;
   err: {
     trial_used: string;
@@ -185,6 +190,9 @@ export interface TrialCopy {
     trial_full: string;
     trial_disabled: string;
     trial_ended: string;
+    resend_wait: string;
+    resend_limit: string;
+    not_pending: string;
     mail_failed: string;
     bad_email: string;
     bad_handle: string;
@@ -323,6 +331,12 @@ if(er==='limit_reached'&&x.b.limit){wlim=x.b.limit;wcountUp();}
 wsay(wfo,tpl(errText(x,true),{handle:iso('@'+h)}),false);g('watch_add_error',{error:er});
 }).catch(function(){wfb.disabled=false;wsay(wfo,WC.err.network,false);g('watch_add_error',{error:'network'});});});
 function terr(x){var e=x.b&&x.b.error;if(e&&TC.err.hasOwnProperty(e))return TC.err[e];return x.s===429?TC.err.rate:TC.err.generic;}
+function tresend(box,m){var rb=mini(TC.resend),ro=el('p','xt-pro-msg');ro.setAttribute('role','status');ro.setAttribute('aria-live','polite');
+box.appendChild(el('p','xt-watch-hint',tpl(TC.sentFrom,{sender:iso('watch@xtracticle.com')})));box.appendChild(rb);box.appendChild(ro);
+rb.addEventListener('click',function(){rb.disabled=true;setTimeout(function(){rb.disabled=false},60000);wsay(ro,'',true);
+api('POST','/api/watch/trial/resend',{email:m}).then(function(x){if(x.s===200&&x.b&&x.b.status==='resent'){g('trial_resend',{ok:true,place:'pro_page'});wsay(ro,tpl(TC.resent,{email:iso(x.b.email||m)}),true);return;}
+g('trial_resend',{ok:false,error:(x.b&&x.b.error)||String(x.s),place:'pro_page'});wsay(ro,terr(x),false);})
+.catch(function(){g('trial_resend',{ok:false,error:'network',place:'pro_page'});wsay(ro,TC.err.network,false);});});}
 function tstate(t){tbody.innerHTML='';var p=el('p','xt-watch-state',t);p.setAttribute('role','status');tbody.appendChild(p);}
 function tforget(){tok='';try{sessionStorage.removeItem('xt_trial_t')}catch(e){}}
 function tload(after){tcd.hidden=false;if(!after)tstate(TC.loading);
@@ -374,15 +388,16 @@ try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}if
 if(ev)try{tcd.scrollIntoView({block:'start'})}catch(e){}return true;}
 if(!thash()){try{tok=sessionStorage.getItem('xt_trial_t')||''}catch(e){}if(!/^[A-Za-z0-9_-]{16,128}$/.test(tok))tok='';if(tok)tload();}
 window.addEventListener('hashchange',thash);
-if(ts){var tf=ts.querySelector('form'),thi=tf.querySelector('input[name=handle]'),tem=tf.querySelector('input[name=email]'),tbt=tf.querySelector('button'),tmo=tf.querySelector('[role=status]');
+if(ts){var tf=ts.querySelector('form'),thi=tf.querySelector('input[name=handle]'),tem=tf.querySelector('input[name=email]'),tbt=tf.querySelector('button'),tmo=tf.querySelector('[role=status]'),tpd=null;
 tf.addEventListener('submit',function(e){e.preventDefault();var h=clean(thi.value),m=tem.value.trim();
 if(!h){wsay(tmo,TC.err.bad_handle,false);try{thi.focus()}catch(x){}return;}if(!m){wsay(tmo,TC.err.bad_email,false);try{tem.focus()}catch(x){}return;}
-tbt.disabled=true;wsay(tmo,TC.starting,true);
+tbt.disabled=true;wsay(tmo,TC.starting,true);if(tpd){tf.removeChild(tpd);tpd=null;}
 api('POST','/api/watch/trial',{handle:h,email:m,mode:'both',lang:(location.pathname.split('/')[1]||'en').length===2?location.pathname.split('/')[1]:'en'}).then(function(x){tbt.disabled=false;
 if(x.s===201&&x.b&&x.b.status){g('trial_start',{ok:true,place:'pro_page'});var dn=el('div','xt-trial-sent');dn.setAttribute('role','status');
-dn.appendChild(el('p','xt-trial-when',tpl(TC.sent,{email:iso(x.b.email||m),handle:iso('@'+(x.b.handle||h))})));dn.appendChild(el('p','xt-watch-hint',TC.sentHint));
+dn.appendChild(el('p','xt-trial-when',tpl(TC.sent,{email:iso(x.b.email||m),handle:iso('@'+(x.b.handle||h))})));dn.appendChild(el('p','xt-watch-hint',TC.sentHint));tresend(dn,x.b.email||m);
 tf.parentNode.replaceChild(dn,tf);return;}
-var er=(x.b&&x.b.error)||String(x.s);g('trial_start',{ok:false,error:er,place:'pro_page'});wsay(tmo,terr(x),false);})
+var er=(x.b&&x.b.error)||String(x.s);g('trial_start',{ok:false,error:er,place:'pro_page'});wsay(tmo,terr(x),false);
+if(er==='trial_pending'){tpd=el('div','xt-trial-resend');tf.appendChild(tpd);tresend(tpd,m);}})
 .catch(function(){tbt.disabled=false;wsay(tmo,TC.err.network,false);g('trial_start',{ok:false,error:'network',place:'pro_page'});});});
 tstart();}}
 var f=document.getElementById('xt-pro-form');if(!f)return;
@@ -732,6 +747,9 @@ export const PRO_EN: ProCopy = {
     starting: 'Checking the account…',
     sent: 'Check your inbox at {email} — confirm to start watching {handle}.',
     sentHint: 'The link works for 24 hours. Nothing is watched or mailed until you click it.',
+    sentFrom: 'The e-mail comes from {sender}. If it is not in your inbox, check Spam or Promotions.',
+    resend: 'Resend e-mail',
+    resent: 'Sent again to {email}.',
     startNote: 'One trial per e-mail address. Nothing is charged: when the 14 days are over, the watch simply stops.',
     err: {
       trial_used: 'This address has already had its free trial (one per address). To keep watching, pick a plan under Pricing.',
@@ -739,6 +757,9 @@ export const PRO_EN: ProCopy = {
       trial_full: 'All free trial places are taken right now. Please try again in a few days.',
       trial_disabled: 'Free trials are paused right now. Please try again later.',
       trial_ended: 'This trial has already ended.',
+      resend_wait: 'Please wait two minutes before asking for another e-mail.',
+      resend_limit: 'The confirmation e-mail was already sent three times. If none arrived, check the address or try another one.',
+      not_pending: 'There is no unconfirmed trial request for this address. It may be confirmed already, or the request expired: start the trial again.',
       mail_failed: 'The confirmation e-mail could not be sent. Check the address and try again.',
       bad_email: 'Please enter a valid e-mail address.',
       bad_handle: 'That does not look like an X username.',

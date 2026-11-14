@@ -128,6 +128,12 @@ export interface TrialRow {
   end_reason: TrialEndReason | null;
   /** Site language the trial was started from (migrations/0003_trial_lang.sql); picks the e-mail language and the /pro page. */
   lang: string;
+  /** migrations/0004_trial_engagement.sql: NULL on rows from before it (and until the e-mail is sent). */
+  welcome_sent_at: string | null;
+  checkin_sent_at: string | null;
+  verify_sent_at: string | null;
+  /** Verification e-mails sent for this request (1 after start; POST /api/watch/trial/resend adds one, up to 3). */
+  verify_sends: number;
 }
 
 export const HANDLE_RE = /^[A-Za-z0-9_]{1,15}$/;
@@ -140,6 +146,9 @@ export const LIMIT_LIFETIME = 2;
 export const TRIAL_DAYS = 14;
 export const TRIAL_ACCOUNTS = 1;
 export const TRIAL_VERIFY_HOURS = 24;
+/** Resending the verification e-mail: at most this many sends per request, this far apart. */
+export const TRIAL_VERIFY_MAX_SENDS = 3;
+export const TRIAL_RESEND_WAIT_MS = 2 * 60 * 1000;
 export const TRIAL_MAX_DEFAULT = 300;
 /** watches.key_hash of a trial watch: this prefix + trials.id. License hashes are hex, so they never collide. */
 export const TRIAL_KEY_PREFIX = 'trial:';

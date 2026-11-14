@@ -9,7 +9,9 @@ import {
   TRIAL_ACCOUNTS,
   TRIAL_DAYS,
   TRIAL_MAX_DEFAULT,
+  TRIAL_RESEND_WAIT_MS,
   TRIAL_VERIFY_HOURS,
+  TRIAL_VERIFY_MAX_SENDS,
   excerpt,
   hashTrialEmail,
   json,
@@ -30,7 +32,17 @@ import {
   type WatchMode,
   type WatchRow,
 } from './db';
-import { emailSender, publicOrigin, trialEndedEmail, trialReminderEmail, trialVerificationEmail, type DigestItem, type DigestTrial } from './email';
+import {
+  emailSender,
+  publicOrigin,
+  trialCheckinEmail,
+  trialEndedEmail,
+  trialReminderEmail,
+  trialVerificationEmail,
+  trialWelcomeEmail,
+  type DigestItem,
+  type DigestTrial,
+} from './email';
 import { PRO_PATHS, isMailLang } from './mail-copy';
 import { eventTitle, eventView, toFeedEvent } from './feed';
 import { lookupProfile, seedHandle } from './poll';
@@ -41,7 +53,8 @@ import { lookupProfile, seedHandle } from './poll';
  *
  *   GET    /api/watch/trial/config          { available, full, days, maxAccounts, modes }
  *   POST   /api/watch/trial                 { handle, email, mode? } → pending trial + verification e-mail
- *   GET    /api/watch/trial/verify/:token   e-mail link: creates the watch, starts the clock, redirects to /pro
+ *   POST   /api/watch/trial/resend          { email } → the same verification link again (2 min apart, 3 sends in all)
+ *   GET    /api/watch/trial/verify/:token   e-mail link: creates the watch, starts the clock, sends the welcome e-mail, redirects to /pro
  *   GET    /api/watch/trial/:manageToken    the trial's state and recent events
  *   PATCH  /api/watch/trial/:manageToken    { mode }
  *   DELETE /api/watch/trial/:manageToken    end the trial (pending: cancel the request)
@@ -55,6 +68,11 @@ import { lookupProfile, seedHandle } from './poll';
 const DAY_MS = 24 * 3600 * 1000;
 /** The reminder goes out this long before expiry (day 12 of 14). */
 const REMINDER_BEFORE_MS = 2 * DAY_MS;
+/** The check-in goes out this long after verification, and only while more than CHECKIN_MIN_LEFT_MS remain (never next to the reminder). */
+const CHECKIN_AFTER_MS = 7 * DAY_MS;
+const CHECKIN_MIN_LEFT_MS = 3 * DAY_MS;
+/** Events listed in the check-in e-mail. */
+const CHECKIN_MAIL_EVENTS = 5;
 /** Expiries / reminders handled per cron run (each may send an e-mail). */
 const LIFECYCLE_PER_RUN = 20;
 /** Events listed in the "trial ended" e-mail. */
@@ -64,10 +82,21 @@ const trialMax = (env: WatchEnv) => Math.max(0, parseInt(env.WATCH_TRIAL_MAX || 
 const disabled = (env: WatchEnv) => env.WATCH_TRIAL_DISABLED === '1';
 const expiryOf = (verifiedAt: string) => new Date(Date.parse(verifiedAt) + TRIAL_DAYS * DAY_MS).toISOString();
 
-export async function handleTrial(request: Request, env: WatchEnv, db: D1Database, path: string, url: URL): Promise<Response> {
+export async function handleTrial(
+  request: Request,
+  env: WatchEnv,
+  db: D1Database,
+  path: string,
+  url: URL,
+  waitUntil?: (p: Promise<unknown>) => void,
+): Promise<Response> {
   let m: RegExpMatchArray | null;
   if (path === '/api/watch/trial/config') return config(env, db);
-  if ((m = path.match(/^\/api\/watch\/trial\/verify\/([^/]+)$/))) return verify(request, env, db, m[1]);
+  if ((m = path.match(/^\/api\/watch\/trial\/verify\/([^/]+)$/))) return verify(request, env, db, m[1], waitUntil);
+  if (path === '/api/watch/trial/resend') {
+    if (request.method === 'POST') return resend(request, env, db);
+    return json({ error: 'method_not_allowed' }, 405);
+  }
   if (path === '/api/watch/trial') {
     if (request.method === 'POST') return start(request, env, db);
     return json({ error: 'method_not_allowed' }, 405);
@@ -116,6 +145,16 @@ async function trialEventCount(db: D1Database, t: TrialRow): Promise<number> {
   return row?.n ?? 0;
 }
 
+const snapshotCount = async (db: D1Database, handle: string) =>
+  (await db.prepare('SELECT COUNT(*) AS n FROM snapshots WHERE handle = ?').bind(handle).first<{ n: number }>())?.n ?? 0;
+
+/** Same per-IP limiter for start and resend. */
+async function limited(request: Request, env: WatchEnv): Promise<boolean> {
+  if (!env.TRIAL_LIMITER) return false;
+  const ip = request.headers.get('cf-connecting-ip') || 'unknown';
+  return !(await env.TRIAL_LIMITER.limit({ key: ip })).success;
+}
+
 async function trialView(db: D1Database, t: TrialRow, origin: string) {
   const w = t.watch_id ? await db.prepare('SELECT * FROM watches WHERE id = ?').bind(t.watch_id).first<WatchRow>() : null;
   const events = await trialEvents(db, t, RECENT_EVENTS);
@@ -157,10 +196,7 @@ async function start(request: Request, env: WatchEnv, db: D1Database): Promise<R
   if (!fromSite(request)) return json({ error: 'forbidden' }, 403);
   if (disabled(env)) return json({ error: 'trial_disabled' }, 503);
   if (!env.PRO_COOKIE_SECRET) return json({ error: 'pro_unavailable' }, 503);
-  if (env.TRIAL_LIMITER) {
-    const ip = request.headers.get('cf-connecting-ip') || 'unknown';
-    if (!(await env.TRIAL_LIMITER.limit({ key: ip })).success) return json({ error: 'rate' }, 429, { 'Retry-After': '60' });
-  }
+  if (await limited(request, env)) return json({ error: 'rate' }, 429, { 'Retry-After': '60' });
   const body = await readBody(request);
   if (!body) return json({ error: 'bad_request' }, 400);
   const rawHandle = typeof body.handle === 'string' ? body.handle.trim().replace(/^@/, '') : '';
@@ -205,13 +241,17 @@ async function start(request: Request, env: WatchEnv, db: D1Database): Promise<R
     ended_at: null,
     end_reason: null,
     lang,
+    welcome_sent_at: null,
+    checkin_sent_at: null,
+    verify_sent_at: now,
+    verify_sends: 1,
   };
   try {
     await db
       .prepare(
-        'INSERT INTO trials (id, email_hash, email, handle, mode, status, verify_token, verify_expires_at, manage_token, unsub_token, created_at, lang) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO trials (id, email_hash, email, handle, mode, status, verify_token, verify_expires_at, manage_token, unsub_token, created_at, lang, verify_sent_at, verify_sends) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       )
-      .bind(t.id, t.email_hash, t.email, t.handle, t.mode, t.status, t.verify_token, t.verify_expires_at, t.manage_token, t.unsub_token, t.created_at, t.lang)
+      .bind(t.id, t.email_hash, t.email, t.handle, t.mode, t.status, t.verify_token, t.verify_expires_at, t.manage_token, t.unsub_token, t.created_at, t.lang, t.verify_sent_at, t.verify_sends)
       .run();
   } catch (err) {
     // Two requests racing on the same address: the unique index decides.
@@ -239,7 +279,7 @@ async function start(request: Request, env: WatchEnv, db: D1Database): Promise<R
   return json({ status: 'pending', handle, mode, email, days: TRIAL_DAYS, verifyExpiresAt: t.verify_expires_at }, 201);
 }
 
-async function verify(request: Request, env: WatchEnv, db: D1Database, token: string): Promise<Response> {
+async function verify(request: Request, env: WatchEnv, db: D1Database, token: string, waitUntil?: (p: Promise<unknown>) => void): Promise<Response> {
   if (request.method !== 'GET') return json({ error: 'method_not_allowed' }, 405);
   if (!TOKEN_RE.test(token)) return redirect('verify_failed');
   const t = await db.prepare("SELECT * FROM trials WHERE verify_token = ? AND status = 'pending'").bind(token).first<TrialRow>();
@@ -297,7 +337,76 @@ async function verify(request: Request, env: WatchEnv, db: D1Database, token: st
     throw err;
   }
   console.log(JSON.stringify({ watch: 'trial_verified', handle: t.handle, mode: t.mode, seeded, shared: !!known }));
+  t.verified_at = now;
+  t.expires_at = expiryOf(now);
+  // The welcome e-mail never holds up or breaks the redirect.
+  const welcome = sendWelcome(db, env, t).catch(err =>
+    console.log(JSON.stringify({ watch: 'trial_welcome_mail', ok: false, error: err instanceof Error ? err.message : String(err) })),
+  );
+  if (waitUntil) waitUntil(welcome);
+  else await welcome;
   return redirect('verified', `#t=${t.manage_token}`, t.lang);
+}
+
+/** "Watch is on for @h", once per trial (claimed with welcome_sent_at before sending). */
+async function sendWelcome(db: D1Database, env: WatchEnv, t: TrialRow): Promise<void> {
+  if (!t.email || !t.expires_at) return;
+  const claim = await db.prepare('UPDATE trials SET welcome_sent_at = ? WHERE id = ? AND welcome_sent_at IS NULL').bind(nowIso(), t.id).run();
+  if (!claim.meta.changes) return;
+  const posts = await snapshotCount(db, t.handle);
+  const sender = emailSender(env);
+  if (!sender) {
+    console.log(JSON.stringify({ watch: 'trial_welcome_mail', skipped: 'no e-mail sender configured', handle: t.handle, mode: t.mode, posts }));
+    return;
+  }
+  const msg = trialWelcomeEmail(publicOrigin(env), t.handle, t.mode, posts, t.expires_at, t.manage_token, t.unsub_token, t.lang);
+  const r = await sender.send({ to: t.email, ...msg });
+  console.log(JSON.stringify({ watch: 'trial_welcome_mail', handle: t.handle, ok: r.ok, error: r.error, posts }));
+}
+
+/**
+ * The verification e-mail once more for a pending request, with the same link (its 24 h start again).
+ * At most TRIAL_VERIFY_MAX_SENDS sends per request, TRIAL_RESEND_WAIT_MS apart; the claim is one conditional UPDATE.
+ */
+async function resend(request: Request, env: WatchEnv, db: D1Database): Promise<Response> {
+  if (!fromSite(request)) return json({ error: 'forbidden' }, 403);
+  if (!env.PRO_COOKIE_SECRET) return json({ error: 'pro_unavailable' }, 503);
+  if (await limited(request, env)) return json({ error: 'rate' }, 429, { 'Retry-After': '60' });
+  const body = await readBody(request);
+  if (!body) return json({ error: 'bad_request' }, 400);
+  const email = typeof body.email === 'string' ? normalizeEmail(body.email) : '';
+  if (!EMAIL_RE.test(email)) return json({ error: 'bad_email' }, 422);
+  const emailHash = await hashTrialEmail(email, env.PRO_COOKIE_SECRET);
+  const t = await db.prepare("SELECT * FROM trials WHERE email_hash = ? AND status = 'pending'").bind(emailHash).first<TrialRow>();
+  if (!t || !t.verify_token || !t.email) return json({ error: 'not_pending' }, 404);
+
+  const nowMs = Date.now();
+  const sends = t.verify_sends ?? 1;
+  if (sends >= TRIAL_VERIFY_MAX_SENDS) return json({ error: 'resend_limit' }, 429);
+  const sentMs = t.verify_sent_at ? Date.parse(t.verify_sent_at) : NaN;
+  const wait = Number.isFinite(sentMs) ? sentMs + TRIAL_RESEND_WAIT_MS - nowMs : 0;
+  if (wait > 0) return json({ error: 'resend_wait' }, 429, { 'Retry-After': String(Math.ceil(wait / 1000)) });
+
+  const now = new Date(nowMs).toISOString();
+  const expires = new Date(nowMs + TRIAL_VERIFY_HOURS * 3600 * 1000).toISOString();
+  const claim = await db
+    .prepare(
+      "UPDATE trials SET verify_sent_at = ?, verify_sends = verify_sends + 1, verify_expires_at = ? WHERE id = ? AND status = 'pending' AND verify_sends < ? AND (verify_sent_at IS NULL OR verify_sent_at <= ?)",
+    )
+    .bind(now, expires, t.id, TRIAL_VERIFY_MAX_SENDS, new Date(nowMs - TRIAL_RESEND_WAIT_MS).toISOString())
+    .run();
+  // Another resend for the same address got there first.
+  if (!claim.meta.changes) return json({ error: 'resend_wait' }, 429, { 'Retry-After': String(TRIAL_RESEND_WAIT_MS / 1000) });
+
+  const sender = emailSender(env);
+  if (sender) {
+    const r = await sender.send({ to: t.email, ...trialVerificationEmail(publicOrigin(env), t.handle, TRIAL_DAYS, t.verify_token, t.manage_token, t.lang) });
+    console.log(JSON.stringify({ watch: 'trial_verify_resend', ok: r.ok, error: r.error, sends: sends + 1 }));
+    if (!r.ok) return json({ error: 'mail_failed' }, 502);
+  } else {
+    console.log(JSON.stringify({ watch: 'trial_verify_resend', skipped: 'no e-mail sender configured', verifyToken: t.verify_token, sends: sends + 1 }));
+  }
+  return json({ status: 'resent', email: t.email, verifyExpiresAt: expires });
 }
 
 async function view(db: D1Database, token: string, origin: string): Promise<Response> {
@@ -395,15 +504,16 @@ function toItem(e: EventRow): DigestItem {
 }
 
 /**
- * Expires trials whose 14 days are over (watch removed, one "trial ended" e-mail) and sends the one reminder
- * two days before expiry. Each trial is claimed before its e-mail goes out, so a repeated run never mails twice.
+ * Expires trials whose 14 days are over (watch removed, one "trial ended" e-mail), sends the one reminder
+ * two days before expiry and the day-7 check-in. Each trial is claimed before its e-mail goes out, so a repeated run never mails twice.
  */
-export async function trialLifecycle(db: D1Database, env: WatchEnv, now = Date.now()): Promise<{ ended: number; reminded: number }> {
+export async function trialLifecycle(db: D1Database, env: WatchEnv, now = Date.now()): Promise<{ ended: number; reminded: number; checkedIn: number }> {
   const origin = publicOrigin(env);
   const sender = emailSender(env);
   const nowStr = new Date(now).toISOString();
   let ended = 0;
   let reminded = 0;
+  let checkedIn = 0;
 
   const expired = (await db.prepare("SELECT * FROM trials WHERE status = 'active' AND expires_at <= ? ORDER BY expires_at LIMIT ?").bind(nowStr, LIFECYCLE_PER_RUN).all<TrialRow>()).results;
   for (const t of expired) {
@@ -442,7 +552,33 @@ export async function trialLifecycle(db: D1Database, env: WatchEnv, now = Date.n
     const r = await sender.send({ to: t.email!, ...trialReminderEmail(origin, t.handle, left, t.expires_at!, caught, t.manage_token, t.unsub_token, t.lang) });
     console.log(JSON.stringify({ watch: 'trial_reminder_mail', handle: t.handle, ok: r.ok, error: r.error }));
   }
-  return { ended, reminded };
+
+  const week = (
+    await db
+      .prepare(
+        "SELECT * FROM trials WHERE status = 'active' AND checkin_sent_at IS NULL AND email IS NOT NULL AND expires_at > ? AND verified_at <= ? LIMIT ?",
+      )
+      .bind(new Date(now + CHECKIN_MIN_LEFT_MS).toISOString(), new Date(now - CHECKIN_AFTER_MS).toISOString(), LIFECYCLE_PER_RUN)
+      .all<TrialRow>()
+  ).results;
+  for (const t of week) {
+    const claim = await db.prepare('UPDATE trials SET checkin_sent_at = ? WHERE id = ? AND checkin_sent_at IS NULL').bind(nowStr, t.id).run();
+    if (!claim.meta.changes) continue;
+    checkedIn++;
+    const events = await trialEvents(db, t, CHECKIN_MAIL_EVENTS);
+    const total = events.length < CHECKIN_MAIL_EVENTS ? events.length : await trialEventCount(db, t);
+    const posts = await snapshotCount(db, t.handle);
+    const w = t.watch_id ? await db.prepare('SELECT last_polled_at FROM watches WHERE id = ?').bind(t.watch_id).first<{ last_polled_at: string | null }>() : null;
+    const left = daysLeft(t.expires_at, now) ?? 0;
+    if (!sender) {
+      console.log(JSON.stringify({ watch: 'trial_checkin_mail', skipped: 'no e-mail sender configured', handle: t.handle, posts, events: total, daysLeft: left }));
+      continue;
+    }
+    const msg = trialCheckinEmail(origin, t.handle, posts, w?.last_polled_at ?? null, events.map(toItem), total, left, t.expires_at!, t.manage_token, t.unsub_token, t.lang);
+    const r = await sender.send({ to: t.email!, ...msg });
+    console.log(JSON.stringify({ watch: 'trial_checkin_mail', handle: t.handle, ok: r.ok, error: r.error, events: total }));
+  }
+  return { ended, reminded, checkedIn };
 }
 
 /** For the digest: days left and manage token per trial watch id (only active trials). */
