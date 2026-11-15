@@ -203,6 +203,15 @@ export interface TimelineOptions {
   base: string;
   /** Count folded threads toward maxPosts (the profile endpoint) instead of raw own posts. */
   foldForCount?: boolean;
+  /**
+   * Early stop for timelines full of reposts: after `enoughPages` pages, stop as soon as at least
+   * `minOwn` own posts are in hand (Watch reads 2 pages for most accounts, up to maxPages for
+   * accounts whose own posts are buried between reposts). Unset = only maxPosts/maxPages count.
+   */
+  enoughPages?: number;
+  minOwn?: number;
+  /** Retries stop once the whole lookup is older than this (default RETRY_BEFORE_MS). */
+  retryBeforeMs?: number;
 }
 
 export interface Timeline {
@@ -232,7 +241,7 @@ export async function fetchOwnTimeline(handle: string, o: TimelineOptions): Prom
   while (pages < o.maxPages) {
     const attempts = pages === 0 ? FIRST_PAGE_ATTEMPTS : LATER_PAGE_ATTEMPTS;
     let page = await fetchPage(o.base, handle, cursor);
-    for (let a = 1; a < attempts && page.status !== 'ok' && Date.now() - started < RETRY_BEFORE_MS; a++) {
+    for (let a = 1; a < attempts && page.status !== 'ok' && Date.now() - started < (o.retryBeforeMs ?? RETRY_BEFORE_MS); a++) {
       page = await fetchPage(o.base, handle, cursor);
     }
     pages++;
@@ -255,6 +264,7 @@ export async function fetchOwnTimeline(handle: string, o: TimelineOptions): Prom
     cursor = page.cursor;
     const count = o.foldForCount === false ? own.length : foldThreads(own).length;
     if (count >= o.maxPosts || !cursor) break;
+    if (o.enoughPages && pages >= o.enoughPages && count >= (o.minOwn ?? 0)) break;
   }
   return { status, own, failed, cursor, pages };
 }

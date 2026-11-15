@@ -2,6 +2,7 @@ import type { D1Database, D1PreparedStatement } from '@cloudflare/workers-types'
 import { fxBase } from '../fx';
 import { fetchOwnTimeline, isoDate, type OwnPost, type RawStatus } from '../profile';
 import { compareIdsDesc, snowflakeDate, waybackSnapshot } from '../url';
+import type { TimelineOptions } from '../profile';
 import {
   marks,
   newId,
@@ -23,11 +24,22 @@ import {
  * the window); every candidate is confirmed with a single-status lookup, and a post that is only
  * older than the window is dropped from the snapshot without an event. A fetched post is "new"
  * only when its ID is newer than every post already known for the handle (a post that merely
- * re-enters the window, or a thread reply whose root fell off, is stored silently).
+ * re-enters the window, or a thread reply whose root fell off, is stored silently). When nothing
+ * is known yet but the handle is already being watched (the window held no own posts so far), a
+ * post counts as new when its ID dates from after the first active watch on the handle was created.
+ *
+ * Window depth: most accounts fill it in 2 timeline pages. Accounts that mostly repost bury their
+ * own posts (one real account: 7 own posts in 200 timeline items, the newest at item 47), so the
+ * poller keeps reading, up to WINDOW_MAX_PAGES, until it holds WINDOW_MIN_OWN own posts.
  */
 
 export const WINDOW_POSTS = 40;
+/** Pages read for a normal account; more only while fewer than WINDOW_MIN_OWN own posts were found. */
 export const WINDOW_PAGES = 2;
+export const WINDOW_MAX_PAGES = 6;
+export const WINDOW_MIN_OWN = 10;
+/** FxTwitter answers spurious 404s; deep reads get more time for retries than the 15 s default. */
+const WINDOW_RETRY_MS = 40_000;
 /** Deletion confirmations per handle per run. */
 export const MAX_CONFIRMATIONS = 10;
 const STATUS_TIMEOUT_MS = 8_000;
@@ -93,8 +105,12 @@ export interface Diff {
   seen: string[];
 }
 
-/** The comparison at the heart of the poller. `known` may be empty (first poll → everything unseen, nothing fresh). */
-export function diff(known: Known[], fetched: FetchedPost[]): Diff {
+/**
+ * The comparison at the heart of the poller. `known` may be empty: on a first poll everything is
+ * unseen and nothing fresh, unless `watchedSince` (ISO time the handle started being watched) is
+ * given, in which case thread roots posted after it are fresh.
+ */
+export function diff(known: Known[], fetched: FetchedPost[], watchedSince?: string | null): Diff {
   const knownIds = new Set(known.map(k => k.post_id));
   const fetchedIds = new Set(fetched.map(f => f.id));
   let maxKnown: string | null = null;
@@ -103,7 +119,12 @@ export function diff(known: Known[], fetched: FetchedPost[]): Diff {
   for (const f of fetched) if (!minPresent || compareIdsDesc(f.id, minPresent) > 0) minPresent = f.id;
 
   const unseen = fetched.filter(f => !knownIds.has(f.id));
-  const fresh = maxKnown ? unseen.filter(f => !f.parentId && compareIdsDesc(f.id, maxKnown!) < 0) : [];
+  const since = !maxKnown && watchedSince ? Date.parse(watchedSince) : NaN;
+  const fresh = maxKnown
+    ? unseen.filter(f => !f.parentId && compareIdsDesc(f.id, maxKnown!) < 0)
+    : Number.isNaN(since)
+      ? []
+      : unseen.filter(f => !f.parentId && (snowflakeDate(f.id)?.getTime() ?? 0) > since);
   const seen = fetched.filter(f => knownIds.has(f.id)).map(f => f.id);
   const candidates = minPresent
     ? known
@@ -238,9 +259,20 @@ export const payloadOf = (p: FetchedPost | SnapshotRow, wayback?: string): PostP
       }
     : { text: p.text, createdAt: p.createdAt, media: p.media, parentId: p.parentId, authorName: p.authorName, ...(wayback ? { wayback } : {}) };
 
+/** How Watch reads a timeline: see "Window depth" above. */
+export const windowOptions = (base: string): TimelineOptions => ({
+  maxPosts: WINDOW_POSTS,
+  maxPages: WINDOW_MAX_PAGES,
+  enoughPages: WINDOW_PAGES,
+  minOwn: WINDOW_MIN_OWN,
+  retryBeforeMs: WINDOW_RETRY_MS,
+  base,
+  foldForCount: false,
+});
+
 /** Fetches the window and stores it as the baseline (no events). Used on create. Returns false when the timeline could not be read. */
 export async function seedHandle(db: D1Database, env: WatchEnv, handle: string): Promise<boolean> {
-  const t = await fetchOwnTimeline(handle, { maxPosts: WINDOW_POSTS, maxPages: WINDOW_PAGES, base: fxBase(env), foldForCount: false });
+  const t = await fetchOwnTimeline(handle, windowOptions(fxBase(env)));
   if (t.status !== 'ok') return false;
   const now = nowIso();
   const stmts = t.own.map(p => insertSnapshot(db, handle, toFetched(p), now));
@@ -265,7 +297,7 @@ export interface PollResult {
  */
 export async function pollHandle(db: D1Database, env: WatchEnv, handle: string, wantNew: boolean): Promise<PollResult> {
   const base = fxBase(env);
-  const t = await fetchOwnTimeline(handle, { maxPosts: WINDOW_POSTS, maxPages: WINDOW_PAGES, base, foldForCount: false });
+  const t = await fetchOwnTimeline(handle, windowOptions(base));
   if (t.status === 'not_found') return { result: 'not_found' };
   if (t.status === 'error') return { result: 'error' };
   const fetched = t.own.map(toFetched);
@@ -273,9 +305,17 @@ export async function pollHandle(db: D1Database, env: WatchEnv, handle: string, 
 
   const known = (await db.prepare('SELECT post_id, parent_id FROM snapshots WHERE handle = ?').bind(handle).all<Known>()).results;
   if (!known.length) {
-    // No baseline (first poll, or pruned while unwatched): store the window silently.
-    if (fetched.length) await db.batch(fetched.map(p => insertSnapshot(db, handle, p, now)));
-    return { result: 'ok', seeded: true };
+    // No baseline yet (the window held no own posts so far, or it was pruned): store the window,
+    // and report posts written after the handle started being watched as new (diff's watchedSince).
+    if (!fetched.length) return { result: 'ok', seeded: true };
+    const since = wantNew
+      ? (await db.prepare("SELECT MIN(created_at) AS t FROM watches WHERE handle = ? AND status = 'active'").bind(handle).first<{ t: string | null }>())?.t
+      : null;
+    const d = diff([], fetched, since);
+    const stmts = fetched.map(p => insertSnapshot(db, handle, p, now));
+    for (const p of d.fresh) stmts.push(insertEvent(db, handle, 'new', p.id, payloadOf(p), now));
+    await db.batch(stmts);
+    return { result: 'ok', seeded: true, fresh: d.fresh.length };
   }
 
   const d = diff(known, fetched);
