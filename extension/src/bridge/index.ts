@@ -4,7 +4,8 @@
  *
  *   - marks <html data-xt-ext="<version>"> and posts `xt:hello` (now and on DOMContentLoaded);
  *   - posts `xt:status` on every page after the hello (the site does not ask for it);
- *   - follows the site's language: its stored choice (`xtracticle_lang`), else <html lang>;
+ *   - follows the site's language, only when the page states a choice: the stored `xtracticle_lang`, else a
+ *     language-prefixed path (/tr/...). An unprefixed page's default <html lang="en"> changes nothing (lang.ts);
  *   - answers the site's messages (logic.ts), `xt:saved:*` on /saved only.
  */
 import { DATASET_KEY, isTrustedEvent, message, parseSiteMessage, type ExtMessage } from '../../../src/shared/bridge';
@@ -36,7 +37,7 @@ import { handleSiteMessage, sendStatus, type BridgeDeps } from './logic';
     } catch {
       /* storage blocked */
     }
-    const lang = siteLang(stored, document.documentElement?.getAttribute('lang') || null);
+    const lang = siteLang(stored, location.pathname);
     if (lang) void send({ type: 'lang:set', lang });
   };
 

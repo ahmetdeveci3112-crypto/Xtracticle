@@ -1,7 +1,7 @@
 /** Links the extension opens on xtracticle.com (extension/src/links.ts) and its language choice (lang.ts). */
 import { describe, expect, it } from 'vitest';
 import { FINDER_PATHS, finderUrl, parseStatusUrl, proUrl, savedUrl, statusUrl } from '../../extension/src/links';
-import { fill, mapUiLang, pickLang } from '../../extension/src/lang';
+import { fill, langOf, mapUiLang, pickLang } from '../../extension/src/lang';
 import { LANGS } from '../../src/shared/bridge';
 import { parseDlHash, parseSavedHash, savedPath } from '../../src/lib/ext';
 import { extText } from '../../src/i18n';
@@ -64,6 +64,16 @@ describe('language', () => {
     expect(pickLang('ja', 'tr-TR')).toBe('ja');
     expect(pickLang('xx', 'tr-TR')).toBe('tr');
     expect(pickLang(null, 'fr')).toBe('en');
+  });
+  it('no site choice: X\'s interface language before the browser\'s', () => {
+    expect(pickLang(null, 'en-US', 'tr')).toBe('tr');
+    expect(pickLang(undefined, 'tr-TR', 'ja')).toBe('ja');
+    expect(pickLang('es', 'en-US', 'tr')).toBe('es'); // the site's choice still wins
+    expect(pickLang(null, 'tr-TR', 'de')).toBe('tr'); // X in a language we lack → the browser's
+    expect(pickLang(null, 'fr', 'x-unknown')).toBe('en');
+    expect(pickLang(null, 'ar', null)).toBe('ar');
+    expect(langOf('pt-BR')).toBe('pt');
+    expect(langOf('de')).toBeNull();
   });
   it('every language has every string, placeholders intact', () => {
     const keys = Object.keys(extText.en).sort();

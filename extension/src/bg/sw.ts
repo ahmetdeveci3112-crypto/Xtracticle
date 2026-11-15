@@ -27,6 +27,10 @@ chrome.runtime.onInstalled.addListener(details => {
   })().catch(() => {});
 });
 
+// The bookmarks button's "hidden for this session" flag lives in chrome.storage.session, which content scripts
+// may only read once the SW allows it (nothing else is kept there).
+void chrome.storage.session.setAccessLevel?.({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' }).catch(() => {});
+
 // Every wake-up: both calls return at once when their cache is fresh (10 min / 6 h); queued counters go out when due.
 void getPro().catch(() => {});
 void refreshConfig().catch(() => {});

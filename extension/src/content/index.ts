@@ -15,7 +15,8 @@ import { send } from '../messages';
 import { XT_VERSION } from '../config';
 import { parseStatusUrl } from '../links';
 import { categoryOf, isHookMessage, OPS_TAG, parseStoredConfig, type HookMessage, type OpsMessage, type XtConfig } from '../x/ops';
-import { startBookmarksPanel } from './bookmarks-panel';
+import { bookmarksPageKind } from './anchors';
+import { EXPORT_HASH, startBookmarksPanel } from './bookmarks-panel';
 import type { ScanResponse } from './scan';
 import { accountFromCookie, handleHookMessage, RecentPosts } from './capture';
 import { goneFromDetail } from './gone';
@@ -31,6 +32,8 @@ import { initLang, watchTheme } from './ui';
   const queue: HookMessage[] = [];
   const recent = new RecentPosts();
   const parseFailSent = new Set<string>();
+  // Read now, at document_start: X redirects /i/bookmarks to /i/history and the redirect drops the hash.
+  const openedForExport = location.hash === EXPORT_HASH && !!bookmarksPageKind(location.pathname);
 
   let ui: {
     bookmarks: ReturnType<typeof startBookmarksPanel>;
@@ -117,6 +120,33 @@ import { initLang, watchTheme } from './ui';
 
   /* ─── UI ─── */
 
+  const DISMISS_KEY = 'xtBookmarksButtonHidden';
+  /**
+   * A flag for this browser session: chrome.storage.session (the SW opens it to content scripts), else memory
+   * for this tab. Never X's own localStorage / sessionStorage.
+   */
+  function sessionFlag(key: string) {
+    let mem = false;
+    return {
+      get: async () => {
+        try {
+          return (await chrome.storage.session.get(key))[key] === true || mem;
+        } catch {
+          return mem;
+        }
+      },
+      set: async (v: boolean) => {
+        mem = v;
+        try {
+          if (v) await chrome.storage.session.set({ [key]: true });
+          else await chrome.storage.session.remove(key);
+        } catch {
+          /* session storage closed to content scripts: memory only */
+        }
+      },
+    };
+  }
+
   async function startUi() {
     await initLang();
     const save = startSaveMenu({ recent, account: () => accountFromCookie(document.cookie), enabled: () => config.flags.saveMenu });
@@ -125,6 +155,8 @@ import { initLang, watchTheme } from './ui';
         const r = await send({ type: 'pro:get' });
         return r.ok && r.data.pro;
       },
+      dismissed: sessionFlag(DISMISS_KEY),
+      openedForExport,
     });
     const gone = startGonePanel();
     ui = { save, bookmarks, gone };
@@ -135,11 +167,12 @@ import { initLang, watchTheme } from './ui';
     });
 
     // X is a single-page app: follow URL changes (pushState is not visible from this world, so poll cheaply).
+    // The bookmarks panel also follows the History page's tabs, which switch without a URL change.
     let href = '';
     const route = () => {
+      bookmarks.route();
       if (location.href === href) return;
       href = location.href;
-      bookmarks.route();
       gone.route();
     };
     route();

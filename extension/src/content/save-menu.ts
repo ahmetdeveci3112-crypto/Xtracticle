@@ -16,7 +16,11 @@
  */
 import { buildDoc, fileBaseName, frontMatter } from '../../../src/shared/convert';
 import type { FxTweet } from '../../../src/shared/fx';
-import { MARK_SVG } from '../../../src/shared/brand';
+/* Outline "save to device" glyph. Not the brand mark: the mark is bookmark-shaped
+ * and would sit right next to X's own bookmark button in the action bar. */
+const SAVE_ICON =
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<path d="M12 3.5v11"/><path d="M7.5 10.5 12 15l4.5-4.5"/><path d="M4.5 15.5v3a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3"/></svg>';
 import { langInfo, translations } from '../../../src/i18n';
 import { XT_BASE } from '../config';
 import { parseStatusUrl, savedUrl, statusUrl, type OpenFormat } from '../links';
@@ -89,7 +93,7 @@ export function startSaveMenu(deps: SaveMenuDeps) {
     slot.style.cssText = 'display:flex;align-items:center;justify-content:flex-end;flex:0 0 auto;';
     const h = createHost('xt-save', BUTTON_CSS);
     const b = el('button', { class: 'b', type: 'button', 'aria-haspopup': 'menu', 'aria-expanded': 'false', 'aria-label': L().saveLabel, title: L().saveLabel });
-    b.innerHTML = MARK_SVG(18);
+    b.innerHTML = SAVE_ICON;
     b.addEventListener('click', e => {
       e.preventDefault();
       e.stopPropagation(); // the post itself is a link: the click must not open it

@@ -107,12 +107,20 @@ describe('bridge: payloads', () => {
 });
 
 describe('site language', () => {
-  it('the stored choice first, then <html lang>', () => {
-    expect(siteLang('"tr"', 'en')).toBe('tr');
-    expect(siteLang(null, 'pt-BR')).toBe('pt');
-    expect(siteLang('"xx"', 'ja')).toBe('ja');
-    expect(siteLang('not json', 'zh-CN')).toBe('zh');
-    expect(siteLang(null, 'de')).toBeNull();
+  it('the stored choice first, then a language-prefixed path', () => {
+    expect(siteLang('"tr"', '/saved')).toBe('tr');
+    expect(siteLang('"en"', '/tr/saved')).toBe('en'); // an explicit English pick is a choice too
+    expect(siteLang(null, '/pt/saved')).toBe('pt');
+    expect(siteLang(null, '/ja')).toBe('ja');
+    expect(siteLang('"xx"', '/zh/pro')).toBe('zh');
+    expect(siteLang('not json', '/ar/')).toBe('ar');
+  });
+  it('an unprefixed page states no choice: its default lang="en" does not change the extension', () => {
+    expect(siteLang(null, '/saved')).toBeNull();
+    expect(siteLang(null, '/')).toBeNull();
+    expect(siteLang(null, '/de/saved')).toBeNull();
+    expect(siteLang(null, '/trending')).toBeNull();
+    expect(siteLang('', '/pro')).toBeNull();
     expect(siteLang(null, null)).toBeNull();
   });
 });

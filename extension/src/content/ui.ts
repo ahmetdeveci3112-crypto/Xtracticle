@@ -19,13 +19,16 @@ export const L = () => strings;
 export const lang_ = () => lang;
 export const onLang = (fn: () => void) => void langListeners.add(fn);
 
+/** X's interface language (<html lang>): the fallback before the browser's when the site set none (lang.ts). */
+const xLang = () => document.documentElement?.getAttribute('lang') || null;
+
 export async function initLang(): Promise<void> {
-  lang = await currentLang();
+  lang = await currentLang(xLang());
   strings = stringsFor(lang);
   try {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== 'local' || !changes[LANG_KEY]) return;
-      lang = pickLang(changes[LANG_KEY].newValue, chrome.i18n.getUILanguage());
+      lang = pickLang(changes[LANG_KEY].newValue, chrome.i18n.getUILanguage(), xLang());
       strings = stringsFor(lang);
       langListeners.forEach(fn => fn());
     });

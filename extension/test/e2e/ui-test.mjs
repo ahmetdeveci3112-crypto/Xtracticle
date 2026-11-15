@@ -122,12 +122,57 @@ function bookmarksPage(from, n, cursor) {
   return JSON.stringify({ data: { bookmark_timeline_v2: { timeline: { instructions: [{ type: 'TimelineAddEntries', entries }] } } } });
 }
 
-/** The bookmarks page: loads Bookmarks pages with its own fetch when the end comes into view, like X. */
-function bookmarksHtml() {
+/** Stand-in Bookmarks page sizes: 22 per answer like X, 6 pages (the last one short). */
+const BM_SIZES = [22, 22, 22, 22, 22, 12];
+const BM_TOTAL = BM_SIZES.reduce((a, b) => a + b, 0);
+
+/**
+ * The bookmarks page, as X behaves (observed on x.com, Nov 2026): it asks for the next Bookmarks page with its
+ * own fetch only when the end of the list comes within ~1.5 screens, once per approach (no chaining), and the
+ * list is virtual: every loaded post keeps its height, but only the posts near the viewport are in the DOM.
+ * `history`: X's current x.com/i/history page instead (Bookmarks | Likes tabs, no testids on the tabs, the
+ * Likes tab empties the list); `redirect`: /i/bookmarks moves itself to /i/history and drops the hash, as X does.
+ */
+function bookmarksHtml({ history = false, redirect = false } = {}) {
+  const tabs = history
+    ? `<div role="tablist"><div role="presentation"><a role="tab" aria-selected="true" href="#" id="tab-b">Yer İşaretleri</a></div><div role="presentation"><a role="tab" aria-selected="false" href="#" id="tab-l">Beğeni</a></div></div>`
+    : '';
+  const tabScript = history
+    ? `for (const t of document.querySelectorAll('[role="tab"]')) t.addEventListener('click', e => {
+    e.preventDefault();
+    for (const o of document.querySelectorAll('[role="tab"]')) o.setAttribute('aria-selected', String(o === t));
+    items.length = 0; draw();
+    if (t.id !== 'tab-l') { next = 0; load(); }
+  });`
+    : '';
   const script = `<script>
-  window.xtPage = { fetches: 0, statuses: [] };
-  let next = 0, loading = false;
+  ${redirect ? "history.replaceState(null, '', '/i/history');" : ''}
+  window.xtPage = { fetches: 0, statuses: [], maxArticles: 0 };
+  const ROW = 160;
+  let next = 0, loading = false, armed = true;
+  const items = [];
   const list = document.getElementById('list');
+  list.style.position = 'relative';
+  const tpl = ${JSON.stringify(articleHtml('HANDLE', 'ID', 'Ada', 'TEXT'))};
+  const shown = new Map();
+  function draw() {
+    list.style.height = items.length * ROW + 'px';
+    const top = list.getBoundingClientRect().top + scrollY;
+    const first = Math.max(0, Math.floor((scrollY - top) / ROW) - 2);
+    const last = Math.min(items.length - 1, Math.ceil((scrollY + innerHeight - top) / ROW) + 1);
+    for (const [i, node] of shown) if (i < first || i > last || !items[i]) { node.remove(); shown.delete(i); }
+    for (let i = first; i <= last; i++) {
+      if (shown.has(i)) continue;
+      const t = items[i];
+      const div = document.createElement('div');
+      div.innerHTML = tpl.replaceAll('HANDLE', 'ada_example').replaceAll('ID', t.rest_id).replace('TEXT', t.legacy.full_text);
+      const a = div.firstChild;
+      a.style.cssText = 'position:absolute;inset-inline:0;top:' + i * ROW + 'px;height:' + ROW + 'px;box-sizing:border-box';
+      list.appendChild(a);
+      shown.set(i, a);
+    }
+    window.xtPage.maxArticles = Math.max(window.xtPage.maxArticles, document.querySelectorAll('article').length);
+  }
   async function load() {
     if (loading) return; loading = true;
     window.xtPage.fetches++;
@@ -137,20 +182,23 @@ function bookmarksHtml() {
       if (r.ok) {
         const j = await r.json();
         const entries = j.data.bookmark_timeline_v2.timeline.instructions[0].entries.filter(e => e.entryId.startsWith('tweet-'));
-        for (const e of entries) {
-          const t = e.content.itemContent.tweet_results.result;
-          const div = document.createElement('div');
-          div.innerHTML = ${JSON.stringify(articleHtml('HANDLE', 'ID', 'Ada', 'TEXT'))}.replaceAll('HANDLE', 'ada_example').replaceAll('ID', t.rest_id).replace('TEXT', t.legacy.full_text);
-          list.appendChild(div.firstChild);
-        }
+        for (const e of entries) items.push(e.content.itemContent.tweet_results.result);
         if (entries.length) next++;
+        draw();
       }
     } finally { loading = false; }
   }
   load();
-  addEventListener('scroll', () => { if (innerHeight + scrollY > document.body.scrollHeight - 300) load(); }, { passive: true });
+  addEventListener('scroll', () => {
+    draw();
+    const near = scrollY + innerHeight >= document.documentElement.scrollHeight - 1.5 * innerHeight;
+    if (near && armed) { armed = false; load(); }
+    else if (!near) armed = true;
+  }, { passive: true });
+  addEventListener('resize', draw);
+  ${tabScript}
 </script>`;
-  return page({ title: 'Bookmarks / X', main: `<h1>Bookmarks</h1><div id="list"></div>`, script });
+  return page({ title: history ? 'History / X' : 'Bookmarks / X', main: `<h1>${history ? 'Geçmiş' : 'Bookmarks'}</h1>${tabs}<div id="list"></div>`, script });
 }
 
 /* ─── Site stand-in (xtracticle.com) ─── */
@@ -304,7 +352,7 @@ export async function runUiStandInTest({ log = () => {}, expect, headless = !pro
         if (m[1] === 'Bookmarks') {
           const cursor = Number((JSON.parse(u.searchParams.get('variables') || '{}').cursor || 'c0').slice(1));
           if (cursor === throttle.at) return route.fulfill({ status: 429, contentType: 'application/json', body: '{"errors":[{"message":"Rate limit exceeded","code":88}]}' });
-          const sizes = [20, 20, 20, 15];
+          const sizes = BM_SIZES;
           const from = sizes.slice(0, cursor).reduce((a, b) => a + b, 0);
           return route.fulfill({ status: 200, contentType: 'application/json', body: bookmarksPage(from, sizes[cursor] || 0, cursor + 1) });
         }
@@ -315,7 +363,8 @@ export async function runUiStandInTest({ log = () => {}, expect, headless = !pro
         return route.fulfill({ status: 404, body: '{}' });
       }
       const theme = u.searchParams.get('theme') || 'light';
-      if (u.pathname === '/i/bookmarks') return route.fulfill({ status: 200, contentType: 'text/html', body: bookmarksHtml() });
+      if (u.pathname === '/i/bookmarks') return route.fulfill({ status: 200, contentType: 'text/html', body: bookmarksHtml({ history: u.searchParams.has('redirect'), redirect: u.searchParams.has('redirect') }) });
+      if (u.pathname === '/i/history') return route.fulfill({ status: 200, contentType: 'text/html', body: bookmarksHtml({ history: true }) });
       const st = u.pathname.match(/^\/([A-Za-z0-9_]+)\/status\/(\d+)$/);
       if (st) {
         const [, handle, id] = st;
@@ -451,13 +500,28 @@ export async function runUiStandInTest({ log = () => {}, expect, headless = !pro
     const panel = () => inShadow(pg, 'xt-bookmarks', roots => {
       const r0 = roots[0];
       if (!r0 || r0.host.hidden) return { shown: false };
-      return { shown: true, count: r0.querySelector('.count').textContent, info: r0.querySelector('.info').hidden ? null : r0.querySelector('.info').textContent, exp: r0.querySelector('a.btn').hidden ? null : r0.querySelector('a.btn').href };
+      const box = r0.host.getBoundingClientRect();
+      return {
+        shown: true,
+        expanded: !r0.querySelector('.p').hidden,
+        button: r0.querySelector('.pill').hidden ? null : r0.querySelector('.open').textContent,
+        size: box.width > 0 && box.height > 0,
+        count: r0.querySelector('.count').textContent,
+        info: r0.querySelector('.info').hidden ? null : r0.querySelector('.info').textContent,
+        exp: r0.querySelector('a.btn').hidden ? null : r0.querySelector('a.btn').href,
+      };
     });
     const press = label => inShadow(pg, 'xt-bookmarks', (roots, label) => [...roots[0].querySelectorAll('button')].find(b => b.textContent === label)?.click(), label);
+    /** A visit without #xt-export shows the small button: open the panel from it. */
+    const openPanel = async () => {
+      await poll(panel, p => p.shown && p.button);
+      await inShadow(pg, 'xt-bookmarks', roots => roots[0].querySelector('.open').click());
+      return poll(panel, p => p.expanded);
+    };
     state.gql.length = 0;
     await pg.goto('https://x.com/i/bookmarks#xt-export');
-    r.panel0 = await poll(panel, p => p.shown);
-    expect(B, '#xt-export opens the panel, free line shown', r.panel0.shown && r.panel0.info === 'Free: last 100 — Pro: all', r.panel0);
+    r.panel0 = await poll(panel, p => p.shown && p.expanded);
+    expect(B, '#xt-export opens the panel, free line shown', r.panel0.shown && r.panel0.expanded && r.panel0.info === 'Free: last 100 — Pro: all', r.panel0);
     await poll(() => pg.evaluate(() => window.xtPage.fetches), n => n >= 1);
     await sleep(500);
     await press('Scan bookmarks');
@@ -466,15 +530,19 @@ export async function runUiStandInTest({ log = () => {}, expect, headless = !pro
     await pg.screenshot({ path: path.join(SHOTS, 'bookmarks-panel.png') });
     r.pageFetches = await pg.evaluate(() => window.xtPage.fetches);
     expect(B, 'live counter while scanning', /^Scanning… \d+/.test(r.scanning.count), r.scanning);
-    expect(B, 'scan ends at the end of the list with the right count (75)', r.panelDone.count === 'Done: 75 bookmarks', r.panelDone);
+    r.maxArticles = await pg.evaluate(() => window.xtPage.maxArticles);
+    expect(B, `scan reaches the end of a ${BM_SIZES.length}-page virtual list with the right count (${BM_TOTAL})`, r.panelDone.count === `Done: ${BM_TOTAL} bookmarks`, { ...r.panelDone, fetches: r.pageFetches, maxArticles: r.maxArticles });
+    expect(B, 'the stand-in list is virtual (few articles in the DOM)', r.maxArticles > 0 && r.maxArticles <= 14, r.maxArticles);
     expect(B, '"Export on Xtracticle" → /saved with utm', r.panelDone.exp === `${BASE}/saved?utm_source=extension&utm_medium=bookmarks_panel&utm_campaign=credit`, r.panelDone.exp);
     expect(B, 'only the page’s own GraphQL requests reach x.com', state.gql.filter(o => o === 'Bookmarks').length === r.pageFetches && state.gql.every(o => o === 'Bookmarks'), { gql: state.gql.length, page: r.pageFetches });
-    r.status75 = await msg({ type: 'saved:status' });
-    expect(B, 'the scanned bookmarks are in the archive (75 + the saved posts)', r.status75?.data?.bookmarks === 75, r.status75?.data);
+    r.statusAll = await msg({ type: 'saved:status' });
+    expect(B, `the scanned bookmarks are in the archive (${BM_TOTAL})`, r.statusAll?.data?.bookmarks === BM_TOTAL, r.statusAll?.data);
 
     // Incremental: everything is archived now → a second scan stops as "up to date".
     await pg.goto('https://x.com/i/bookmarks');
-    await poll(panel, p => p.shown);
+    r.collapsed = await poll(panel, p => p.shown);
+    expect(B, 'without the hash: the small "Export bookmarks" button, panel folded', !r.collapsed.expanded && r.collapsed.button === 'Export bookmarks' && r.collapsed.size, r.collapsed);
+    await openPanel();
     await poll(() => pg.evaluate(() => window.xtPage.fetches), n => n >= 1);
     await sleep(500);
     await press('Scan bookmarks');
@@ -484,7 +552,7 @@ export async function runUiStandInTest({ log = () => {}, expect, headless = !pro
     // 429 on page 3 → stop with the slowed-down line.
     throttle.at = 2;
     await pg.goto('https://x.com/i/bookmarks');
-    await poll(panel, p => p.shown);
+    await openPanel();
     await sleep(500);
     await msg({ type: 'saved:clear' });
     await press('Scan bookmarks');
@@ -492,6 +560,34 @@ export async function runUiStandInTest({ log = () => {}, expect, headless = !pro
     r.throttleFetchesAfter = await pg.evaluate(() => window.xtPage.statuses);
     expect(B, '429 → stops with "X slowed down, continue in 15 min"', r.throttled.count === 'X slowed down, continue in 15 min', r.throttled);
     throttle.at = -1;
+
+    // X now redirects /i/bookmarks to /i/history (tabs: Bookmarks | Likes) and the hash is lost.
+    await pg.goto('https://x.com/i/history');
+    r.history = await poll(panel, p => p.shown && p.button, 6000);
+    expect(B, '/i/history, Bookmarks tab, no hash → the button is visible (non-zero size)', r.history.button === 'Export bookmarks' && r.history.size && !r.history.expanded, r.history);
+    await pg.screenshot({ path: path.join(SHOTS, 'bookmarks-button.png') });
+    await pg.click('#tab-l');
+    r.historyLikes = await poll(panel, p => !p.shown, 3000);
+    expect(B, 'Likes tab → no button', !r.historyLikes.shown, r.historyLikes);
+    await pg.click('#tab-b');
+    r.historyBack = await poll(panel, p => p.shown, 3000);
+    expect(B, 'back to the Bookmarks tab → the button again', r.historyBack.shown, r.historyBack);
+    await pg.evaluate(() => history.pushState(null, '', '/home'));
+    r.historyAway = await poll(panel, p => !p.shown, 3000);
+    expect(B, 'SPA navigation away (pushState) hides it', !r.historyAway.shown, r.historyAway);
+    await pg.evaluate(() => history.pushState(null, '', '/i/history'));
+    r.historyAgain = await poll(panel, p => p.shown, 3000);
+    expect(B, 'SPA navigation back shows it', r.historyAgain.shown, r.historyAgain);
+    await inShadow(pg, 'xt-bookmarks', roots => roots[0].querySelector('.pill .x').click());
+    await pg.reload();
+    await sleep(1500);
+    r.historyDismissed = await panel();
+    expect(B, '× hides the button for the browser session (after a reload too)', !r.historyDismissed.shown, r.historyDismissed);
+    await pg.goto('https://x.com/i/bookmarks?redirect=1#xt-export');
+    r.historyExport = await poll(panel, p => p.shown && p.expanded, 6000);
+    r.historyExportUrl = pg.url();
+    expect(B, 'the site\'s #xt-export link through the redirect opens the panel (and undoes the ×)', r.historyExport.expanded && r.historyExportUrl === 'https://x.com/i/history', { panel: r.historyExport, url: r.historyExportUrl });
+    await pg.screenshot({ path: path.join(SHOTS, 'bookmarks-history.png') });
 
     /* (c) archive panel */
     const C = 'ui (c) archive panel';
