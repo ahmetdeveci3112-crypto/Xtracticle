@@ -600,6 +600,9 @@ body {
 .xt-grid.xt-grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }
 .xt-content .xt-ext-cta { text-align: center; }
 .xt-content .xt-ext-cta .xt-ext-actions { justify-content: center; }
+/* Which store: html.xt-edge (set before first paint, only when an Edge listing exists) swaps the Chrome button for the Edge one. */
+html:not(.xt-edge) .xt-ext-edge { display: none !important; }
+html.xt-edge .xt-ext-chrome { display: none !important; }
 /* Which button shows: the extension's bridge marks <html data-xt-ext> before first paint. */
 .xt-ext-installed { display: none !important; }
 html[data-xt-ext] .xt-ext-installed { display: inline-flex !important; }

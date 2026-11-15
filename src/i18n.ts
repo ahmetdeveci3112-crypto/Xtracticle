@@ -1678,6 +1678,7 @@ export interface SavedStrings {
   noExtBrowser: string;
   ctaText: string;
   ctaInstall: string;
+  ctaInstallEdge: string;
   ctaNotNow: string;
   ctaExport: string;
   ctaRemoved: string;
@@ -1734,6 +1735,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtBrowser: 'It works in desktop Chrome, Edge, Brave and Opera.',
     ctaText: 'Save posts and export your bookmarks right on X.',
     ctaInstall: 'Add to Chrome',
+    ctaInstallEdge: 'Add to Edge',
     ctaNotNow: 'Not now',
     ctaExport: 'Export bookmarks',
     ctaRemoved: 'Unavailable bookmark copies ({n})',
@@ -1788,6 +1790,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtBrowser: 'Masaüstünde Chrome, Edge, Brave ve Opera’da çalışır.',
     ctaText: 'Gönderileri kaydedin, yer imlerinizi doğrudan X’te dışa aktarın.',
     ctaInstall: "Chrome'a ekle",
+    ctaInstallEdge: "Edge'e ekle",
     ctaNotNow: 'Şimdi değil',
     ctaExport: 'Yer imlerini dışa aktar',
     ctaRemoved: 'Erişilemeyen yer imi kopyaları ({n})',
@@ -1842,6 +1845,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtBrowser: 'Funciona en Chrome, Edge, Brave y Opera de escritorio.',
     ctaText: 'Guarda posts y exporta tus guardados directamente en X.',
     ctaInstall: 'Añadir a Chrome',
+    ctaInstallEdge: 'Añadir a Edge',
     ctaNotNow: 'Ahora no',
     ctaExport: 'Exportar guardados',
     ctaRemoved: 'Copias de guardados no disponibles ({n})',
@@ -1896,6 +1900,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtBrowser: 'Funciona no Chrome, Edge, Brave e Opera para computador.',
     ctaText: 'Salve posts e exporte seus itens salvos direto no X.',
     ctaInstall: 'Adicionar ao Chrome',
+    ctaInstallEdge: 'Adicionar ao Edge',
     ctaNotNow: 'Agora não',
     ctaExport: 'Exportar itens salvos',
     ctaRemoved: 'Cópias de itens salvos indisponíveis ({n})',
@@ -1950,6 +1955,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtBrowser: 'パソコン版のChrome、Edge、Brave、Operaで使えます。',
     ctaText: 'Xの画面でそのままポストを保存し、ブックマークを書き出せます。',
     ctaInstall: 'Chromeに追加',
+    ctaInstallEdge: 'Edgeに追加',
     ctaNotNow: '今はしない',
     ctaExport: 'ブックマークを書き出す',
     ctaRemoved: '表示できないブックマークのコピー（{n}）',
@@ -2004,6 +2010,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtBrowser: '支持桌面版 Chrome、Edge、Brave 和 Opera。',
     ctaText: '直接在 X 上保存帖子、导出书签。',
     ctaInstall: '添加到 Chrome',
+    ctaInstallEdge: '添加到 Edge',
     ctaNotNow: '以后再说',
     ctaExport: '导出书签',
     ctaRemoved: '无法访问的书签副本（{n}）',
@@ -2058,6 +2065,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtBrowser: 'تعمل على Chrome وEdge وBrave وOpera في الحاسوب.',
     ctaText: 'احفظ المنشورات وصدّر إشاراتك المرجعية مباشرة على X.',
     ctaInstall: 'أضِف إلى Chrome',
+    ctaInstallEdge: 'أضِف إلى Edge',
     ctaNotNow: 'ليس الآن',
     ctaExport: 'تصدير الإشارات المرجعية',
     ctaRemoved: 'نسخ إشارات مرجعية غير متاحة ({n})',

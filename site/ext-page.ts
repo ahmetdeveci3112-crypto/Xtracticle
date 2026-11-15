@@ -1,13 +1,12 @@
-import { EXT_HOME_COPY } from '../src/shared/ext-copy';
-import { EXT_PAGE_PATHS, savedPath } from '../src/lib/ext';
+import { EXT_PAGE_PATHS, chromeListed, edgeListed, savedPath } from '../src/lib/ext';
 import { steps, type FAQ, type Lang, type SitePage } from './blocks';
-import { extButtons, extLoopVideo } from './ext-home';
+import { extButtons, extLoopVideo, extNote } from './ext-home';
 import { proPath } from './pro-page';
 
 /**
  * /chrome-extension and its six language versions: the browser extension's landing page.
  * site/pages.ts includes these pages only while `extAvailable()` (src/lib/ext.ts): with no store
- * listing there is no page, no sitemap entry and no footer link. Launch day = fill `EXT_STORE_URL`.
+ * listing there is no page, no sitemap entry and no footer link. Launch day = fill `EXT_STORE_URL` (and `EXT_EDGE_STORE_URL`).
  *
  * Facts only (docs/chrome-extension-plan.md and site/privacy-page.ts): free; Markdown on the spot,
  * PDF/EPUB/ZIP through the site; bookmark export (last 100 free, all with Pro); copies stay in the
@@ -502,6 +501,78 @@ const COPY: Record<Lang, ExtPageCopy> = {
   },
 };
 
+/**
+ * Browser statements that depend on which store listings exist (src/lib/ext.ts). The base copy above is true
+ * with only the Chrome Web Store listing (Edge installs from it too). `faqEdge`: both listings, `*Only`: only the
+ * Edge Add-ons listing (no Chrome Web Store yet).
+ */
+interface BrowserVariants {
+  faqEdge: string;
+  faqOnly: string;
+  ctaPOnly: string;
+  stepOnly: string;
+}
+
+const BROWSERS: Record<Lang, BrowserVariants> = {
+  en: {
+    faqEdge: 'Chrome, Microsoft Edge, Brave and Opera on a computer (Windows, macOS, Linux, ChromeOS). Chrome, Brave and Opera install it from the Chrome Web Store, Edge from Microsoft Edge Add-ons. It does not run in Firefox, Safari or on phones; there, use the website.',
+    faqOnly: 'Microsoft Edge on a computer (Windows, macOS, Linux). It installs from Microsoft Edge Add-ons. It does not run in other browsers or on phones; there, use the website.',
+    ctaPOnly: 'Free, no account. Works in Microsoft Edge on a computer.',
+    stepOnly: '<strong>Add the extension</strong> to Microsoft Edge and open x.com, signed in as usual.',
+  },
+  tr: {
+    faqEdge: 'Bilgisayarda Chrome, Microsoft Edge, Brave ve Opera’da (Windows, macOS, Linux, ChromeOS). Chrome, Brave ve Opera’ya Chrome Web Mağazası’ndan, Edge’e Microsoft Edge Eklentileri’nden kurulur. Firefox, Safari ve telefonlarda çalışmaz; orada web sitesini kullanın.',
+    faqOnly: 'Bilgisayarda Microsoft Edge’de (Windows, macOS, Linux). Microsoft Edge Eklentileri’nden kurulur. Başka tarayıcılarda ve telefonlarda çalışmaz; orada web sitesini kullanın.',
+    ctaPOnly: 'Ücretsiz, hesap gerekmez. Bilgisayarda Microsoft Edge’de çalışır.',
+    stepOnly: '<strong>Eklentiyi</strong> Microsoft Edge’e ekleyin ve her zamanki gibi oturum açık olarak x.com’u açın.',
+  },
+  es: {
+    faqEdge: 'En Chrome, Microsoft Edge, Brave y Opera en el ordenador (Windows, macOS, Linux, ChromeOS). Chrome, Brave y Opera la instalan desde Chrome Web Store, y Edge desde Microsoft Edge Add-ons. No funciona en Firefox, Safari ni en el móvil; ahí usa la web.',
+    faqOnly: 'En Microsoft Edge en el ordenador (Windows, macOS, Linux). Se instala desde Microsoft Edge Add-ons. No funciona en otros navegadores ni en el móvil; ahí usa la web.',
+    ctaPOnly: 'Gratis y sin cuenta. Funciona en Microsoft Edge en el ordenador.',
+    stepOnly: '<strong>Añade la extensión</strong> a Microsoft Edge y abre x.com con tu sesión iniciada, como siempre.',
+  },
+  pt: {
+    faqEdge: 'No Chrome, Microsoft Edge, Brave e Opera no computador (Windows, macOS, Linux, ChromeOS). Chrome, Brave e Opera instalam pela Chrome Web Store, e o Edge pelo Microsoft Edge Add-ons. Não funciona no Firefox, no Safari nem no celular; lá, use o site.',
+    faqOnly: 'No Microsoft Edge no computador (Windows, macOS, Linux). Instala-se pelo Microsoft Edge Add-ons. Não funciona em outros navegadores nem no celular; lá, use o site.',
+    ctaPOnly: 'Grátis, sem conta. Funciona no Microsoft Edge no computador.',
+    stepOnly: '<strong>Adicione a extensão</strong> ao Microsoft Edge e abra o x.com com sua conta conectada, como sempre.',
+  },
+  ja: {
+    faqEdge: 'パソコン（Windows、macOS、Linux、ChromeOS）のChrome、Microsoft Edge、Brave、Operaです。Chrome、Brave、OperaはChromeウェブストアから、EdgeはMicrosoft Edgeアドオンからインストールします。Firefox、Safari、スマートフォンでは動作しないので、Webサイトをお使いください。',
+    faqOnly: 'パソコン（Windows、macOS、Linux）のMicrosoft Edgeです。Microsoft Edgeアドオンからインストールします。ほかのブラウザやスマートフォンでは動作しないので、Webサイトをお使いください。',
+    ctaPOnly: '無料、アカウント不要。パソコンのMicrosoft Edgeで使えます。',
+    stepOnly: '<strong>拡張機能を追加</strong>します（Microsoft Edge）。いつもどおりログインした状態でx.comを開きます。',
+  },
+  zh: {
+    faqEdge: '电脑（Windows、macOS、Linux、ChromeOS）上的 Chrome、Microsoft Edge、Brave 和 Opera。Chrome、Brave 和 Opera 从 Chrome 网上应用店安装，Edge 从 Microsoft Edge 加载项安装。不支持 Firefox、Safari 和手机；在这些地方请使用网站。',
+    faqOnly: '电脑（Windows、macOS、Linux）上的 Microsoft Edge，从 Microsoft Edge 加载项安装。不支持其他浏览器和手机；在这些地方请使用网站。',
+    ctaPOnly: '免费，无需账号。适用于电脑上的 Microsoft Edge。',
+    stepOnly: '<strong>把扩展添加到</strong> Microsoft Edge，像平常一样登录后打开 x.com。',
+  },
+  ar: {
+    faqEdge: 'في Chrome وMicrosoft Edge وBrave وOpera على الكمبيوتر (Windows وmacOS وLinux وChromeOS). يثبّتها Chrome وBrave وOpera من متجر Chrome الإلكتروني، ويثبّتها Edge من إضافات Microsoft Edge. لا تعمل في Firefox أو Safari أو على الهواتف؛ استخدم الموقع هناك.',
+    faqOnly: 'في Microsoft Edge على الكمبيوتر (Windows وmacOS وLinux)، وتُثبَّت من إضافات Microsoft Edge. لا تعمل في المتصفحات الأخرى أو على الهواتف؛ استخدم الموقع هناك.',
+    ctaPOnly: 'مجانية ودون حساب. تعمل في Microsoft Edge على الكمبيوتر.',
+    stepOnly: '<strong>أضف الإضافة</strong> إلى Microsoft Edge، وافتح x.com وأنت مسجّل الدخول كالمعتاد.',
+  },
+};
+
+/** The page copy with its browser statements matching the listings that exist. */
+function forListings(lang: Lang, c: ExtPageCopy): ExtPageCopy {
+  const b = BROWSERS[lang];
+  if (!chromeListed()) {
+    return {
+      ...c,
+      bmSteps: [b.stepOnly, ...c.bmSteps.slice(1)],
+      ctaP: b.ctaPOnly,
+      faq: c.faq.map(f => (f.a.includes('Edge') ? { ...f, a: b.faqOnly } : f)),
+    };
+  }
+  if (edgeListed()) return { ...c, faq: c.faq.map(f => (f.a.includes('Edge') ? { ...f, a: b.faqEdge } : f)) };
+  return c;
+}
+
 const LANGS: Lang[] = ['en', 'tr', 'es', 'pt', 'ja', 'zh', 'ar'];
 
 const fill = (html: string, lang: Lang) =>
@@ -520,7 +591,7 @@ function sections(lang: Lang, c: ExtPageCopy): string {
 <section>
   <p>${f(c.intro)}</p>
   <div class="xt-ext-actions">${extButtons(lang, 'page')}</div>
-  <p class="xt-ext-note">${EXT_HOME_COPY[lang].note}</p>
+  <p class="xt-ext-note">${extNote(lang)}</p>
   ${extLoopVideo(lang)}
 </section>
 
@@ -581,7 +652,7 @@ export const extPageCopy = (lang: Lang): ExtPageCopy => COPY[lang];
 /** All seven language versions (site/pages.ts adds them only while the store listing exists). */
 export const extPages = (): SitePage[] =>
   LANGS.map(lang => {
-    const c = COPY[lang];
+    const c = forListings(lang, COPY[lang]);
     const path = EXT_PAGE_PATHS[lang];
     return {
       id: lang === 'en' ? 'chrome-extension' : `${lang}-chrome-extension`,

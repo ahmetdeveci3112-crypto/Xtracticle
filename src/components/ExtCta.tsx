@@ -7,11 +7,15 @@ import { EXT_HOME_COPY } from '../shared/ext-copy';
 import {
   BOOKMARKS_EXPORT_URL,
   createBridgeClient,
+  EXT_EDGE_STORE_URL,
+  chromeListed,
+  edgeListed,
   extAvailable,
   extCtaAllowed,
   extInstalled,
   quietExtCta,
   savedPath,
+  storeForNow,
   storeUrl,
   type BridgeClient,
   type CtaSpot,
@@ -84,8 +88,9 @@ export default function ExtCta({ lang, spot, className = '' }: { lang: Lang; spo
     );
   }
 
-  const href = storeUrl(spot);
-  if (!allowed || !href) return null;
+  const store = storeForNow(spot);
+  if (!allowed || !store) return null;
+  const href = store.href;
   return (
     <div className={row} style={style} data-ext-cta="install">
       <Puzzle className="w-4 h-4 shrink-0" aria-hidden="true" />
@@ -102,7 +107,7 @@ export default function ExtCta({ lang, spot, className = '' }: { lang: Lang; spo
           track('promo_click', { spot: `ext_${spot}`, item: 'extension' });
         }}
       >
-        {s.ctaInstall}
+        {store.browser === 'edge' ? s.ctaInstallEdge : s.ctaInstall}
       </a>
       <button
         type="button"
@@ -139,12 +144,12 @@ export function ExtCtaSlots({ lang }: { lang: Lang }) {
 
 /**
  * Home page hero: the extension as the second way in, right under the link form (owner request 15 Nov 2026).
- * Rendered only once the store listing exists (`extAvailable()`), with the same markup as the static shell
+ * Rendered only once a store listing exists (`extAvailable()`), with the same markup as the static shell
  * (site/ext-home.ts `extHeroShell`), so taking over the page moves nothing:
  * - whether the line shows: `html.xt-ext-on`, set before first paint (`EXT_HERO_SCRIPT`: installed, or desktop
  *   Chromium without "Not now");
  * - which buttons show: CSS. Installed (`html[data-xt-ext]`) → "Export bookmarks" (+ "Unavailable bookmark copies (N)"
- *   when the extension reported some); otherwise "Add to Chrome — free", one sentence and "Not now"
+ *   when the extension reported some); otherwise "Add to Chrome — free" ("Add to Edge — free" in Edge, when it has its own listing), one sentence and "Not now"
  *   (quiet for 180 days, shared with the other one-line calls).
  */
 export function ExtHeroCta({ lang }: { lang: Lang }) {
@@ -159,19 +164,36 @@ export function ExtHeroCta({ lang }: { lang: Lang }) {
   const n = installed ? status?.unavailable ?? 0 : 0;
   return (
     <div className="xt-ext-hero print:hidden">
-      <a
-        href={storeUrl('hero')}
-        target="_blank"
-        rel="noopener"
-        className="xt-ext-hero-btn xt-ext-install focus-ring"
-        onClick={() => {
-          quietExtCta();
-          track('promo_click', { spot: 'ext_hero', item: 'extension' });
-        }}
-      >
-        <Puzzle className="w-4 h-4 shrink-0" aria-hidden="true" />
-        {c.heroInstall}
-      </a>
+      {chromeListed() && (
+        <a
+          href={storeUrl('hero')}
+          target="_blank"
+          rel="noopener"
+          className="xt-ext-hero-btn xt-ext-install xt-ext-chrome focus-ring"
+          onClick={() => {
+            quietExtCta();
+            track('promo_click', { spot: 'ext_hero', item: 'extension' });
+          }}
+        >
+          <Puzzle className="w-4 h-4 shrink-0" aria-hidden="true" />
+          {c.heroInstall}
+        </a>
+      )}
+      {edgeListed() && (
+        <a
+          href={storeUrl('hero', EXT_EDGE_STORE_URL)}
+          target="_blank"
+          rel="noopener"
+          className="xt-ext-hero-btn xt-ext-install xt-ext-edge focus-ring"
+          onClick={() => {
+            quietExtCta();
+            track('promo_click', { spot: 'ext_hero', item: 'extension' });
+          }}
+        >
+          <Puzzle className="w-4 h-4 shrink-0" aria-hidden="true" />
+          {c.heroInstallEdge}
+        </a>
+      )}
       <a
         href={BOOKMARKS_EXPORT_URL}
         target="_blank"

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { EXT_PAGE_PATHS, EXT_STORE_URL, extAvailable, isDesktopChromium, storeUrl } from '../../src/lib/ext';
-import { EXT_HERO_SCRIPT } from '../../site/ext-home';
+import { EXT_EDGE_STORE_URL, EXT_PAGE_PATHS, EXT_STORE_URL, extAvailable, isDesktopChromium, isEdge, storeFor, storeUrl } from '../../src/lib/ext';
+import { extHeroScript } from '../../site/ext-home';
 import { extPages } from '../../site/ext-page';
 import { PAGES } from '../../site/pages';
 import { renderPage, renderSitemap } from '../../site/render';
@@ -21,8 +21,19 @@ describe('extAvailable', () => {
     );
   });
 
-  it('is off in the committed code (launch day = one line in src/lib/ext.ts)', () => {
+  it('is on when either store has a listing', () => {
+    const chrome = 'https://chromewebstore.google.com/detail/x';
+    const edge = 'https://microsoftedge.microsoft.com/addons/detail/y';
+    expect(extAvailable('', '')).toBe(false);
+    expect(extAvailable(chrome, '')).toBe(true);
+    expect(extAvailable('', edge)).toBe(true);
+    expect(extAvailable(chrome, edge)).toBe(true);
+    expect(extAvailable('', 'edge.example/x')).toBe(false);
+  });
+
+  it('is off in the committed code (launch day = one line per store in src/lib/ext.ts)', () => {
     expect(EXT_STORE_URL).toBe('');
+    expect(EXT_EDGE_STORE_URL).toBe('');
     expect(extAvailable()).toBe(false);
   });
 });
@@ -109,8 +120,10 @@ describe('/chrome-extension pages (built only after launch)', () => {
   });
 });
 
-describe('hero line script (runs before first paint)', () => {
-  const run = (ua: string, uaData?: unknown, opts: { installed?: boolean; quietUntil?: number; noStorage?: boolean } = {}) => {
+describe('head script (runs before first paint)', () => {
+  const CHROME_URL = 'https://chromewebstore.google.com/detail/x';
+  const EDGE_URL = 'https://microsoftedge.microsoft.com/addons/detail/y';
+  const run = (chrome: boolean, edge: boolean, ua: string, uaData?: unknown, opts: { installed?: boolean; quietUntil?: number; noStorage?: boolean } = {}) => {
     const classes = new Set<string>();
     const document = { documentElement: { dataset: opts.installed ? { xtExt: '1.0.0' } : {}, classList: { add: (c: string) => classes.add(c) } } };
     const localStorage = {
@@ -119,29 +132,72 @@ describe('hero line script (runs before first paint)', () => {
         return opts.quietUntil ? String(opts.quietUntil) : null;
       },
     };
-    new Function('document', 'navigator', 'localStorage', EXT_HERO_SCRIPT)(document, { userAgent: ua, userAgentData: uaData }, localStorage);
-    return classes.has('xt-ext-on');
+    new Function('document', 'navigator', 'localStorage', extHeroScript(chrome, edge))(document, { userAgent: ua, userAgentData: uaData }, localStorage);
+    return { on: classes.has('xt-ext-on'), edge: classes.has('xt-edge') };
   };
+  const CHROME = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
+  const EDGE = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0';
+  const FIREFOX = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14.5; rv:132.0) Gecko/20100101 Firefox/132.0';
   const UAS: [string, unknown][] = [
-    ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36', undefined],
-    ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0', undefined],
-    ['Mozilla/5.0 (Macintosh; Intel Mac OS X 14.5; rv:132.0) Gecko/20100101 Firefox/132.0', undefined],
+    [CHROME, undefined],
+    [EDGE, undefined],
+    ['Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 OPR/115.0.0.0', undefined],
+    [CHROME, { mobile: false, brands: [{ brand: 'Brave' }, { brand: 'Chromium' }] }],
+    [CHROME, { mobile: false, brands: [{ brand: 'Microsoft Edge' }, { brand: 'Chromium' }] }],
+    [FIREFOX, undefined],
     ['Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15', undefined],
     ['Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Mobile Safari/537.36', undefined],
+    ['Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Mobile Safari/537.36 EdgA/130.0.0.0', undefined],
     ['Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/130.0 Mobile/15E148 Safari/604.1', undefined],
+    ['Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 EdgiOS/130.0 Mobile/15E148 Safari/604.1', undefined],
     ['anything', { mobile: false, brands: [{ brand: 'Brave' }] }],
     ['anything', { mobile: true, brands: [{ brand: 'Google Chrome' }] }],
+    ['anything', { mobile: true, brands: [{ brand: 'Microsoft Edge' }] }],
     ['Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/130.0.0.0 Safari/537.36', { mobile: false, brands: [{ brand: 'Not?A_Brand' }] }],
   ];
-  it('agrees with isDesktopChromium', () => {
-    for (const [ua, data] of UAS) expect(run(ua, data), ua).toBe(isDesktopChromium(ua, data as never));
+  const LISTINGS: [string, string][] = [['', ''], [CHROME_URL, ''], ['', EDGE_URL], [CHROME_URL, EDGE_URL]];
+
+  it('makes the same decision as storeFor for every browser and listing combination', () => {
+    for (const [chromeUrl, edgeUrl] of LISTINGS) {
+      for (const [ua, data] of UAS) {
+        const store = storeFor('hero', ua, data as never, chromeUrl, edgeUrl);
+        const r = run(!!chromeUrl, !!edgeUrl, ua, data);
+        const label = `${chromeUrl ? 'C' : '-'}${edgeUrl ? 'E' : '-'} ${ua}`;
+        expect(r.on, label).toBe(store !== null);
+        expect(r.edge, label).toBe(store?.browser === 'edge');
+      }
+    }
   });
-  it('respects "Not now" and blocked storage like extCtaAllowed, and always shows for an installed extension', () => {
-    const chrome = UAS[0][0];
-    expect(run(chrome, undefined, { quietUntil: Date.now() + 1e6 })).toBe(false);
-    expect(run(chrome, undefined, { quietUntil: Date.now() - 1e6 })).toBe(true);
-    expect(run(chrome, undefined, { noStorage: true })).toBe(false);
-    expect(run(UAS[2][0], undefined, { installed: true })).toBe(true);
+
+  it('is the old Chrome-only behaviour while only the Chrome listing exists', () => {
+    for (const [ua, data] of UAS) expect(run(true, false, ua, data).on, ua).toBe(isDesktopChromium(ua, data as never));
+    expect(run(true, false, EDGE).edge).toBe(false);
+  });
+
+  it('Edge gets the Edge button only with an Edge listing; a Chrome visitor never does', () => {
+    expect(run(true, true, EDGE)).toEqual({ on: true, edge: true });
+    expect(run(true, false, EDGE)).toEqual({ on: true, edge: false });
+    expect(run(true, true, CHROME)).toEqual({ on: true, edge: false });
+    expect(run(false, true, CHROME)).toEqual({ on: false, edge: false });
+    expect(run(false, true, EDGE)).toEqual({ on: true, edge: true });
+    expect(run(false, false, CHROME)).toEqual({ on: false, edge: false });
+  });
+
+  it('isEdge: Edg/ in the user agent or the brand; mobile Edge has neither Edg/ nor desktop Chromium', () => {
+    expect(isEdge(EDGE)).toBe(true);
+    expect(isEdge(CHROME)).toBe(false);
+    expect(isEdge(CHROME, { brands: [{ brand: 'Microsoft Edge' }] })).toBe(true);
+    expect(isEdge('x EdgA/130.0.0.0')).toBe(false);
+    expect(isEdge('x EdgiOS/130.0')).toBe(false);
+  });
+
+  it('respects "Not now" and blocked storage, and always shows for an installed extension', () => {
+    expect(run(true, false, CHROME, undefined, { quietUntil: Date.now() + 1e6 }).on).toBe(false);
+    expect(run(true, false, CHROME, undefined, { quietUntil: Date.now() - 1e6 }).on).toBe(true);
+    expect(run(true, false, CHROME, undefined, { noStorage: true }).on).toBe(false);
+    expect(run(true, false, FIREFOX, undefined, { installed: true }).on).toBe(true);
+    // the store swap is not tied to "Not now": the extension pages' buttons follow it too
+    expect(run(true, true, EDGE, undefined, { quietUntil: Date.now() + 1e6 })).toEqual({ on: false, edge: true });
   });
 });
 

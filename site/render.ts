@@ -359,8 +359,9 @@ function content(page: SitePage): string {
 }
 
 function config(page: SitePage): string {
-  // Home pages, once the extension is in the store: decide before first paint whether the hero line shows.
-  const extHero = page.isHome && extAvailable() ? `<script>${EXT_HERO_SCRIPT}</script>` : '';
+  // Home and /chrome-extension pages, once the extension is in a store: decide before first paint whether the
+  // hero line shows (xt-ext-on) and which store button (xt-edge), so nothing moves afterwards.
+  const extHero = (page.isHome || page.group === 'chrome-extension') && extAvailable() ? `<script>${EXT_HERO_SCRIPT()}</script>` : '';
   const alternates = Object.fromEntries(langVersions(page).map(v => [v.lang, v.path]));
   const cfg = { page: page.id, path: page.path, lang: page.lang, h1: page.h1, sub: page.sub, primary: page.primary, alternates };
   // Runs before first paint:

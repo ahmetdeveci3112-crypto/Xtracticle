@@ -6,15 +6,16 @@ import { savedText, translations, langInfo, type Lang } from '../i18n';
 import type { SavedSummary } from '../shared/bridge';
 import { buildDoc, fileBaseName, frontMatter, type XDoc } from '../shared/convert';
 import { archiveLinks } from '../shared/url';
+import { EXT_HOME_COPY } from '../shared/ext-copy';
 import { countEvent, track } from '../lib/analytics';
 import {
-  EXT_STORE_URL,
+  chromeListed,
+  extAvailable,
   createBridgeClient,
   extInstalled,
-  isDesktopChromiumNow,
+  storeForNow,
   listAllSaved,
   parseSavedHash,
-  storeUrl,
   type BridgeClient,
 } from '../lib/ext';
 import { canOpen, exportScope, freeGoneIds, handleOf, isGone, postToTweets, postUrl, searchSummaries, summariesCsv } from '../lib/saved';
@@ -630,8 +631,7 @@ function SavedItem({
 
 function NoExtension({ lang }: { lang: Lang }) {
   const s = savedText[lang];
-  const href = storeUrl('saved');
-  const desktop = isDesktopChromiumNow();
+  const store = storeForNow('saved');
   return (
     <div className="max-w-2xl mx-auto mb-10 card rounded-3xl p-6 md:p-8" data-saved-noext>
       <div className="flex items-start gap-3">
@@ -639,15 +639,15 @@ function NoExtension({ lang }: { lang: Lang }) {
         <div className="min-w-0">
           <h2 className="text-xl font-semibold mb-2">{s.noExtH}</h2>
           <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>{s.noExtText}</p>
-          {EXT_STORE_URL && href && desktop ? (
-            <a href={href} target="_blank" rel="noopener" className={`${btnBase} btn-primary`} style={primaryStyle}>
+          {store ? (
+            <a href={store.href} target="_blank" rel="noopener" className={`${btnBase} btn-primary`} style={primaryStyle}>
               <Puzzle className="w-3.5 h-3.5" aria-hidden="true" />
-              {s.ctaInstall}
+              {store.browser === 'edge' ? s.ctaInstallEdge : s.ctaInstall}
             </a>
           ) : (
-            !EXT_STORE_URL && <p className="text-sm font-medium">{s.noExtSoon}</p>
+            !extAvailable() && <p className="text-sm font-medium">{s.noExtSoon}</p>
           )}
-          <p className="mt-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>{s.noExtBrowser}</p>
+          <p className="mt-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>{chromeListed() ? s.noExtBrowser : EXT_HOME_COPY[lang].noteEdgeOnly}</p>
         </div>
       </div>
     </div>

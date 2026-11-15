@@ -8,7 +8,8 @@ vi.mock('../../src/lib/ext', async importOriginal => {
   return {
     ...real,
     EXT_STORE_URL: STORE,
-    extAvailable: (base: string = STORE) => real.extAvailable(base),
+    extAvailable: (base: string = STORE) => real.extAvailable(base, ''),
+    chromeListed: (base: string = STORE) => real.chromeListed(base),
     storeUrl: (spot: Parameters<typeof real.storeUrl>[0], base: string = STORE) => real.storeUrl(spot, base),
   };
 });
@@ -18,6 +19,19 @@ const { renderPage, renderSitemap } = await import('../../site/render');
 const { EXT_PAGE_PATHS } = await import('../../src/lib/ext');
 
 const TEMPLATE = '<html lang="en"><head><!--xt:config--><!--xt:head--></head><body><div id="root"><!--xt:shell--></div><!--xt:content--></body></html>';
+
+describe('with only the Chrome Web Store listing', () => {
+  it('has no Edge button anywhere and keeps the Chrome-family browser note', () => {
+    const home = renderPage(TEMPLATE, PAGES.find(p => p.isHome && p.lang === 'en')!);
+    expect(home).not.toContain('xt-ext-edge');
+    expect(home).toContain('For Chrome, Edge, Brave and Opera on a computer.');
+    expect(home).toContain('class="xt-btn xt-ext-install xt-ext-chrome"');
+    // the head script decides on Chrome only: no xt-edge class
+    expect(home).toContain('C=true,E=false');
+    const ext = PAGES.find(p => p.group === 'chrome-extension' && p.lang === 'en')!;
+    expect(renderPage(TEMPLATE, ext)).toContain('C=true,E=false');
+  });
+});
 
 describe('with a store URL', () => {
   it('builds the seven extension pages, in the sitemap and the footer', () => {

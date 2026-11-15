@@ -17,7 +17,7 @@ import {
  * - `createBridgeClient()`: request/response over `window.postMessage` with the protocol in
  *   src/shared/bridge.ts (`xt:saved:list` / `get` / `delete`, `xt:status`).
  * - `notifyProChanged()` / `notifyLangChanged()`: tell the extension the site changed state.
- * - `isDesktopChromium()`, `extCtaAllowed()`: when the one-line install call may show.
+ * - `isDesktopChromium()`, `storeFor()`, `extCtaAllowed()`: which store a visitor gets, and when the one-line install call may show.
  * - `parseDlHash()`, `parseSavedHash()`: the `#dl=` and `#id=` deep links.
  *
  * Safe to import in Node (site/ build code reads `EXT_STORE_URL`): nothing touches the DOM at load.
@@ -30,11 +30,27 @@ import {
 export const EXT_STORE_URL = '';
 
 /**
+ * Microsoft Edge Add-ons listing. Empty until it is published; while it is empty Edge visitors get the
+ * Chrome Web Store button (Edge installs from there too). Launch day =
+ * 'https://microsoftedge.microsoft.com/addons/detail/hompokahpbdaljejfmjpkemhcdonabla'.
+ */
+export const EXT_EDGE_STORE_URL = '';
+
+const isListing = (url: string): boolean => /^https:\/\//.test(url);
+
+/** Is the Chrome Web Store listing set? */
+export const chromeListed = (chrome: string = EXT_STORE_URL): boolean => isListing(chrome);
+/** Is the Edge Add-ons listing set? */
+export const edgeListed = (edge: string = EXT_EDGE_STORE_URL): boolean => isListing(edge);
+
+/**
  * The one switch for everything that promotes the extension: the home page's hero line and extension
  * section, the /chrome-extension pages (and their sitemap and footer entries) and the one-line calls.
- * All of them follow `EXT_STORE_URL`; while it is empty the site looks as it did before the extension.
+ * All of them follow the two store URLs (either one set turns it on); while both are empty the site
+ * looks as it did before the extension.
  */
-export const extAvailable = (base: string = EXT_STORE_URL): boolean => /^https:\/\//.test(base);
+export const extAvailable = (chrome: string = EXT_STORE_URL, edge: string = EXT_EDGE_STORE_URL): boolean =>
+  isListing(chrome) || isListing(edge);
 
 /** Where the bookmark export panel opens (the content script watches for this hash). */
 export const BOOKMARKS_EXPORT_URL = 'https://x.com/i/bookmarks#xt-export';
@@ -43,7 +59,7 @@ export type CtaSpot = 'home' | 'finder' | 'pro' | 'saved' | 'hero' | 'section' |
 
 /** The store listing with our UTM tags, or '' while there is no listing. */
 export function storeUrl(spot: CtaSpot, base: string = EXT_STORE_URL): string {
-  if (!extAvailable(base)) return '';
+  if (!isListing(base)) return '';
   const sep = base.includes('?') ? '&' : '?';
   return `${base}${sep}utm_source=xtracticle&utm_medium=site&utm_campaign=ext_${spot}`;
 }
@@ -278,12 +294,46 @@ export function isDesktopChromiumNow(): boolean {
   return isDesktopChromium(navigator.userAgent || '', (navigator as Navigator & { userAgentData?: UaData }).userAgentData);
 }
 
+/** Microsoft Edge (desktop or not; callers check `isDesktopChromium` first). Mobile Edge (EdgA, EdgiOS) has no `Edg/`. */
+export function isEdge(ua: string, uaData?: UaData | null): boolean {
+  if (uaData && Array.isArray(uaData.brands) && uaData.brands.some(b => b.brand === 'Microsoft Edge')) return true;
+  return /\bEdg\/\d/.test(ua);
+}
+
+export type StoreBrowser = 'chrome' | 'edge';
+
+/**
+ * Which store a visitor installs from, and the link with our UTM tags; null when there is none for them.
+ * Desktop Edge with an Edge listing → Edge Add-ons. Every other desktop Chromium (Chrome, Brave, Opera,
+ * Vivaldi, and Edge while there is no Edge listing) → Chrome Web Store. Anyone else, or a browser whose
+ * store has no listing yet (Chrome visitor while only the Edge listing exists) → null.
+ * `EXT_HERO_SCRIPT` (site/ext-home.ts) makes the same decision in <head> for the static pages.
+ */
+export function storeFor(
+  spot: CtaSpot,
+  ua: string,
+  uaData?: UaData | null,
+  chrome: string = EXT_STORE_URL,
+  edge: string = EXT_EDGE_STORE_URL,
+): { browser: StoreBrowser; href: string } | null {
+  if (!isDesktopChromium(ua, uaData)) return null;
+  if (isEdge(ua, uaData) && edgeListed(edge)) return { browser: 'edge', href: storeUrl(spot, edge) };
+  if (chromeListed(chrome)) return { browser: 'chrome', href: storeUrl(spot, chrome) };
+  return null;
+}
+
+/** `storeFor` for this browser; null on the server. */
+export function storeForNow(spot: CtaSpot): { browser: StoreBrowser; href: string } | null {
+  if (typeof navigator === 'undefined') return null;
+  return storeFor(spot, navigator.userAgent || '', (navigator as Navigator & { userAgentData?: UaData }).userAgentData);
+}
+
 /** Same pattern as PromoCard's QUIET_KEY: "Not now" keeps the install call away for a long while. */
 export const EXT_CTA_QUIET_KEY = 'xtracticle_ext_cta_until';
 const CTA_QUIET_MS = 180 * 24 * 3600 * 1000;
 
 export function extCtaAllowed(): boolean {
-  if (!extAvailable() || !isDesktopChromiumNow()) return false;
+  if (!storeForNow('home')) return false;
   try {
     return Date.now() > Number(localStorage.getItem(EXT_CTA_QUIET_KEY) || 0);
   } catch {

@@ -8,6 +8,7 @@ import {
   parseDlHash,
   parseSavedHash,
   savedPath,
+  storeFor,
   storeUrl,
 } from '../../src/lib/ext';
 
@@ -181,6 +182,48 @@ describe('browser detection', () => {
     expect(isDesktopChromium(UA.chromeAndroid, { mobile: true, brands: [{ brand: 'Google Chrome' }] })).toBe(false);
     expect(isDesktopChromium(UA.chromeIos)).toBe(false);
     expect(isDesktopChromium(UA.ipadSafari)).toBe(false);
+  });
+});
+
+describe('which store a visitor gets', () => {
+  const CH = 'https://chromewebstore.google.com/detail/abc';
+  const ED = 'https://microsoftedge.microsoft.com/addons/detail/def?x=1';
+  const chrome = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36';
+  const edge = chrome.replace('Safari/537.36', 'Safari/537.36 Edg/142.0.0.0');
+  const opera = chrome.replace('Safari/537.36', 'Safari/537.36 OPR/126.0.0.0');
+  const firefox = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:145.0) Gecko/20100101 Firefox/145.0';
+  const phone = 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Mobile Safari/537.36 EdgA/142.0.0.0';
+  const brave = { mobile: false, brands: [{ brand: 'Brave' }, { brand: 'Chromium' }] };
+
+  it('Edge → Edge Add-ons when it has a listing, with UTM tags kept (and & after an existing ?)', () => {
+    expect(storeFor('hero', edge, undefined, CH, ED)).toEqual({
+      browser: 'edge',
+      href: `${ED}&utm_source=xtracticle&utm_medium=site&utm_campaign=ext_hero`,
+    });
+    expect(storeFor('page', chrome, { brands: [{ brand: 'Microsoft Edge' }], mobile: false }, CH, ED)?.browser).toBe('edge');
+  });
+  it('Chrome, Brave, Opera → Chrome Web Store', () => {
+    for (const [ua, data] of [[chrome], [opera], [chrome, brave]] as const) {
+      expect(storeFor('pro', ua, data, CH, ED)).toEqual({
+        browser: 'chrome',
+        href: `${CH}?utm_source=xtracticle&utm_medium=site&utm_campaign=ext_pro`,
+      });
+    }
+  });
+  it('Edge falls back to the Chrome Web Store while there is no Edge listing', () => {
+    expect(storeFor('home', edge, undefined, CH, '')?.browser).toBe('chrome');
+  });
+  it('a browser whose store has no listing gets nothing (Chrome while only the Edge listing exists)', () => {
+    expect(storeFor('home', chrome, undefined, '', ED)).toBeNull();
+    expect(storeFor('home', opera, undefined, '', ED)).toBeNull();
+    expect(storeFor('home', edge, undefined, '', ED)?.browser).toBe('edge');
+  });
+  it('nothing leaks while both listings are empty', () => {
+    for (const ua of [chrome, edge, opera, firefox, phone]) expect(storeFor('home', ua, undefined, '', '')).toBeNull();
+  });
+  it('Firefox, Safari and phones (including mobile Edge) get nothing', () => {
+    for (const ua of [firefox, phone]) expect(storeFor('home', ua, undefined, CH, ED)).toBeNull();
+    expect(storeFor('home', chrome, { mobile: true, brands: [{ brand: 'Microsoft Edge' }] }, CH, ED)).toBeNull();
   });
 });
 
