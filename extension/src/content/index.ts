@@ -155,6 +155,7 @@ import { initLang, watchTheme } from './ui';
         const r = await send({ type: 'pro:get' });
         return r.ok && r.data.pro;
       },
+      account: () => accountFromCookie(document.cookie),
       dismissed: sessionFlag(DISMISS_KEY),
       openedForExport,
     });

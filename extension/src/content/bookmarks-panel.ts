@@ -23,6 +23,20 @@ import { L, createHost, el, lang_, onLang } from './ui';
 export const EXPORT_HASH = '#xt-export';
 
 const CSS = `
+.p { position: relative; overflow: hidden; }
+.bar { position: absolute; inset-block-start: 0; inset-inline: 0; height: 2px; background: var(--border); overflow: hidden; }
+.bar[hidden] { display: none; }
+.bar i { position: absolute; inset-block: 0; inset-inline-start: 0; width: 100%; background: var(--accent); opacity: .55; }
+.sub { margin: -4px 0 10px; font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.sub[hidden] { display: none; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
+.dot[hidden] { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .bar i { width: 35%; opacity: 1; animation: xt-slide 1.6s ease-in-out infinite; }
+  .dot { animation: xt-pulse 1.4s ease-in-out infinite; }
+}
+@keyframes xt-slide { from { transform: translateX(-100%); } to { transform: translateX(290%); } }
+@keyframes xt-pulse { 50% { opacity: .35; } }
 :host { position: fixed; inset-block-end: 20px; inset-inline-end: 20px; z-index: 2147483000; }
 .p {
   width: 288px; max-width: calc(100vw - 40px); padding: 14px 16px 14px;
@@ -64,6 +78,8 @@ export interface BookmarksPanelDeps {
   isPro: () => Promise<boolean>;
   /** The × on the button hides it for the browser session (chrome.storage.session; memory when unavailable). */
   dismissed: { get: () => Promise<boolean>; set: (v: boolean) => Promise<void> };
+  /** The signed-in account (twid cookie); null = unknown, then the scan never stops as up to date. */
+  account?: () => string | null;
   /** The page was first opened with #xt-export (read at document_start, before a redirect drops the hash). */
   openedForExport?: boolean;
 }
@@ -71,7 +87,7 @@ export interface BookmarksPanelDeps {
 export function startBookmarksPanel(deps: BookmarksPanelDeps) {
   let h: ReturnType<typeof createHost> | null = null;
   let parts: {
-    panel: HTMLElement; pill: HTMLElement; openLabel: HTMLElement; open: HTMLButtonElement; dismiss: HTMLButtonElement;
+    panel: HTMLElement; pill: HTMLElement; dot: HTMLElement; bar: HTMLElement; sub: HTMLElement; elapsed: HTMLElement; step: HTMLElement; openLabel: HTMLElement; open: HTMLButtonElement; dismiss: HTMLButtonElement;
     title: HTMLElement; info: HTMLElement; count: HTMLElement; scan: HTMLButtonElement; stop: HTMLButtonElement; exp: HTMLAnchorElement; close: HTMLButtonElement;
   } | null = null;
   let state: ScanState | null = null;
@@ -99,10 +115,11 @@ export function startBookmarksPanel(deps: BookmarksPanelDeps) {
     h = createHost('xt-bookmarks', CSS);
     const pill = el('div', { class: 'pill', role: 'region' });
     const open = el('button', { class: 'open', type: 'button', 'aria-expanded': 'false' });
+    const dot = el('span', { class: 'dot', 'aria-hidden': 'true', hidden: '' });
     const pillMark = el('span', { class: 'm', 'aria-hidden': 'true' });
     pillMark.innerHTML = MARK_SVG(14);
     const openLabel = el('span', { class: 'ol' });
-    open.append(pillMark, openLabel);
+    open.append(pillMark, dot, openLabel);
     const dismiss = el('button', { class: 'x', type: 'button' }, '×');
     pill.append(open, dismiss);
     const p = el('section', { class: 'p', role: 'region', hidden: '' });
@@ -114,14 +131,21 @@ export function startBookmarksPanel(deps: BookmarksPanelDeps) {
     head.append(mark, title, close);
     const info = el('p', { class: 'info' });
     const count = el('p', { class: 'count', role: 'status', 'aria-live': 'polite' });
+    // Elapsed time is aria-hidden (a per-second update must not be read out); the step text is not live either.
+    const sub = el('p', { class: 'sub', hidden: '' });
+    const elapsed = el('span', { 'aria-hidden': 'true' });
+    const step = el('span', { class: 'st' });
+    sub.append(elapsed, ' · ', step);
+    const bar = el('div', { class: 'bar', role: 'progressbar', 'aria-busy': 'true', hidden: '' });
+    bar.append(el('i'));
     const row = el('div', { class: 'row' });
     const scan = el('button', { class: 'btn primary', type: 'button' });
     const stop = el('button', { class: 'btn', type: 'button', hidden: '' });
     const exp = el('a', { class: 'btn', target: '_blank', rel: 'noopener', hidden: '' });
     row.append(scan, stop, exp);
-    p.append(head, info, count, row);
+    p.append(bar, head, info, count, sub, row);
     h.root.append(pill, p);
-    parts = { panel: p, pill, openLabel, open, dismiss, title, info, count, scan, stop, exp, close };
+    parts = { panel: p, pill, dot, bar, sub, elapsed, step, openLabel, open, dismiss, title, info, count, scan, stop, exp, close };
     scan.addEventListener('click', start);
     stop.addEventListener('click', () => finish(userStop(state!)));
     exp.addEventListener('click', () => void send({ type: 'event:track', event: { name: 'saved_open' } }));
@@ -131,7 +155,7 @@ export function startBookmarksPanel(deps: BookmarksPanelDeps) {
     });
     // × on the open panel folds it back into the button; × on the button hides it for this browser session.
     close.addEventListener('click', () => {
-      if (state?.running) finish(userStop(state));
+      // A running scan goes on while folded: the button shows it (dot and count).
       setExpanded(false);
       parts?.open.focus();
     });
@@ -153,6 +177,7 @@ export function startBookmarksPanel(deps: BookmarksPanelDeps) {
     parts.pill.setAttribute('aria-label', L().exportBookmarks);
     parts.panel.setAttribute('aria-label', L().exportBookmarks);
     parts.close.setAttribute('aria-label', L().close);
+    parts.bar.setAttribute('aria-label', L().scanning.replace('{n}', '').replace(/…\s*$/, '').trim());
     parts.dismiss.setAttribute('aria-label', L().close);
     parts.info.textContent = L().freeLimit;
     parts.info.hidden = pro;
@@ -189,6 +214,22 @@ export function startBookmarksPanel(deps: BookmarksPanelDeps) {
     parts.exp.hidden = !state || running || state.stopped === 'format';
     parts.exp.classList.toggle('primary', !!state && !running);
     parts.scan.classList.toggle('primary', !state || running);
+    parts.bar.hidden = !running;
+    parts.sub.hidden = !running;
+    parts.dot.hidden = !running;
+    parts.openLabel.textContent = running ? fill(L().scanPill, { n: state!.seen.size }) : L().exportBookmarks;
+    if (running) {
+      const sec = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
+      parts.elapsed.textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+      parts.step.textContent = stepText();
+    }
+  }
+
+  /** What the scan is doing right now, in words. */
+  function stepText(): string {
+    if (document.hidden) return L().scanPaused;
+    if (Date.now() - lastNewAt > SLOW_MS) return L().scanSlow;
+    return state && state.idle > 0 ? L().scanStepWait : L().scanStepScroll;
   }
 
   function setExpanded(v: boolean) {
@@ -216,8 +257,29 @@ export function startBookmarksPanel(deps: BookmarksPanelDeps) {
 
   /* ─── Scanning ─── */
 
-  function start() {
-    state = newScan(pageSeen);
+  const SLOW_MS = 10000;
+  let startedAt = 0;
+  /** When the last bookmark id new to this scan arrived (ms). */
+  let lastNewAt = 0;
+  let lastSeen = 0;
+  let ticker: ReturnType<typeof setInterval> | null = null;
+  let starting = false;
+  async function start() {
+    if (starting || state?.running) return;
+    starting = true;
+    try {
+      // 'Up to date' needs proof that an earlier scan of this account reached the end of the list.
+      const acc = deps.account?.() ?? null;
+      const r = acc ? await send({ type: 'scan:state', accountId: acc }) : null;
+      const incremental = !!(r && r.ok && r.data.fullScanAt);
+      state = newScan(pageSeen, incremental);
+    } finally {
+      starting = false;
+    }
+    startedAt = lastNewAt = Date.now();
+    lastSeen = state.seen.size;
+    if (ticker) clearInterval(ticker);
+    ticker = setInterval(render, 1000); // elapsed time and step text
     render();
     tick();
   }
@@ -239,9 +301,13 @@ export function startBookmarksPanel(deps: BookmarksPanelDeps) {
 
   function finish(s: ScanState) {
     state = s;
+    if (ticker) clearInterval(ticker);
+    ticker = null;
     if (timer) clearTimeout(timer);
     timer = null;
     render();
+    const acc = deps.account?.() ?? null;
+    if (s.stopped === 'end' && acc) void send({ type: 'scan:done', accountId: acc });
     void send({ type: 'event:track', event: { name: 'bookmarks_capture', param: countBucket(s.seen.size) } });
   }
 
@@ -268,6 +334,10 @@ export function startBookmarksPanel(deps: BookmarksPanelDeps) {
     }
     if (!state?.running) return;
     const next = onResponse(state, r);
+    if (next.seen.size > lastSeen) {
+      lastSeen = next.seen.size;
+      lastNewAt = Date.now();
+    }
     if (!next.running) finish(next);
     else {
       state = next;

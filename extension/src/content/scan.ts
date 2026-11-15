@@ -9,6 +9,7 @@
  *               response bringing a new bookmark                            → 'end'
  *               a listened Bookmarks answer was 429 or ≥ 500                 → 'throttled'
  *               2 pages in a row whose bookmarks were all already archived  → 'uptodate'
+ *                 (only when an earlier scan of this account reached the end of the list)
  *               2,000 bookmarks seen in this scan                           → 'limit'
  *               a response X sent in a shape the mapper did not recognise  → 'format'
  *               the user pressed Stop                                       → 'user'
@@ -39,13 +40,18 @@ export interface ScanState {
   idle: number;
   /** When the first of those steps was taken (ms), null while idle is 0. */
   idleSince: number | null;
+  /** The 'uptodate' rule applies: an earlier scan of this account reached the end of the list. */
+  incremental: boolean;
   /** Pages in a row with every bookmark already archived. */
   knownInRow: number;
   stopped: StopReason | null;
 }
 
-/** `seed`: bookmarks X already loaded on the page before the scan started (they count too). */
-export const newScan = (seed: Iterable<string> = []): ScanState => ({ running: true, seen: new Set([...seed].slice(0, SCAN.sessionMax)), idle: 0, idleSince: null, knownInRow: 0, stopped: null });
+/**
+ * `seed`: bookmarks X already loaded on the page before the scan started (they count too).
+ * `incremental`: false until a scan of the account has reached the list's end (then 'uptodate' never fires).
+ */
+export const newScan = (seed: Iterable<string> = [], incremental = true): ScanState => ({ running: true, seen: new Set([...seed].slice(0, SCAN.sessionMax)), idle: 0, idleSince: null, incremental, knownInRow: 0, stopped: null });
 
 /** One listened Bookmarks response during the scan. */
 export interface ScanResponse {
@@ -77,7 +83,7 @@ export function onResponse(s: ScanState, r: ScanResponse): ScanState {
   const allKnown = r.ids.length > 0 && r.fresh === 0;
   let next: ScanState = { ...s, seen, idle: added > 0 ? 0 : s.idle, idleSince: added > 0 ? null : s.idleSince, knownInRow: allKnown ? s.knownInRow + 1 : r.ids.length ? 0 : s.knownInRow };
   if (seen.size >= SCAN.sessionMax) next = stop(next, 'limit');
-  else if (next.knownInRow >= SCAN.knownPages) next = stop(next, 'uptodate');
+  else if (next.incremental && next.knownInRow >= SCAN.knownPages) next = stop(next, 'uptodate');
   return next;
 }
 

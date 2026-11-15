@@ -1158,6 +1158,10 @@ export interface ExtStrings {
   upToDate: string;
   scanStopped: string;
   scanPaused: string;
+  scanStepScroll: string;
+  scanStepWait: string;
+  scanSlow: string;
+  scanPill: string;
   scanLimit: string;
   formatChanged: string;
   archiveOff: string;
@@ -1218,6 +1222,10 @@ export const extText: Record<Lang, ExtStrings> = {
     upToDate: 'Up to date: {n} bookmarks',
     scanStopped: 'Stopped at {n}',
     scanPaused: 'Paused while this tab is hidden',
+    scanStepScroll: 'Scrolling down',
+    scanStepWait: 'Waiting for X’s response',
+    scanSlow: 'X is responding slowly, waiting…',
+    scanPill: 'Scanning · {n}',
     scanLimit: 'Stopped at {n}, the limit for one scan',
     formatChanged: 'Nothing could be read: X may have changed its format.',
     archiveOff: 'The local archive is off. Turn it on in the extension.',
@@ -1276,6 +1284,10 @@ export const extText: Record<Lang, ExtStrings> = {
     upToDate: 'Güncel: {n} yer imi',
     scanStopped: '{n} gönderide durduruldu',
     scanPaused: 'Sekme gizliyken duraklatıldı',
+    scanStepScroll: 'Aşağı kaydırılıyor',
+    scanStepWait: 'X’in yanıtı bekleniyor',
+    scanSlow: 'X yavaş yanıt veriyor, bekleniyor…',
+    scanPill: 'Taranıyor · {n}',
     scanLimit: 'Tek taramanın sınırı olan {n} gönderide durdu',
     formatChanged: 'Hiçbir şey okunamadı: X biçimini değiştirmiş olabilir.',
     archiveOff: 'Yerel arşiv kapalı. Eklentiden açabilirsiniz.',
@@ -1334,6 +1346,10 @@ export const extText: Record<Lang, ExtStrings> = {
     upToDate: 'Al día: {n} guardados',
     scanStopped: 'Detenido en {n}',
     scanPaused: 'En pausa mientras la pestaña está oculta',
+    scanStepScroll: 'Desplazando hacia abajo',
+    scanStepWait: 'Esperando la respuesta de X',
+    scanSlow: 'X responde despacio, esperando…',
+    scanPill: 'Revisando · {n}',
     scanLimit: 'Detenido en {n}, el límite de una revisión',
     formatChanged: 'No se pudo leer nada: puede que X haya cambiado su formato.',
     archiveOff: 'El archivo local está desactivado. Actívalo en la extensión.',
@@ -1392,6 +1408,10 @@ export const extText: Record<Lang, ExtStrings> = {
     upToDate: 'Em dia: {n} itens salvos',
     scanStopped: 'Parado em {n}',
     scanPaused: 'Pausado enquanto a aba está oculta',
+    scanStepScroll: 'Rolando para baixo',
+    scanStepWait: 'Aguardando a resposta do X',
+    scanSlow: 'O X está respondendo devagar, aguardando…',
+    scanPill: 'Verificando · {n}',
     scanLimit: 'Parado em {n}, o limite de uma verificação',
     formatChanged: 'Nada pôde ser lido: o X pode ter mudado o formato.',
     archiveOff: 'O arquivo local está desativado. Ative-o na extensão.',
@@ -1450,6 +1470,10 @@ export const extText: Record<Lang, ExtStrings> = {
     upToDate: '最新です：{n}件のブックマーク',
     scanStopped: '{n}件で停止しました',
     scanPaused: 'タブが非表示の間は一時停止します',
+    scanStepScroll: '下へスクロール中',
+    scanStepWait: 'Xの応答を待っています',
+    scanSlow: 'Xの応答が遅れています。待機中…',
+    scanPill: '読み込み中 · {n}',
     scanLimit: '1回の上限の{n}件で停止しました',
     formatChanged: '何も読み取れませんでした。Xの形式が変わった可能性があります。',
     archiveOff: 'ローカル保存がオフです。拡張機能でオンにしてください。',
@@ -1508,6 +1532,10 @@ export const extText: Record<Lang, ExtStrings> = {
     upToDate: '已是最新：{n} 条书签',
     scanStopped: '已在 {n} 条处停止',
     scanPaused: '标签页隐藏时暂停',
+    scanStepScroll: '正在向下滚动',
+    scanStepWait: '正在等待 X 的响应',
+    scanSlow: 'X 响应较慢，请稍候…',
+    scanPill: '正在扫描 · {n}',
     scanLimit: '已在单次扫描上限 {n} 条处停止',
     formatChanged: '未能读取任何内容：X 可能更改了格式。',
     archiveOff: '本地存档已关闭，可在扩展中开启。',
@@ -1566,6 +1594,10 @@ export const extText: Record<Lang, ExtStrings> = {
     upToDate: 'محدّث: {n} إشارة مرجعية',
     scanStopped: 'توقف عند {n}',
     scanPaused: 'متوقف مؤقتًا ما دامت علامة التبويب مخفية',
+    scanStepScroll: 'جارٍ التمرير لأسفل',
+    scanStepWait: 'في انتظار استجابة X',
+    scanSlow: 'استجابة X بطيئة، جارٍ الانتظار…',
+    scanPill: 'جارٍ الفحص · {n}',
     scanLimit: 'توقف عند {n}، وهو حد الفحص الواحد',
     formatChanged: 'تعذّرت قراءة أي شيء: ربما غيّر X تنسيقه.',
     archiveOff: 'الأرشيف المحلي متوقف. فعّله من الإضافة.',

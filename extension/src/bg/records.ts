@@ -15,6 +15,14 @@ const SOURCES: readonly PostSource[] = ['bookmark', 'manual', 'like', 'own'];
 const ACCOUNT_RE = /^\d{1,25}$/;
 const SORT_RE = /^\d{1,30}$/;
 
+/**
+ * meta key holding when a scan last reached the real end of this account's bookmarks list (ISO time).
+ * Without it the incremental "up to date" stop is off: an earlier scan may have stopped half way.
+ */
+export const FULL_SCAN_PREFIX = 'fullScan:';
+export const fullScanKey = (accountId: string) => FULL_SCAN_PREFIX + accountId;
+export const isFullScanKey = (key: string) => key.startsWith(FULL_SCAN_PREFIX);
+
 export interface BookmarkRow {
   accountId: string;
   id: string;

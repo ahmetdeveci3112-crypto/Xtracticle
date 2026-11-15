@@ -11,7 +11,7 @@
 import type { SavedFilter, SavedState, SavedSummary } from '../../../src/shared/bridge';
 import { XT_VERSION } from '../config';
 import type { ArchiveExport, CapturePayload, SavedPage, SavedStatus, StoredPost } from '../messages';
-import { PAGE_SIZE, buildExport, markGone, markRemoved, mergeBookmark, mergePost, pageOf, summarize, type BookmarkRow } from './records';
+import { PAGE_SIZE, buildExport, fullScanKey, markGone, markRemoved, mergeBookmark, mergePost, pageOf, summarize, type BookmarkRow } from './records';
 
 export const DB_NAME = 'xtracticle';
 export const DB_VERSION = 1;
@@ -225,6 +225,22 @@ export async function deleteSaved(ids: string[]): Promise<number> {
   return n;
 }
 
+export async function fullScanGet(accountId: string): Promise<string | null> {
+  const db = await openDb();
+  const v = await metaGet(db.transaction(['meta'], 'readonly'), fullScanKey(accountId));
+  return typeof v === 'string' ? v : null;
+}
+
+export async function fullScanSet(accountId: string, now = new Date().toISOString()): Promise<string> {
+  const db = await openDb();
+  const tx = db.transaction(['meta'], 'readwrite');
+  const end = finished(tx);
+  tx.objectStore('meta').put({ key: fullScanKey(accountId), value: now });
+  await end;
+  return now;
+}
+
+/** Everything, including the `fullScan:<account>` meta rows (the whole meta store is cleared). */
 export async function clearAll(): Promise<void> {
   const db = await openDb();
   const tx = db.transaction(['posts', 'bookmarks', 'meta'], 'readwrite');

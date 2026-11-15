@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_SETTINGS, buildExport, markGone, markRemoved, mergeBookmark, mergePost, pageOf, sanitizeCapture, sanitizeSettings, sanitizeTweet, summarize, type BookmarkRow } from '../../extension/src/bg/records';
+import { DEFAULT_SETTINGS, buildExport, markGone, markRemoved, mergeBookmark, mergePost, pageOf, sanitizeCapture, sanitizeSettings, sanitizeTweet, summarize, fullScanKey, isFullScanKey, FULL_SCAN_PREFIX, type BookmarkRow } from '../../extension/src/bg/records';
 import type { StoredPost } from '../../extension/src/messages';
 import { parseGraphql } from '../../extension/src/x/graphql';
 import type { FxTweet } from '../../src/shared/fx';
@@ -117,5 +117,16 @@ describe('re-validation of what content.js sends', () => {
     expect(sanitizeSettings({ counter: false, noticeSeen: true }, DEFAULT_SETTINGS)).toEqual({ archive: true, counter: false, noticeSeen: true });
     // Settings stored by 0.1.0 had only `archive`.
     expect(sanitizeSettings(undefined, { archive: false } as never)).toEqual({ ...D, archive: false });
+  });
+});
+
+describe('full-scan meta key', () => {
+  it('is per account and recognisable, so "delete all" can find every one', () => {
+    expect(fullScanKey('123')).toBe('fullScan:123');
+    expect(fullScanKey('123')).not.toBe(fullScanKey('456'));
+    expect(isFullScanKey(fullScanKey('123'))).toBe(true);
+    expect(isFullScanKey('lastSyncAt')).toBe(false);
+    expect(isFullScanKey('lastAccountId')).toBe(false);
+    expect(FULL_SCAN_PREFIX).toBe('fullScan:');
   });
 });

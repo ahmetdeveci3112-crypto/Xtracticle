@@ -13,7 +13,7 @@ describe('who may send what to the service worker', () => {
 
   it('content.js on x.com: capture, read-only status, the post fetch and counters', () => {
     const allowed = MSG_TYPES.filter(t => isAllowed(t, s('https://x.com/i/bookmarks'), EXT, SITE));
-    expect(allowed.sort()).toEqual(['capture:posts', 'event:track', 'pro:get', 'pro:refresh', 'saved:has', 'saved:status', 'settings:get', 'thread:get']);
+    expect(allowed.sort()).toEqual(['capture:posts', 'event:track', 'pro:get', 'pro:refresh', 'saved:has', 'saved:status', 'scan:done', 'scan:state', 'settings:get', 'thread:get']);
     // Never the archive contents, the settings or the Pro actions.
     for (const t of ['saved:list', 'saved:get', 'saved:export', 'saved:clear', 'saved:delete', 'settings:set', 'pro:activate', 'pro:logout', 'lang:set'] as const) {
       expect(isAllowed(t, s('https://x.com/i/bookmarks'), EXT, SITE), t).toBe(false);

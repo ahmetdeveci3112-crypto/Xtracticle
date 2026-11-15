@@ -134,6 +134,18 @@ describe('stop rules', () => {
     expect(s.stopped).toBe('uptodate');
   });
 
+  it('no finished scan of the account yet: the up-to-date rule is off, the scan runs to the end', () => {
+    let s = newScan([], false);
+    for (let i = 0; i < 5; i++) s = onResponse(s, page(i * 20, 20, 0));
+    expect(s.running).toBe(true);
+    expect(s.knownInRow).toBe(5);
+    s = bottomSteps(s, 3);
+    s = onStep(s, bottom(10000));
+    expect(s.stopped).toBe('end');
+    // The other stop rules still apply.
+    expect(onResponse(newScan([], false), { ids: [], fresh: null, recognized: false }).stopped).toBe('format');
+  });
+
   it('archive off (fresh unknown) never claims "up to date"', () => {
     let s = newScan();
     for (let i = 0; i < 5; i++) s = onResponse(s, page(i * 20, 20, null));

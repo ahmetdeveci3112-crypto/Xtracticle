@@ -6,7 +6,7 @@
  * Who may send what (bg/sw.ts → `isAllowed`):
  *   popup / extension pages   everything
  *   content.js on x.com       capture:posts, pro:get, pro:refresh, saved:status, saved:has, settings:get,
- *                             thread:get, event:track
+ *                             thread:get, event:track, scan:state, scan:done
  *   bridge.js on the site     pro:get, pro:refresh, saved:status, lang:set; on /saved also saved:list,
  *                             saved:get, saved:delete
  *
@@ -112,6 +112,8 @@ export type Msg =
   | { type: 'event:track'; event: TrackedEvent }
   | { type: 'lang:set'; lang: string }
   | { type: 'saved:clear' }
+  | { type: 'scan:state'; accountId: string }
+  | { type: 'scan:done'; accountId: string }
   | { type: 'saved:export' }
   | { type: 'settings:get' }
   | { type: 'settings:set'; settings: Partial<Settings> };
@@ -135,6 +137,10 @@ export interface Replies {
   'event:track': { queued: boolean };
   'lang:set': { lang: string; changed: boolean };
   'saved:clear': { cleared: true };
+  /** When a scan last reached the end of the account's bookmarks list (ISO); null = never. */
+  'scan:state': { fullScanAt: string | null };
+  /** A scan stopped at the end of the list: remembers it for the account. */
+  'scan:done': { fullScanAt: string };
   'saved:export': ArchiveExport;
   'settings:get': Settings;
   'settings:set': Settings;
@@ -144,7 +150,7 @@ export type Reply<T> = { ok: true; data: T } | { ok: false; error: string };
 
 export const MSG_TYPES: readonly MsgType[] = [
   'pro:get', 'pro:refresh', 'pro:activate', 'pro:logout', 'capture:posts',
-  'saved:list', 'saved:get', 'saved:delete', 'saved:status', 'saved:has', 'saved:clear', 'saved:export',
+  'saved:list', 'saved:get', 'saved:delete', 'saved:status', 'saved:has', 'saved:clear', 'saved:export', 'scan:state', 'scan:done',
   'settings:get', 'settings:set', 'thread:get', 'event:track', 'lang:set',
 ];
 

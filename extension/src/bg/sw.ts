@@ -10,7 +10,7 @@ import { XT_ORIGIN, XT_VERSION } from '../config';
 import { MSG_TYPES, type Msg, type Reply } from '../messages';
 import { isAllowed } from './access';
 import { fetchThread } from './api';
-import { applyCapture, clearAll, deleteSaved, exportAll, getSaved, hasSaved, listSaved, savedStatus } from './db';
+import { applyCapture, clearAll, deleteSaved, exportAll, fullScanGet, fullScanSet, getSaved, hasSaved, listSaved, savedStatus } from './db';
 import { flush, startQueue, track } from './events';
 import { activate, getPro, logout } from './pro';
 import { sanitizeCapture, sanitizeTweet } from './records';
@@ -99,6 +99,16 @@ async function handle(msg: Msg): Promise<Reply<unknown>> {
     case 'saved:clear':
       await clearAll();
       return { ok: true, data: { cleared: true } };
+    case 'scan:state': {
+      const acc = accountOf(msg.accountId);
+      if (!acc) return { ok: false, error: 'bad_account' };
+      return { ok: true, data: { fullScanAt: await fullScanGet(acc) } };
+    }
+    case 'scan:done': {
+      const acc = accountOf(msg.accountId);
+      if (!acc) return { ok: false, error: 'bad_account' };
+      return { ok: true, data: { fullScanAt: await fullScanSet(acc) } };
+    }
     case 'saved:export':
       return { ok: true, data: await exportAll() };
     case 'settings:get':

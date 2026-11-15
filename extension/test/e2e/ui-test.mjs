@@ -509,6 +509,11 @@ export async function runUiStandInTest({ log = () => {}, expect, headless = !pro
         count: r0.querySelector('.count').textContent,
         info: r0.querySelector('.info').hidden ? null : r0.querySelector('.info').textContent,
         exp: r0.querySelector('a.btn').hidden ? null : r0.querySelector('a.btn').href,
+        bar: !r0.querySelector('.bar').hidden,
+        barBusy: r0.querySelector('.bar').getAttribute('aria-busy'),
+        sub: r0.querySelector('.sub').hidden ? null : r0.querySelector('.sub').textContent,
+        dot: !r0.querySelector('.dot').hidden,
+        pillText: r0.querySelector('.pill').hidden ? null : r0.querySelector('.ol').textContent,
       };
     });
     const press = label => inShadow(pg, 'xt-bookmarks', (roots, label) => [...roots[0].querySelectorAll('button')].find(b => b.textContent === label)?.click(), label);
@@ -526,8 +531,21 @@ export async function runUiStandInTest({ log = () => {}, expect, headless = !pro
     await sleep(500);
     await press('Scan bookmarks');
     r.scanning = await poll(panel, p => /^Scanning… \d+/.test(p.count), 4000);
+    const secs = t => { const m = /^(\d+):(\d{2}) · /.exec(t || ''); return m ? +m[1] * 60 + +m[2] : -1; };
+    r.live = await poll(panel, p => secs(p.sub) >= 0, 4000);
+    expect(B, 'scanning: indeterminate bar visible (progressbar, aria-busy), elapsed time and a step text shown', r.live.bar && r.live.barBusy === 'true' && /^\d+:\d{2} · \S/.test(r.live.sub), r.live);
+    await pg.screenshot({ path: path.join(SHOTS, 'bookmarks-scanning.png') });
+    r.live2 = await poll(panel, p => !p.sub || secs(p.sub) > secs(r.live.sub), 6000, 300);
+    expect(B, 'scanning: the elapsed time keeps counting up', secs(r.live2.sub) > secs(r.live.sub), { a: r.live.sub, b: r.live2.sub });
+    // Fold the panel while the scan runs: it goes on, and the small button shows dot and count.
+    await inShadow(pg, 'xt-bookmarks', roots => roots[0].querySelector('.p .x').click());
+    r.folded = await poll(panel, p => p.shown && !p.expanded && /^Scanning · \d+$/.test(p.pillText || ''), 4000);
+    expect(B, 'folded while scanning: the button shows a dot and "Scanning · N"', r.folded.dot && /^Scanning · \d+$/.test(r.folded.pillText), r.folded);
+    await inShadow(pg, 'xt-bookmarks', roots => roots[0].querySelector('.open').click());
+    await poll(panel, p => p.expanded, 3000);
     r.panelDone = await poll(panel, p => /^Done:/.test(p.count), 90000, 300);
     await pg.screenshot({ path: path.join(SHOTS, 'bookmarks-panel.png') });
+    expect(B, 'done: the bar and the live line are gone, the result text stays, the button label is back', !r.panelDone.bar && r.panelDone.sub === null && !r.panelDone.dot, r.panelDone);
     r.pageFetches = await pg.evaluate(() => window.xtPage.fetches);
     expect(B, 'live counter while scanning', /^Scanning… \d+/.test(r.scanning.count), r.scanning);
     r.maxArticles = await pg.evaluate(() => window.xtPage.maxArticles);
@@ -548,6 +566,8 @@ export async function runUiStandInTest({ log = () => {}, expect, headless = !pro
     await press('Scan bookmarks');
     r.upToDate = await poll(panel, p => /^Up to date/.test(p.count), 40000, 300);
     expect(B, 'incremental re-scan: 2 known pages → up to date', /^Up to date: \d+ bookmarks$/.test(r.upToDate.count), r.upToDate);
+    r.fullScan = await msg({ type: 'scan:state', accountId: ACCOUNT });
+    expect(B, 'the first scan reached the end → the account has a full-scan time', typeof r.fullScan?.data?.fullScanAt === 'string', r.fullScan);
 
     // 429 on page 3 → stop with the slowed-down line.
     throttle.at = 2;
@@ -560,6 +580,20 @@ export async function runUiStandInTest({ log = () => {}, expect, headless = !pro
     r.throttleFetchesAfter = await pg.evaluate(() => window.xtPage.statuses);
     expect(B, '429 → stops with "X slowed down, continue in 15 min"', r.throttled.count === 'X slowed down, continue in 15 min', r.throttled);
     throttle.at = -1;
+    r.fullScanCleared = await msg({ type: 'scan:state', accountId: ACCOUNT });
+    expect(B, '"delete all" also forgot the full-scan time, and the 429 scan did not set it', r.fullScanCleared?.data?.fullScanAt === null, r.fullScanCleared);
+
+    // Partial archive (2 pages from the 429 scan), no full scan on record: pages 1–2 are all known, but the
+    // scan must NOT stop as up to date: it goes to the end of the list.
+    await pg.goto('https://x.com/i/bookmarks');
+    await openPanel();
+    await poll(() => pg.evaluate(() => window.xtPage.fetches), n => n >= 1);
+    await sleep(500);
+    await press('Scan bookmarks');
+    r.partial = await poll(panel, p => /^(Done|Up to date)/.test(p.count), 90000, 300);
+    expect(B, 'partial archive without a full scan: runs to the end (no "up to date")', r.partial.count === `Done: ${BM_TOTAL} bookmarks`, r.partial);
+    r.fullScanSet = await msg({ type: 'scan:state', accountId: ACCOUNT });
+    expect(B, 'reaching the end records the full-scan time', typeof r.fullScanSet?.data?.fullScanAt === 'string', r.fullScanSet);
 
     // X now redirects /i/bookmarks to /i/history (tabs: Bookmarks | Likes) and the hash is lost.
     await pg.goto('https://x.com/i/history');
