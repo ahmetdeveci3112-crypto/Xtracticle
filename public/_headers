@@ -13,3 +13,13 @@
 /.well-known/*
   Content-Type: text/plain; charset=utf-8
   Cache-Control: public, max-age=300
+
+# /saved: the extension's local bookmark copies (docs/chrome-extension-plan.md, A5). No GA, nothing leaves
+# the page but same-origin requests. The inline-script hashes are filled in by the build (site/plugin.ts).
+/saved
+  Content-Security-Policy: default-src 'none'; script-src 'self' {{SAVED_SCRIPT_HASHES}}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://pbs.twimg.com https://abs.twimg.com; media-src https://video.twimg.com https://pbs.twimg.com; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+  Cache-Control: no-cache
+
+/:lang/saved
+  Content-Security-Policy: default-src 'none'; script-src 'self' {{SAVED_SCRIPT_HASHES}}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://pbs.twimg.com https://abs.twimg.com; media-src https://video.twimg.com https://pbs.twimg.com; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+  Cache-Control: no-cache

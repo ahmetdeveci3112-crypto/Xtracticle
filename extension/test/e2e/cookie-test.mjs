@@ -21,6 +21,8 @@
  *   node extension/test/e2e/cookie-test.mjs --no-prod  skip the production check
  *   XT_TEST_HEADED=1 …                                 show the browser
  *
+ * Runs extension/test/e2e/capture-test.mjs first (capture path → IndexedDB; needs no wrangler).
+ *
  * The production check only sends GET /api/pro/me and GET /api/pro/config without a cookie.
  * Exit code 0 = every expectation held. Prints a JSON report.
  */
@@ -30,6 +32,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
+import { runCaptureTest } from './capture-test.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '../../..');
@@ -41,6 +44,7 @@ const PROD = 'https://xtracticle.com';
 const KEY = 'TEST-GRANTED-MONTHLY';
 const withProd = !process.argv.includes('--no-prod');
 const headless = !process.env.XT_TEST_HEADED;
+const EXT_VERSION = JSON.parse(fs.readFileSync(path.join(root, 'extension/manifest.json'), 'utf8')).version;
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'xt-cookie-test-'));
 const children = [];
@@ -239,7 +243,7 @@ async function scenario(name, opts) {
     // Counter: two events from the SW.
     r.counter = [];
     for (let i = 0; i < 2; i++) {
-      r.counter.push((await swFetch(sw, `${BASE}/api/ext/event`, { method: 'POST', headers: { ...json, ...ext }, body: JSON.stringify({ name: 'ext_install', v: '3.0.0' }) })).status);
+      r.counter.push((await swFetch(sw, `${BASE}/api/ext/event`, { method: 'POST', headers: { ...json, ...ext }, body: JSON.stringify({ name: 'ext_install', v: EXT_VERSION }) })).status);
     }
 
     if (withProd) {
@@ -268,7 +272,7 @@ async function scenario(name, opts) {
   expect(s, 'site activation 200', r.siteActivate.status === 200, r.siteActivate);
   expect(s, 'extension sees Pro after site activation', r.extMeAfterSiteActivate.body?.pro === true, r.extMeAfterSiteActivate);
   expect(s, 'site sign-out clears the extension', r.extMeAfterSiteLogout.body?.pro === false, r.extMeAfterSiteLogout);
-  expect(s, 'bridge sets data-xt-ext and says xt:hello', r.bridge.dataset === '3.0.0' && r.bridge.messages.includes('xt:hello'), r.bridge);
+  expect(s, 'bridge sets data-xt-ext and says xt:hello', r.bridge.dataset === EXT_VERSION && r.bridge.messages.includes('xt:hello'), r.bridge);
   expect(s, 'counter answers 204 twice', r.counter.every(x => x === 204), r.counter);
   if (withProd) {
     expect(s, 'prod /api/pro/me from the store-build SW → 200 pro:false', r.prodMe.status === 200 && r.prodMe.body?.pro === false, r.prodMe);
@@ -281,9 +285,21 @@ async function scenario(name, opts) {
 
 let state;
 try {
+  log('capture test (x.com stand-in → IndexedDB)');
+  const cap = await runCaptureTest({ log, expect, headless });
+  report.capture = Object.fromEntries(Object.entries(cap).filter(([k]) => k.startsWith('status')).map(([k, v]) => [k, v?.data ?? v]));
+} catch (err) {
+  report.failures.push(`capture test error: ${err.stack || err}`);
+}
+try {
   state = await setup();
+  // Each scenario sends ~17 /api requests (the SW's own start-up GET /api/pro/me included); the Worker allows
+  // 40 per 10 s per IP (API_LIMITER), so scenarios wait out the window instead of sharing it.
+  const cooldown = () => new Promise(r => setTimeout(r, 10500));
   await scenario('default', {});
+  await cooldown();
   await scenario('third-party-cookies-blocked', { block3p: true });
+  await cooldown();
   await scenario('3pcd-phaseout-flag', { block3p: true, extraArgs: ['--test-third-party-cookie-phaseout'] });
 
   const out = run('npx', ['wrangler', 'd1', 'execute', 'xtracticle-watch', '--local', '--persist-to', state, '--json', '--command', 'SELECT day, surface, name, param, version, n FROM ext_events']);

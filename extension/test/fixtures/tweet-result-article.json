@@ -1,0 +1,331 @@
+{
+  "data": {
+    "tweetResult": {
+      "result": {
+        "__typename": "Tweet",
+        "rest_id": "1890000000000000301",
+        "core": {
+          "user_results": {
+            "result": {
+              "__typename": "User",
+              "id": "VXNlcjoxMDAwMDAwMDAx",
+              "rest_id": "1000000001",
+              "legacy": {
+                "description": "",
+                "followers_count": 10,
+                "friends_count": 5
+              },
+              "core": {
+                "name": "Ada Example",
+                "screen_name": "ada_example",
+                "created_at": "Mon Jan 01 00:00:00 +0000 2018"
+              },
+              "avatar": {
+                "image_url": "https://pbs.twimg.com/profile_images/1000000001/ada_normal.jpg"
+              }
+            }
+          }
+        },
+        "unmention_data": {},
+        "edit_control": {
+          "edit_tweet_ids": [
+            "1890000000000000301"
+          ],
+          "editable_until_msecs": "1793000000000",
+          "is_edit_eligible": true,
+          "edits_remaining": "5"
+        },
+        "is_translatable": false,
+        "views": {
+          "count": "1301",
+          "state": "EnabledWithCount"
+        },
+        "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+        "legacy": {
+          "bookmark_count": 3,
+          "bookmarked": true,
+          "created_at": "Sun Nov 01 09:01:00 +0000 2026",
+          "conversation_id_str": "1890000000000000301",
+          "display_text_range": [
+            0,
+            23
+          ],
+          "entities": {
+            "hashtags": [],
+            "symbols": [],
+            "timestamps": [],
+            "urls": [
+              {
+                "display_url": "x.com/i/article/1890…",
+                "expanded_url": "http://x.com/i/article/1890000000000077702",
+                "url": "https://t.co/KKKKKKKKKK",
+                "indices": [
+                  0,
+                  23
+                ]
+              }
+            ],
+            "user_mentions": []
+          },
+          "favorite_count": 341,
+          "favorited": false,
+          "full_text": "https://t.co/KKKKKKKKKK",
+          "is_quote_status": false,
+          "lang": "en",
+          "quote_count": 1,
+          "reply_count": 2,
+          "retweet_count": 4,
+          "retweeted": false,
+          "user_id_str": "1000000001",
+          "id_str": "1890000000000000301"
+        },
+        "article": {
+          "article_results": {
+            "result": {
+              "rest_id": "1890000000000077702",
+              "id": "QXJ0aWNsZUVudGl0eToyMDI2",
+              "title": "Notes on Building Small Tools",
+              "preview_text": "Why small tools…",
+              "cover_media": {
+                "id": "QXBpTWVkaWE6MQ==",
+                "media_key": "3_1890000000000090001",
+                "media_id": "1890000000000090001",
+                "media_info": {
+                  "__typename": "ApiImage",
+                  "original_img_height": 900,
+                  "original_img_width": 1600,
+                  "original_img_url": "https://pbs.twimg.com/media/SYNTHCOVER.jpg",
+                  "color_info": {
+                    "palette": []
+                  }
+                }
+              },
+              "content_state": {
+                "blocks": [
+                  {
+                    "key": "b0",
+                    "type": "header-two",
+                    "text": "Why small tools",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [],
+                    "data": {}
+                  },
+                  {
+                    "key": "b1",
+                    "type": "unstyled",
+                    "text": "Small tools are easy to read and easy to fix. See the guide for more.",
+                    "depth": 0,
+                    "inlineStyleRanges": [
+                      {
+                        "offset": 0,
+                        "length": 11,
+                        "style": "Bold"
+                      },
+                      {
+                        "offset": 24,
+                        "length": 4,
+                        "style": "Italic"
+                      }
+                    ],
+                    "entityRanges": [
+                      {
+                        "offset": 50,
+                        "length": 9,
+                        "key": 0
+                      }
+                    ],
+                    "data": {}
+                  },
+                  {
+                    "key": "b2",
+                    "type": "atomic",
+                    "text": " ",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [
+                      {
+                        "offset": 0,
+                        "length": 1,
+                        "key": 1
+                      }
+                    ],
+                    "data": {}
+                  },
+                  {
+                    "key": "b3",
+                    "type": "unordered-list-item",
+                    "text": "One job each",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [],
+                    "data": {}
+                  },
+                  {
+                    "key": "b4",
+                    "type": "unordered-list-item",
+                    "text": "Plain files",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [],
+                    "data": {}
+                  },
+                  {
+                    "key": "b5",
+                    "type": "ordered-list-item",
+                    "text": "Write it",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [],
+                    "data": {}
+                  },
+                  {
+                    "key": "b6",
+                    "type": "ordered-list-item",
+                    "text": "Ship it",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [],
+                    "data": {}
+                  },
+                  {
+                    "key": "b7",
+                    "type": "code-block",
+                    "text": "npm run build",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [],
+                    "data": {}
+                  },
+                  {
+                    "key": "b8",
+                    "type": "code-block",
+                    "text": "npm test",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [],
+                    "data": {}
+                  },
+                  {
+                    "key": "b9",
+                    "type": "blockquote",
+                    "text": "Boring is a feature.",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [],
+                    "data": {}
+                  },
+                  {
+                    "key": "b10",
+                    "type": "atomic",
+                    "text": " ",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [
+                      {
+                        "offset": 0,
+                        "length": 1,
+                        "key": 2
+                      }
+                    ],
+                    "data": {}
+                  },
+                  {
+                    "key": "b11",
+                    "type": "atomic",
+                    "text": " ",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [
+                      {
+                        "offset": 0,
+                        "length": 1,
+                        "key": 3
+                      }
+                    ],
+                    "data": {}
+                  },
+                  {
+                    "key": "b12",
+                    "type": "header-three",
+                    "text": "Ünicode & emoji 🧰 check",
+                    "depth": 0,
+                    "inlineStyleRanges": [],
+                    "entityRanges": [],
+                    "data": {}
+                  }
+                ],
+                "entityMap": [
+                  {
+                    "key": "0",
+                    "value": {
+                      "type": "LINK",
+                      "mutability": "MUTABLE",
+                      "data": {
+                        "url": "https://example.com/guide"
+                      }
+                    }
+                  },
+                  {
+                    "key": "1",
+                    "value": {
+                      "type": "MEDIA",
+                      "mutability": "IMMUTABLE",
+                      "data": {
+                        "caption": "A tidy workbench",
+                        "mediaItems": [
+                          {
+                            "localMediaId": "1",
+                            "mediaCategory": "DraftTweetImage",
+                            "mediaId": "1890000000000090002"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "key": "2",
+                    "value": {
+                      "type": "DIVIDER",
+                      "mutability": "IMMUTABLE",
+                      "data": {}
+                    }
+                  },
+                  {
+                    "key": "3",
+                    "value": {
+                      "type": "TWEET",
+                      "mutability": "IMMUTABLE",
+                      "data": {
+                        "tweetId": "1890000000000000101"
+                      }
+                    }
+                  }
+                ]
+              },
+              "media_entities": [
+                {
+                  "id": "QXBpTWVkaWE6Mg==",
+                  "media_key": "3_1890000000000090002",
+                  "media_id": "1890000000000090002",
+                  "media_info": {
+                    "__typename": "ApiImage",
+                    "original_img_height": 600,
+                    "original_img_width": 800,
+                    "original_img_url": "https://pbs.twimg.com/media/SYNTHART1.jpg"
+                  }
+                }
+              ],
+              "lifecycle_state": {
+                "modified_at_secs": 1793000000
+              },
+              "metadata": {
+                "first_published_at_secs": 1793000000
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

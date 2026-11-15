@@ -1,4 +1,4 @@
-import { GITHUB, type FAQ, type Lang, type SitePage } from './blocks';
+import { GITHUB, extCtaSlot, type FAQ, type Lang, type SitePage } from './blocks';
 
 /**
  * /pro (and /tr/pro, /es/pro, …): Xtracticle Pro — license-key based paid tier sold through Gumroad.
@@ -221,6 +221,8 @@ const SCRIPT = `(function(){
 var g=function(n,p){try{if(window.gtag)window.gtag('event',n,p||{})}catch(e){}};
 g('pro_view',{lang:document.documentElement.lang});
 var q=new URLSearchParams(location.search),ok=document.getElementById('xt-pro-success');
+var qh=q.get('handle')||'';if(!/^[A-Za-z0-9_]{1,15}$/.test(qh))qh='';
+if(qh){var qhi=document.querySelector('#xt-trial-start input[name=handle]');if(qhi&&!qhi.value){qhi.value='@'+qh;g('watch_prefill',{via:'query'});}}
 if(q.get('status')==='success'&&ok){ok.hidden=false;g('pro_checkout_success');}
 var btns=document.querySelectorAll('.xt-price a[data-plan]'),soon=document.getElementById('xt-pro-soon');
 function off(){if(soon){soon.textContent=soon.getAttribute('data-text')||'';soon.hidden=false;}}
@@ -254,7 +256,7 @@ if(!add&&e==='not_found')return WC.err.generic;var t=e&&WC.err.hasOwnProperty(e)
 function wcountUp(){var full=wlim>0&&wcount>=wlim;wcnt.textContent=wlim?tpl(WC.count,{n:wcount,limit:wlim}):'';
 wfull.hidden=!full;wfull.textContent=full?tpl(WC.full,{limit:wlim}):'';wfb.disabled=full;wfi.disabled=full;wfm.disabled=full;
 wst.hidden=wcount>0;if(!wcount)wst.textContent=WC.empty;}
-function wprefill(){if(wcount||wfi.value||wfi.disabled)return;var lh='';try{lh=localStorage.getItem('xt_last_handle')||''}catch(e){}
+function wprefill(){if(wcount||wfi.value||wfi.disabled)return;var lh=qh;if(!lh)try{lh=localStorage.getItem('xt_last_handle')||''}catch(e){}
 lh=clean(lh);if(/^[A-Za-z0-9_]{1,15}$/.test(lh)){wfi.value='@'+lh;g('watch_prefill');}}
 document.querySelectorAll('a[href="#xt-watch"]').forEach(function(a){a.addEventListener('click',function(e){if(!wb)return;e.preventDefault();g('watch_now_click',{prefilled:!!(wfi&&wfi.value)});
 try{wb.scrollIntoView({block:'start'})}catch(x){}if(!wf.hidden&&!wfi.disabled)try{wfi.focus({preventScroll:true})}catch(x){}});});
@@ -558,6 +560,7 @@ export function proPage(lang: Lang, c: ProCopy): SitePage {
   <p>${c.pitch}</p>
   <h2>${esc(c.featuresH2)}</h2>
   <ul class="xt-pro-features">${c.features.map(f => `<li>${f}</li>`).join('')}</ul>
+  ${extCtaSlot('pro')}
   ${trialStart(c.trial)}
 </section>
 

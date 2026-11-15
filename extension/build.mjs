@@ -6,9 +6,11 @@
  *   node extension/build.mjs --dev    local build → extension/dist-dev  (XT_BASE http://localhost:8787,
  *                                     plus localhost host permission and bridge match for `wrangler dev`)
  *   XT_BASE=<url> overrides the base of either build.
+ *   --out=<dir>                       writes somewhere else (tests build throw-away copies this way)
  *
  * Output: sw.js (one ES module), hook.js / content.js / bridge.js (separate IIFEs, no imports),
- * popup.html + popup.js + popup.css, icons/, manifest.json with the version from package.json.
+ * popup.html + popup.js + popup.css, icons/, manifest.json.
+ * The extension's version comes from extension/manifest.json only (independent of the site's package.json).
  * The site build (`npm run build`) is not touched.
  */
 import fs from 'node:fs';
@@ -20,9 +22,14 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
 const dev = process.argv.includes('--dev');
 const base = (process.env.XT_BASE || (dev ? 'http://localhost:8787' : 'https://xtracticle.com')).replace(/\/+$/, '');
-const outDir = path.join(here, dev ? 'dist-dev' : 'dist');
-const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-const version = pkg.version;
+const outArg = process.argv.find(a => a.startsWith('--out='));
+const outDir = outArg ? path.resolve(outArg.slice('--out='.length)) : path.join(here, dev ? 'dist-dev' : 'dist');
+const sourceManifest = JSON.parse(fs.readFileSync(path.join(here, 'manifest.json'), 'utf8'));
+const version = sourceManifest.version;
+if (!/^\d{1,4}(\.\d{1,5}){0,3}$/.test(version || '')) {
+  console.error(`✗ extension/manifest.json version is not a dotted number: ${version}`);
+  process.exit(1);
+}
 
 let baseOrigin;
 try {
@@ -79,8 +86,7 @@ await bundle('src/pages/popup.ts', 'popup.js', 'iife');
 for (const f of ['popup.html', 'popup.css']) fs.copyFileSync(path.join(here, 'src/pages', f), path.join(outDir, f));
 fs.cpSync(path.join(here, 'icons'), path.join(outDir, 'icons'), { recursive: true });
 
-const manifest = JSON.parse(fs.readFileSync(path.join(here, 'manifest.json'), 'utf8'));
-manifest.version = version;
+const manifest = structuredClone(sourceManifest);
 if (baseOrigin !== 'https://xtracticle.com') {
   const match = `${baseOrigin}/*`;
   manifest.name = `${manifest.name} (dev)`;
@@ -90,4 +96,4 @@ if (baseOrigin !== 'https://xtracticle.com') {
 }
 fs.writeFileSync(path.join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 
-console.log(`✓ extension ${version} built → ${path.relative(root, outDir)} (XT_BASE ${base})`);
+console.log(`✓ extension ${version} built → ${path.relative(root, outDir) || outDir} (XT_BASE ${base})`);

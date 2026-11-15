@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { track } from './analytics';
+import { notifyProChanged } from './ext';
 
 /**
  * Xtracticle Pro state for the app (see src/shared/pro.ts for the Worker side).
@@ -94,6 +95,8 @@ function start() {
   window.addEventListener(CHANGE_EVENT, () => {
     clearSession();
     void refresh();
+    // The static /pro page activated or signed out: the extension shares the same cookie.
+    notifyProChanged();
   });
 }
 
@@ -131,6 +134,7 @@ export async function activate(key: string): Promise<ActivateResult> {
     writeSession(next);
     set(next);
     track('pro_activate', { ok: true, plan: body.plan });
+    notifyProChanged();
     return { ok: true, plan: body.plan };
   }
   const error: ActivateError =
@@ -150,4 +154,5 @@ export async function logout(): Promise<void> {
   } catch { /* the cookie clears next time */ }
   clearSession();
   set({ pro: false, loading: false });
+  notifyProChanged();
 }

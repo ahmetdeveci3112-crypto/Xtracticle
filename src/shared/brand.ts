@@ -53,6 +53,16 @@ export const LOGO_PATH =
 export const logoSvg = (size = 28) =>
   `<svg viewBox="0 0 24 24" aria-hidden="true" width="${size}" height="${size}" fill="currentColor"><path d="${LOGO_PATH}"></path></svg>`;
 
+/**
+ * Xtracticle's own mark (docs/brand/): a page with a dog-eared corner and a bookmark notch, i.e. a
+ * post kept as a document. 24-unit grid, same convention as LOGO_PATH (fill=currentColor on an
+ * `accent` tile). Used for the extension icons; the site still draws LOGO_PATH until the owner switches.
+ */
+export const MARK_PATH = 'M5 4.24a2.24 2.24 0 0 1 2.24 -2.24H13.68L19 7.32V22L12 16.8L5 22Z';
+
+export const MARK_SVG = (size = 28) =>
+  `<svg viewBox="0 0 24 24" aria-hidden="true" width="${size}" height="${size}" fill="currentColor"><path d="${MARK_PATH}"></path></svg>`;
+
 /** CSS custom properties for a Shadow DOM root or the popup, e.g. `:host { ${cssVars(LIGHT)} }`. */
 export const cssVars = (palette: Record<ColorToken, string>) =>
   [`--font-sans: ${FONT_STACK};`, ...Object.entries(palette).map(([k, v]) => `--${k}: ${v};`)].join(' ');

@@ -1,13 +1,14 @@
 /**
- * MAIN-world script on x.com, document_start (docs/chrome-extension-plan.md, B3).
- *
- * Phase 2 wraps fetch / XMLHttpRequest here and forwards the response bodies of the GraphQL
- * operations listed in public/ext/config.json to content.js with window.postMessage. It never
- * changes a request, reads headers or stores anything.
- *
- * Placeholder for now: it only marks that it ran, so the manifest wiring can be checked.
+ * MAIN-world script on x.com, document_start (docs/chrome-extension-plan.md, B3): wraps fetch and
+ * XMLHttpRequest and forwards the bodies of the listened GraphQL operations to content.js. Logic and
+ * contract: ./wrap.ts.
  */
+import { install } from './wrap';
+
 (() => {
-  const root = document.documentElement as HTMLElement | null;
-  if (root) root.dataset.xtHook = '1';
+  try {
+    install(window as unknown as Parameters<typeof install>[0]);
+  } catch {
+    /* never break x.com */
+  }
 })();

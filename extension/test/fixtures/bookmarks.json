@@ -1,0 +1,1139 @@
+{
+  "data": {
+    "bookmark_timeline_v2": {
+      "timeline": {
+        "instructions": [
+          {
+            "type": "TimelineAddEntries",
+            "entries": [
+              {
+                "entryId": "tweet-1890000000000000101",
+                "sortIndex": "1859000000000000099",
+                "content": {
+                  "entryType": "TimelineTimelineItem",
+                  "__typename": "TimelineTimelineItem",
+                  "itemContent": {
+                    "itemType": "TimelineTweet",
+                    "__typename": "TimelineTweet",
+                    "tweet_results": {
+                      "result": {
+                        "__typename": "Tweet",
+                        "rest_id": "1890000000000000101",
+                        "core": {
+                          "user_results": {
+                            "result": {
+                              "__typename": "User",
+                              "id": "VXNlcjoxMDAwMDAwMDAx",
+                              "rest_id": "1000000001",
+                              "legacy": {
+                                "description": "",
+                                "followers_count": 10,
+                                "friends_count": 5
+                              },
+                              "core": {
+                                "name": "Ada Example",
+                                "screen_name": "ada_example",
+                                "created_at": "Mon Jan 01 00:00:00 +0000 2018"
+                              },
+                              "avatar": {
+                                "image_url": "https://pbs.twimg.com/profile_images/1000000001/ada_normal.jpg"
+                              }
+                            }
+                          }
+                        },
+                        "unmention_data": {},
+                        "edit_control": {
+                          "edit_tweet_ids": [
+                            "1890000000000000101"
+                          ],
+                          "editable_until_msecs": "1793000000000",
+                          "is_edit_eligible": true,
+                          "edits_remaining": "5"
+                        },
+                        "is_translatable": false,
+                        "views": {
+                          "count": "1101",
+                          "state": "EnabledWithCount"
+                        },
+                        "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+                        "legacy": {
+                          "bookmark_count": 3,
+                          "bookmarked": true,
+                          "created_at": "Sun Nov 01 09:41:00 +0000 2026",
+                          "conversation_id_str": "1890000000000000101",
+                          "display_text_range": [
+                            0,
+                            90
+                          ],
+                          "entities": {
+                            "hashtags": [],
+                            "symbols": [],
+                            "timestamps": [],
+                            "urls": [
+                              {
+                                "display_url": "example.com/reading",
+                                "expanded_url": "https://example.com/reading",
+                                "url": "https://t.co/AAAAAAAAAA",
+                                "indices": [
+                                  43,
+                                  66
+                                ]
+                              }
+                            ],
+                            "user_mentions": [],
+                            "media": [
+                              {
+                                "display_url": "pic.x.com/BBBBBBBBBB",
+                                "expanded_url": "https://x.com/i/status/photo/1",
+                                "id_str": "SYNTHPHOTO101",
+                                "indices": [
+                                  0,
+                                  0
+                                ],
+                                "media_key": "3_SYNTHPHOTO101",
+                                "media_url_https": "https://pbs.twimg.com/media/SYNTHPHOTO101.jpg",
+                                "type": "photo",
+                                "url": "https://t.co/BBBBBBBBBB",
+                                "ext_alt_text": "A stack of books on a wooden table",
+                                "original_info": {
+                                  "width": 1600,
+                                  "height": 1200,
+                                  "focus_rects": []
+                                },
+                                "sizes": {}
+                              }
+                            ]
+                          },
+                          "favorite_count": 141,
+                          "favorited": false,
+                          "full_text": "Reading list for the weekend &amp; beyond: https://t.co/AAAAAAAAAA https://t.co/BBBBBBBBBB",
+                          "is_quote_status": false,
+                          "lang": "en",
+                          "quote_count": 1,
+                          "reply_count": 2,
+                          "retweet_count": 4,
+                          "retweeted": false,
+                          "user_id_str": "1000000001",
+                          "id_str": "1890000000000000101",
+                          "extended_entities": {
+                            "media": [
+                              {
+                                "display_url": "pic.x.com/BBBBBBBBBB",
+                                "expanded_url": "https://x.com/i/status/photo/1",
+                                "id_str": "SYNTHPHOTO101",
+                                "indices": [
+                                  0,
+                                  0
+                                ],
+                                "media_key": "3_SYNTHPHOTO101",
+                                "media_url_https": "https://pbs.twimg.com/media/SYNTHPHOTO101.jpg",
+                                "type": "photo",
+                                "url": "https://t.co/BBBBBBBBBB",
+                                "ext_alt_text": "A stack of books on a wooden table",
+                                "original_info": {
+                                  "width": 1600,
+                                  "height": 1200,
+                                  "focus_rects": []
+                                },
+                                "sizes": {}
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "tweetDisplayType": "Tweet"
+                  }
+                }
+              },
+              {
+                "entryId": "tweet-1890000000000000102",
+                "sortIndex": "1859000000000000098",
+                "content": {
+                  "entryType": "TimelineTimelineItem",
+                  "__typename": "TimelineTimelineItem",
+                  "itemContent": {
+                    "itemType": "TimelineTweet",
+                    "__typename": "TimelineTweet",
+                    "tweet_results": {
+                      "result": {
+                        "__typename": "Tweet",
+                        "rest_id": "1890000000000000102",
+                        "core": {
+                          "user_results": {
+                            "result": {
+                              "__typename": "User",
+                              "id": "VXNlcjoxMDAwMDAwMDAy",
+                              "rest_id": "1000000002",
+                              "legacy": {
+                                "description": "",
+                                "followers_count": 10,
+                                "friends_count": 5,
+                                "profile_image_url_https": "https://pbs.twimg.com/profile_images/1000000002/grace_normal.png",
+                                "name": "Grace Sample",
+                                "screen_name": "grace_sample"
+                              }
+                            }
+                          }
+                        },
+                        "unmention_data": {},
+                        "edit_control": {
+                          "edit_tweet_ids": [
+                            "1890000000000000102"
+                          ],
+                          "editable_until_msecs": "1793000000000",
+                          "is_edit_eligible": true,
+                          "edits_remaining": "5"
+                        },
+                        "is_translatable": false,
+                        "views": {
+                          "count": "1102",
+                          "state": "EnabledWithCount"
+                        },
+                        "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+                        "legacy": {
+                          "bookmark_count": 3,
+                          "bookmarked": true,
+                          "created_at": "Sun Nov 01 09:42:00 +0000 2026",
+                          "conversation_id_str": "1890000000000000102",
+                          "display_text_range": [
+                            0,
+                            139
+                          ],
+                          "entities": {
+                            "hashtags": [],
+                            "symbols": [],
+                            "timestamps": [],
+                            "urls": [
+                              {
+                                "display_url": "example.org/notes",
+                                "expanded_url": "https://example.org/notes",
+                                "url": "https://t.co/DDDDDDDDDD",
+                                "indices": [
+                                  80,
+                                  103
+                                ]
+                              },
+                              {
+                                "display_url": "x.com/i/web/status/1…",
+                                "expanded_url": "https://twitter.com/i/web/status/1890000000000000102",
+                                "url": "https://t.co/CCCCCCCCCC",
+                                "indices": [
+                                  118,
+                                  141
+                                ]
+                              }
+                            ],
+                            "user_mentions": []
+                          },
+                          "favorite_count": 142,
+                          "favorited": false,
+                          "full_text": "This is a long post that goes past the old limit.\n\nSecond paragraph, with a link https://t.co/DDDDDDDDDD and a few… https://t.co/CCCCCCCCCC",
+                          "is_quote_status": false,
+                          "lang": "en",
+                          "quote_count": 1,
+                          "reply_count": 2,
+                          "retweet_count": 4,
+                          "retweeted": false,
+                          "user_id_str": "1000000002",
+                          "id_str": "1890000000000000102"
+                        },
+                        "note_tweet": {
+                          "is_expandable": true,
+                          "note_tweet_results": {
+                            "result": {
+                              "id": "Tm90ZVR3ZWV0UmVzdWx0czoxODkwMDAwMDAwMDAwMDAwMTAy",
+                              "text": "This is a long post that goes past the old limit.\n\nSecond paragraph, with a link https://t.co/DDDDDDDDDD and a few more words.\nA single line break here, and 5 < 6 &amp; done.\n\nFiller sentence for length. Filler sentence for length. Filler sentence for length. Filler sentence for length. Filler sentence for length. Filler sentence for length. Filler sentence for length. Filler sentence for length. Filler sentence for length. Filler sentence for length. Filler sentence for length. Filler sentence for length.",
+                              "entity_set": {
+                                "hashtags": [],
+                                "symbols": [],
+                                "urls": [
+                                  {
+                                    "display_url": "example.org/notes",
+                                    "expanded_url": "https://example.org/notes",
+                                    "url": "https://t.co/DDDDDDDDDD",
+                                    "indices": [
+                                      80,
+                                      103
+                                    ]
+                                  }
+                                ],
+                                "user_mentions": []
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "tweetDisplayType": "Tweet"
+                  }
+                }
+              },
+              {
+                "entryId": "tweet-1890000000000000103",
+                "sortIndex": "1859000000000000097",
+                "content": {
+                  "entryType": "TimelineTimelineItem",
+                  "__typename": "TimelineTimelineItem",
+                  "itemContent": {
+                    "itemType": "TimelineTweet",
+                    "__typename": "TimelineTweet",
+                    "tweet_results": {
+                      "result": {
+                        "__typename": "Tweet",
+                        "rest_id": "1890000000000000103",
+                        "core": {
+                          "user_results": {
+                            "result": {
+                              "__typename": "User",
+                              "id": "VXNlcjoxMDAwMDAwMDAx",
+                              "rest_id": "1000000001",
+                              "legacy": {
+                                "description": "",
+                                "followers_count": 10,
+                                "friends_count": 5
+                              },
+                              "core": {
+                                "name": "Ada Example",
+                                "screen_name": "ada_example",
+                                "created_at": "Mon Jan 01 00:00:00 +0000 2018"
+                              },
+                              "avatar": {
+                                "image_url": "https://pbs.twimg.com/profile_images/1000000001/ada_normal.jpg"
+                              }
+                            }
+                          }
+                        },
+                        "unmention_data": {},
+                        "edit_control": {
+                          "edit_tweet_ids": [
+                            "1890000000000000103"
+                          ],
+                          "editable_until_msecs": "1793000000000",
+                          "is_edit_eligible": true,
+                          "edits_remaining": "5"
+                        },
+                        "is_translatable": false,
+                        "views": {
+                          "count": "1103",
+                          "state": "EnabledWithCount"
+                        },
+                        "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+                        "legacy": {
+                          "bookmark_count": 3,
+                          "bookmarked": true,
+                          "created_at": "Sun Nov 01 09:43:00 +0000 2026",
+                          "conversation_id_str": "1890000000000000103",
+                          "display_text_range": [
+                            0,
+                            23
+                          ],
+                          "entities": {
+                            "hashtags": [],
+                            "symbols": [],
+                            "timestamps": [],
+                            "urls": [],
+                            "user_mentions": []
+                          },
+                          "favorite_count": 143,
+                          "favorited": false,
+                          "full_text": "Worth reading this one.",
+                          "is_quote_status": true,
+                          "lang": "en",
+                          "quote_count": 1,
+                          "reply_count": 2,
+                          "retweet_count": 4,
+                          "retweeted": false,
+                          "user_id_str": "1000000001",
+                          "id_str": "1890000000000000103",
+                          "quoted_status_id_str": "1890000000000000099",
+                          "quoted_status_permalink": {
+                            "url": "https://t.co/QQQQQQQQQQ",
+                            "expanded": "https://x.com/lin_placeholder/status/1890000000000000099",
+                            "display": "x.com/…"
+                          }
+                        },
+                        "quoted_status_result": {
+                          "result": {
+                            "__typename": "Tweet",
+                            "rest_id": "1890000000000000099",
+                            "core": {
+                              "user_results": {
+                                "result": {
+                                  "__typename": "User",
+                                  "id": "VXNlcjoxMDAwMDAwMDAz",
+                                  "rest_id": "1000000003",
+                                  "legacy": {
+                                    "description": "",
+                                    "followers_count": 10,
+                                    "friends_count": 5
+                                  },
+                                  "core": {
+                                    "name": "Lin Placeholder",
+                                    "screen_name": "lin_placeholder",
+                                    "created_at": "Mon Jan 01 00:00:00 +0000 2018"
+                                  },
+                                  "avatar": {
+                                    "image_url": "https://pbs.twimg.com/profile_images/1000000003/lin_normal.jpg"
+                                  }
+                                }
+                              }
+                            },
+                            "unmention_data": {},
+                            "edit_control": {
+                              "edit_tweet_ids": [
+                                "1890000000000000099"
+                              ],
+                              "editable_until_msecs": "1793000000000",
+                              "is_edit_eligible": true,
+                              "edits_remaining": "5"
+                            },
+                            "is_translatable": false,
+                            "views": {
+                              "count": "1099",
+                              "state": "EnabledWithCount"
+                            },
+                            "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+                            "legacy": {
+                              "bookmark_count": 3,
+                              "bookmarked": true,
+                              "created_at": "Sun Nov 01 09:39:00 +0000 2026",
+                              "conversation_id_str": "1890000000000000099",
+                              "display_text_range": [
+                                0,
+                                56
+                              ],
+                              "entities": {
+                                "hashtags": [],
+                                "symbols": [],
+                                "timestamps": [],
+                                "urls": [],
+                                "user_mentions": [],
+                                "media": [
+                                  {
+                                    "display_url": "pic.x.com/EEEEEEEEEE",
+                                    "expanded_url": "https://x.com/i/status/photo/1",
+                                    "id_str": "SYNTHPHOTO099",
+                                    "indices": [
+                                      0,
+                                      0
+                                    ],
+                                    "media_key": "3_SYNTHPHOTO099",
+                                    "media_url_https": "https://pbs.twimg.com/media/SYNTHPHOTO099.jpg",
+                                    "type": "photo",
+                                    "url": "https://t.co/EEEEEEEEEE",
+                                    "original_info": {
+                                      "width": 1200,
+                                      "height": 800,
+                                      "focus_rects": []
+                                    },
+                                    "sizes": {}
+                                  }
+                                ]
+                              },
+                              "favorite_count": 139,
+                              "favorited": false,
+                              "full_text": "Original thought, with a picture https://t.co/EEEEEEEEEE",
+                              "is_quote_status": false,
+                              "lang": "en",
+                              "quote_count": 1,
+                              "reply_count": 2,
+                              "retweet_count": 4,
+                              "retweeted": false,
+                              "user_id_str": "1000000003",
+                              "id_str": "1890000000000000099",
+                              "extended_entities": {
+                                "media": [
+                                  {
+                                    "display_url": "pic.x.com/EEEEEEEEEE",
+                                    "expanded_url": "https://x.com/i/status/photo/1",
+                                    "id_str": "SYNTHPHOTO099",
+                                    "indices": [
+                                      0,
+                                      0
+                                    ],
+                                    "media_key": "3_SYNTHPHOTO099",
+                                    "media_url_https": "https://pbs.twimg.com/media/SYNTHPHOTO099.jpg",
+                                    "type": "photo",
+                                    "url": "https://t.co/EEEEEEEEEE",
+                                    "original_info": {
+                                      "width": 1200,
+                                      "height": 800,
+                                      "focus_rects": []
+                                    },
+                                    "sizes": {}
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "tweetDisplayType": "Tweet"
+                  }
+                }
+              },
+              {
+                "entryId": "tweet-1890000000000000104",
+                "sortIndex": "1859000000000000096",
+                "content": {
+                  "entryType": "TimelineTimelineItem",
+                  "__typename": "TimelineTimelineItem",
+                  "itemContent": {
+                    "itemType": "TimelineTweet",
+                    "__typename": "TimelineTweet",
+                    "tweet_results": {
+                      "result": {
+                        "__typename": "TweetWithVisibilityResults",
+                        "tweet": {
+                          "rest_id": "1890000000000000104",
+                          "core": {
+                            "user_results": {
+                              "result": {
+                                "__typename": "User",
+                                "id": "VXNlcjoxMDAwMDAwMDAy",
+                                "rest_id": "1000000002",
+                                "legacy": {
+                                  "description": "",
+                                  "followers_count": 10,
+                                  "friends_count": 5,
+                                  "profile_image_url_https": "https://pbs.twimg.com/profile_images/1000000002/grace_normal.png",
+                                  "name": "Grace Sample",
+                                  "screen_name": "grace_sample"
+                                }
+                              }
+                            }
+                          },
+                          "unmention_data": {},
+                          "edit_control": {
+                            "edit_tweet_ids": [
+                              "1890000000000000104"
+                            ],
+                            "editable_until_msecs": "1793000000000",
+                            "is_edit_eligible": true,
+                            "edits_remaining": "5"
+                          },
+                          "is_translatable": false,
+                          "views": {
+                            "count": "1104",
+                            "state": "EnabledWithCount"
+                          },
+                          "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+                          "legacy": {
+                            "bookmark_count": 3,
+                            "bookmarked": true,
+                            "created_at": "Sun Nov 01 09:44:00 +0000 2026",
+                            "conversation_id_str": "1890000000000000104",
+                            "display_text_range": [
+                              0,
+                              35
+                            ],
+                            "entities": {
+                              "hashtags": [],
+                              "symbols": [],
+                              "timestamps": [],
+                              "urls": [],
+                              "user_mentions": [],
+                              "media": [
+                                {
+                                  "display_url": "pic.x.com/FFFFFFFFFF",
+                                  "expanded_url": "https://x.com/i/status/video/1",
+                                  "id_str": "1890000000000050401",
+                                  "indices": [
+                                    12,
+                                    35
+                                  ],
+                                  "media_key": "13_1890000000000050401",
+                                  "media_url_https": "https://pbs.twimg.com/amplify_video_thumb/1890000000000050401/img/SYNTHTHUMB.jpg",
+                                  "type": "video",
+                                  "url": "https://t.co/FFFFFFFFFF",
+                                  "original_info": {
+                                    "width": 1280,
+                                    "height": 720,
+                                    "focus_rects": []
+                                  },
+                                  "sizes": {}
+                                }
+                              ]
+                            },
+                            "favorite_count": 144,
+                            "favorited": false,
+                            "full_text": "Launch clip https://t.co/FFFFFFFFFF",
+                            "is_quote_status": false,
+                            "lang": "en",
+                            "quote_count": 1,
+                            "reply_count": 2,
+                            "retweet_count": 4,
+                            "retweeted": false,
+                            "user_id_str": "1000000002",
+                            "id_str": "1890000000000000104",
+                            "extended_entities": {
+                              "media": [
+                                {
+                                  "display_url": "pic.x.com/FFFFFFFFFF",
+                                  "expanded_url": "https://x.com/i/status/video/1",
+                                  "id_str": "1890000000000050401",
+                                  "indices": [
+                                    12,
+                                    35
+                                  ],
+                                  "media_key": "13_1890000000000050401",
+                                  "media_url_https": "https://pbs.twimg.com/amplify_video_thumb/1890000000000050401/img/SYNTHTHUMB.jpg",
+                                  "type": "video",
+                                  "url": "https://t.co/FFFFFFFFFF",
+                                  "original_info": {
+                                    "width": 1280,
+                                    "height": 720,
+                                    "focus_rects": []
+                                  },
+                                  "sizes": {},
+                                  "video_info": {
+                                    "aspect_ratio": [
+                                      16,
+                                      9
+                                    ],
+                                    "duration_millis": 12345,
+                                    "variants": [
+                                      {
+                                        "content_type": "application/x-mpegURL",
+                                        "url": "https://video.twimg.com/amplify_video/1890000000000050401/pl/SYNTH.m3u8?tag=14"
+                                      },
+                                      {
+                                        "bitrate": 832000,
+                                        "content_type": "video/mp4",
+                                        "url": "https://video.twimg.com/amplify_video/1890000000000050401/vid/avc1/640x360/SYNTHLOW.mp4?tag=14"
+                                      },
+                                      {
+                                        "bitrate": 2176000,
+                                        "content_type": "video/mp4",
+                                        "url": "https://video.twimg.com/amplify_video/1890000000000050401/vid/avc1/1280x720/SYNTHHIGH.mp4?tag=14"
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "limitedActionResults": {
+                          "limited_actions": [
+                            {
+                              "action": "Reply",
+                              "prompt": {}
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "tweetDisplayType": "Tweet"
+                  }
+                }
+              },
+              {
+                "entryId": "tweet-1890000000000000106",
+                "sortIndex": "1859000000000000095",
+                "content": {
+                  "entryType": "TimelineTimelineItem",
+                  "__typename": "TimelineTimelineItem",
+                  "itemContent": {
+                    "itemType": "TimelineTweet",
+                    "__typename": "TimelineTweet",
+                    "tweet_results": {
+                      "result": {
+                        "__typename": "TweetTombstone",
+                        "tombstone": {
+                          "__typename": "TextTombstone",
+                          "text": {
+                            "rtl": false,
+                            "text": "This Post is unavailable. Learn more",
+                            "entities": []
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "entryId": "tweet-1890000000000000105",
+                "sortIndex": "1859000000000000094",
+                "content": {
+                  "entryType": "TimelineTimelineItem",
+                  "__typename": "TimelineTimelineItem",
+                  "itemContent": {
+                    "itemType": "TimelineTweet",
+                    "__typename": "TimelineTweet",
+                    "tweet_results": {
+                      "result": {
+                        "__typename": "Tweet",
+                        "rest_id": "1890000000000000105",
+                        "core": {
+                          "user_results": {
+                            "result": {
+                              "__typename": "User",
+                              "id": "VXNlcjoxMDAwMDAwMDAz",
+                              "rest_id": "1000000003",
+                              "legacy": {
+                                "description": "",
+                                "followers_count": 10,
+                                "friends_count": 5
+                              },
+                              "core": {
+                                "name": "Lin Placeholder",
+                                "screen_name": "lin_placeholder",
+                                "created_at": "Mon Jan 01 00:00:00 +0000 2018"
+                              },
+                              "avatar": {
+                                "image_url": "https://pbs.twimg.com/profile_images/1000000003/lin_normal.jpg"
+                              }
+                            }
+                          }
+                        },
+                        "unmention_data": {},
+                        "edit_control": {
+                          "edit_tweet_ids": [
+                            "1890000000000000105"
+                          ],
+                          "editable_until_msecs": "1793000000000",
+                          "is_edit_eligible": true,
+                          "edits_remaining": "5"
+                        },
+                        "is_translatable": false,
+                        "views": {
+                          "count": "1105",
+                          "state": "EnabledWithCount"
+                        },
+                        "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+                        "legacy": {
+                          "bookmark_count": 3,
+                          "bookmarked": true,
+                          "created_at": "Sun Nov 01 09:45:00 +0000 2026",
+                          "conversation_id_str": "1890000000000000105",
+                          "display_text_range": [
+                            0,
+                            48
+                          ],
+                          "entities": {
+                            "hashtags": [],
+                            "symbols": [],
+                            "timestamps": [],
+                            "urls": [],
+                            "user_mentions": [],
+                            "media": [
+                              {
+                                "display_url": "pic.x.com/HHHHHHHHHH",
+                                "expanded_url": "https://x.com/i/status/photo/1",
+                                "id_str": "1890000000000050501",
+                                "indices": [
+                                  0,
+                                  23
+                                ],
+                                "media_key": "16_1890000000000050501",
+                                "media_url_https": "https://pbs.twimg.com/tweet_video_thumb/SYNTHGIF.jpg",
+                                "type": "animated_gif",
+                                "url": "https://t.co/HHHHHHHHHH",
+                                "original_info": {
+                                  "width": 480,
+                                  "height": 270,
+                                  "focus_rects": []
+                                },
+                                "sizes": {}
+                              }
+                            ]
+                          },
+                          "favorite_count": 145,
+                          "favorited": false,
+                          "full_text": "Me when the build passes https://t.co/HHHHHHHHHH",
+                          "is_quote_status": false,
+                          "lang": "en",
+                          "quote_count": 1,
+                          "reply_count": 2,
+                          "retweet_count": 4,
+                          "retweeted": false,
+                          "user_id_str": "1000000003",
+                          "id_str": "1890000000000000105",
+                          "extended_entities": {
+                            "media": [
+                              {
+                                "display_url": "pic.x.com/HHHHHHHHHH",
+                                "expanded_url": "https://x.com/i/status/photo/1",
+                                "id_str": "1890000000000050501",
+                                "indices": [
+                                  0,
+                                  23
+                                ],
+                                "media_key": "16_1890000000000050501",
+                                "media_url_https": "https://pbs.twimg.com/tweet_video_thumb/SYNTHGIF.jpg",
+                                "type": "animated_gif",
+                                "url": "https://t.co/HHHHHHHHHH",
+                                "original_info": {
+                                  "width": 480,
+                                  "height": 270,
+                                  "focus_rects": []
+                                },
+                                "sizes": {},
+                                "video_info": {
+                                  "aspect_ratio": [
+                                    16,
+                                    9
+                                  ],
+                                  "variants": [
+                                    {
+                                      "bitrate": 0,
+                                      "content_type": "video/mp4",
+                                      "url": "https://video.twimg.com/tweet_video/SYNTHGIF.mp4"
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "tweetDisplayType": "Tweet"
+                  }
+                }
+              },
+              {
+                "entryId": "promoted-tweet-1890000000000000190-abc",
+                "sortIndex": "1859000000000000093",
+                "content": {
+                  "entryType": "TimelineTimelineItem",
+                  "__typename": "TimelineTimelineItem",
+                  "itemContent": {
+                    "itemType": "TimelineTweet",
+                    "__typename": "TimelineTweet",
+                    "tweet_results": {
+                      "result": {
+                        "__typename": "Tweet",
+                        "rest_id": "1890000000000000190",
+                        "core": {
+                          "user_results": {
+                            "result": {
+                              "__typename": "User",
+                              "id": "VXNlcjoxMDAwMDAwMDAz",
+                              "rest_id": "1000000003",
+                              "legacy": {
+                                "description": "",
+                                "followers_count": 10,
+                                "friends_count": 5
+                              },
+                              "core": {
+                                "name": "Lin Placeholder",
+                                "screen_name": "lin_placeholder",
+                                "created_at": "Mon Jan 01 00:00:00 +0000 2018"
+                              },
+                              "avatar": {
+                                "image_url": "https://pbs.twimg.com/profile_images/1000000003/lin_normal.jpg"
+                              }
+                            }
+                          }
+                        },
+                        "unmention_data": {},
+                        "edit_control": {
+                          "edit_tweet_ids": [
+                            "1890000000000000190"
+                          ],
+                          "editable_until_msecs": "1793000000000",
+                          "is_edit_eligible": true,
+                          "edits_remaining": "5"
+                        },
+                        "is_translatable": false,
+                        "views": {
+                          "count": "1190",
+                          "state": "EnabledWithCount"
+                        },
+                        "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+                        "legacy": {
+                          "bookmark_count": 3,
+                          "bookmarked": true,
+                          "created_at": "Sun Nov 01 09:10:00 +0000 2026",
+                          "conversation_id_str": "1890000000000000190",
+                          "display_text_range": [
+                            0,
+                            5
+                          ],
+                          "entities": {
+                            "hashtags": [],
+                            "symbols": [],
+                            "timestamps": [],
+                            "urls": [],
+                            "user_mentions": []
+                          },
+                          "favorite_count": 230,
+                          "favorited": false,
+                          "full_text": "An ad",
+                          "is_quote_status": false,
+                          "lang": "en",
+                          "quote_count": 1,
+                          "reply_count": 2,
+                          "retweet_count": 4,
+                          "retweeted": false,
+                          "user_id_str": "1000000003",
+                          "id_str": "1890000000000000190"
+                        }
+                      }
+                    },
+                    "promotedMetadata": {
+                      "advertiser_results": {}
+                    }
+                  }
+                }
+              },
+              {
+                "entryId": "tweet-1890000000000000107",
+                "sortIndex": "1859000000000000092",
+                "content": {
+                  "entryType": "TimelineTimelineItem",
+                  "__typename": "TimelineTimelineItem",
+                  "itemContent": {
+                    "itemType": "TimelineTweet",
+                    "__typename": "TimelineTweet",
+                    "tweet_results": {
+                      "result": {
+                        "__typename": "Tweet",
+                        "rest_id": "1890000000000000107",
+                        "core": {
+                          "user_results": {
+                            "result": {
+                              "__typename": "User",
+                              "id": "VXNlcjoxMDAwMDAwMDAx",
+                              "rest_id": "1000000001",
+                              "legacy": {
+                                "description": "",
+                                "followers_count": 10,
+                                "friends_count": 5
+                              },
+                              "core": {
+                                "name": "Ada Example",
+                                "screen_name": "ada_example",
+                                "created_at": "Mon Jan 01 00:00:00 +0000 2018"
+                              },
+                              "avatar": {
+                                "image_url": "https://pbs.twimg.com/profile_images/1000000001/ada_normal.jpg"
+                              }
+                            }
+                          }
+                        },
+                        "unmention_data": {},
+                        "edit_control": {
+                          "edit_tweet_ids": [
+                            "1890000000000000107"
+                          ],
+                          "editable_until_msecs": "1793000000000",
+                          "is_edit_eligible": true,
+                          "edits_remaining": "5"
+                        },
+                        "is_translatable": false,
+                        "views": {
+                          "count": "1107",
+                          "state": "EnabledWithCount"
+                        },
+                        "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+                        "legacy": {
+                          "bookmark_count": 3,
+                          "bookmarked": true,
+                          "created_at": "Sun Nov 01 09:47:00 +0000 2026",
+                          "conversation_id_str": "1890000000000000107",
+                          "display_text_range": [
+                            0,
+                            23
+                          ],
+                          "entities": {
+                            "hashtags": [],
+                            "symbols": [],
+                            "timestamps": [],
+                            "urls": [
+                              {
+                                "display_url": "x.com/i/article/1890…",
+                                "expanded_url": "http://x.com/i/article/1890000000000077701",
+                                "url": "https://t.co/GGGGGGGGGG",
+                                "indices": [
+                                  0,
+                                  23
+                                ]
+                              }
+                            ],
+                            "user_mentions": []
+                          },
+                          "favorite_count": 147,
+                          "favorited": false,
+                          "full_text": "https://t.co/GGGGGGGGGG",
+                          "is_quote_status": false,
+                          "lang": "en",
+                          "quote_count": 1,
+                          "reply_count": 2,
+                          "retweet_count": 4,
+                          "retweeted": false,
+                          "user_id_str": "1000000001",
+                          "id_str": "1890000000000000107"
+                        },
+                        "article": {
+                          "article_results": {
+                            "result": {
+                              "rest_id": "1890000000000077701",
+                              "id": "QXJ0aWNsZUVudGl0eToxODkw",
+                              "title": "A Short Field Guide",
+                              "preview_text": "A preview of the article body as the timeline shows it.",
+                              "cover_media": {
+                                "id": "QXBpTWVkaWE6MQ==",
+                                "media_key": "3_1890000000000090001",
+                                "media_id": "1890000000000090001",
+                                "media_info": {
+                                  "__typename": "ApiImage",
+                                  "original_img_height": 900,
+                                  "original_img_width": 1600,
+                                  "original_img_url": "https://pbs.twimg.com/media/SYNTHCOVER.jpg",
+                                  "color_info": {
+                                    "palette": []
+                                  }
+                                }
+                              },
+                              "lifecycle_state": {
+                                "modified_at_secs": 1793000000
+                              },
+                              "metadata": {
+                                "first_published_at_secs": 1793000000
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "tweetDisplayType": "Tweet"
+                  }
+                }
+              },
+              {
+                "entryId": "tweet-1890000000000000108",
+                "sortIndex": "1859000000000000091",
+                "content": {
+                  "entryType": "TimelineTimelineItem",
+                  "__typename": "TimelineTimelineItem",
+                  "itemContent": {
+                    "itemType": "TimelineTweet",
+                    "__typename": "TimelineTweet",
+                    "tweet_results": {
+                      "result": {
+                        "__typename": "Tweet",
+                        "rest_id": "1890000000000000108",
+                        "core": {
+                          "user_results": {
+                            "result": {
+                              "__typename": "User",
+                              "id": "VXNlcjoxMDAwMDAwMDAz",
+                              "rest_id": "1000000003",
+                              "legacy": {
+                                "description": "",
+                                "followers_count": 10,
+                                "friends_count": 5
+                              },
+                              "core": {
+                                "name": "Lin Placeholder",
+                                "screen_name": "lin_placeholder",
+                                "created_at": "Mon Jan 01 00:00:00 +0000 2018"
+                              },
+                              "avatar": {
+                                "image_url": "https://pbs.twimg.com/profile_images/1000000003/lin_normal.jpg"
+                              }
+                            }
+                          }
+                        },
+                        "unmention_data": {},
+                        "edit_control": {
+                          "edit_tweet_ids": [
+                            "1890000000000000108"
+                          ],
+                          "editable_until_msecs": "1793000000000",
+                          "is_edit_eligible": true,
+                          "edits_remaining": "5"
+                        },
+                        "is_translatable": false,
+                        "views": {
+                          "count": "1108",
+                          "state": "EnabledWithCount"
+                        },
+                        "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+                        "legacy": {
+                          "bookmark_count": 3,
+                          "bookmarked": true,
+                          "created_at": "Sun Nov 01 09:48:00 +0000 2026",
+                          "conversation_id_str": "1890000000000000108",
+                          "display_text_range": [
+                            14,
+                            39
+                          ],
+                          "entities": {
+                            "hashtags": [],
+                            "symbols": [],
+                            "timestamps": [],
+                            "urls": [],
+                            "user_mentions": [
+                              {
+                                "id_str": "1000000002",
+                                "name": "Grace Sample",
+                                "screen_name": "grace_sample",
+                                "indices": [
+                                  0,
+                                  13
+                                ]
+                              }
+                            ]
+                          },
+                          "favorite_count": 148,
+                          "favorited": false,
+                          "full_text": "@grace_sample Thanks, that helps a lot.",
+                          "is_quote_status": false,
+                          "lang": "en",
+                          "quote_count": 1,
+                          "reply_count": 2,
+                          "retweet_count": 4,
+                          "retweeted": false,
+                          "user_id_str": "1000000003",
+                          "id_str": "1890000000000000108",
+                          "in_reply_to_status_id_str": "1890000000000000104",
+                          "in_reply_to_screen_name": "grace_sample",
+                          "in_reply_to_user_id_str": "1000000002"
+                        }
+                      }
+                    },
+                    "tweetDisplayType": "Tweet"
+                  }
+                }
+              },
+              {
+                "entryId": "cursor-top-1859000000000000100",
+                "sortIndex": "1859000000000000100",
+                "content": {
+                  "entryType": "TimelineTimelineCursor",
+                  "__typename": "TimelineTimelineCursor",
+                  "value": "SYNTHCURSORTOP",
+                  "cursorType": "Top"
+                }
+              },
+              {
+                "entryId": "cursor-bottom-1859000000000000090",
+                "sortIndex": "1859000000000000090",
+                "content": {
+                  "entryType": "TimelineTimelineCursor",
+                  "__typename": "TimelineTimelineCursor",
+                  "value": "SYNTHCURSORBOTTOM",
+                  "cursorType": "Bottom"
+                }
+              }
+            ]
+          },
+          {
+            "type": "TimelineTerminateTimeline",
+            "direction": "Top"
+          }
+        ],
+        "responseObjects": {
+          "feedbackActions": []
+        }
+      }
+    }
+  }
+}

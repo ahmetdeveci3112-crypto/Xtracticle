@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "minVersion": "3.0.0",
+  "minVersion": "0.1.0",
   "ops": {
     "bookmarks": ["Bookmarks", "BookmarkFolderTimeline", "BookmarkSearchTimeline"],
     "detail": ["TweetDetail", "TweetResultByRestId"],

@@ -27,6 +27,8 @@ export interface SitePage {
   sections: string;
   faq: FAQ[];
   noindex?: boolean;
+  /** No Google Analytics on this page (the /saved page; its events go to the Worker counter). */
+  noAnalytics?: boolean;
   isHome?: boolean;
   /** Absolute canonical URL when it differs from the page's own URL. */
   canonical?: string;
@@ -54,6 +56,9 @@ const SAMPLE_PDF: Record<Lang, { alt: string; caption: string }> = {
 
 export const samplePdfFigure = (lang: Lang) =>
   `<figure class="xt-figure"><img src="/img/sample-pdf.webp" width="900" height="789" loading="lazy" decoding="async" alt="${SAMPLE_PDF[lang].alt}" /><figcaption>${SAMPLE_PDF[lang].caption}</figcaption></figure>`;
+
+/** Where the React app puts the one-line extension call (src/components/ExtCta.tsx); empty until then. */
+export const extCtaSlot = (spot: 'home' | 'pro') => `<div class="xt-ext-slot" data-xt-ext-cta="${spot}"></div>`;
 
 export const steps = (items: string[]) => `<ol class="xt-steps">${items.map(i => `<li>${i}</li>`).join('')}</ol>`;
 

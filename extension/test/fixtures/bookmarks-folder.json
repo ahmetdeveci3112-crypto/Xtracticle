@@ -1,0 +1,188 @@
+{
+  "data": {
+    "bookmark_collection_timeline": {
+      "timeline": {
+        "instructions": [
+          {
+            "type": "TimelineAddEntries",
+            "entries": [
+              {
+                "entryId": "tweet-1890000000000000111",
+                "sortIndex": "1859000000000000089",
+                "content": {
+                  "entryType": "TimelineTimelineItem",
+                  "__typename": "TimelineTimelineItem",
+                  "itemContent": {
+                    "itemType": "TimelineTweet",
+                    "__typename": "TimelineTweet",
+                    "tweet_results": {
+                      "result": {
+                        "__typename": "Tweet",
+                        "rest_id": "1890000000000000111",
+                        "core": {
+                          "user_results": {
+                            "result": {
+                              "__typename": "User",
+                              "id": "VXNlcjoxMDAwMDAwMDAy",
+                              "rest_id": "1000000002",
+                              "legacy": {
+                                "description": "",
+                                "followers_count": 10,
+                                "friends_count": 5,
+                                "profile_image_url_https": "https://pbs.twimg.com/profile_images/1000000002/grace_normal.png",
+                                "name": "Grace Sample",
+                                "screen_name": "grace_sample"
+                              }
+                            }
+                          }
+                        },
+                        "unmention_data": {},
+                        "edit_control": {
+                          "edit_tweet_ids": [
+                            "1890000000000000111"
+                          ],
+                          "editable_until_msecs": "1793000000000",
+                          "is_edit_eligible": true,
+                          "edits_remaining": "5"
+                        },
+                        "is_translatable": false,
+                        "views": {
+                          "count": "1111",
+                          "state": "EnabledWithCount"
+                        },
+                        "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+                        "legacy": {
+                          "bookmark_count": 3,
+                          "bookmarked": true,
+                          "created_at": "Sun Nov 01 09:51:00 +0000 2026",
+                          "conversation_id_str": "1890000000000000111",
+                          "display_text_range": [
+                            0,
+                            20
+                          ],
+                          "entities": {
+                            "hashtags": [],
+                            "symbols": [],
+                            "timestamps": [],
+                            "urls": [],
+                            "user_mentions": []
+                          },
+                          "favorite_count": 151,
+                          "favorited": false,
+                          "full_text": "Second page post one",
+                          "is_quote_status": false,
+                          "lang": "en",
+                          "quote_count": 1,
+                          "reply_count": 2,
+                          "retweet_count": 4,
+                          "retweeted": false,
+                          "user_id_str": "1000000002",
+                          "id_str": "1890000000000000111"
+                        }
+                      }
+                    },
+                    "tweetDisplayType": "Tweet"
+                  }
+                }
+              },
+              {
+                "entryId": "tweet-1890000000000000112",
+                "sortIndex": "1859000000000000088",
+                "content": {
+                  "entryType": "TimelineTimelineItem",
+                  "__typename": "TimelineTimelineItem",
+                  "itemContent": {
+                    "itemType": "TimelineTweet",
+                    "__typename": "TimelineTweet",
+                    "tweet_results": {
+                      "result": {
+                        "__typename": "Tweet",
+                        "rest_id": "1890000000000000112",
+                        "core": {
+                          "user_results": {
+                            "result": {
+                              "__typename": "User",
+                              "id": "VXNlcjoxMDAwMDAwMDAx",
+                              "rest_id": "1000000001",
+                              "legacy": {
+                                "description": "",
+                                "followers_count": 10,
+                                "friends_count": 5
+                              },
+                              "core": {
+                                "name": "Ada Example",
+                                "screen_name": "ada_example",
+                                "created_at": "Mon Jan 01 00:00:00 +0000 2018"
+                              },
+                              "avatar": {
+                                "image_url": "https://pbs.twimg.com/profile_images/1000000001/ada_normal.jpg"
+                              }
+                            }
+                          }
+                        },
+                        "unmention_data": {},
+                        "edit_control": {
+                          "edit_tweet_ids": [
+                            "1890000000000000112"
+                          ],
+                          "editable_until_msecs": "1793000000000",
+                          "is_edit_eligible": true,
+                          "edits_remaining": "5"
+                        },
+                        "is_translatable": false,
+                        "views": {
+                          "count": "1112",
+                          "state": "EnabledWithCount"
+                        },
+                        "source": "<a href=\"https://example.com\" rel=\"nofollow\">Synthetic</a>",
+                        "legacy": {
+                          "bookmark_count": 3,
+                          "bookmarked": true,
+                          "created_at": "Sun Nov 01 09:52:00 +0000 2026",
+                          "conversation_id_str": "1890000000000000112",
+                          "display_text_range": [
+                            0,
+                            20
+                          ],
+                          "entities": {
+                            "hashtags": [],
+                            "symbols": [],
+                            "timestamps": [],
+                            "urls": [],
+                            "user_mentions": []
+                          },
+                          "favorite_count": 152,
+                          "favorited": false,
+                          "full_text": "Second page post two",
+                          "is_quote_status": false,
+                          "lang": "en",
+                          "quote_count": 1,
+                          "reply_count": 2,
+                          "retweet_count": 4,
+                          "retweeted": false,
+                          "user_id_str": "1000000001",
+                          "id_str": "1890000000000000112"
+                        }
+                      }
+                    },
+                    "tweetDisplayType": "Tweet"
+                  }
+                }
+              },
+              {
+                "entryId": "cursor-bottom-1859000000000000087",
+                "sortIndex": "1859000000000000087",
+                "content": {
+                  "entryType": "TimelineTimelineCursor",
+                  "__typename": "TimelineTimelineCursor",
+                  "value": "SYNTHCURSOR2",
+                  "cursorType": "Bottom"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

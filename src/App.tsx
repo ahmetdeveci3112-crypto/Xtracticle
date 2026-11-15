@@ -14,17 +14,12 @@ import type { PromoProduct } from './shared/promo';
 import { track } from './lib/analytics';
 import { logout as proLogout, usePro } from './lib/pro';
 import { demoVideo } from './shared/demo';
-
-// Lazy-load react-markdown + remark-gfm together (~165KB saved from initial bundle)
-const LazyMarkdown = lazy(() =>
-  Promise.all([import('react-markdown'), import('remark-gfm')]).then(
-    ([{ default: ReactMarkdown }, { default: remarkGfm }]) => ({
-      default: (props: any) => <ReactMarkdown remarkPlugins={[remarkGfm]} {...props} />,
-    })
-  )
-);
+import DocPreview from './components/DocPreview';
+import ExtCta, { ExtCtaSlots } from './components/ExtCta';
+import { notifyLangChanged, parseDlHash, type DlFormat } from './lib/ext';
 
 const ArchivePanel = lazy(() => import('./components/ArchivePanel'));
+const SavedPage = lazy(() => import('./components/SavedPage'));
 
 /* ─── Page config (injected per page by the build / Worker) ─── */
 type ExportKey = 'md' | 'pdf' | 'epub' | 'zip' | 'txt' | 'obsidian';
@@ -47,6 +42,8 @@ declare global {
 const PAGE: PageConfig = (typeof window !== 'undefined' && window.__XT__) || {};
 /** Deleted Tweet Finder and Tracker pages (id `deleted-finder`, `tr-deleted-tracker`, …) ask for an account, not a post. */
 const ACCOUNT_INPUT = /(^|-)deleted-(finder|tracker)$/.test(PAGE.page || '');
+/** /saved and its language versions (id `saved`, `tr-saved`, …): the extension's bookmark copies. */
+const SAVED_PAGE = /(^|-)saved$/.test(PAGE.page || '');
 
 /* ─── Persistence ─── */
 interface HistoryItem {
@@ -159,6 +156,10 @@ export default function App() {
   const [speaking, setSpeaking] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
+  // `#dl=<format>` on a status page (the extension's save menu): run that download once, then forget it.
+  const [dlPending, setDlPending] = useState<DlFormat | null>(() => (ON_STATUS_PAGE ? parseDlHash(location.hash) : null));
+  const [previewReady, setPreviewReady] = useState(false);
+  const onPreviewReady = useCallback(() => setPreviewReady(true), []);
   const scrollPending = useRef(false);
   const requestRef = useRef(0);
 
@@ -179,6 +180,7 @@ export default function App() {
   /* ─── Language ─── */
   const changeLang = (next: Lang) => {
     store(LANG_KEY, next);
+    notifyLangChanged(next);
     // Go to this page's version in that language (status pages only switch the UI).
     if (location.pathname === PAGE.path) return void (location.href = PAGE.alternates?.[next] || langInfo(next).home);
     setLang(next);
@@ -187,6 +189,16 @@ export default function App() {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   }, [lang]);
+  // Language links in the static footer (data-set-lang) are a language pick too: tell the extension.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as Element | null)?.closest?.('a[data-set-lang]');
+      const next = a?.getAttribute('data-set-lang') as Lang | null | undefined;
+      if (next && LANGS.some(l => l.code === next)) notifyLangChanged(next);
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, []);
 
 
   const showFlash = (msg: string) => {
@@ -288,6 +300,8 @@ export default function App() {
   useEffect(() => {
     const fromPath = parsePath(location.pathname);
     if (fromPath) {
+      // The hash is read once (dlPending) and cleared right away, so a reload does not download again.
+      if (parseDlHash(location.hash)) window.history.replaceState(window.history.state, '', location.pathname + location.search);
       const preload = window.__XT_PRELOAD__;
       const input = `https://x.com/${fromPath.handle || 'i'}/status/${fromPath.id}`;
       setUrl(input);
@@ -347,6 +361,8 @@ export default function App() {
     }
   }, [doc, loading]);
 
+  useEffect(() => setPreviewReady(false), [doc]);
+
   // Stop speech when the document changes
   useEffect(() => () => { if ('speechSynthesis' in window) speechSynthesis.cancel(); }, [doc]);
   useEffect(() => setSpeaking(false), [doc]);
@@ -394,6 +410,14 @@ export default function App() {
       setProgress(null);
     }
   };
+
+  // `#dl=`: once the post, its rendered preview (PDF/EPUB read it) and the Pro state (credit line) are in.
+  useEffect(() => {
+    if (!dlPending || !doc || loading || !previewReady || pro.loading || busy) return;
+    setDlPending(null);
+    void runExport(dlPending);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dlPending, doc, loading, previewReady, pro.loading, busy]);
 
   const handleCopy = async () => {
     if (!doc) return;
@@ -536,7 +560,7 @@ export default function App() {
           </a>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{h1}</h1>
           <p className="text-lg max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>{sub}</p>
-          <button
+          {!SAVED_PAGE && <button
             type="button"
             onClick={() => {
               setDemoOpen(true);
@@ -547,9 +571,15 @@ export default function App() {
             <CirclePlay className="w-4 h-4" aria-hidden="true" />
             {t.watchDemo}
             <span className="xt-demo-len">0:34</span>
-          </button>
+          </button>}
         </header>
 
+        {SAVED_PAGE ? (
+          <Suspense fallback={null}>
+            <SavedPage lang={lang} pro={pro.pro} />
+          </Suspense>
+        ) : (
+        <>
         {/* Mode switch */}
         <div className="flex justify-center mb-4 print:hidden">
           <div className="inline-flex p-1 rounded-xl text-xs font-medium" style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}>
@@ -665,6 +695,7 @@ export default function App() {
                       setBatchSeed({ text: `@${handle}`, n: Date.now() });
                       setMode('batch');
                     }}
+                    footer={<ExtCta lang={lang} spot="finder" className="px-4 pb-4" />}
                   />
                 </Suspense>
               )}
@@ -830,30 +861,16 @@ export default function App() {
                   </div>
                 </div>
 
-                <article
-                  id="xt-preview"
-                  dir="auto"
-                  lang={doc.lang && doc.lang !== 'zxx' ? doc.lang : undefined}
-                  className="prose prose-neutral max-w-none prose-img:rounded-2xl prose-img:border prose-headings:tracking-tight"
-                >
-                  <Suspense fallback={<p style={{ color: 'var(--text-tertiary)' }}>{t.loadingPreview}</p>}>
-                    <LazyMarkdown
-                      components={{
-                        img: ({ node, ...props }: any) => (
-                          <img {...props} loading="lazy" referrerPolicy="no-referrer" style={{ borderColor: 'var(--border)' }} />
-                        ),
-                        a: ({ node, ...props }: any) => <a {...props} target="_blank" rel="noopener noreferrer nofollow" />,
-                      }}
-                    >
-                      {doc.md}
-                    </LazyMarkdown>
-                  </Suspense>
-                </article>
+                <DocPreview doc={doc} id="xt-preview" loadingLabel={t.loadingPreview} onReady={onPreviewReady} />
               </div>
             )}
           </>
         )}
+        </>
+        )}
       </main>
+
+      <ExtCtaSlots lang={lang} />
 
       {demoOpen && <DemoModal lang={lang} closeLabel={t.closeDemo} onClose={() => setDemoOpen(false)} />}
 

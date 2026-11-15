@@ -1,6 +1,6 @@
 import { coffeeUrl, sponsorsUrl } from '../src/shared/support';
 import { PAGES, SITE, GITHUB_URL, type Lang, type SitePage } from './pages';
-import { langTag } from './blocks';
+import { extCtaSlot, langTag } from './blocks';
 import { latestPicks } from './curated';
 import { homeProBlock } from './home-pro';
 import { promoBlock } from './promo-block';
@@ -117,6 +117,8 @@ const homeOf = (lang: Lang) => HOMES().find(h => h.lang === lang) || HOMES()[0];
 
 /** Language versions of a page (same translation group), in PAGES order. */
 const versions = (page: SitePage) => (page.noindex ? [] : PAGES.filter(p => p.group === page.group && !p.noindex));
+/** Language versions a visitor can switch to: like `versions`, but noindex groups (the /saved pages) link to each other too. */
+const langVersions = (page: SitePage) => (page.group === 'saved' ? PAGES.filter(p => p.group === page.group) : versions(page));
 const OG_IMAGE = `${SITE}/og-image.png`;
 
 function jsonLd(page: SitePage): unknown[] {
@@ -209,6 +211,7 @@ function head(page: SitePage): string {
 
 /** Mirrors the React header markup/classes so hydration causes no layout shift. */
 function shell(page: SitePage): string {
+  if (page.group === 'saved') return savedShell(page);
   const { button } = UI[page.lang];
   const placeholder = page.group === 'deleted-finder' || page.group === 'deleted-tracker' ? PROFILE_PLACEHOLDER[page.lang] : UI[page.lang].placeholder;
   const home = homeOf(page.lang).path;
@@ -227,6 +230,21 @@ function shell(page: SitePage): string {
           <input type="text" disabled placeholder="${esc(placeholder)}" class="w-full pl-5 pr-28 py-4 rounded-2xl text-base" style="background-color:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary)" />
           <button disabled class="absolute right-2 top-2 bottom-2 px-6 rounded-xl font-semibold text-sm" style="background-color:var(--accent);color:var(--bg-primary);opacity:.7">${button}</button>
         </div>
+      </main>`;
+}
+
+/** /saved: the same header without the demo button and the link form (matches src/components/SavedPage.tsx). */
+function savedShell(page: SitePage): string {
+  const home = homeOf(page.lang).path;
+  return `<main class="max-w-3xl mx-auto px-5 pt-16 pb-8 md:pt-24">
+        <header class="mb-10 text-center">
+          <a href="${home}" class="inline-flex flex-col items-center gap-3 mb-5" aria-label="Xtracticle home">
+            <span class="xt-logo"><svg viewBox="0 0 24 24" aria-hidden="true" class="w-7 h-7" width="28" height="28" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.007 4.076H5.036z"></path></svg></span>
+            <span class="text-sm font-semibold tracking-wide" style="color:var(--text-secondary)">Xtracticle</span>
+          </a>
+          <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-4">${esc(page.h1)}</h1>
+          <p class="text-lg max-w-xl mx-auto" style="color:var(--text-secondary)">${esc(page.sub)}</p>
+        </header>
       </main>`;
 }
 
@@ -265,7 +283,7 @@ function footer(page: SitePage): string {
   );
   if (page.lang !== 'en' && latestPicks()) tools.push(`<a href="/best-x-articles" hreflang="en">${esc(PICKS_COPY[page.lang].nav)}</a>`);
   // Same page in other languages (falls back to each language's home).
-  const vs = versions(page);
+  const vs = langVersions(page);
   const languages = HOMES().map(h => {
     const target = vs.find(v => v.lang === h.lang) || h;
     const current = target.id === page.id ? ' aria-current="page"' : '';
@@ -310,14 +328,20 @@ function content(page: SitePage): string {
   // Home pages: the Pro block, then the picks teaser, both right after the first ("How to download") section.
   const extra = (page.isHome ? homeProBlock(page.lang) : '') + picksTeaser(page);
   const cut = extra ? page.sections.indexOf('</section>') : -1;
-  const sections = cut >= 0 ? page.sections.slice(0, cut + 10) + extra + page.sections.slice(cut + 10) : page.sections;
+  let sections = cut >= 0 ? page.sections.slice(0, cut + 10) + extra + page.sections.slice(cut + 10) : page.sections;
+  // Home pages: the extension line closes the tool list ("Every format you need" grid).
+  if (page.isHome) {
+    const grid = sections.indexOf('class="xt-grid"');
+    const end = grid >= 0 ? sections.indexOf('</section>', grid) : -1;
+    if (end >= 0) sections = sections.slice(0, end) + `  ${extCtaSlot('home')}\n` + sections.slice(end);
+  }
   // "From the maker" strip (site/promo-block.ts) sits between the page content and the FAQ.
   const body = sections + promoBlock(page) + faqHtml(page);
   return (body.trim() ? `<div class="xt-content">${body}</div>\n` : '') + footer(page);
 }
 
 function config(page: SitePage): string {
-  const alternates = Object.fromEntries(versions(page).map(v => [v.lang, v.path]));
+  const alternates = Object.fromEntries(langVersions(page).map(v => [v.lang, v.path]));
   const cfg = { page: page.id, path: page.path, lang: page.lang, h1: page.h1, sub: page.sub, primary: page.primary, alternates };
   // Runs before first paint:
   //  1. a visitor who explicitly picked a language earlier is sent to this page's version in it
@@ -329,13 +353,24 @@ function config(page: SitePage): string {
   return `<script>window.__XT__=${inlineJson(cfg)};(function(){var K='xtracticle_lang',c=window.__XT__,d=document;try{if(/(^|;\\s*)xt_pro_hint=/.test(d.cookie))d.documentElement.classList.add('xt-has-pro')}catch(e){}d.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-track]');if(a)try{window.gtag('event',a.getAttribute('data-track'),{lang:c.lang,page:c.page,item:a.getAttribute('data-track-item')||void 0,spot:a.getAttribute('data-track-spot')||void 0})}catch(e){}});try{var p=JSON.parse(localStorage.getItem(K)||'null');if(p&&p!==c.lang&&c.alternates[p]&&location.pathname===c.path&&!/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent))location.replace(c.alternates[p]+location.search+location.hash)}catch(e){}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-set-lang]');if(a)try{localStorage.setItem(K,JSON.stringify(a.getAttribute('data-set-lang')))}catch(e){}})})()</script>`;
 }
 
+/**
+ * Pages without analytics (the /saved page) also run under a strict CSP (public/_headers), so they drop
+ * the GA loader and the font stylesheet's inline `onload` handler (a plain stylesheet link instead).
+ */
+export function withoutAnalytics(html: string): string {
+  return html
+    .replace(/\s*<!-- Google Analytics[^>]*-->\s*<script>[\s\S]*?<\/script>/, '')
+    .replace(/ media="print" onload="this\.media='all'"/g, '');
+}
+
 export function renderPage(template: string, page: SitePage): string {
-  return template
+  const html = template
     .replace('<html lang="en">', `<html lang="${langTag(page.lang)}"${page.lang === 'ar' ? ' dir="rtl"' : ''}>`)
     .replace('<!--xt:head-->', head(page))
     .replace('<!--xt:shell-->', shell(page))
     .replace('<!--xt:content-->', content(page))
     .replace('<!--xt:config-->', config(page));
+  return page.noAnalytics ? withoutAnalytics(html) : html;
 }
 
 export function renderSitemap(): string {

@@ -91,6 +91,7 @@ export default function ArchivePanel({
   onDownloadLatest,
   pro = false,
   proKnown = true,
+  footer,
 }: {
   handle: string;
   t: Strings;
@@ -102,6 +103,8 @@ export default function ArchivePanel({
   onOpenPost: (id: string, handle: string) => void;
   /** Opens batch mode with this account's latest posts (works without the Wayback list). */
   onDownloadLatest?: (handle: string) => void;
+  /** Shown under the results once they are in (the extension line, src/components/ExtCta.tsx). */
+  footer?: ReactNode;
 }) {
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [slow, setSlow] = useState(false);
@@ -688,6 +691,8 @@ export default function ArchivePanel({
           {data.stale && <p>{t.archiveStale.replace('{date}', new Date(data.fetchedAt).toLocaleDateString(locale))}</p>}
         </div>
       )}
+
+      {data && footer}
     </section>
   );
 }

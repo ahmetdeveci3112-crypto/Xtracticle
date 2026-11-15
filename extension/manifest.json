@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Xtracticle",
   "description": "Save X posts, threads and articles as PDF, Markdown or EPUB, and export your bookmarks.",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "minimum_chrome_version": "116",
   "icons": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" },
   "permissions": ["storage"],
@@ -15,7 +15,7 @@
   },
   "content_scripts": [
     { "matches": ["https://x.com/*", "https://twitter.com/*"], "js": ["hook.js"], "world": "MAIN", "run_at": "document_start" },
-    { "matches": ["https://x.com/*", "https://twitter.com/*"], "js": ["content.js"], "run_at": "document_idle" },
+    { "matches": ["https://x.com/*", "https://twitter.com/*"], "js": ["content.js"], "run_at": "document_start" },
     { "matches": ["https://xtracticle.com/*"], "js": ["bridge.js"], "run_at": "document_start" }
   ]
 }
