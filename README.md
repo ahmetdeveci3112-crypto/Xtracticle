@@ -74,6 +74,18 @@ The dev server runs at `http://localhost:5173`. `/api/*` is served by the **same
 | `npm run preview:worker` | Build and run the real Worker locally with `wrangler dev` (SSR status pages, 404s, `_headers`) |
 | `npm run lint` | Type-check the app and the Worker |
 
+## Browser extension
+
+A Chrome (Manifest V3) extension in `extension/` adds a Save menu and a bookmarks panel to x.com: it saves posts, threads and articles as PDF, Markdown or EPUB, exports bookmarks, and keeps optional local copies (IndexedDB) so a saved post survives if X removes it. It never contacts X on its own; it reads data the page has already loaded. The plan and design notes are in `docs/chrome-extension-plan.md`.
+
+```bash
+XT_BASE=http://localhost:8787 npm run build:ext:dev   # local build → extension/dist-dev (adds localhost access)
+# chrome://extensions → Developer mode → Load unpacked → extension/dist-dev
+npm run pack:ext                                      # store build + zip → extension/release/xtracticle-<version>.zip
+```
+
+The extension version comes from `extension/manifest.json` only. `npm run build:ext` runs `scripts/check-ext.mjs` (permissions, no remote code, size).
+
 ## Deployment
 
 Cloudflare Workers + Static Assets, deployed automatically on push to `main` (build: `npm run build`, deploy: `npx wrangler deploy`). No environment variables.

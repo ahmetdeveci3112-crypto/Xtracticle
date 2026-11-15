@@ -9,15 +9,15 @@ export const privacyPage: SitePage = {
   lang: 'en',
   title: 'Privacy Policy | Xtracticle',
   description:
-    'How Xtracticle handles data: no accounts, files built in your browser, anonymous analytics, what the MCP server and API log, and what Pro Watch stores.',
+    'How Xtracticle handles data: no accounts, files built in your browser, anonymous analytics, what the MCP server and API log, what the browser extension does, and what Pro Watch stores.',
   h1: 'Privacy Policy',
   sub: 'Short version: no accounts, no uploads, and we don’t keep the posts you save. Only the Pro Watch feature stores data, and only for 90 days.',
   primary: 'pdf',
   nav: 'Privacy',
   sections: `
 <section>
-  <p><em>Last updated: November 9, 2026.</em> This policy covers xtracticle.com, its Markdown API (<code>/api/markdown/…</code>)
-  and its MCP server (<code>/mcp</code>). Xtracticle is a free, open-source project; the
+  <p><em>Last updated: November 15, 2026.</em> This policy covers xtracticle.com, its Markdown API (<code>/api/markdown/…</code>),
+  its MCP server (<code>/mcp</code>) and its browser extension. Xtracticle is a free, open-source project; the
   <a href="${GITHUB}" rel="noopener">source code</a> shows exactly what it does.</p>
 </section>
 
@@ -55,6 +55,40 @@ export const privacyPage: SitePage = {
   <h2>Stored in your browser</h2>
   <p>Your recent links, theme and language choice are saved in your browser’s local storage only. Clear your browser data to
   remove them.</p>
+</section>
+
+<section>
+  <h2>Browser extension</h2>
+  <p>The Xtracticle Chrome extension adds a Save menu and a bookmarks panel to x.com and keeps optional copies of
+  your bookmarks. It follows the same rules as the rest of this policy, with these details.</p>
+  <ul>
+    <li><strong>No requests to X:</strong> the extension never contacts X on its own. It reads the post data that the X page has
+    already loaded in your browser, such as your bookmarks list and the posts you open.</li>
+    <li><strong>Copies stay on your device:</strong> bookmarks you scan are saved in your browser’s local database (IndexedDB)
+    and are not uploaded. The local archive is on by default; you can turn it off, delete every copy, or export a JSON backup in the
+    extension popup. Removing the extension removes them. The Saved posts page (<code>/saved</code>) reads them from the extension in
+    your browser and does not send them to us or write them to the page’s storage; it does not load Google Analytics.</li>
+    <li><strong>What is sent to us:</strong>
+      <ul>
+        <li>the ID of the <em>public</em> post you choose to save, so we can fetch its text (handled like any pasted link, see “Post content”);</li>
+        <li>your Pro status: the extension calls the site with the same cookie the website uses; if you enter a license key in the popup, it is
+        sent to us once to activate Pro, exactly as on the website. The extension does not store the key;</li>
+        <li>anonymous daily usage counts, described below.</li>
+      </ul>
+      Like any request to our server, these reach Cloudflare, which processes IP addresses to apply rate limits.</li>
+    <li><strong>Anonymous usage counts:</strong> the extension counts events such as “download” with one short value (the format,
+    or a size range such as “11-100” for a bookmark scan). We store the day, event name, value, extension version and a total. We do
+    not store links, usernames, post or account IDs, license keys or IP addresses with them. You can turn this off in the popup,
+    which also clears the queue.</li>
+    <li><strong>Settings file:</strong> every few hours the extension downloads a small public file from xtracticle.com with
+    on/off flags and the names of X’s data operations it listens for. It contains no code and no information about you.</li>
+    <li><strong>Archive links:</strong> on a post that cannot be opened, the extension shows links to the Wayback Machine,
+    archive.today and our deleted-tweet finder. Nothing is sent to them until you click a link, and then their own policies apply.</li>
+    <li><strong>No ads, no selling:</strong> we don’t sell or share this data, use it for advertising, or use it for anything unrelated to saving
+    and backing up posts. The extension loads no remote code, and its <a href="${GITHUB}" rel="noopener">source code</a> is open.</li>
+    <li><strong>Permissions:</strong> the extension uses the <code>storage</code> permission and access to x.com, twitter.com and
+    xtracticle.com. It is not affiliated with X Corp.</li>
+  </ul>
 </section>
 
 <section>

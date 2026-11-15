@@ -10,4 +10,5 @@ coverage/
 .wrangler
 .dev.vars
 extension/dist-dev/
+extension/release/
 extension/test/e2e/.profile/

@@ -89,7 +89,7 @@ fs.cpSync(path.join(here, 'icons'), path.join(outDir, 'icons'), { recursive: tru
 const manifest = structuredClone(sourceManifest);
 if (baseOrigin !== 'https://xtracticle.com') {
   const match = `${baseOrigin}/*`;
-  manifest.name = `${manifest.name} (dev)`;
+  manifest.name = `${manifest.short_name} (dev)`;
   manifest.host_permissions.push(match);
   const bridge = manifest.content_scripts.find(cs => cs.js.includes('bridge.js'));
   bridge.matches.push(match);

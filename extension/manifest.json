@@ -1,7 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Xtracticle",
-  "description": "Save X posts, threads and articles as PDF, Markdown or EPUB, and export your bookmarks.",
+  "name": "Xtracticle: Save Posts & Bookmarks as PDF, Markdown",
+  "short_name": "Xtracticle",
+  "description": "Save X posts, threads and articles as PDF, Markdown or EPUB, export your bookmarks, and keep a copy if a saved post is removed.",
   "version": "0.1.0",
   "minimum_chrome_version": "116",
   "icons": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" },
