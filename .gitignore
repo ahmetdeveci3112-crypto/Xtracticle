@@ -9,3 +9,5 @@ coverage/
 .vercel
 .wrangler
 .dev.vars
+extension/dist-dev/
+extension/test/e2e/.profile/

@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "minVersion": "3.0.0",
+  "ops": {
+    "bookmarks": ["Bookmarks", "BookmarkFolderTimeline", "BookmarkSearchTimeline"],
+    "detail": ["TweetDetail", "TweetResultByRestId"],
+    "bookmarkAdd": ["CreateBookmark"],
+    "bookmarkRemove": ["DeleteBookmark"],
+    "user": ["UserByScreenName"]
+  },
+  "flags": {
+    "capture": true,
+    "detect": false,
+    "saveMenu": true
+  }
+}

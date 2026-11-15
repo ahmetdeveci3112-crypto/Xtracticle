@@ -41,7 +41,7 @@ import { handleTrial } from './trial';
  *                                          or ?feed=<feed token> of a watch on the handle — trial feeds)
  *   /api/watch/trial/*                     free trial, no license (src/shared/watch/trial.ts)
  *
- * Identity: the Pro cookie (plus X-Xt-Client: web) or Authorization: Bearer <license key>.
+ * Identity: the Pro cookie (plus X-Xt-Client: web | ext) or Authorization: Bearer <license key>.
  * Returns null for any other path so the Worker continues routing.
  */
 

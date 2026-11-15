@@ -1,5 +1,6 @@
 import { handleApi } from './shared/api';
 import { handleArchive } from './shared/archive';
+import { handleExt } from './shared/ext';
 import { handleMarkdown } from './shared/markdown';
 import { handleMcp } from './shared/mcp';
 import { handleProfile } from './shared/profile';
@@ -38,7 +39,8 @@ export interface Env extends WatchEnv {
  *                                /api/archive/:handle[.csv] (src/shared/archive.ts),
  *                                /api/profile/:handle/posts (src/shared/profile.ts),
  *                                /api/pro/* — Xtracticle Pro license cookie (src/shared/pro.ts),
- *                                /api/watch/* — Pro account monitoring (src/shared/watch/api.ts)
+ *                                /api/watch/* — Pro account monitoring (src/shared/watch/api.ts),
+ *                                /api/ext/event — anonymous extension counters (src/shared/ext.ts)
  *   /mcp                       → remote MCP server (src/shared/mcp.ts)
  *   /{user}/status/{id}        → app shell with per-post meta tags + preloaded data
  * Everything else is served directly from dist/ (with 404.html for unknown paths).
@@ -68,6 +70,7 @@ export default {
       const res =
         (await handlePro(request, env)) ??
         (await handleWatch(request, env, waitUntil)) ??
+        (await handleExt(request, env)) ??
         (await handleArchive(request, waitUntil, env, url.pathname.startsWith('/api/archive/') ? (await proFromRequest(request, env)).pro : false)) ??
         (await handleProfile(request, waitUntil, env)) ??
         (await handleMarkdown(request, waitUntil)) ??

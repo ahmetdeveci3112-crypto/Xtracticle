@@ -1,5 +1,10 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+/* Not site markup: brand tokens shared with the extension, the extension itself and tests.
+   Scanning them would add utilities (e.g. `font-sans` from `--font-sans`) the site never uses. */
+@source not "./shared/brand.ts";
+@source not "../extension";
+@source not "../test";
 
 /* ─── Design System: CSS Custom Properties ─── */
 :root {

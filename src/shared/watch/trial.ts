@@ -1,4 +1,5 @@
 import type { D1Database, D1PreparedStatement } from '@cloudflare/workers-types';
+import { isAppClient } from '../client';
 import { fxBase } from '../fx';
 import {
   EMAIL_RE,
@@ -118,8 +119,8 @@ const liveCount = async (db: D1Database, statuses: string[]) =>
 
 const byManageToken = (db: D1Database, token: string) => db.prepare('SELECT * FROM trials WHERE manage_token = ?').bind(token).first<TrialRow>();
 
-/** The SPA sends this header; without it a trial could be started from any page on the web. */
-const fromSite = (request: Request) => request.headers.get('X-Xt-Client') === 'web';
+/** The SPA and the extension send this header; without it a trial could be started from any page on the web. */
+const fromSite = (request: Request) => isAppClient(request);
 
 const redirect = (q: string, hash = '', lang?: string | null) =>
   new Response(null, { status: 302, headers: { Location: `${PRO_PATHS[isMailLang(lang) ? lang : 'en']}?trial=${q}${hash}`, 'Cache-Control': 'no-store' } });

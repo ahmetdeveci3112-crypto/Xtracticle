@@ -5,6 +5,7 @@ import fs from 'fs';
 import { defineConfig, type Plugin } from 'vite';
 import { handleApi } from './src/shared/api';
 import { handleArchive } from './src/shared/archive';
+import { handleExt } from './src/shared/ext';
 import { handleMarkdown } from './src/shared/markdown';
 import { handleMcp } from './src/shared/mcp';
 import { handleProfile } from './src/shared/profile';
@@ -66,6 +67,8 @@ function devApi(): Plugin {
             : ((await handlePro(request, process.env as Record<string, string | undefined>)) ??
               // No D1 in the Vite server: /api/watch answers 503 here; use `wrangler dev` for Watch.
               (await handleWatch(request, process.env as Record<string, string | undefined>)) ??
+              // Same here: no D1, so /api/ext/event validates and answers 204 without counting.
+              (await handleExt(request, {})) ??
               (await handleArchive(request, undefined, { ARCHIVE_DISABLED: process.env.ARCHIVE_DISABLED, CDX_BASE_URL: process.env.CDX_BASE_URL })) ??
               (await handleProfile(request, undefined, { PROFILE_DISABLED: process.env.PROFILE_DISABLED })) ??
               (await handleMarkdown(request)) ??

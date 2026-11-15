@@ -1,3 +1,4 @@
+import { isAppClient } from './client';
 import { compareIdsDesc, snowflakeDate, waybackSnapshot } from './url';
 
 /**
@@ -9,7 +10,7 @@ import { compareIdsDesc, snowflakeDate, waybackSnapshot } from './url';
  * result is cached at the edge: a fresh copy for 6 h, a "last known good" copy for 30 days
  * and a short negative entry so a failing upstream isn't hammered.
  *
- * Only the SPA may call it (X-Xt-Client: web), so it can't be used as a free CDX proxy.
+ * Only our own front ends may call it (X-Xt-Client: web | ext, see client.ts), so it can't be used as a free CDX proxy.
  * Free requests get the newest 50 posts; Xtracticle Pro (cookie, see pro.ts) gets the whole list and
  * `GET /api/archive/:handle.csv`. The cache holds the full list under keys that are never served
  * directly, so each response is cut to the caller's tier when it is built.
@@ -208,7 +209,7 @@ export async function handleArchive(
   // The CSV is opened as a download link, which cannot carry the client header; the Pro cookie is its gate.
   if (csv) {
     if (!pro) return json({ error: 'pro_required' }, 402);
-  } else if (request.headers.get('X-Xt-Client') !== 'web') {
+  } else if (!isAppClient(request)) {
     return json({ error: 'forbidden' }, 403);
   }
   if (env.ARCHIVE_DISABLED === '1') return json({ error: 'disabled' }, 503);

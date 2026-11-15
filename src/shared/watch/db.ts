@@ -1,5 +1,6 @@
 import type { D1Database, D1PreparedStatement } from '@cloudflare/workers-types';
 import { bearerProDetail, proKeyFromRequest, type ProEnv, type ProPlan } from '../pro';
+import { isAppClient } from '../client';
 import type { FxEnv } from '../fx';
 
 /**
@@ -252,7 +253,7 @@ export async function identify(request: Request, env: WatchEnv): Promise<Identit
   }
   const c = await proKeyFromRequest(request, env);
   if (!c) return { ok: false, status: 402, error: 'pro_required' };
-  if (request.headers.get('X-Xt-Client') !== 'web') return { ok: false, status: 403, error: 'forbidden' };
+  if (!isAppClient(request)) return { ok: false, status: 403, error: 'forbidden' };
   return { ok: true, id: { keyHash: await hashLicenseKey(c.key, secret), plan: c.plan, bearer: false } };
 }
 

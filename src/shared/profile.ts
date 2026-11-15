@@ -1,4 +1,5 @@
 import { fxBase, type FxEnv } from './fx';
+import { isAppClient } from './client';
 import { compareIdsDesc } from './url';
 
 /**
@@ -10,7 +11,7 @@ import { compareIdsDesc } from './url';
  * the account's own posts, with thread replies folded into their first post (the batch
  * export unrolls the thread from there). Results are cached at the edge for 15 minutes.
  *
- * Only the SPA may call it (X-Xt-Client: web), so it can't be used as a free FxTwitter proxy.
+ * Only our own front ends may call it (X-Xt-Client: web | ext, see client.ts), so it can't be used as a free FxTwitter proxy.
  * Returns null for any other path so the caller can continue routing.
  */
 
@@ -286,7 +287,7 @@ export async function handleProfile(
     handle = decodeURIComponent(match[1]).replace(/^@/, '');
   } catch { /* malformed escape → bad handle */ }
   if (!HANDLE_RE.test(handle)) return json({ error: 'bad_handle' }, 400);
-  if (request.headers.get('X-Xt-Client') !== 'web') return json({ error: 'forbidden' }, 403);
+  if (!isAppClient(request)) return json({ error: 'forbidden' }, 403);
   if (env.PROFILE_DISABLED === '1') return json({ error: 'disabled' }, 503);
 
   const h = handle.toLowerCase();
