@@ -527,6 +527,70 @@ body {
 .xt-content .xt-home-pro .xt-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .xt-has-pro .xt-home-pro { display: none; }
 
+/* ─── "From the maker" strip above the FAQ (site/promo-block.ts) ─── */
+.xt-content .xt-promo { padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.xt-content .xt-promo-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.xt-content .xt-promo h2 { font-size: 1.25rem; margin: 0 0 0.4rem; }
+.xt-content .xt-promo-lead { font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1rem; }
+.xt-content ul.xt-promo-cards {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.9rem;
+}
+.xt-content .xt-promo-cards li { margin: 0; }
+.xt-content .xt-promo-cards li[hidden] { display: none; }
+.xt-content .xt-promo-cards a {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  overflow: hidden;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+.xt-content .xt-promo-cards a:hover { border-color: var(--text-tertiary); }
+.xt-content .xt-promo-cards a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.xt-content .xt-promo-cards img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-bottom: 1px solid var(--border); }
+.dark .xt-content .xt-promo-cards img { filter: brightness(0.88); }
+.xt-promo-name { padding: 0.75rem 0.9rem 0.2rem; font-weight: 600; font-size: 0.95rem; }
+.xt-promo-pitch { padding: 0 0.9rem; font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary); flex: 1; }
+.xt-promo-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.7rem 0.9rem 0.8rem; font-size: 0.82rem; }
+.xt-promo-price { font-weight: 600; color: var(--text-secondary); }
+.xt-promo-price.is-free { color: #2f7d4f; }
+.dark .xt-promo-price.is-free { color: #6cc28d; }
+.xt-promo-cta { font-weight: 600; white-space: nowrap; }
+.xt-content .xt-promo-cards a:hover .xt-promo-cta { text-decoration: underline; text-underline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .xt-content .xt-promo-cards a { transition: none; } }
+/* Phones: compact rows (small picture left) so three cards stay about one screen tall. */
+@media (max-width: 40rem) {
+  .xt-content ul.xt-promo-cards { gap: 0.6rem; }
+  .xt-content .xt-promo-cards a {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    grid-template-rows: auto 1fr auto;
+    column-gap: 0.8rem;
+    padding: 0.7rem;
+  }
+  .xt-content .xt-promo-cards img { grid-row: 1 / 4; align-self: start; border: 1px solid var(--border); border-radius: 0.5rem; }
+  .xt-promo-name { padding: 0 0 0.15rem; font-size: 0.9rem; }
+  .xt-promo-pitch { padding: 0; font-size: 0.8rem; }
+  .xt-promo-foot { padding: 0.4rem 0 0; }
+}
+.xt-has-pro .xt-promo { display: none; }
+
 /* ─── /pro page: price cards and the license-key form (site/pro-page.ts) ─── */
 .xt-pricing {
   display: grid;

@@ -9,6 +9,8 @@ import { buildDoc, fileBaseName, frontMatter, type XDoc } from './shared/convert
 import { parseInput, parsePath, shareUrl } from './lib/url';
 import { archiveLinks, classifyInput, waybackProfile } from './shared/url';
 import TipRow, { tipAllowed } from './components/TipRow';
+import PromoCard, { pickAppPromo, promoAllowed } from './components/PromoCard';
+import type { PromoProduct } from './shared/promo';
 import { track } from './lib/analytics';
 import { logout as proLogout, usePro } from './lib/pro';
 import { demoVideo } from './shared/demo';
@@ -142,6 +144,8 @@ export default function App() {
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
   const [flash, setFlash] = useState<string | null>(null);
   const [tip, setTip] = useState(false);
+  // "From the maker" card after a download, only when the coffee row is not showing (src/components/PromoCard.tsx).
+  const [promo, setPromo] = useState<PromoProduct | null>(null);
   const [busy, setBusy] = useState<ExportKey | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
   const [recent, setRecent] = useState<HistoryItem[]>(() => load(HISTORY_KEY, []));
@@ -373,6 +377,7 @@ export default function App() {
       track('download_done', { format: key, kind: doc.kind, ms: Math.round(performance.now() - started) });
       // Coffee row after every real save (free users; quiet for 30/90 days after "Not now"/a click).
       if (tipAllowed(pro.pro)) setTip(true);
+      else if (!tip && promoAllowed(pro.pro)) setPromo(p => p || pickAppPromo());
     } catch (err) {
       console.error(err);
       const message = String((err as Error)?.message || err).slice(0, 100);
@@ -783,6 +788,11 @@ export default function App() {
                     {tip && !pro.pro && (
                       <div className="mt-3" role="status">
                         <TipRow t={t} place="after_download" onHide={() => setTip(false)} />
+                      </div>
+                    )}
+                    {!tip && promo && !pro.pro && (
+                      <div className="mt-3">
+                        <PromoCard product={promo} lang={lang} onHide={() => setPromo(null)} />
                       </div>
                     )}
                   </div>

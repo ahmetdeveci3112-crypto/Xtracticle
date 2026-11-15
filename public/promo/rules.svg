@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180"><rect width="320" height="180" fill="#E8F1EA"/>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="9">
+<rect x="96" y="20" width="168" height="104" rx="8" fill="#D4E6D9" stroke="#BFD8C6"/>
+<text x="108" y="35" fill="#2F5E3E">AGENTS.md</text>
+<rect x="76" y="38" width="168" height="104" rx="8" fill="#EAF4ED" stroke="#BFD8C6"/>
+<text x="88" y="53" fill="#2F5E3E">CLAUDE.md</text>
+<rect x="56" y="56" width="168" height="104" rx="8" fill="#FFFFFF" stroke="#BFD8C6"/>
+<rect x="56" y="56" width="168" height="20" rx="8" fill="#3E9B5F"/><rect x="56" y="68" width="168" height="8" fill="#3E9B5F"/>
+<text x="68" y="70" fill="#FFFFFF">.cursor/rules</text>
+<text x="68" y="94" fill="#3E9B5F">use</text><text x="90" y="94" fill="#213A2A">server actions</text>
+<text x="68" y="110" fill="#3E9B5F">auth</text><text x="96" y="110" fill="#213A2A">supabase/ssr</text>
+<text x="68" y="126" fill="#3E9B5F">never</text><text x="102" y="126" fill="#213A2A">expose keys</text>
+<rect x="68" y="138" width="90" height="4" rx="2" fill="#DCEBE0"/></g>
+<text x="292" y="166" font-family="ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="10" font-weight="700" fill="#2F5E3E" text-anchor="end">Next.js + Supabase</text>
+</svg>

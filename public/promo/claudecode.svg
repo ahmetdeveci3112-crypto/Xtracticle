@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180"><rect width="320" height="180" fill="#F4ECE6"/>
+<rect x="40" y="22" width="240" height="140" rx="10" fill="#1F1B18"/>
+<circle cx="56" cy="36" r="3.5" fill="#E2685B"/><circle cx="67" cy="36" r="3.5" fill="#E9B44C"/><circle cx="78" cy="36" r="3.5" fill="#5FB36A"/>
+<rect x="94" y="28" width="70" height="16" rx="4" fill="#2E2925"/>
+<text x="129" y="39.5" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="8.5" fill="#F0E6DC" text-anchor="middle">CLAUDE.md</text>
+<g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="9.5">
+<text x="56" y="64" fill="#D97757"># Project</text>
+<text x="56" y="80" fill="#B7AAA0">Stack: Next.js · tests: vitest</text>
+<text x="56" y="98" fill="#D97757">## Rules</text>
+<text x="56" y="114" fill="#B7AAA0">- run tests before commit</text></g>
+<g font-family="ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="8.5" font-weight="600">
+<rect x="56" y="128" width="52" height="18" rx="9" fill="#D97757"/><text x="82" y="140" fill="#1F1B18" text-anchor="middle">planner</text>
+<rect x="114" y="128" width="54" height="18" rx="9" fill="#3A332E"/><text x="141" y="140" fill="#F0E6DC" text-anchor="middle">reviewer</text>
+<rect x="174" y="128" width="44" height="18" rx="9" fill="#3A332E"/><text x="196" y="140" fill="#F0E6DC" text-anchor="middle">tester</text></g>
+<rect x="246" y="106" width="6" height="12" fill="#D97757"/>
+</svg>
