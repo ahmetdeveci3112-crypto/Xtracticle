@@ -15,6 +15,8 @@ import { curatedPages } from './curated';
 import { mcpPage } from './mcp-page';
 import { privacyPage } from './privacy-page';
 import { savedPages } from './saved-page';
+import { extPages } from './ext-page';
+import { extAvailable } from '../src/lib/ext';
 import { PRO_EN, proPage } from './pro-page';
 import { TOOL_PAGES_EN } from './tools-extra';
 import { EXTRA_PAGES as EXTRA_ZH } from './l10n/zh';
@@ -542,8 +544,11 @@ const notFound: SitePage = {
 
 const PAGES_EN: SitePage[] = [home, pdf, markdown, thread, ...TOOL_PAGES_EN, epub, obsidian, alternative];
 
-/** Order = footer order within each language. */
-export const PAGES: SitePage[] = [...PAGES_EN, mcpPage, proPage('en', PRO_EN), ...guidePages(), privacyPage, ...curatedPages(), ...PAGES_ES, ...EXTRA_ES, ...PAGES_PT, ...EXTRA_PT, ...PAGES_JA, ...EXTRA_JA, ...PAGES_ZH, ...EXTRA_ZH, ...PAGES_AR, ...EXTRA_AR, ...PAGES_TR, ...EXTRA_TR, ...savedPages(), notFound];
+/**
+ * Order = footer order within each language. The /chrome-extension pages exist only once the extension
+ * is in the store (`extAvailable()`, src/lib/ext.ts): no page, sitemap entry or footer link before that.
+ */
+export const PAGES: SitePage[] = [...PAGES_EN, mcpPage, proPage('en', PRO_EN), ...guidePages(), privacyPage, ...curatedPages(), ...PAGES_ES, ...EXTRA_ES, ...PAGES_PT, ...EXTRA_PT, ...PAGES_JA, ...EXTRA_JA, ...PAGES_ZH, ...EXTRA_ZH, ...PAGES_AR, ...EXTRA_AR, ...PAGES_TR, ...EXTRA_TR, ...(extAvailable() ? extPages() : []), ...savedPages(), notFound];
 
 export function pageForPath(pathname: string): SitePage {
   const clean = pathname.split('?')[0].replace(/\.html$/, '');

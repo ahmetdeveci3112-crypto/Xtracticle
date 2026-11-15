@@ -4,6 +4,9 @@ import { extCtaSlot, langTag } from './blocks';
 import { latestPicks } from './curated';
 import { homeProBlock } from './home-pro';
 import { promoBlock } from './promo-block';
+import { EXT_HERO_SCRIPT, extHeroShell, extHomeBlock } from './ext-home';
+import { translations } from '../src/i18n';
+import { extAvailable } from '../src/lib/ext';
 
 /**
  * Fills the markers in index.html for one page:
@@ -230,6 +233,9 @@ function shell(page: SitePage): string {
           <input type="text" disabled placeholder="${esc(placeholder)}" class="w-full pl-5 pr-28 py-4 rounded-2xl text-base" style="background-color:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary)" />
           <button disabled class="absolute right-2 top-2 bottom-2 px-6 rounded-xl font-semibold text-sm" style="background-color:var(--accent);color:var(--bg-primary);opacity:.7">${button}</button>
         </div>
+        <p class="text-center text-xs mb-8" style="color:var(--text-tertiary)">${esc(translations[page.lang].urlTip)}</p>
+        ${page.isHome ? extHeroShell(page.lang) : ''}
+        <div class="xt-hero-loop" aria-hidden="true"></div>
       </main>`;
 }
 
@@ -324,23 +330,37 @@ function picksTeaser(page: SitePage): string {
 </section>`;
 }
 
+/**
+ * Home pages, top to bottom (the hero, link form and demo loop above come from the React app):
+ *   1. the browser extension (only once it is in the store: `extAvailable()`), the second way in;
+ *   2. How to download → Every format → Articles, threads and posts: what the free tool does;
+ *   3. Pro, then this week's picks: offers come after the free value, never before it;
+ *   4. the rest of the page's own sections (shortcuts, comparison, AI, privacy);
+ *   5. FAQ, then "From the maker" last, so other products never sit between a visitor and the answers.
+ * Other pages keep their own order, with the "From the maker" strip (deleted-tweet pages) above the FAQ.
+ */
 function content(page: SitePage): string {
-  // Home pages: the Pro block, then the picks teaser, both right after the first ("How to download") section.
-  const extra = (page.isHome ? homeProBlock(page.lang) : '') + picksTeaser(page);
-  const cut = extra ? page.sections.indexOf('</section>') : -1;
-  let sections = cut >= 0 ? page.sections.slice(0, cut + 10) + extra + page.sections.slice(cut + 10) : page.sections;
-  // Home pages: the extension line closes the tool list ("Every format you need" grid).
+  let sections = page.sections;
   if (page.isHome) {
     const grid = sections.indexOf('class="xt-grid"');
-    const end = grid >= 0 ? sections.indexOf('</section>', grid) : -1;
-    if (end >= 0) sections = sections.slice(0, end) + `  ${extCtaSlot('home')}\n` + sections.slice(end);
+    const gridEnd = grid >= 0 ? sections.indexOf('</section>', grid) : -1;
+    // The one-line extension call closes the format grid only while the extension section is absent
+    // (it still shows "Export bookmarks" to people testing an unpacked build before launch).
+    if (gridEnd >= 0 && !extAvailable()) sections = sections.slice(0, gridEnd) + `  ${extCtaSlot('home')}\n` + sections.slice(gridEnd);
+    // Pro and the picks teaser go after the section that follows the grid ("Articles, threads and single posts").
+    const extra = homeProBlock(page.lang) + picksTeaser(page);
+    const after = gridEnd >= 0 ? sections.indexOf('</section>', sections.indexOf('</section>', grid) + 10) : -1;
+    const cut = after >= 0 ? after + 10 : sections.indexOf('</section>') + 10;
+    sections = extHomeBlock(page.lang) + sections.slice(0, cut) + extra + sections.slice(cut);
   }
-  // "From the maker" strip (site/promo-block.ts) sits between the page content and the FAQ.
-  const body = sections + promoBlock(page) + faqHtml(page);
+  // "From the maker" strip (site/promo-block.ts): after the FAQ on home pages, above it elsewhere.
+  const body = page.isHome ? sections + faqHtml(page) + promoBlock(page) : sections + promoBlock(page) + faqHtml(page);
   return (body.trim() ? `<div class="xt-content">${body}</div>\n` : '') + footer(page);
 }
 
 function config(page: SitePage): string {
+  // Home pages, once the extension is in the store: decide before first paint whether the hero line shows.
+  const extHero = page.isHome && extAvailable() ? `<script>${EXT_HERO_SCRIPT}</script>` : '';
   const alternates = Object.fromEntries(langVersions(page).map(v => [v.lang, v.path]));
   const cfg = { page: page.id, path: page.path, lang: page.lang, h1: page.h1, sub: page.sub, primary: page.primary, alternates };
   // Runs before first paint:
@@ -350,7 +370,7 @@ function config(page: SitePage): string {
   //  3. a visitor with the xt_pro_hint cookie gets html.xt-has-pro (hides Pro promotion on static pages);
   //  4. clicks on static links with data-track="event_name" are sent to GA as that event
   //     (plus data-track-item / data-track-spot when present).
-  return `<script>window.__XT__=${inlineJson(cfg)};(function(){var K='xtracticle_lang',c=window.__XT__,d=document;try{if(/(^|;\\s*)xt_pro_hint=/.test(d.cookie))d.documentElement.classList.add('xt-has-pro')}catch(e){}d.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-track]');if(a)try{window.gtag('event',a.getAttribute('data-track'),{lang:c.lang,page:c.page,item:a.getAttribute('data-track-item')||void 0,spot:a.getAttribute('data-track-spot')||void 0})}catch(e){}});try{var p=JSON.parse(localStorage.getItem(K)||'null');if(p&&p!==c.lang&&c.alternates[p]&&location.pathname===c.path&&!/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent))location.replace(c.alternates[p]+location.search+location.hash)}catch(e){}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-set-lang]');if(a)try{localStorage.setItem(K,JSON.stringify(a.getAttribute('data-set-lang')))}catch(e){}})})()</script>`;
+  return `<script>window.__XT__=${inlineJson(cfg)};(function(){var K='xtracticle_lang',c=window.__XT__,d=document;try{if(/(^|;\\s*)xt_pro_hint=/.test(d.cookie))d.documentElement.classList.add('xt-has-pro')}catch(e){}d.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-track]');if(a)try{window.gtag('event',a.getAttribute('data-track'),{lang:c.lang,page:c.page,item:a.getAttribute('data-track-item')||void 0,spot:a.getAttribute('data-track-spot')||void 0})}catch(e){}});try{var p=JSON.parse(localStorage.getItem(K)||'null');if(p&&p!==c.lang&&c.alternates[p]&&location.pathname===c.path&&!/bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent))location.replace(c.alternates[p]+location.search+location.hash)}catch(e){}document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[data-set-lang]');if(a)try{localStorage.setItem(K,JSON.stringify(a.getAttribute('data-set-lang')))}catch(e){}})})()</script>${extHero}`;
 }
 
 /**

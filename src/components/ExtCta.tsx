@@ -3,9 +3,11 @@ import { createPortal } from 'react-dom';
 import { Puzzle } from 'lucide-react';
 import { savedText, type Lang } from '../i18n';
 import { track } from '../lib/analytics';
+import { EXT_HOME_COPY } from '../shared/ext-copy';
 import {
   BOOKMARKS_EXPORT_URL,
   createBridgeClient,
+  extAvailable,
   extCtaAllowed,
   extInstalled,
   quietExtCta,
@@ -132,5 +134,71 @@ export function ExtCtaSlots({ lang }: { lang: Lang }) {
         );
       })}
     </>
+  );
+}
+
+/**
+ * Home page hero: the extension as the second way in, right under the link form (owner request 15 Nov 2026).
+ * Rendered only once the store listing exists (`extAvailable()`), with the same markup as the static shell
+ * (site/ext-home.ts `extHeroShell`), so taking over the page moves nothing:
+ * - whether the line shows: `html.xt-ext-on`, set before first paint (`EXT_HERO_SCRIPT`: installed, or desktop
+ *   Chromium without "Not now");
+ * - which buttons show: CSS. Installed (`html[data-xt-ext]`) → "Export bookmarks" (+ "Unavailable bookmark copies (N)"
+ *   when the extension reported some); otherwise "Add to Chrome — free", one sentence and "Not now"
+ *   (quiet for 180 days, shared with the other one-line calls).
+ */
+export function ExtHeroCta({ lang }: { lang: Lang }) {
+  const s = savedText[lang];
+  const c = EXT_HOME_COPY[lang];
+  const { installed, status } = useExtState();
+  useEffect(() => {
+    // The bridge answered after first paint (rare): show the installed line too.
+    if (installed) document.documentElement.classList.add('xt-ext-on');
+  }, [installed]);
+  if (!extAvailable()) return null;
+  const n = installed ? status?.unavailable ?? 0 : 0;
+  return (
+    <div className="xt-ext-hero print:hidden">
+      <a
+        href={storeUrl('hero')}
+        target="_blank"
+        rel="noopener"
+        className="xt-ext-hero-btn xt-ext-install focus-ring"
+        onClick={() => {
+          quietExtCta();
+          track('promo_click', { spot: 'ext_hero', item: 'extension' });
+        }}
+      >
+        <Puzzle className="w-4 h-4 shrink-0" aria-hidden="true" />
+        {c.heroInstall}
+      </a>
+      <a
+        href={BOOKMARKS_EXPORT_URL}
+        target="_blank"
+        rel="noopener"
+        className="xt-ext-hero-btn xt-ext-installed focus-ring"
+        onClick={() => track('promo_click', { spot: 'ext_hero', item: 'ext_export' })}
+      >
+        <Puzzle className="w-4 h-4 shrink-0" aria-hidden="true" />
+        {s.ctaExport}
+      </a>
+      <span className="xt-ext-install">{s.ctaText}</span>
+      <button
+        type="button"
+        className="xt-ext-install text-xs underline underline-offset-2 rounded focus-ring"
+        onClick={() => {
+          quietExtCta();
+          document.documentElement.classList.remove('xt-ext-on');
+          track('promo_dismiss', { spot: 'ext_hero', item: 'extension' });
+        }}
+      >
+        {s.ctaNotNow}
+      </button>
+      {n > 0 && (
+        <a href={`${savedPath(lang)}?view=removed`} className={linkClass} style={{ color: 'var(--text-primary)' }}>
+          {s.ctaRemoved.replace('{n}', n.toLocaleString(lang))}
+        </a>
+      )}
+    </div>
   );
 }

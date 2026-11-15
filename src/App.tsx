@@ -15,7 +15,7 @@ import { track } from './lib/analytics';
 import { logout as proLogout, usePro } from './lib/pro';
 import { demoVideo } from './shared/demo';
 import DocPreview from './components/DocPreview';
-import ExtCta, { ExtCtaSlots } from './components/ExtCta';
+import ExtCta, { ExtCtaSlots, ExtHeroCta } from './components/ExtCta';
 import { notifyLangChanged, parseDlHash, type DlFormat } from './lib/ext';
 
 const ArchivePanel = lazy(() => import('./components/ArchivePanel'));
@@ -104,6 +104,8 @@ function browserLang(): Lang | null {
 
 const isHomePath = (path: string) => LANGS.some(l => l.home === path);
 const isHomeLike = (path: string) => isHomePath(path) || !!parsePath(path);
+/** One of the seven home pages (not a status page served with the home config). */
+const ON_HOME_PAGE = !ON_STATUS_PAGE && typeof window !== 'undefined' && isHomePath(window.location.pathname);
 
 /* ─── API ─── */
 class ApiError extends Error {
@@ -710,6 +712,7 @@ export default function App() {
               </p>
             )}
             <p className="text-center text-xs mb-8 print:hidden" style={{ color: 'var(--text-tertiary)' }}>{t.urlTip}</p>
+            {ON_HOME_PAGE && <ExtHeroCta lang={lang} />}
 
             {/* History */}
             {recent.length > 0 && !doc && !loading && (

@@ -29,20 +29,38 @@ import {
  */
 export const EXT_STORE_URL = '';
 
+/**
+ * The one switch for everything that promotes the extension: the home page's hero line and extension
+ * section, the /chrome-extension pages (and their sitemap and footer entries) and the one-line calls.
+ * All of them follow `EXT_STORE_URL`; while it is empty the site looks as it did before the extension.
+ */
+export const extAvailable = (base: string = EXT_STORE_URL): boolean => /^https:\/\//.test(base);
+
 /** Where the bookmark export panel opens (the content script watches for this hash). */
 export const BOOKMARKS_EXPORT_URL = 'https://x.com/i/bookmarks#xt-export';
 
-export type CtaSpot = 'home' | 'finder' | 'pro' | 'saved';
+export type CtaSpot = 'home' | 'finder' | 'pro' | 'saved' | 'hero' | 'section' | 'page';
 
 /** The store listing with our UTM tags, or '' while there is no listing. */
 export function storeUrl(spot: CtaSpot, base: string = EXT_STORE_URL): string {
-  if (!base) return '';
+  if (!extAvailable(base)) return '';
   const sep = base.includes('?') ? '&' : '?';
   return `${base}${sep}utm_source=xtracticle&utm_medium=site&utm_campaign=ext_${spot}`;
 }
 
 /** The /saved page in a language (same prefix rule as every other page). */
 export const savedPath = (lang: Lang | string) => (lang && lang !== 'en' ? `/${lang}/saved` : '/saved');
+
+/** The extension's landing page in each language (es/pt/tr get native slugs, like their other pages). */
+export const EXT_PAGE_PATHS: Record<Lang, string> = {
+  en: '/chrome-extension',
+  tr: '/tr/chrome-eklentisi',
+  es: '/es/extension-de-chrome',
+  pt: '/pt/extensao-do-chrome',
+  ja: '/ja/chrome-extension',
+  zh: '/zh/chrome-extension',
+  ar: '/ar/chrome-extension',
+};
 
 /* ─── Detection ─── */
 
@@ -265,7 +283,7 @@ export const EXT_CTA_QUIET_KEY = 'xtracticle_ext_cta_until';
 const CTA_QUIET_MS = 180 * 24 * 3600 * 1000;
 
 export function extCtaAllowed(): boolean {
-  if (!EXT_STORE_URL || !isDesktopChromiumNow()) return false;
+  if (!extAvailable() || !isDesktopChromiumNow()) return false;
   try {
     return Date.now() > Number(localStorage.getItem(EXT_CTA_QUIET_KEY) || 0);
   } catch {

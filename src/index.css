@@ -532,6 +532,111 @@ body {
 .xt-content .xt-home-pro .xt-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .xt-has-pro .xt-home-pro { display: none; }
 
+/* ─── Browser extension: home section and /chrome-extension pages (site/ext-home.ts, site/ext-page.ts) ─── */
+.xt-content .xt-ext {
+  padding: 1.5rem 1.5rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background-color: var(--bg-secondary);
+  box-shadow: var(--shadow-sm);
+}
+.xt-content .xt-ext-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.xt-content .xt-ext h2 { margin-bottom: 0.9rem; }
+.xt-content ul.xt-ext-points {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+.xt-content .xt-ext-points li { margin: 0; font-size: 0.95rem; line-height: 1.6; }
+.xt-ext-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.25rem;
+}
+.xt-content .xt-ext-actions .xt-btn { margin-top: 0; }
+.xt-content .xt-ext-actions .xt-btn:focus-visible,
+.xt-content .xt-ext-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 0.5rem; }
+.xt-content .xt-ext-more { font-size: 0.95rem; font-weight: 500; }
+.xt-content .xt-ext-note { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--text-tertiary); }
+.xt-ext-media { position: relative; margin: 1.25rem 0 0; }
+.xt-ext-pause {
+  /* Sits on the video, which is light in both themes, so it keeps the light palette (LIGHT in src/shared/brand.ts). */
+  position: absolute;
+  bottom: 0.75rem;
+  inset-inline-end: 0.75rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #0a0a0a;
+  background-color: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e5e5e5;
+  cursor: pointer;
+}
+.xt-ext-pause:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.xt-ext-media video,
+.xt-ext-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background-color: #fff;
+}
+.xt-ext-shot { margin: 1.25rem 0 0.5rem; }
+.xt-ext-shot img { aspect-ratio: 8 / 5; box-shadow: var(--shadow-md); }
+.xt-ext-shot figcaption { margin-top: 0.6rem; font-size: 0.85rem; color: var(--text-tertiary); text-align: center; }
+.xt-grid.xt-grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }
+.xt-content .xt-ext-cta { text-align: center; }
+.xt-content .xt-ext-cta .xt-ext-actions { justify-content: center; }
+/* Which button shows: the extension's bridge marks <html data-xt-ext> before first paint. */
+.xt-ext-installed { display: none !important; }
+html[data-xt-ext] .xt-ext-installed { display: inline-flex !important; }
+html[data-xt-ext] .xt-ext-install { display: none !important; }
+/* Phones and tablets cannot install it: keep the explanation, drop the button. */
+@media (hover: none) and (pointer: coarse) {
+  .xt-ext-install { display: none !important; }
+}
+
+/* Hero line under the link form (ExtHeroCta in src/components/ExtCta.tsx, extHeroShell in site/ext-home.ts).
+   Shown only with html.xt-ext-on, set before first paint. */
+.xt-ext-hero {
+  display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.9rem;
+  margin: -1rem auto 2rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+.xt-ext-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+}
+.xt-ext-hero-btn:hover { background-color: var(--bg-tertiary); }
+html.xt-ext-on .xt-ext-hero { display: flex; }
+
 /* ─── "From the maker" strip above the FAQ (site/promo-block.ts) ─── */
 .xt-content .xt-promo { padding-top: 1.5rem; border-top: 1px solid var(--border); }
 .xt-content .xt-promo-label {
