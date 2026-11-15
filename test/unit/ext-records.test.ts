@@ -109,9 +109,13 @@ describe('re-validation of what content.js sends', () => {
   });
 
   it('settings: archive defaults on, only booleans change it', () => {
-    expect(DEFAULT_SETTINGS).toEqual({ archive: true });
-    expect(sanitizeSettings(undefined, DEFAULT_SETTINGS)).toEqual({ archive: true });
-    expect(sanitizeSettings({ archive: false }, DEFAULT_SETTINGS)).toEqual({ archive: false });
-    expect(sanitizeSettings({ archive: 'no' }, { archive: false })).toEqual({ archive: false });
+    const D = { archive: true, counter: true, noticeSeen: false };
+    expect(DEFAULT_SETTINGS).toEqual(D);
+    expect(sanitizeSettings(undefined, DEFAULT_SETTINGS)).toEqual(D);
+    expect(sanitizeSettings({ archive: false }, DEFAULT_SETTINGS)).toEqual({ ...D, archive: false });
+    expect(sanitizeSettings({ archive: 'no' }, { ...D, archive: false })).toEqual({ ...D, archive: false });
+    expect(sanitizeSettings({ counter: false, noticeSeen: true }, DEFAULT_SETTINGS)).toEqual({ archive: true, counter: false, noticeSeen: true });
+    // Settings stored by 0.1.0 had only `archive`.
+    expect(sanitizeSettings(undefined, { archive: false } as never)).toEqual({ ...D, archive: false });
   });
 });

@@ -416,16 +416,17 @@ card.hidden=false;if(box)box.hidden=true;if(ts)ts.hidden=true;mark(p);wload();
 if(!scroll&&location.hash==='#watch'&&wb){try{wb.scrollIntoView({block:'start'})}catch(e){}}
 if(scroll){var still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 card.scrollIntoView({behavior:still?'auto':'smooth',block:'center'});try{card.focus({preventScroll:true})}catch(e){}}}
+function xtx(){try{window.postMessage({xt:1,type:'xt:pro-changed'},location.origin)}catch(e){}}
 function hide(){if(!card)return;card.hidden=true;if(box)box.hidden=false;mark('');say('',true);wclear();try{inp.focus()}catch(e){}}
 if(card){card.querySelector('[data-signout]').addEventListener('click',function(){var s=this;s.disabled=true;
 fetch('/api/pro/logout',{method:'POST',credentials:'same-origin'}).catch(function(){}).then(function(){s.disabled=false;
-try{sessionStorage.removeItem('xt_pro_state')}catch(e){}g('pro_signout',{place:'pro_page'});hide();window.dispatchEvent(new Event('xt:pro'));});});}
+try{sessionStorage.removeItem('xt_pro_state')}catch(e){}g('pro_signout',{place:'pro_page'});hide();window.dispatchEvent(new Event('xt:pro'));xtx();});});}
 if(/(^|; )xt_pro_hint=1/.test(document.cookie)){fetch('/api/pro/me',{credentials:'same-origin'}).then(function(r){return r.json()}).then(function(m){if(m&&m.pro)show(m.plan,false)}).catch(function(){});}
 f.addEventListener('submit',function(e){e.preventDefault();var k=inp.value.trim();if(!k)return;btn.disabled=true;say(d.working,true);
 fetch('/api/pro/activate',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k})})
 .then(function(r){return r.json().then(function(b){return{s:r.status,b:b}},function(){return{s:r.status,b:null}})})
 .then(function(x){btn.disabled=false;
-if(x.s===200&&x.b&&x.b.pro){say('',true);inp.value='';show(x.b.plan,true);g('pro_activate',{ok:true});try{sessionStorage.removeItem('xt_pro_state')}catch(e){}window.dispatchEvent(new Event('xt:pro'));return;}
+if(x.s===200&&x.b&&x.b.pro){say('',true);inp.value='';show(x.b.plan,true);g('pro_activate',{ok:true});try{sessionStorage.removeItem('xt_pro_state')}catch(e){}window.dispatchEvent(new Event('xt:pro'));xtx();return;}
 var err=(x.b&&x.b.error)||String(x.s);
 say(x.s===503?d.unavailable:x.s===429?d.rate:err==='activation_limit'?d.limit:x.s===401?d.invalid:d.upstream,false);
 g('pro_activate',{ok:false,error:err});})

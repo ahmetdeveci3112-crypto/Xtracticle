@@ -14,8 +14,8 @@ export interface SenderInfo {
   tab?: unknown;
 }
 
-const X_CONTENT: readonly MsgType[] = ['capture:posts', 'pro:get', 'pro:refresh', 'saved:status', 'settings:get'];
-const SITE_ANY: readonly MsgType[] = ['pro:get', 'pro:refresh', 'saved:status'];
+const X_CONTENT: readonly MsgType[] = ['capture:posts', 'pro:get', 'pro:refresh', 'saved:status', 'saved:has', 'settings:get', 'thread:get', 'event:track'];
+const SITE_ANY: readonly MsgType[] = ['pro:get', 'pro:refresh', 'saved:status', 'lang:set'];
 const SITE_SAVED: readonly MsgType[] = ['saved:list', 'saved:get', 'saved:delete'];
 const X_HOSTS = new Set(['x.com', 'twitter.com', 'mobile.x.com', 'mobile.twitter.com']);
 

@@ -13,6 +13,67 @@
         <span class="xt-name">Xtracticle</span>
         <span class="xt-version" id="xt-version"></span>
       </header>
+
+      <div class="xt-notice" id="notice" hidden>
+        <p id="notice-text"></p>
+        <button type="button" class="xt-link" id="notice-ok"></button>
+      </div>
+
+      <section class="xt-card" id="pro" aria-live="polite">
+        <div class="xt-pro-on" id="pro-on" hidden>
+          <span class="xt-dot" aria-hidden="true"></span>
+          <span id="pro-on-label"></span>
+          <button type="button" class="xt-btn xt-btn-quiet" id="signout"></button>
+        </div>
+        <form class="xt-pro-off" id="pro-off" hidden novalidate>
+          <div class="xt-row">
+            <span class="xt-muted" id="free-label"></span>
+            <a class="xt-link" id="pro-link" target="_blank" rel="noopener"></a>
+          </div>
+          <div class="xt-key">
+            <label class="xt-sr" for="key" id="key-label"></label>
+            <input id="key" name="key" type="text" autocomplete="off" spellcheck="false" maxlength="200" />
+            <button type="submit" class="xt-btn xt-btn-primary" id="activate"></button>
+          </div>
+          <p class="xt-error" id="key-error" role="alert" hidden></p>
+        </form>
+      </section>
+
+      <section class="xt-card" id="this-post" hidden>
+        <button type="button" class="xt-btn xt-btn-wide" id="save-this"></button>
+        <p class="xt-error" id="save-error" role="alert" hidden></p>
+      </section>
+
+      <section class="xt-card">
+        <label class="xt-switch">
+          <span id="archive-label"></span>
+          <input type="checkbox" role="switch" id="archive" />
+        </label>
+        <p class="xt-muted xt-counts" id="counts"></p>
+        <p class="xt-muted xt-counts" id="counts-bm"></p>
+        <div class="xt-actions">
+          <a class="xt-btn xt-btn-wide" id="open-saved" target="_blank" rel="noopener"></a>
+        </div>
+        <div class="xt-actions">
+          <button type="button" class="xt-btn" id="export"></button>
+          <button type="button" class="xt-btn xt-btn-danger" id="delete"></button>
+        </div>
+        <div class="xt-confirm" id="confirm" hidden>
+          <p id="confirm-text"></p>
+          <div class="xt-actions">
+            <button type="button" class="xt-btn xt-btn-danger-solid" id="confirm-yes"></button>
+            <button type="button" class="xt-btn" id="confirm-no"></button>
+          </div>
+        </div>
+        <p class="xt-muted" id="deleted" role="status" hidden></p>
+      </section>
+
+      <footer class="xt-foot">
+        <label class="xt-switch xt-switch-small">
+          <span id="counter-label"></span>
+          <input type="checkbox" role="switch" id="counter" />
+        </label>
+      </footer>
     </main>
     <script src="popup.js"></script>
   </body>

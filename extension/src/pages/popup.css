@@ -1,18 +1,84 @@
 /* Layout only; colours and font come from the brand tokens popup.ts writes into :root (src/shared/brand.ts). */
 html, body { margin: 0; }
 body {
-  min-width: 260px;
+  width: 320px;
   font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 1.4;
   background: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
 }
-.xt-popup { padding: 14px 16px; }
+[hidden] { display: none !important; }
+.xt-popup { padding: 14px 14px 10px; display: flex; flex-direction: column; gap: 10px; }
 .xt-head { display: flex; align-items: center; gap: 10px; }
 .xt-logo {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; border-radius: 0.6rem;
+  width: 30px; height: 30px; border-radius: 0.6rem;
   background: var(--accent); color: var(--bg-primary);
 }
-.xt-name { font-size: 14px; font-weight: 600; }
+.xt-name { font-size: 15px; font-weight: 600; }
 .xt-version { margin-inline-start: auto; font-size: 12px; color: var(--text-tertiary); }
+
+.xt-card {
+  padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--bg-secondary); display: flex; flex-direction: column; gap: 8px;
+}
+.xt-notice {
+  display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+  border-radius: var(--radius-md); background: var(--bg-tertiary); color: var(--text-secondary); font-size: 12.5px;
+}
+.xt-notice p { margin: 0; flex: 1; }
+
+.xt-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.xt-muted { color: var(--text-secondary); margin: 0; }
+.xt-counts { font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.xt-pro-on { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.xt-pro-on .xt-btn { margin-inline-start: auto; }
+.xt-dot { width: 8px; height: 8px; border-radius: 999px; background: var(--text-primary); }
+.xt-pro-off { display: flex; flex-direction: column; gap: 8px; margin: 0; }
+.xt-key { display: flex; gap: 6px; }
+.xt-key input {
+  flex: 1; min-width: 0; height: 34px; padding: 0 10px; font: inherit; font-size: 13px;
+  color: var(--text-primary); background: var(--bg-primary);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+}
+.xt-key input:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 1px; }
+
+.xt-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.xt-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 32px; padding: 0 12px; font: inherit; font-size: 13px; font-weight: 600;
+  color: var(--text-primary); background: transparent; text-decoration: none;
+  border: 1px solid var(--border); border-radius: 999px; cursor: pointer;
+}
+.xt-btn:hover { background: var(--bg-tertiary); }
+.xt-btn:focus-visible, .xt-link:focus-visible, .xt-switch input:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+.xt-btn:disabled { opacity: 0.55; cursor: default; }
+.xt-btn-primary { background: var(--accent); border-color: var(--accent); color: var(--bg-primary); }
+.xt-btn-primary:hover { background: var(--accent-hover); }
+.xt-btn-quiet { border-color: transparent; color: var(--text-secondary); font-weight: 500; }
+.xt-btn-wide { flex: 1; }
+.xt-btn-danger { color: var(--error-text); }
+.xt-btn-danger-solid { background: var(--error-text); border-color: var(--error-text); color: #fff; }
+.xt-link { font: inherit; font-size: 12.5px; color: var(--text-primary); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.xt-error { margin: 0; color: var(--error-text); font-size: 12.5px; }
+.xt-confirm { padding: 10px; border-radius: var(--radius-md); background: var(--error-bg); border: 1px solid var(--error-border); }
+.xt-confirm p { margin: 0 0 8px; font-size: 12.5px; }
+
+.xt-switch { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 600; cursor: pointer; }
+.xt-switch input {
+  appearance: none; flex: none; width: 34px; height: 20px; margin: 0; border-radius: 999px;
+  background: var(--border); position: relative; cursor: pointer; transition: background-color .15s;
+}
+.xt-switch input::after {
+  content: ''; position: absolute; inset-block-start: 2px; inset-inline-start: 2px; width: 16px; height: 16px;
+  border-radius: 999px; background: var(--bg-secondary); transition: translate .15s;
+}
+.xt-switch input:checked { background: var(--accent); }
+.xt-switch input:checked::after { translate: 14px 0; background: var(--bg-primary); }
+:dir(rtl) .xt-switch input:checked::after { translate: -14px 0; }
+.xt-switch-small { font-weight: 500; font-size: 12.5px; color: var(--text-secondary); }
+.xt-foot { padding: 0 4px; }
+.xt-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .xt-switch input, .xt-switch input::after { transition: none; } }

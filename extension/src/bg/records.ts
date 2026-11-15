@@ -28,7 +28,7 @@ export interface BookmarkRow {
   seenByUserAt: string | null;
 }
 
-export const DEFAULT_SETTINGS: Settings = { archive: true };
+export const DEFAULT_SETTINGS: Settings = { archive: true, counter: true, noticeSeen: false };
 
 /* ─── Merging ─── */
 
@@ -180,7 +180,10 @@ export function sanitizeCapture(raw: unknown): CapturePayload | null {
 
 export function sanitizeSettings(patch: unknown, prev: Settings): Settings {
   const p = isObj(patch) ? patch : {};
-  return { archive: typeof p.archive === 'boolean' ? p.archive : prev.archive };
+  const pick = <K extends keyof Settings>(k: K): Settings[K] => (typeof p[k] === 'boolean' ? (p[k] as Settings[K]) : prev[k]);
+  // Older stored settings lack the newer fields: fill them from the defaults.
+  const base = { ...DEFAULT_SETTINGS, ...prev };
+  return { archive: pick('archive') ?? base.archive, counter: pick('counter') ?? base.counter, noticeSeen: pick('noticeSeen') ?? base.noticeSeen };
 }
 
 export function buildExport(posts: StoredPost[], bookmarks: BookmarkRow[], now: string, extVersion: string): ArchiveExport {

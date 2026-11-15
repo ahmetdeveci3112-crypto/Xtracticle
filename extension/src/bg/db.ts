@@ -72,8 +72,11 @@ async function metaGet(tx: IDBTransaction, key: string): Promise<unknown> {
   return row?.value ?? null;
 }
 
-/** Writes one capture in one transaction. Returns how many posts and bookmark rows were written. */
-export async function applyCapture(c: CapturePayload, now = new Date().toISOString()): Promise<{ stored: number; bookmarks: number }> {
+/**
+ * Writes one capture in one transaction. Returns how many posts and bookmark rows were written, and how many
+ * of the timeline entries had no bookmark row before (`fresh`; the bookmarks panel's incremental stop rule).
+ */
+export async function applyCapture(c: CapturePayload, now = new Date().toISOString()): Promise<{ stored: number; bookmarks: number; fresh: number }> {
   const db = await openDb();
   const tx = db.transaction(['posts', 'bookmarks', 'meta'], 'readwrite');
   const end = finished(tx);
@@ -81,6 +84,7 @@ export async function applyCapture(c: CapturePayload, now = new Date().toISOStri
   const bms = tx.objectStore('bookmarks');
   let stored = 0;
   let rows = 0;
+  let fresh = 0;
   for (const t of c.tweets) {
     const prev = (await done(posts.get(t.id))) as StoredPost | undefined;
     posts.put(mergePost(prev, t, c.source, now));
@@ -93,6 +97,7 @@ export async function applyCapture(c: CapturePayload, now = new Date().toISOStri
       // A bookmark row needs a stored copy; ids without one (not in this capture, not stored before) are skipped.
       if (!known.has(e.id) && !(await done(posts.getKey(e.id)))) continue;
       const prev = (await done(bms.get([acc, e.id]))) as BookmarkRow | undefined;
+      if (!prev) fresh++;
       bms.put(mergeBookmark(prev, acc, e, now));
       rows++;
     }
@@ -115,7 +120,7 @@ export async function applyCapture(c: CapturePayload, now = new Date().toISOStri
     if (c.entries?.length) meta.put({ key: 'lastSyncAt', value: now });
   }
   await end;
-  return { stored, bookmarks: rows };
+  return { stored, bookmarks: rows, fresh };
 }
 
 async function resolveAccount(tx: IDBTransaction, accountId?: string): Promise<string | null> {
@@ -191,6 +196,15 @@ function cmpSort(a: string | null, b: string | null): number {
 export async function getSaved(id: string): Promise<StoredPost | null> {
   const db = await openDb();
   return ((await done(db.transaction('posts', 'readonly').objectStore('posts').get(id))) as StoredPost | undefined) ?? null;
+}
+
+/** Which of `ids` have a stored copy (the Save menu's "Open saved copy"). */
+export async function hasSaved(ids: string[]): Promise<string[]> {
+  const db = await openDb();
+  const posts = db.transaction('posts', 'readonly').objectStore('posts');
+  const out: string[] = [];
+  for (const id of ids) if (await done(posts.getKey(id))) out.push(id);
+  return out;
 }
 
 /** Deletes the posts and every account's bookmark rows for them. */

@@ -45,6 +45,8 @@ export interface Handled {
   capture: CapturePayload | null;
   /** The mapped response, when there was one (for counters / later UI). */
   result: GqlResult | null;
+  /** The parsed body (the archive panel reads TweetDetail errors from it). */
+  json?: unknown;
 }
 
 export function handleHookMessage(m: HookMessage, config: XtConfig, accountId: string | null, recent: RecentPosts): Handled {
@@ -70,7 +72,7 @@ export function handleHookMessage(m: HookMessage, config: XtConfig, accountId: s
   }
   const result = parseGraphql(json);
   recent.add(result.tweets);
-  if (cat === 'detail') return { capture: null, result }; // kept for the Save menu; archived only when the user saves it
+  if (cat === 'detail') return { capture: null, result, json }; // kept for the Save menu; archived only when the user saves it
 
   const gone = result.skipped.filter(s => s.id && (s.reason === 'tombstone' || s.reason === 'unavailable')).map(s => ({ id: s.id as string, sortIndex: s.sortIndex }));
   if (!result.tweets.length && !gone.length) return { capture: null, result };

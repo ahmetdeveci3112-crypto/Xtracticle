@@ -37,6 +37,13 @@ const FLAG_KEYS = Object.keys(DEFAULT_FLAGS) as (keyof Flags)[];
 /** Categories whose request body (the mutation variables) is forwarded too; for all others only the response. */
 export const REQUEST_BODY_CATEGORIES: readonly OpCategory[] = ['bookmarkAdd', 'bookmarkRemove'];
 
+/**
+ * Categories whose throttling answers (429, ≥ 500) are reported too, as a status-only message with an empty
+ * body: the bookmarks panel stops scrolling when X slows down (plan B4).
+ */
+export const STATUS_CATEGORIES: readonly OpCategory[] = ['bookmarks'];
+export const isThrottleStatus = (s: unknown): s is number => typeof s === 'number' && Number.isInteger(s) && (s === 429 || (s >= 500 && s <= 599));
+
 /** How often the service worker re-reads public/ext/config.json. */
 export const CONFIG_TTL_MS = 6 * 3600 * 1000;
 
@@ -166,6 +173,8 @@ export interface HookMessage {
   body: string;
   /** Request body, only for REQUEST_BODY_CATEGORIES. */
   req?: string;
+  /** Set (429 or 5xx) on a status-only message for STATUS_CATEGORIES; `body` is then ''. */
+  status?: number;
 }
 
 export interface OpsMessage {
@@ -182,6 +191,7 @@ export function isHookMessage(d: unknown): d is HookMessage {
     isOpName(m.op) &&
     typeof m.body === 'string' &&
     m.body.length <= MAX_BODY_CHARS &&
-    (m.req === undefined || (typeof m.req === 'string' && m.req.length <= MAX_REQ_CHARS))
+    (m.req === undefined || (typeof m.req === 'string' && m.req.length <= MAX_REQ_CHARS)) &&
+    (m.status === undefined || (isThrottleStatus(m.status) && m.body === ''))
   );
 }

@@ -21,7 +21,8 @@
  *   node extension/test/e2e/cookie-test.mjs --no-prod  skip the production check
  *   XT_TEST_HEADED=1 …                                 show the browser
  *
- * Runs extension/test/e2e/capture-test.mjs first (capture path → IndexedDB; needs no wrangler).
+ * Runs extension/test/e2e/capture-test.mjs and ui-test.mjs's stand-in part first (capture path, Save menu,
+ * panels; no wrangler), and ui-test.mjs's real-bridge part last (the real /saved page and the popup on wrangler).
  *
  * The production check only sends GET /api/pro/me and GET /api/pro/config without a cookie.
  * Exit code 0 = every expectation held. Prints a JSON report.
@@ -33,6 +34,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { runCaptureTest } from './capture-test.mjs';
+import { runRealBridgeTest, runUiStandInTest } from './ui-test.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '../../..');
@@ -139,6 +141,9 @@ async function launch(extDir, { block3p = false, extraArgs = [] } = {}) {
   });
   let [sw] = context.serviceWorkers();
   if (!sw) sw = await context.waitForEvent('serviceworker', { timeout: 15000 });
+  // Counters off: the SW's own ext_install must not mix into the counts below (nor reach production from
+  // the store build, which also waits a minute after install before its first batch).
+  await sw.evaluate(() => chrome.storage.local.set({ settings: { archive: true, counter: false, noticeSeen: true } }));
   report.browser ??= context.browser()?.version() || (await sw.evaluate(() => navigator.userAgent));
   return { context, sw };
 }
@@ -292,6 +297,13 @@ try {
   report.failures.push(`capture test error: ${err.stack || err}`);
 }
 try {
+  log('ui test (Save menu, bookmarks panel, archive panel, counters; stand-ins)');
+  const ui = await runUiStandInTest({ log, expect, headless });
+  report.ui = { md: ui.md101, bookmarks: ui.panelDone?.count, gone: ui.gone?.links?.length, events: ui.events };
+} catch (err) {
+  report.failures.push(`ui test error: ${err.stack || err}`);
+}
+try {
   state = await setup();
   // Each scenario sends ~17 /api requests (the SW's own start-up GET /api/pro/me included); the Worker allows
   // 40 per 10 s per IP (API_LIMITER), so scenarios wait out the window instead of sharing it.
@@ -306,6 +318,11 @@ try {
   report.extEvents = JSON.parse(out)[0]?.results ?? out;
   const row = Array.isArray(report.extEvents) && report.extEvents.find(r => r.name === 'ext_install' && r.surface === 'ext');
   expect('counter', 'ext_install counted once per request (2 per scenario × 3)', row && row.n === 6, report.extEvents);
+
+  await cooldown();
+  log('real bridge test (/saved on wrangler, popup Pro)');
+  const rb = await runRealBridgeTest({ base: BASE, extDir: path.join(root, 'extension/dist-dev'), key: KEY, log, expect, headless });
+  report.realBridge = { status: rb.statusMsg, zipFiles: rb.zipFiles?.length, siteMe: rb.siteMe };
 } catch (err) {
   report.failures.push(`setup/run error: ${err.stack || err}`);
 } finally {

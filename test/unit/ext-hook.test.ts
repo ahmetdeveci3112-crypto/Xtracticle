@@ -100,14 +100,29 @@ describe('fetch wrapper', () => {
   });
 
   it('forwards nothing for other URLs, other ops or non-200 answers', async () => {
-    const { win } = makeWindow(async (url: string) => new Response('{}', { status: url.includes('Bookmarks') ? 429 : 200 }));
+    const { win } = makeWindow(async (url: string) => new Response('{}', { status: url.includes('Bookmarks') ? 404 : url.includes('TweetDetail') ? 429 : 200 }));
     install(win);
     await win.fetch!('https://x.com/i/api/graphql/abc/HomeTimeline');
     await win.fetch!('https://x.com/i/api/1.1/account/settings.json');
     await win.fetch!('https://evil.example/i/api/graphql/abc/Bookmarks');
-    await win.fetch!(GQL);
+    await win.fetch!(GQL); // 404: not a throttling answer
+    await win.fetch!('https://x.com/i/api/graphql/abc/TweetDetail'); // 429 outside STATUS_CATEGORIES
     await flush();
     expect(win.posted).toHaveLength(0);
+  });
+
+  it('reports a throttled Bookmarks answer (429 / 5xx) as status only, without the body', async () => {
+    let status = 429;
+    const { win } = makeWindow(async () => new Response('{"errors":[{"message":"Rate limit"}]}', { status }));
+    install(win);
+    await win.fetch!(GQL);
+    status = 503;
+    await win.fetch!(GQL);
+    await flush();
+    expect(win.posted.map(p => p.message)).toEqual([
+      { tag: HOOK_TAG, op: 'Bookmarks', body: '', status: 429 },
+      { tag: HOOK_TAG, op: 'Bookmarks', body: '', status: 503 },
+    ]);
   });
 
   it('forwards the request body only for bookmark mutations; accepts Request and URL inputs', async () => {
@@ -194,6 +209,17 @@ describe('XMLHttpRequest wrapper', () => {
     x.send();
     expect(win.posted.map(p => p.message.body)).toEqual(['{"a":1}', '{"a":1}']);
     expect((x as any).listeners.load).toHaveLength(1);
+  });
+
+  it('a throttled Bookmarks XHR is reported as status only', () => {
+    const { win, XHR } = makeWindow(async () => new Response(''));
+    const url = 'https://x.com/i/api/graphql/q/Bookmarks';
+    FakeXHR.responses.set(url, { status: 429, body: '{"errors":[]}' });
+    install(win);
+    const x = new XHR();
+    x.open('GET', url);
+    x.send();
+    expect(win.posted.map(p => p.message)).toEqual([{ tag: HOOK_TAG, op: 'Bookmarks', body: '', status: 429 }]);
   });
 
   it('non-200 XHR answers are not forwarded', () => {

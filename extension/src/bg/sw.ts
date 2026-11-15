@@ -9,19 +9,30 @@ import { isPostId, MAX_DELETE_IDS } from '../../../src/shared/bridge';
 import { XT_ORIGIN, XT_VERSION } from '../config';
 import { MSG_TYPES, type Msg, type Reply } from '../messages';
 import { isAllowed } from './access';
-import { applyCapture, clearAll, deleteSaved, exportAll, getSaved, listSaved, savedStatus } from './db';
+import { fetchThread } from './api';
+import { applyCapture, clearAll, deleteSaved, exportAll, getSaved, hasSaved, listSaved, savedStatus } from './db';
+import { flush, startQueue, track } from './events';
 import { activate, getPro, logout } from './pro';
-import { sanitizeCapture } from './records';
+import { sanitizeCapture, sanitizeTweet } from './records';
+import { isLang, LANG_KEY } from '../lang';
 import { refreshConfig } from './remote';
 import { getSettings, setSettings } from './settings';
 
 chrome.runtime.onInstalled.addListener(details => {
-  if (details.reason === 'install') void chrome.storage.local.set({ installedAt: new Date().toISOString(), installedVersion: XT_VERSION });
+  if (details.reason !== 'install') return;
+  void (async () => {
+    await chrome.storage.local.set({ installedAt: new Date().toISOString(), installedVersion: XT_VERSION });
+    await startQueue();
+    await track({ name: 'ext_install' });
+  })().catch(() => {});
 });
 
-// Every wake-up: both calls return at once when their cache is fresh (10 min / 6 h).
+// Every wake-up: both calls return at once when their cache is fresh (10 min / 6 h); queued counters go out when due.
 void getPro().catch(() => {});
 void refreshConfig().catch(() => {});
+void flush().catch(() => {});
+
+const MAX_HAS_IDS = 100;
 
 const ACCOUNT_RE = /^\d{1,25}$/;
 const accountOf = (v: unknown) => (typeof v === 'string' && ACCOUNT_RE.test(v) ? v : undefined);
@@ -47,6 +58,25 @@ async function handle(msg: Msg): Promise<Reply<unknown>> {
       if (!archive) return { ok: true, data: { stored: 0, bookmarks: 0, disabled: true } };
       const r = await applyCapture(capture);
       return { ok: true, data: { ...r, disabled: false } };
+    }
+    case 'saved:has': {
+      if (!Array.isArray(msg.ids) || msg.ids.length > MAX_HAS_IDS || !msg.ids.every(isPostId)) return { ok: false, error: 'bad_ids' };
+      return { ok: true, data: { ids: await hasSaved(msg.ids) } };
+    }
+    case 'thread:get': {
+      if (!isPostId(msg.id)) return { ok: false, error: 'bad_id' };
+      const r = await fetchThread(msg.id);
+      const list = r.body && typeof r.body === 'object' && Array.isArray((r.body as { tweets?: unknown }).tweets) ? ((r.body as { tweets: unknown[] }).tweets) : null;
+      const tweets = list ? list.slice(0, 200).map(t => sanitizeTweet(t)).filter((t): t is NonNullable<typeof t> => !!t) : null;
+      return { ok: true, data: { status: r.status === 200 && !tweets?.length ? 404 : r.status, tweets: tweets?.length ? tweets : null } };
+    }
+    case 'event:track':
+      return { ok: true, data: { queued: await track(msg.event) } };
+    case 'lang:set': {
+      if (!isLang(msg.lang)) return { ok: false, error: 'bad_lang' };
+      const prev = (await chrome.storage.local.get(LANG_KEY))[LANG_KEY];
+      if (prev !== msg.lang) await chrome.storage.local.set({ [LANG_KEY]: msg.lang });
+      return { ok: true, data: { lang: msg.lang, changed: prev !== msg.lang } };
     }
     case 'saved:list': {
       const cursor = typeof msg.cursor === 'number' && Number.isInteger(msg.cursor) && msg.cursor >= 0 ? msg.cursor : 0;

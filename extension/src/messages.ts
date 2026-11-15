@@ -5,8 +5,10 @@
  *
  * Who may send what (bg/sw.ts → `isAllowed`):
  *   popup / extension pages   everything
- *   content.js on x.com       capture:posts, pro:get, pro:refresh, saved:status, settings:get
- *   bridge.js on the site     pro:get, pro:refresh, saved:status; on /saved also saved:list, saved:get, saved:delete
+ *   content.js on x.com       capture:posts, pro:get, pro:refresh, saved:status, saved:has, settings:get,
+ *                             thread:get, event:track
+ *   bridge.js on the site     pro:get, pro:refresh, saved:status, lang:set; on /saved also saved:list,
+ *                             saved:get, saved:delete
  *
  * Every reply is `{ ok: true, data }` or `{ ok: false, error }` (error is a short code).
  */
@@ -32,6 +34,22 @@ export interface CapturePayload {
 export interface Settings {
   /** Local archive of captured posts (default on, owner decision 4). Off = nothing is written. */
   archive: boolean;
+  /** Anonymous daily counters (POST /api/ext/event, bg/events.ts). Default on; off drops the queue. */
+  counter: boolean;
+  /** The popup's one-line notice about the local archive was dismissed (owner decision 4). */
+  noticeSeen: boolean;
+}
+
+/** thread:get: the site's GET /api/thread/:id. `status` 404 = not public / not found; 0 = network error. */
+export interface ThreadReply {
+  status: number;
+  tweets: FxTweet[] | null;
+}
+
+/** event:track: one counter event (names from src/shared/events.ts COUNTER_EVENTS). */
+export interface TrackedEvent {
+  name: string;
+  param?: string;
 }
 
 export interface ProView {
@@ -89,6 +107,10 @@ export type Msg =
   | { type: 'saved:get'; id: string }
   | { type: 'saved:delete'; ids: string[] }
   | { type: 'saved:status'; accountId?: string }
+  | { type: 'saved:has'; ids: string[] }
+  | { type: 'thread:get'; id: string }
+  | { type: 'event:track'; event: TrackedEvent }
+  | { type: 'lang:set'; lang: string }
   | { type: 'saved:clear' }
   | { type: 'saved:export' }
   | { type: 'settings:get' }
@@ -101,11 +123,17 @@ export interface Replies {
   'pro:refresh': ProView;
   'pro:activate': ProView;
   'pro:logout': ProView;
-  'capture:posts': { stored: number; bookmarks: number; disabled: boolean };
+  /** `fresh`: bookmark rows that did not exist before this capture (incremental scan stop rule). */
+  'capture:posts': { stored: number; bookmarks: number; fresh: number; disabled: boolean };
   'saved:list': SavedPage;
   'saved:get': StoredPost | null;
   'saved:delete': { deleted: number };
   'saved:status': SavedStatus;
+  /** The ids, of those asked, that have a stored copy. */
+  'saved:has': { ids: string[] };
+  'thread:get': ThreadReply;
+  'event:track': { queued: boolean };
+  'lang:set': { lang: string; changed: boolean };
   'saved:clear': { cleared: true };
   'saved:export': ArchiveExport;
   'settings:get': Settings;
@@ -116,8 +144,8 @@ export type Reply<T> = { ok: true; data: T } | { ok: false; error: string };
 
 export const MSG_TYPES: readonly MsgType[] = [
   'pro:get', 'pro:refresh', 'pro:activate', 'pro:logout', 'capture:posts',
-  'saved:list', 'saved:get', 'saved:delete', 'saved:status', 'saved:clear', 'saved:export',
-  'settings:get', 'settings:set',
+  'saved:list', 'saved:get', 'saved:delete', 'saved:status', 'saved:has', 'saved:clear', 'saved:export',
+  'settings:get', 'settings:set', 'thread:get', 'event:track', 'lang:set',
 ];
 
 /** Typed sendMessage for content.js / bridge.js / popup. Never rejects: a sleeping or reloading SW gives `{ ok: false }`. */

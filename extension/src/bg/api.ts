@@ -19,3 +19,16 @@ export async function jsonOf(res: Response): Promise<unknown> {
     return null;
   }
 }
+
+/**
+ * GET /api/thread/:id: the post (or the self-thread it belongs to) the site would show for this id.
+ * `status` 0 = network error; the tweets are re-validated by the caller (bg/records.ts sanitizeTweet).
+ */
+export async function fetchThread(id: string): Promise<{ status: number; body: unknown }> {
+  try {
+    const res = await siteFetch(`/api/thread/${id}`);
+    return { status: res.status, body: res.ok ? await jsonOf(res) : null };
+  } catch {
+    return { status: 0, body: null };
+  }
+}
