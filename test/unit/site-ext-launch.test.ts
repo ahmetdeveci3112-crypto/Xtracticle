@@ -45,4 +45,17 @@ describe('with a store URL', () => {
       expect(html).toContain('class="xt-btn xt-ext-installed"');
     }
   });
+
+  it('adds the extension line and FAQ entry to /pro in all seven languages, linking the language page', () => {
+    const pro = PAGES.filter(p => p.path === '/pro' || /^\/[a-z]{2}\/pro$/.test(p.path));
+    expect(pro).toHaveLength(7);
+    for (const p of pro) {
+      const html = renderPage(TEMPLATE, p);
+      const lang = p.lang as keyof typeof EXT_PAGE_PATHS;
+      expect(html, lang).toContain(`<li><strong><a href="${EXT_PAGE_PATHS[lang]}">`);
+      expect(p.faq!.some(f => /Chrome/.test(f.q)), lang).toBe(true);
+      // the existing install-call slot is untouched
+      expect(html).toContain('data-xt-ext-cta="pro"');
+    }
+  });
 });

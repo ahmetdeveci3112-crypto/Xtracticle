@@ -144,3 +144,15 @@ describe('hero line script (runs before first paint)', () => {
     expect(run(UAS[2][0], undefined, { installed: true })).toBe(true);
   });
 });
+
+describe('before launch (empty EXT_STORE_URL): /pro', () => {
+  it('has no extension line or FAQ entry in any language', () => {
+    const pro = PAGES.filter(p => p.path === '/pro' || /^\/[a-z]{2}\/pro$/.test(p.path));
+    expect(pro).toHaveLength(7);
+    for (const p of pro) {
+      const html = renderPage(TEMPLATE, p);
+      for (const path of Object.values(EXT_PAGE_PATHS)) expect(html, p.lang).not.toContain(`href="${path}"`);
+      expect(p.faq!.some(f => /Chrome/.test(f.q)), p.lang).toBe(false);
+    }
+  });
+});

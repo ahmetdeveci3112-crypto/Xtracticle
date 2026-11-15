@@ -1,3 +1,4 @@
+import { extProFaq, extProFeature } from './ext-pro';
 import { GITHUB, extCtaSlot, type FAQ, type Lang, type SitePage } from './blocks';
 
 /**
@@ -494,6 +495,11 @@ function trialStart(t: TrialCopy): string {
 }
 
 export function proPage(lang: Lang, c: ProCopy): SitePage {
+  // Chrome extension line + FAQ entry: only once the extension is in the store (extAvailable()).
+  const extFeature = extProFeature(lang);
+  const extFaq = extProFaq(lang);
+  const features = extFeature ? [...c.features.slice(0, -1), extFeature, ...c.features.slice(-1)] : c.features;
+  const faq = extFaq ? [...c.faq.slice(0, -1), extFaq, ...c.faq.slice(-1)] : c.faq;
   const path = PATHS[lang];
   const form = `<form id="xt-pro-form" class="xt-pro-form" autocomplete="off"
     data-working="${esc(c.msgWorking)}" data-ok="${esc(c.msgOk)}" data-already="${esc(c.msgAlready)}" data-invalid="${esc(c.msgInvalid)}"
@@ -560,7 +566,7 @@ export function proPage(lang: Lang, c: ProCopy): SitePage {
   ${trialCard(c)}
   <p>${c.pitch}</p>
   <h2>${esc(c.featuresH2)}</h2>
-  <ul class="xt-pro-features">${c.features.map(f => `<li>${f}</li>`).join('')}</ul>
+  <ul class="xt-pro-features">${features.map(f => `<li>${f}</li>`).join('')}</ul>
   ${extCtaSlot('pro')}
   ${trialStart(c.trial)}
 </section>
@@ -586,7 +592,7 @@ export function proPage(lang: Lang, c: ProCopy): SitePage {
   ${active}
 </section>
 <script>${SCRIPT}</script>`,
-    faq: c.faq,
+    faq,
   };
 }
 
