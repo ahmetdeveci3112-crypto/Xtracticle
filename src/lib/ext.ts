@@ -34,7 +34,7 @@ export const EXT_STORE_URL = '';
  * Chrome Web Store button (Edge installs from there too). Launch day =
  * 'https://microsoftedge.microsoft.com/addons/detail/hompokahpbdaljejfmjpkemhcdonabla'.
  */
-export const EXT_EDGE_STORE_URL = '';
+export const EXT_EDGE_STORE_URL = 'https://microsoftedge.microsoft.com/addons/detail/hompokahpbdaljejfmjpkemhcdonabla';
 
 const isListing = (url: string): boolean => /^https:\/\//.test(url);
 

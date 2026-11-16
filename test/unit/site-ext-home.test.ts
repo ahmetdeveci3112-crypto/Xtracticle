@@ -1,4 +1,23 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+/**
+ * Pre-launch state: both store URLs empty. The committed URLs are no longer empty (Edge Add-ons is live),
+ * so this file pins the empty state to keep proving that nothing about the extension leaks while there
+ * is no listing.
+ */
+vi.mock('../../src/lib/ext', async importOriginal => {
+  const real = await importOriginal<typeof import('../../src/lib/ext')>();
+  return {
+    ...real,
+    EXT_STORE_URL: '',
+    EXT_EDGE_STORE_URL: '',
+    extAvailable: (chrome: string = '', edge: string = '') => real.extAvailable(chrome, edge),
+    chromeListed: (chrome: string = '') => real.chromeListed(chrome),
+    edgeListed: (edge: string = '') => real.edgeListed(edge),
+    storeUrl: (spot: Parameters<typeof real.storeUrl>[0], base: string = '') => real.storeUrl(spot, base),
+  };
+});
+
 import { EXT_EDGE_STORE_URL, EXT_PAGE_PATHS, EXT_STORE_URL, extAvailable, isDesktopChromium, isEdge, storeFor, storeUrl } from '../../src/lib/ext';
 import { extHeroScript } from '../../site/ext-home';
 import { extPages } from '../../site/ext-page';
@@ -31,10 +50,19 @@ describe('extAvailable', () => {
     expect(extAvailable('', 'edge.example/x')).toBe(false);
   });
 
-  it('is off in the committed code (launch day = one line per store in src/lib/ext.ts)', () => {
+  it('is off while both store URLs are empty', () => {
     expect(EXT_STORE_URL).toBe('');
     expect(EXT_EDGE_STORE_URL).toBe('');
     expect(extAvailable()).toBe(false);
+  });
+
+  it('committed code: Edge Add-ons is live, Chrome Web Store not yet (launch day = one line in src/lib/ext.ts)', async () => {
+    const real = await vi.importActual<typeof import('../../src/lib/ext')>('../../src/lib/ext');
+    expect(real.EXT_STORE_URL).toBe('');
+    expect(real.EXT_EDGE_STORE_URL).toBe('https://microsoftedge.microsoft.com/addons/detail/hompokahpbdaljejfmjpkemhcdonabla');
+    expect(real.extAvailable()).toBe(true);
+    expect(real.chromeListed()).toBe(false);
+    expect(real.extAvailable('', '')).toBe(false);
   });
 });
 

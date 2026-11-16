@@ -8,6 +8,8 @@ vi.mock('../../src/lib/ext', async importOriginal => {
   return {
     ...real,
     EXT_STORE_URL: STORE,
+    EXT_EDGE_STORE_URL: '',
+    edgeListed: (edge: string = '') => real.edgeListed(edge),
     extAvailable: (base: string = STORE) => real.extAvailable(base, ''),
     chromeListed: (base: string = STORE) => real.chromeListed(base),
     storeUrl: (spot: Parameters<typeof real.storeUrl>[0], base: string = STORE) => real.storeUrl(spot, base),
