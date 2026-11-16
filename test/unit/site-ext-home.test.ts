@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 /**
- * Pre-launch state: both store URLs empty. The committed URLs are no longer empty (Edge Add-ons is live),
+ * Pre-launch state: both store URLs empty. The committed URLs are no longer empty (both stores are live),
  * so this file pins the empty state to keep proving that nothing about the extension leaks while there
  * is no listing.
  */
@@ -56,12 +56,13 @@ describe('extAvailable', () => {
     expect(extAvailable()).toBe(false);
   });
 
-  it('committed code: Edge Add-ons is live, Chrome Web Store not yet (launch day = one line in src/lib/ext.ts)', async () => {
+  it('committed code: both stores are live (Chrome Web Store and Edge Add-ons)', async () => {
     const real = await vi.importActual<typeof import('../../src/lib/ext')>('../../src/lib/ext');
-    expect(real.EXT_STORE_URL).toBe('');
+    expect(real.EXT_STORE_URL).toBe('https://chromewebstore.google.com/detail/olhoofgccihgkgeklcipnokigepoimje');
     expect(real.EXT_EDGE_STORE_URL).toBe('https://microsoftedge.microsoft.com/addons/detail/hompokahpbdaljejfmjpkemhcdonabla');
     expect(real.extAvailable()).toBe(true);
-    expect(real.chromeListed()).toBe(false);
+    expect(real.chromeListed()).toBe(true);
+    expect(real.edgeListed()).toBe(true);
     expect(real.extAvailable('', '')).toBe(false);
   });
 });

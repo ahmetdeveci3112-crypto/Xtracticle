@@ -24,15 +24,13 @@ import {
  */
 
 /**
- * Chrome Web Store listing. Empty until the extension is published: while it is empty no install
- * call is rendered anywhere. Launch day = put the listing URL here.
+ * Chrome Web Store listing (live since Nov 16 2026). Set to '' to hide every Chrome install call.
  */
-export const EXT_STORE_URL = '';
+export const EXT_STORE_URL = 'https://chromewebstore.google.com/detail/olhoofgccihgkgeklcipnokigepoimje';
 
 /**
- * Microsoft Edge Add-ons listing. Empty until it is published; while it is empty Edge visitors get the
- * Chrome Web Store button (Edge installs from there too). Launch day =
- * 'https://microsoftedge.microsoft.com/addons/detail/hompokahpbdaljejfmjpkemhcdonabla'.
+ * Microsoft Edge Add-ons listing (live since Nov 16 2026). Edge visitors are sent here; if it were
+ * empty they would get the Chrome Web Store button (Edge installs from there too).
  */
 export const EXT_EDGE_STORE_URL = 'https://microsoftedge.microsoft.com/addons/detail/hompokahpbdaljejfmjpkemhcdonabla';
 

@@ -228,8 +228,9 @@ describe('which store a visitor gets', () => {
 });
 
 describe('links', () => {
-  it('store URL is empty until there is a listing, then carries UTM tags', () => {
-    expect(storeUrl('home')).toBe('');
+  it('store URL is empty without a listing, otherwise carries UTM tags', () => {
+    expect(storeUrl('home', '')).toBe('');
+    expect(storeUrl('home')).toBe('https://chromewebstore.google.com/detail/olhoofgccihgkgeklcipnokigepoimje?utm_source=xtracticle&utm_medium=site&utm_campaign=ext_home');
     expect(storeUrl('pro', 'https://chromewebstore.google.com/detail/abc')).toBe(
       'https://chromewebstore.google.com/detail/abc?utm_source=xtracticle&utm_medium=site&utm_campaign=ext_pro',
     );
