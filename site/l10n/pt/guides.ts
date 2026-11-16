@@ -415,9 +415,9 @@ ${privacy('pt')}`,
 const seeDeleted = guide({
   slug: 'how-to-see-deleted-tweets',
   pslug: 'ver-tweets-apagados',
-  title: 'Como ver tweets apagados: busque nos arquivos com um clique | Xtracticle',
+  title: 'Como ver tweets apagados ou indisponíveis: busque nos arquivos | Xtracticle',
   description:
-    'Veja tweets apagados de outra conta: cole o link do post e busque de uma vez na Wayback Machine e no archive.today. Mais citações, prints e o que nunca funciona.',
+    'Viu “Este post está indisponível”? Entenda o motivo e veja tweets apagados de outra conta: cole o link e busque de uma vez na Wayback Machine e no archive.today.',
   h1: 'Como ver tweets apagados',
   sub: 'Só dá para ver o post apagado de outra pessoa se uma cópia foi feita antes. Veja onde as cópias costumam existir e o que é beco sem saída.',
   primary: 'pdf',
@@ -431,6 +431,18 @@ ${takeaways([
 ])}
 
 ${archiveCheck('pt')}
+
+<section>
+  <h2>Por que aparece “Este post está indisponível”</h2>
+  <p>O aviso de tweet indisponível nem sempre quer dizer que o post foi apagado. As causas mais comuns são:</p>
+  <ul>
+    <li><strong>O autor apagou o post.</strong> Então só uma cópia feita antes, em um arquivo web ou em um print, pode mostrá-lo.</li>
+    <li><strong>A conta ficou protegida.</strong> Só seguidores aprovados veem os posts. Eles não foram apagados, mas não são públicos.</li>
+    <li><strong>A conta foi suspensa ou desativada.</strong> Todos os posts dela ficam indisponíveis, às vezes só por um tempo.</li>
+    <li><strong>O autor bloqueou você</strong>, ou o post tem restrição de idade ou de país. Nesse caso ele ainda pode aparecer sem login ou para outras pessoas.</li>
+  </ul>
+  <p>Para saber qual é o seu caso, abra o perfil do autor. Se o perfil abre e o post não aparece, ele provavelmente foi apagado: cole o link na busca acima para conferir os arquivos. Se o perfil todo está protegido ou suspenso, os arquivos ainda podem ter capturas antigas dos posts públicos.</p>
+</section>
 
 <section>
   <h2>Seus posts apagados vs os de outra pessoa</h2>
@@ -486,6 +498,7 @@ ${privacy('pt')}`,
     { q: 'Posso ver o tweet apagado de outra pessoa?', a: 'Só se uma cópia foi feita antes da exclusão, por exemplo uma captura da Wayback Machine ou do archive.today, um print ou uma matéria de notícia que o citou. O X não mostra posts apagados para ninguém.' },
     { q: 'Existe um site que mostra qualquer tweet apagado?', a: 'Não. Os sites que dizem isso não conseguem ler dados que o X removeu. Eles pesquisam os mesmos arquivos públicos que você pode pesquisar, e alguns pedem seu login ou pagamento, então tenha cuidado.' },
     { q: 'Uma citação mantém o texto apagado?', a: 'Normalmente não. O X mostra o post citado como indisponível depois que o original é apagado, embora as palavras de quem citou continuem lá.' },
+    { q: 'O que significa “Este post está indisponível”?', a: 'O post foi apagado, a conta ficou protegida ou foi suspensa, ou o autor bloqueou você. Abra o perfil: se ele abre e o post não está lá, o post provavelmente foi apagado e só uma cópia em arquivo pode mostrá-lo.' },
     { q: 'O Xtracticle consegue mostrar um post apagado?', a: 'Não. O Xtracticle lê posts públicos que ainda estão no ar, e um post apagado aparece como não encontrado.' },
     { q: 'Como garanto que poderei ver um post depois?', a: 'Salve-o enquanto está no ar. Cole o link no Xtracticle e baixe um PDF ou um ZIP com imagens.' },
   ],

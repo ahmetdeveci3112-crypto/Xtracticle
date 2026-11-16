@@ -1,0 +1,52 @@
+{
+  "week": "2026-W47",
+  "published": "2026-11-16",
+  "intro": "Five long reads people saved with Xtracticle this week — a one-person workflow for AI short dramas, how Odessia ran on agents before OpenAI bought it, Addy Osmani on why agent users are really managers, a beginner’s guide to DeepSeek Harness, and a playbook for growing a Xiaohongshu account.",
+  "items": [
+    {
+      "id": "2119326884505043274",
+      "handle": "TuyetloanP81840",
+      "author": "Miller",
+      "title": "用 Claude + H3 一个人拍 AI 短剧：一手实战教程，附全流程提示词和技能包",
+      "lang": "",
+      "topic": "AI video",
+      "summary": "A hands-on guide to making a five-minute AI short drama alone, with Claude writing the script and shot list, GPT Image designing the cast and sets, and MiniMax H3 animating talking characters for under 30 yuan an episode."
+    },
+    {
+      "id": "2120214953349263473",
+      "handle": "FDavidsonT",
+      "author": "Francis Davidson",
+      "title": "OpenAI Acquires Odessia",
+      "lang": "",
+      "topic": "Startups",
+      "summary": "Francis Davidson announces that OpenAI bought his AI travel agent Odessia less than a year after founding, and explains how the team ran almost every job, from strategy to support, through agents fed with all of the company’s context."
+    },
+    {
+      "id": "2119332146485891501",
+      "handle": "addyosmani",
+      "author": "Addy Osmani",
+      "title": "Your coding agents made you a manager",
+      "lang": "",
+      "topic": "Engineering practice",
+      "summary": "Addy Osmani argues that working with coding agents all day is a form of management, and maps good manager habits, starting with giving the agent a way to check its own work, onto everyday agent use."
+    },
+    {
+      "id": "2120305885457313794",
+      "handle": "ai_edisonZ",
+      "author": "edisonZ",
+      "title": "万字长文｜DeepSeek Harness 完全指南，打造你的专属工作台",
+      "lang": "",
+      "topic": "Agent tools",
+      "summary": "A beginner’s walkthrough of DeepSeek Harness, DeepSeek’s open-source agent runtime: how to install the desktop app, add plugins by package name, and which of seven ready-made workbenches are worth trying first."
+    },
+    {
+      "id": "2119430655390122208",
+      "handle": "bbkirstry",
+      "author": "小晚不在",
+      "title": "小红书起号保姆级教程｜从0开始找对标，坚持出摊、商业化",
+      "lang": "zh",
+      "topic": "Creator business",
+      "summary": "A content marketer’s step-by-step method for starting a Xiaohongshu account, from studying five to ten similar accounts to posting consistently and making the first money, written for creators moving over from X."
+    }
+  ]
+}
