@@ -33,6 +33,8 @@ export interface ProCopy {
   once: string;
   monthlyNote: string;
   yearlyNote: string;
+  /** Badge on the yearly card. */
+  bestValue: string;
   lifetimeNote: string;
   /** Button label on the three cards. */
   buy: string;
@@ -434,8 +436,9 @@ g('pro_activate',{ok:false,error:err});})
 .catch(function(){btn.disabled=false;say(d.network,false);g('pro_activate',{ok:false,error:'network'});});});
 })();`;
 
-function card(name: string, amount: number, unit: string, note: string, plan: keyof typeof PRICES, buy: string, featured = false): string {
-  return `<div class="xt-price${featured ? ' xt-price-featured' : ''}">
+function card(name: string, amount: number, unit: string, note: string, plan: keyof typeof PRICES, buy: string, badge = ''): string {
+  return `<div class="xt-price${badge ? ' xt-price-featured' : ''}">
+      ${badge ? `<span class="xt-price-badge">${esc(badge)}</span>` : ''}
       <h3>${esc(name)}</h3>
       <p class="xt-price-amount"><bdi>$${amount}</bdi><span>${esc(unit)}</span></p>
       <p class="xt-price-note">${esc(note)}</p>
@@ -575,7 +578,7 @@ export function proPage(lang: Lang, c: ProCopy): SitePage {
   <h2>${esc(c.pricingH2)}</h2>
   <div class="xt-pricing">
     ${card(c.monthly, PRICES.monthly, c.perMonth, c.monthlyNote, 'monthly', c.buy)}
-    ${card(c.yearly, PRICES.yearly, c.perYear, c.yearlyNote, 'yearly', c.buy, true)}
+    ${card(c.yearly, PRICES.yearly, c.perYear, c.yearlyNote, 'yearly', c.buy, c.bestValue)}
     ${card(c.lifetime, PRICES.lifetime, c.once, c.lifetimeNote, 'lifetime', c.buy)}
   </div>
   <p id="xt-pro-soon" class="xt-pro-soon" data-text="${esc(c.soon)}" hidden></p>
@@ -623,7 +626,8 @@ export const PRO_EN: ProCopy = {
   perYear: '/ year',
   once: 'once',
   monthlyNote: 'Cancel anytime.',
-  yearlyNote: 'That is $3 a month — 40% off.',
+  yearlyNote: '$3 a month, billed yearly. You save $24 compared with monthly.',
+  bestValue: 'Best value',
   lifetimeNote: 'Launch price for the first 100 buyers. Pay once, keep it forever.',
   buy: 'Get Pro',
   soon: 'Checkout is temporarily unavailable. Please try again in a little while. Everything else on this page keeps working.',

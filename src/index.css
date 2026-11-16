@@ -721,7 +721,29 @@ html.xt-ext-on .xt-ext-hero { display: flex; }
   background-color: var(--bg-secondary);
   box-shadow: var(--shadow-sm);
 }
-.xt-price-featured { border-color: var(--text-primary); }
+.xt-price-featured { border: 2px solid var(--accent); box-shadow: var(--shadow-md, var(--shadow-sm)); }
+.xt-price-badge {
+  align-self: flex-start;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background-color: var(--accent);
+  color: var(--bg-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.xt-price-current .xt-price-badge { display: none; }
+/* Monthly and lifetime use a quieter button so the yearly plan reads as the default choice. */
+.xt-content .xt-price:not(.xt-price-featured) .xt-btn {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.xt-content .xt-price:not(.xt-price-featured) .xt-btn:hover { background-color: var(--bg-tertiary); }
+/* One column (phones): yearly first. */
+@media (max-width: 44rem) {
+  .xt-price-featured { order: -1; }
+}
 .xt-content .xt-price h3 { margin: 0; }
 .xt-content .xt-price p { margin: 0; }
 .xt-price-amount {
