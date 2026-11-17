@@ -18,6 +18,7 @@ export const SITE_EVENTS = [
   'extract_error',
   'deep_link',
   'profile_posts',
+  'tweet_search',
   'batch_extract',
   // Output (src/App.tsx)
   'download',

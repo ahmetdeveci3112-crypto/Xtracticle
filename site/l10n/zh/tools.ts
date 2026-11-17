@@ -494,4 +494,150 @@ ${privacy('zh')}`,
   ],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, mcp, privacyPage];
+/* ─── 推特图片下载 ─── */
+
+const imageDownloader: SitePage = {
+  id: 'zh-image-dl',
+  group: 'image-dl',
+  path: '/zh/twitter-image-downloader',
+  file: 'zh/twitter-image-downloader.html',
+  lang: 'zh',
+  title: '推特图片下载：X 帖子里的图片保存为原图大小 | Xtracticle',
+  description: '一次下载推文、推文串或 X 文章中的所有图片，保持原图画质，连同帖子文字打包成一个 ZIP。免费，无需登录，无水印，无需安装 App。',
+  h1: '推特图片下载',
+  sub: '把 X（推特）帖子、推文串或文章里的所有图片按原画质保存，连同文字一起打包成一个 ZIP。',
+  primary: 'zip',
+  nav: '推特图片下载',
+  sections: `
+<section>
+  <p><strong>Xtracticle 是一个免费的推特图片下载工具：</strong>粘贴帖子链接，就能下载一个 ZIP，里面是帖子中的每一张图片（X 保存的原图尺寸），
+  以及 Markdown 格式的帖子文字。单条推文、完整推文串和 X 长文章都支持，电脑和手机都能用，无需账号，也无需 App。</p>
+  <h2>三步下载推文中的图片</h2>
+  ${steps([
+    '<strong>复制帖子链接</strong>（分享 → 复制链接）。x.com、twitter.com、fxtwitter、vxtwitter、nitter、xcancel 链接都可以，纯帖子 ID 也行。',
+    '<strong>粘贴到上方输入框</strong>，点击“提取”。帖子、图片和被引用的帖子会显示在下方。',
+    '<strong>点击 ZIP。</strong>你会得到一个压缩包：图片放在 <code>images</code> 文件夹里，文字则是一个指向这些图片的 Markdown 文件。',
+  ])}
+</section>
+
+<section>
+  <h2>你会得到什么</h2>
+  <ul>
+    <li><strong>原图画质。</strong>图片按 X 保存的最大尺寸（<code>name=orig</code>）获取，而不是你在时间线里看到的压缩预览图。</li>
+    <li><strong>所有图片一次拿到。</strong>一条帖子的全部四张图片、被引用帖子的图片；如果是推文串或 X 文章，则是其中的每一张图，按文档顺序排列。</li>
+    <li><strong>文字也在里面。</strong>ZIP 中包含一个 Markdown 文件，记录帖子文字、作者、日期和来源链接，图片不会失去上下文。</li>
+    <li><strong>没有水印，无需注册。</strong>不会在图片上添加任何内容，也不会在 X 上发布任何东西。</li>
+  </ul>
+  <p>只想要文字？同一个页面还能导出 <a href="/zh/tweet-to-pdf">PDF</a>、<a href="/zh/x-article-to-markdown">Markdown</a>、
+  EPUB 和纯文本。</p>
+</section>
+
+<section>
+  <h2>推文、推文串和文章</h2>
+  <h3>单条推文</h3>
+  <p>粘贴帖子链接。ZIP 中包含该帖子的图片，以及它所引用帖子的图片。</p>
+  <h3>完整推文串</h3>
+  <p>粘贴推文串中的任意一条帖子。Xtracticle 会按顺序合并作者的帖子，所以一个 ZIP 就包含整个推文串的图片。
+  想先阅读的话，可以<a href="/zh/unroll-twitter-thread">展开推文串</a>。</p>
+  <h3>X 文章</h3>
+  <p>长文章会保留封面图和正文中的每一张图片，并按阅读顺序编号。想要可打印的副本，请看 <a href="/zh/x-article-to-pdf">X 文章转 PDF</a>。</p>
+</section>
+
+<section>
+  <h2>它做不到什么</h2>
+  <ul>
+    <li><strong>没有视频文件。</strong>视频和 GIF 在 Markdown 中显示为带链接的缩略图；ZIP 里不包含视频本身。</li>
+    <li><strong>仅限公开帖子。</strong>受保护的账号无法读取。</li>
+    <li><strong>不支持已删除的帖子。</strong>帖子一旦被删除，X 就不再提供它的图片。想查找存档副本，请使用<a href="/zh/deleted-tweet-finder">已删除推文查找</a>。</li>
+    <li><strong>批量模式保存的是文字。</strong>批量模式最多接受 20 个链接，返回一个 Markdown 文件的 ZIP，其中的图片链接指向 X。想把图片保存到本地，请逐条保存帖子。</li>
+  </ul>
+  <p>图片归发布者所有。请仅用于你自己的记录、研究或参考，使用他人的作品前请先征得同意。</p>
+</section>
+
+${shortcuts('zh')}
+
+${privacy('zh')}`,
+  faq: [
+    { q: '如何下载推文中的图片？', a: '复制帖子链接，粘贴到 Xtracticle，点击“提取”，再点击 ZIP。压缩包里有该帖子的所有原图画质图片，以及 Markdown 格式的文字。' },
+    { q: '图片是原图画质吗？', a: '是的。图片按 X 保存的最大尺寸（name=orig）获取，而不是时间线里压缩过的预览图。' },
+    { q: '可以一次下载推文串里的所有图片吗？', a: '可以。粘贴推文串中的任意一条帖子；ZIP 会按顺序包含作者在该推文串中所有帖子的图片。' },
+    { q: '会下载视频或 GIF 吗？', a: '不会。视频和 GIF 显示为带链接的缩略图。ZIP 中只有图片和文字。' },
+    { q: '推特图片下载工具免费吗？', a: '免费。无需登录，无需 App，也不会加水印。' },
+    { q: 'iPhone 和安卓上能用吗？', a: '能。它在浏览器中运行。在手机上，ZIP 会保存到“下载”文件夹或“文件”App。' },
+    { q: '可以下载私密账号里的图片吗？', a: '不可以。只能读取公开帖子。' },
+  ],
+};
+
+/* ─── 推文搜索 ─── */
+
+const tweetFinder: SitePage = {
+  id: 'zh-tweet-finder',
+  group: 'tweet-finder',
+  path: '/zh/tweet-finder',
+  file: 'zh/tweet-finder.html',
+  lang: 'zh',
+  title: '推文搜索：按日期或关键词查找旧推文，免费 | Xtracticle',
+  description: '查找某个账号的旧推文：按关键词和日期生成 X 搜索，无需登录即可用 Google 搜索，或在 Wayback Machine 中列出已存档的帖子。免费。',
+  h1: '推文搜索',
+  sub: '按关键词和日期查找任意公开账号的旧推文。输入 @用户名，再选择搜索方式。',
+  primary: 'md',
+  nav: '推文搜索',
+  sections: `
+<section>
+  <p><strong>Xtracticle 的推文搜索会同时在三个地方查找某个账号的旧帖子：</strong>X 自带的搜索、Google 对 X 页面的索引，以及 Wayback Machine。
+  输入 @用户名，就能看到 Internet Archive 抓取过的该账号帖子。在搜索框里加上关键词或日期范围，就会得到现成的 X 和 Google 搜索。无需安装，这里也不需要账号。</p>
+  <h2>三步找到一条旧推文</h2>
+  ${steps([
+    '<strong>输入账号：</strong>输入 <code>@用户名</code>，或粘贴个人主页链接，点击“提取”，列出该账号已存档的帖子，按从新到旧排列。',
+    '<strong>缩小范围：</strong>在搜索框里加上一个关键词或 <code>"引号中的短语"</code>，再设置起止日期。搜索语句会随着输入实时生成。',
+    '<strong>选择搜索方式：</strong><em>在 X 上搜索</em>会带着搜索语句打开 X 的搜索；<em>用 Google 搜索</em>无需登录；<em>已存档的帖子</em>列出 Wayback Machine 的副本。找到了吗？把帖子链接粘贴到<a href="/zh/">首页</a>，就能保存为 PDF 或 Markdown。',
+  ])}
+</section>
+
+<section>
+  <h2>该用哪种搜索</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>在 X 上搜索</th><th>用 Google 搜索</th><th>已存档的帖子</th></tr></thead>
+    <tbody>
+      <tr><td>登录</td><td>X 会要求登录</td><td>无需</td><td>无需</td></tr>
+      <tr><td>覆盖范围</td><td>对仍在线的公开帖子最全面</td><td>仅限 Google 已收录的帖子</td><td>仅限有人存档过的帖子</td></tr>
+      <tr><td>已删除的帖子</td><td>搜不到</td><td>很少能搜到，直到 Google 撤下该页面</td><td>能，只要删除前已被存档</td></tr>
+      <tr><td>日期</td><td>精确（<code>since:</code> / <code>until:</code>）</td><td>大致（<code>after:</code> / <code>before:</code>，按收录日期）</td><td>按每个快照分别显示</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>背后的搜索运算符</h2>
+  <p>搜索框生成的是 X 的高级搜索。你也可以把这些运算符直接输入 X 的搜索栏：</p>
+  <ul>
+    <li><code>from:username</code> 只看该账号发的帖子。<code>to:username</code> 查找发给该账号的回复。</li>
+    <li><code>since:2021-01-01 until:2021-12-31</code> 限定日期范围。<code>until</code> 不含当天：帖子必须早于该日期。</li>
+    <li><code>"精确短语"</code> 按该顺序匹配这些词；<code>-词语</code> 排除某个词；<code>OR</code> 匹配任一词。</li>
+    <li><code>filter:media</code>、<code>filter:links</code> 和 <code>-filter:replies</code> 分别只保留含媒体、含链接或不含回复的帖子。</li>
+    <li><code>min_faves:100</code> 和 <code>min_retweets:50</code> 只保留热门帖子。</li>
+  </ul>
+  <p>例如，<code>from:NASA "Artemis" since:2022-11-01 until:2022-12-01</code> 会列出 NASA 在 2022 年 11 月发布的与 Artemis 相关的帖子。</p>
+</section>
+
+<section>
+  <h2>如果推文已被删除</h2>
+  <p>X 的搜索不会显示已删除的帖子，Google 重新抓取时也会把它们撤下。剩下可查的地方就是 Wayback Machine。
+  <a href="/zh/deleted-tweet-finder">已删除推文查找</a>对此有详细说明。想在某个账号今后删帖时收到通知，
+  请使用<a href="/zh/deleted-tweet-tracker">删推监控</a>。</p>
+  <p>在找自己的旧推文？你的 X 数据存档（设置 → 你的账号 → 下载数据存档）包含你没有删除的所有帖子；
+  <a href="/zh/guides/recover-deleted-tweets">恢复指南</a>说明了里面有什么。</p>
+</section>
+
+${privacy('zh')}`,
+  faq: [
+    { q: '如何查找某人的旧推文？', a: '在 Xtracticle 的推文搜索中输入对方的 @用户名，加上关键词或日期范围，然后在 X 或 Google 上打开搜索。点击“提取”还会列出他们在 Wayback Machine 中存档的帖子。' },
+    { q: '可以按日期搜索推文吗？', a: '可以。选择起止日期：X 搜索使用 since: 和 until:，是精确的。Google 的 after: 和 before: 只是大致的，因为它们使用的是 Google 收录该页面的日期。' },
+    { q: '没有 X 账号也能搜索推文吗？', a: 'X 自带的搜索会要求登录。用 Google 搜索和已存档帖子列表都不需要任何登录。' },
+    { q: '能找到已删除的推文吗？', a: '只能通过存档。帖子一旦删除，X 和 Google 就不再显示；如果有人事先存档过，Wayback Machine 列表里就能看到。' },
+    { q: '推文搜索免费吗？', a: '免费。无需注册，也从不索要你的 X 登录信息。' },
+    { q: '对私密账号有效吗？', a: '无效。受保护的帖子只有经批准的关注者才能在 X 上看到，所以任何外部搜索都找不到。' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, imageDownloader, tweetFinder, mcp, privacyPage];

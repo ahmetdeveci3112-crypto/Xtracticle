@@ -538,4 +538,154 @@ ${privacy('pt')}`,
   ],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, mcp, privacyPt];
+/* ─── Baixar imagens do Twitter ─── */
+
+const imageDownloader: SitePage = {
+  id: 'pt-image-dl',
+  group: 'image-dl',
+  path: '/pt/baixar-imagens-do-twitter',
+  file: 'pt/baixar-imagens-do-twitter.html',
+  lang: 'pt',
+  title: 'Baixar imagens do Twitter: fotos do X em tamanho original | Xtracticle',
+  description:
+    'Baixe todas as fotos de um tweet, thread ou Artigo do X em qualidade original, em um único ZIP com o texto do post. Grátis, sem login, sem marca d’água e sem app.',
+  h1: 'Baixar imagens do Twitter',
+  sub: 'Salve todas as fotos de um post, thread ou Artigo do X (Twitter) em qualidade original, com o texto, em um único ZIP.',
+  primary: 'zip',
+  nav: 'Baixar imagens do Twitter',
+  sections: `
+<section>
+  <p><strong>O Xtracticle é um baixador grátis de imagens do Twitter:</strong> cole o link de um post e baixe um ZIP com todas as fotos
+  dele, no tamanho original que o X guarda, ao lado do texto do post em Markdown. Funciona com tweets avulsos, threads inteiras e Artigos
+  longos do X, no computador e no celular, sem conta nem app.</p>
+  <h2>Baixe as imagens de um tweet em três passos</h2>
+  ${steps([
+    '<strong>Copie o link do post</strong> (Compartilhar → Copiar link). Links de x.com, twitter.com, fxtwitter, vxtwitter, nitter e xcancel funcionam, e o ID do post sozinho também.',
+    '<strong>Cole acima</strong> e toque em Extrair. O post, as fotos e o post citado aparecem abaixo.',
+    '<strong>Clique em ZIP.</strong> Você recebe um único arquivo com as fotos em uma pasta <code>images</code> e o texto em um arquivo Markdown que aponta para elas.',
+  ])}
+</section>
+
+<section>
+  <h2>O que você recebe</h2>
+  <ul>
+    <li><strong>Qualidade original.</strong> As fotos vêm no maior tamanho que o X guarda (<code>name=orig</code>), e não na prévia comprimida que você vê na timeline.</li>
+    <li><strong>Todas as fotos de uma vez.</strong> As quatro fotos de um post, as fotos do post citado e, em uma thread ou Artigo do X, todas as imagens, na ordem do documento.</li>
+    <li><strong>O texto também.</strong> O ZIP tem um arquivo Markdown com o texto do post, o autor, a data e o link de origem, para que as fotos não percam o contexto.</li>
+    <li><strong>Sem marca d’água e sem cadastro.</strong> Nada é adicionado às imagens e nada é publicado no X.</li>
+  </ul>
+  <p>Quer só o texto? A mesma página também exporta <a href="/pt/tweet-para-pdf">PDF</a>, <a href="/pt/artigo-do-x-para-markdown">Markdown</a>,
+  EPUB e texto simples.</p>
+</section>
+
+<section>
+  <h2>Tweets, threads e Artigos</h2>
+  <h3>Um único tweet</h3>
+  <p>Cole o link do post. O ZIP contém as fotos desse post e as fotos de qualquer post que ele cite.</p>
+  <h3>Uma thread inteira</h3>
+  <p>Cole qualquer post da thread. O Xtracticle junta os posts do autor em ordem, então um único ZIP traz as imagens da thread toda.
+  Para ler antes, <a href="/pt/desenrolar-thread-do-twitter">desenrole a thread</a>.</p>
+  <h3>Um Artigo do X</h3>
+  <p>Artigos longos mantêm a imagem de capa e todas as imagens do texto, numeradas na ordem de leitura. Veja <a href="/pt/artigo-do-x-para-pdf">Artigo do X para PDF</a> para uma cópia imprimível.</p>
+</section>
+
+<section>
+  <h2>O que ele não faz</h2>
+  <ul>
+    <li><strong>Sem arquivos de vídeo.</strong> Vídeos e GIFs aparecem como uma miniatura com link no Markdown; o ZIP não contém o vídeo em si.</li>
+    <li><strong>Só posts públicos.</strong> Contas protegidas não podem ser lidas.</li>
+    <li><strong>Sem posts apagados.</strong> Depois que um post é apagado, o X para de servir as imagens dele. Para procurar uma cópia arquivada, use o <a href="/pt/localizador-de-tweets-apagados">localizador de tweets apagados</a>.</li>
+    <li><strong>O modo em lote salva texto.</strong> O modo em lote aceita até 20 links e devolve um ZIP de arquivos Markdown cujos links de imagem apontam para o X. Para ter as fotos localmente, salve cada post separadamente.</li>
+  </ul>
+  <p>As imagens pertencem a quem as publicou. Salve-as para seus próprios registros, pesquisa ou referência, e peça permissão antes de reutilizar o trabalho de outra pessoa.</p>
+</section>
+
+${shortcuts('pt')}
+
+${privacy('pt')}`,
+  faq: [
+    { q: 'Como baixo as imagens de um tweet?', a: 'Copie o link do post, cole no Xtracticle, toque em Extrair e clique em ZIP. O arquivo traz todas as fotos do post em qualidade original e o texto em Markdown.' },
+    { q: 'As imagens vêm em qualidade original?', a: 'Sim. As fotos vêm no maior tamanho que o X guarda (name=orig), e não na prévia comprimida da timeline.' },
+    { q: 'Posso baixar todas as imagens de uma thread de uma vez?', a: 'Sim. Cole qualquer post da thread; o ZIP traz as fotos de todos os posts do autor nessa thread, em ordem.' },
+    { q: 'Ele baixa vídeos ou GIFs?', a: 'Não. Vídeos e GIFs aparecem como uma miniatura com link. O ZIP contém fotos e texto.' },
+    { q: 'O baixador de imagens do Twitter é grátis?', a: 'Sim. É grátis, não exige login nem app e não coloca marca d’água.' },
+    { q: 'Funciona no iPhone e no Android?', a: 'Sim. Roda no navegador. No celular, o ZIP vai para a pasta Downloads ou para o app Arquivos.' },
+    { q: 'Posso baixar imagens de uma conta privada?', a: 'Não. Só posts públicos podem ser lidos.' },
+  ],
+};
+
+/* ─── Buscador de tweets ─── */
+
+const tweetFinder: SitePage = {
+  id: 'pt-tweet-finder',
+  group: 'tweet-finder',
+  path: '/pt/buscador-de-tweets',
+  file: 'pt/buscador-de-tweets.html',
+  lang: 'pt',
+  title: 'Buscador de tweets: ache tweets antigos por data ou palavra | Xtracticle',
+  description:
+    'Ache tweets antigos de uma conta: monte uma busca no X por palavras e datas, pesquise no Google sem login ou liste posts arquivados na Wayback Machine. Grátis.',
+  h1: 'Buscador de tweets',
+  sub: 'Ache tweets antigos de qualquer conta pública, por palavras e datas. Digite o @usuário e escolha como pesquisar.',
+  primary: 'md',
+  nav: 'Buscador de tweets',
+  sections: `
+<section>
+  <p><strong>O buscador de tweets do Xtracticle procura os posts antigos de uma conta em três lugares ao mesmo tempo:</strong> a busca do próprio X, o
+  índice do Google das páginas do X e a Wayback Machine. Digite um @usuário e você vê os posts dessa conta que o Internet Archive capturou.
+  Adicione palavras ou um intervalo de datas na caixa de busca e você recebe buscas prontas para o X e o Google. Nada para instalar e, aqui, sem conta.</p>
+  <h2>Ache um tweet antigo em três passos</h2>
+  ${steps([
+    '<strong>Informe a conta:</strong> digite <code>@usuario</code> ou cole o link do perfil e toque em Extrair para listar os posts arquivados, do mais recente ao mais antigo.',
+    '<strong>Afunile a busca:</strong> na caixa de busca, adicione uma palavra ou uma <code>"frase entre aspas"</code> e uma data de início e de fim. A consulta aparece enquanto você digita.',
+    '<strong>Escolha uma busca:</strong> <em>Pesquisar no X</em> abre a busca do X com a consulta; <em>Pesquisar no Google</em> funciona sem login; <em>Posts arquivados</em> lista as cópias da Wayback Machine. Achou? Cole o link do post na <a href="/pt/">página inicial</a> para salvá-lo como PDF ou Markdown.',
+  ])}
+</section>
+
+<section>
+  <h2>Qual busca usar</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Pesquisar no X</th><th>Pesquisar no Google</th><th>Posts arquivados</th></tr></thead>
+    <tbody>
+      <tr><td>Login</td><td>O X pede login</td><td>Não</td><td>Não</td></tr>
+      <tr><td>Cobertura</td><td>A mais completa para posts públicos que ainda estão no ar</td><td>Só posts que o Google indexou</td><td>Só posts que alguém arquivou</td></tr>
+      <tr><td>Posts apagados</td><td>Não</td><td>Raramente, até o Google derrubar a página</td><td>Sim, se foram arquivados antes de apagar</td></tr>
+      <tr><td>Datas</td><td>Exatas (<code>since:</code> / <code>until:</code>)</td><td>Aproximadas (<code>after:</code> / <code>before:</code>, pela data de indexação)</td><td>Mostradas por captura</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Os operadores de busca por trás</h2>
+  <p>A caixa monta uma busca avançada do X. Você também pode digitar estes operadores direto na barra de busca do X:</p>
+  <ul>
+    <li><code>from:username</code> só posts dessa conta. <code>to:username</code> acha as respostas enviadas a ela.</li>
+    <li><code>since:2021-01-01 until:2021-12-31</code> limita as datas. <code>until</code> é exclusivo: o post precisa ser anterior a esse dia.</li>
+    <li><code>"frase exata"</code> busca as palavras nessa ordem; <code>-palavra</code> exclui uma palavra; <code>OR</code> busca uma ou outra.</li>
+    <li><code>filter:media</code>, <code>filter:links</code> e <code>-filter:replies</code> mantêm só os posts com mídia, com links ou sem respostas.</li>
+    <li><code>min_faves:100</code> e <code>min_retweets:50</code> mantêm só os posts populares.</li>
+  </ul>
+  <p>Por exemplo, <code>from:NASA "Artemis" since:2022-11-01 until:2022-12-01</code> lista os posts da NASA sobre Artemis em novembro de 2022.</p>
+</section>
+
+<section>
+  <h2>Se o tweet foi apagado</h2>
+  <p>A busca do X não mostra posts apagados, e o Google os derruba quando rastreia de novo. A Wayback Machine é o lugar que resta. O
+  <a href="/pt/localizador-de-tweets-apagados">localizador de tweets apagados</a> explica isso em detalhes. Para ser avisado quando uma conta apagar algo daqui para a frente,
+  use o <a href="/pt/rastreador-de-tweets-apagados">rastreador de tweets apagados</a>.</p>
+  <p>Procurando seus próprios tweets antigos? Seu arquivo de dados do X (Configurações → Sua conta → Baixar um arquivo dos seus dados) contém todos os
+  posts que você não apagou; o <a href="/pt/guias/recuperar-tweets-apagados">guia de recuperação</a> explica o que ele traz.</p>
+</section>
+
+${privacy('pt')}`,
+  faq: [
+    { q: 'Como acho um tweet antigo de alguém?', a: 'Digite o @usuário da pessoa no buscador de tweets do Xtracticle, adicione palavras ou um intervalo de datas e abra a busca no X ou no Google. Toque em Extrair para listar também os posts dela arquivados na Wayback Machine.' },
+    { q: 'Posso pesquisar tweets por data?', a: 'Sim. Escolha uma data de início e uma de fim: a busca no X usa since: e until:, que são exatos. O after: e o before: do Google são aproximados, porque usam a data em que o Google indexou a página.' },
+    { q: 'Posso pesquisar tweets sem uma conta do X?', a: 'A busca do próprio X pede login. Pesquisar no Google e a lista de posts arquivados funcionam sem nenhum login.' },
+    { q: 'Ele acha tweets apagados?', a: 'Só por meio de arquivos. O X e o Google param de mostrar um post depois que ele é apagado; a lista da Wayback Machine o mostra se alguém o arquivou antes.' },
+    { q: 'O buscador de tweets é grátis?', a: 'Sim. É grátis, não exige cadastro e nunca pede seu login do X.' },
+    { q: 'Funciona com contas privadas?', a: 'Não. Posts protegidos só são visíveis para seguidores aprovados no X, então nenhuma busca externa consegue achá-los.' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, imageDownloader, tweetFinder, mcp, privacyPt];

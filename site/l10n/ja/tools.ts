@@ -530,4 +530,154 @@ ${privacy('ja')}`,
   ],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, mcp, privacyPage];
+/* ─── Twitter画像保存 ─── */
+
+const imageDownloader: SitePage = {
+  id: 'ja-image-dl',
+  group: 'image-dl',
+  path: '/ja/twitter-image-downloader',
+  file: 'ja/twitter-image-downloader.html',
+  lang: 'ja',
+  title: 'Twitter画像保存｜Xの写真を元サイズで一括ダウンロード | Xtracticle',
+  description:
+    'ツイート・スレッド・Xの記事の写真をすべて元のサイズで、ポスト本文と一緒に1つのZIPにダウンロード。無料、ログイン不要、透かしなし、アプリ不要。',
+  h1: 'Twitter画像保存・ダウンロード',
+  sub: 'X（旧Twitter）のポスト・スレッド・記事の写真を、すべて元の画質のまま本文付きで1つのZIPに保存できます。',
+  primary: 'zip',
+  nav: 'Twitter画像保存',
+  sections: `
+<section>
+  <p><strong>Xtracticleは、無料で使えるTwitter画像のダウンロードツールです。</strong>ポストのリンクを貼るだけで、含まれる写真をすべて
+  Xが保存している元のサイズで、ポスト本文（Markdown）と一緒にZIPでダウンロードできます。1件のツイート、スレッド全体、長文のX記事に対応し、
+  パソコンでもスマホでも、アカウントやアプリは不要です。</p>
+  <h2>3ステップでツイートの画像を保存</h2>
+  ${steps([
+    '<strong>ポストのリンクをコピー</strong>します（共有 → リンクをコピー）。x.com、twitter.com、fxtwitter、vxtwitter、nitter、xcancelのリンクのほか、ポストIDだけでも使えます。',
+    '<strong>上の欄に貼り付けて</strong>「取得」を押します。ポスト、その写真、引用ポストが下に表示されます。',
+    '<strong>「ZIP」をクリック</strong>します。写真は<code>images</code>フォルダに、本文はそれらを参照するMarkdownファイルにまとめられた、1つのアーカイブが届きます。',
+  ])}
+</section>
+
+<section>
+  <h2>保存できるもの</h2>
+  <ul>
+    <li><strong>元の画質。</strong>写真は、タイムラインで見る圧縮されたプレビューではなく、Xが保存している最大サイズ（<code>name=orig</code>）で取得します。</li>
+    <li><strong>写真をまとめて一度に。</strong>1件のポストの4枚すべて、引用ポストの写真、スレッドやX記事ならその中のすべての画像を、文書の順序のまま保存します。</li>
+    <li><strong>本文も一緒に。</strong>ZIPには、ポスト本文・投稿者・日付・出典リンクを含むMarkdownファイルが入っているので、写真の文脈も残ります。</li>
+    <li><strong>透かしなし、登録なし。</strong>画像には何も追加されず、Xには何も投稿されません。</li>
+  </ul>
+  <p>本文だけが必要ですか？同じページで<a href="/ja/tweet-pdf">PDF</a>、<a href="/ja/x-kiji-markdown">Markdown</a>、
+  EPUB、プレーンテキストにも書き出せます。</p>
+</section>
+
+<section>
+  <h2>ツイート、スレッド、記事</h2>
+  <h3>1件のツイート</h3>
+  <p>ポストのリンクを貼ります。ZIPには、そのポストの写真と、引用しているポストの写真が入ります。</p>
+  <h3>スレッド全体</h3>
+  <p>スレッド内のどのポストでも貼ってください。Xtracticleが投稿者本人のポストを順番にまとめるので、1つのZIPにスレッド全体の画像が入ります。
+  先に読みたいときは<a href="/ja/thread-unroll">スレッドをまとめて読む</a>をご利用ください。</p>
+  <h3>Xの記事</h3>
+  <p>長文の記事は、カバー画像と本文中のすべての画像を、読む順に番号を付けて保存します。印刷できる形で残したいときは<a href="/ja/x-kiji-pdf">X記事をPDFで保存</a>をご覧ください。</p>
+</section>
+
+<section>
+  <h2>できないこと</h2>
+  <ul>
+    <li><strong>動画ファイルは保存できません。</strong>動画とGIFは、Markdown内でリンク付きのサムネイルとして表示されます。ZIPには動画そのものは入りません。</li>
+    <li><strong>公開ポストのみ。</strong>非公開（鍵付き）アカウントのポストは読み取れません。</li>
+    <li><strong>削除されたポストは対象外。</strong>ポストが削除されると、Xはその画像を配信しなくなります。保存済みのコピーを探すには、<a href="/ja/deleted-tweet-finder">削除ツイート検索</a>をご利用ください。</li>
+    <li><strong>一括モードで保存されるのは本文です。</strong>一括モードは最大20件のリンクを受け付け、画像リンクがXを指すMarkdownファイルを1つのZIPで返します。写真をローカルに保存したいときは、ポストを1件ずつ保存してください。</li>
+  </ul>
+  <p>画像の権利は、投稿した本人にあります。自分の記録、調査、参照のために保存し、他の人の作品を再利用する場合は事前に許可を取ってください。</p>
+</section>
+
+${shortcuts('ja')}
+
+${privacy('ja')}`,
+  faq: [
+    { q: 'ツイートの画像はどうやって保存しますか？', a: 'ポストのリンクをコピーしてXtracticleに貼り付け、「取得」を押してから「ZIP」をクリックします。アーカイブには、そのポストのすべての写真が元の画質で、本文がMarkdownで入っています。' },
+    { q: '画像は元の画質で保存されますか？', a: 'はい。写真は、タイムラインの圧縮プレビューではなく、Xが保存している最大サイズ（name=orig）で取得します。' },
+    { q: 'スレッドの画像を一度にまとめて保存できますか？', a: 'はい。スレッド内のどのポストでも貼り付けてください。ZIPには、そのスレッドにある投稿者のすべてのポストの写真が順番に入ります。' },
+    { q: '動画やGIFも保存できますか？', a: 'いいえ。動画とGIFはリンク付きのサムネイルとして記載されます。ZIPに入るのは写真と本文です。' },
+    { q: 'Twitter画像の保存ツールは無料ですか？', a: 'はい。無料で、ログインもアプリも不要、透かしも入りません。' },
+    { q: 'iPhoneやAndroidでも使えますか？', a: 'はい。ブラウザ上で動作します。スマホでは、ZIPはダウンロードフォルダまたは「ファイル」アプリに保存されます。' },
+    { q: '非公開アカウントの画像を保存できますか？', a: 'いいえ。読み取れるのは公開ポストだけです。' },
+  ],
+};
+
+/* ─── 過去ツイート検索 ─── */
+
+const tweetFinder: SitePage = {
+  id: 'ja-tweet-finder',
+  group: 'tweet-finder',
+  path: '/ja/tweet-finder',
+  file: 'ja/tweet-finder.html',
+  lang: 'ja',
+  title: '過去ツイート検索｜日付・キーワードで古いツイートを探す | Xtracticle',
+  description:
+    'アカウントの古いツイートを探します。キーワードと日付でX検索を組み立て、ログインなしでGoogle検索、Wayback Machineの保存済みポストも一覧表示。無料。',
+  h1: '過去ツイート検索',
+  sub: '公開アカウントの古いツイートを、キーワードと日付で探せます。@ユーザー名を入力して、検索方法を選んでください。',
+  primary: 'md',
+  nav: '過去ツイート検索',
+  sections: `
+<section>
+  <p><strong>Xtracticleの過去ツイート検索は、アカウントの古いポストを3か所から同時に探します。</strong>X自体の検索、GoogleのXページのインデックス、
+  そしてWayback Machineです。@ユーザー名を入力すると、Internet Archiveが保存したそのアカウントのポストが表示されます。
+  検索ボックスにキーワードや期間を追加すれば、XとGoogleですぐ使える検索が作られます。インストールは不要で、ここではアカウントも要りません。</p>
+  <h2>3ステップで古いツイートを探す</h2>
+  ${steps([
+    '<strong>アカウントを入力：</strong><code>@ユーザー名</code>を入力するかプロフィールのリンクを貼り付け、「取得」を押すと、保存済みのポストが新しい順に一覧表示されます。',
+    '<strong>絞り込む：</strong>検索ボックスにキーワードか<code>"引用符で囲んだフレーズ"</code>、開始日と終了日を追加します。入力に合わせて検索クエリが組み立てられます。',
+    '<strong>検索方法を選ぶ：</strong><em>X で検索</em>はクエリ付きでXの検索を開きます。<em>Google で検索</em>はログイン不要です。<em>アーカイブされた投稿</em>はWayback Machineのコピーを一覧にします。見つかったら、ポストのリンクを<a href="/ja/">ホーム</a>に貼ると、PDFやMarkdownで保存できます。',
+  ])}
+</section>
+
+<section>
+  <h2>どの検索を使うか</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>X で検索</th><th>Google で検索</th><th>アーカイブされた投稿</th></tr></thead>
+    <tbody>
+      <tr><td>ログイン</td><td>Xへのログインが必要</td><td>不要</td><td>不要</td></tr>
+      <tr><td>対象範囲</td><td>現在も公開中の公開ポストでは最も網羅的</td><td>Googleがインデックスしたポストのみ</td><td>誰かが保存したポストのみ</td></tr>
+      <tr><td>削除されたポスト</td><td>見つからない</td><td>まれに、Googleがそのページを外すまで</td><td>削除前に保存されていれば見つかる</td></tr>
+      <tr><td>日付</td><td>正確（<code>since:</code> / <code>until:</code>）</td><td>おおよそ（<code>after:</code> / <code>before:</code>、インデックスされた日付による）</td><td>スナップショットごとに表示</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>裏で使われる検索演算子</h2>
+  <p>ボックスはXの高度な検索を組み立てます。次の演算子は、Xの検索バーに直接入力することもできます。</p>
+  <ul>
+    <li><code>from:username</code>はそのアカウントのポストだけに絞ります。<code>to:username</code>はそのアカウント宛ての返信を探します。</li>
+    <li><code>since:2021-01-01 until:2021-12-31</code>で期間を限定します。<code>until</code>はその日を含みません。ポストはその日より前のものになります。</li>
+    <li><code>"完全一致のフレーズ"</code>は、その語順のとおりに一致します。<code>-単語</code>はその単語を除外し、<code>OR</code>はどちらかの語に一致します。</li>
+    <li><code>filter:media</code>、<code>filter:links</code>、<code>-filter:replies</code>は、それぞれメディア付き、リンク付き、返信を除いたポストだけを残します。</li>
+    <li><code>min_faves:100</code>と<code>min_retweets:50</code>は、人気のポストだけを残します。</li>
+  </ul>
+  <p>たとえば<code>from:NASA "Artemis" since:2022-11-01 until:2022-12-01</code>なら、NASAが2022年11月にアルテミスについて投稿したポストが一覧になります。</p>
+</section>
+
+<section>
+  <h2>ツイートが削除されていたら</h2>
+  <p>Xの検索は削除されたポストを表示せず、Googleも再クロールの際にそれを外します。残された探し先はWayback Machineです。
+  <a href="/ja/deleted-tweet-finder">削除ツイート検索</a>で詳しく解説しています。あるアカウントがこれから何かを削除したときに通知を受け取るには、
+  <a href="/ja/deleted-tweet-tracker">削除ツイート監視</a>をご利用ください。</p>
+  <p>自分の古いツイートを探していますか？Xのデータアーカイブ（設定 → アカウント → データのアーカイブをダウンロード）には、削除していないすべてのポストが入っています。
+  何が含まれるかは<a href="/ja/guides/recover-deleted-tweets">復元ガイド</a>で説明しています。</p>
+</section>
+
+${privacy('ja')}`,
+  faq: [
+    { q: '誰かの古いツイートはどうやって探しますか？', a: 'Xtracticleの過去ツイート検索にその人の@ユーザー名を入力し、キーワードや期間を追加して、XまたはGoogleで検索を開きます。「取得」を押すと、Wayback Machineに保存されたポストも一覧表示されます。' },
+    { q: 'ツイートを日付で検索できますか？', a: 'はい。開始日と終了日を選んでください。X検索はsince:とuntil:を使い、これは正確です。Googleのafter:とbefore:は、Googleがそのページをインデックスした日付を使うため、おおよその絞り込みになります。' },
+    { q: 'Xのアカウントなしでツイートを検索できますか？', a: 'X自体の検索はログインが必要です。Googleでの検索と、アーカイブされた投稿の一覧は、ログインなしで使えます。' },
+    { q: '削除されたツイートも見つかりますか？', a: 'アーカイブ経由の場合のみです。ポストが削除されるとXとGoogleは表示しなくなります。誰かが先に保存していれば、Wayback Machineの一覧には表示されます。' },
+    { q: '過去ツイート検索は無料ですか？', a: 'はい。無料で、登録も不要、Xのログイン情報を求めることもありません。' },
+    { q: '非公開アカウントでも使えますか？', a: 'いいえ。保護されたポストは、Xで承認されたフォロワーにしか見えないため、外部の検索では見つかりません。' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, imageDownloader, tweetFinder, mcp, privacyPage];

@@ -562,4 +562,154 @@ ${privacy('tr')}`,
   ],
 };
 
-export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, mcp, privacyPage];
+/* ─── Twitter görsel indirme ─── */
+
+const imageDownloader: SitePage = {
+  id: 'tr-image-dl',
+  group: 'image-dl',
+  path: '/tr/twitter-gorsel-indirme',
+  file: 'tr/twitter-gorsel-indirme.html',
+  lang: 'tr',
+  title: 'Twitter Görsel İndirme: X Fotoğraflarını Orijinal Boyutta Kaydet | Xtracticle',
+  description:
+    'Bir tweet’in, flood’un veya X Makalesi’nin tüm fotoğraflarını orijinal kalitede, gönderi metniyle birlikte tek ZIP’te indirin. Ücretsiz, giriş yok, filigran yok, uygulama yok.',
+  h1: 'Twitter Görsel İndirme',
+  sub: 'Bir X (Twitter) gönderisinin, flood’unun veya Makalesi’nin tüm fotoğraflarını orijinal kalitede, metniyle birlikte tek ZIP’te kaydedin.',
+  primary: 'zip',
+  nav: 'Twitter Görsel İndirme',
+  sections: `
+<section>
+  <p><strong>Xtracticle ücretsiz bir Twitter görsel indirme aracıdır:</strong> bir gönderinin linkini yapıştırın; içindeki her fotoğrafı,
+  X’in sakladığı orijinal boyutta, gönderi metniyle (Markdown olarak) birlikte tek bir ZIP’te indirin. Tek tweet’lerde, tüm flood’larda ve uzun
+  X Makalelerinde çalışır; masaüstünde ve telefonda, hesap ya da uygulama olmadan.</p>
+  <h2>Tweet’ten görselleri üç adımda indirin</h2>
+  ${steps([
+    '<strong>Gönderinin linkini kopyalayın</strong> (Paylaş → Linki kopyala). x.com, twitter.com, fxtwitter, vxtwitter, nitter ve xcancel linkleri çalışır; çıplak gönderi kimliği de.',
+    '<strong>Yukarıya yapıştırın</strong> ve Çıkar’a basın. Gönderi, fotoğrafları ve alıntılanan gönderi aşağıda görünür.',
+    '<strong>ZIP’e tıklayın.</strong> Fotoğrafların <code>images</code> klasöründe, metnin de onlara işaret eden bir Markdown dosyası olarak yer aldığı tek bir arşiv alırsınız.',
+  ])}
+</section>
+
+<section>
+  <h2>Ne elde edersiniz?</h2>
+  <ul>
+    <li><strong>Orijinal kalite.</strong> Fotoğraflar, akışta gördüğünüz sıkıştırılmış önizleme değil, X’in sakladığı en büyük boyutta (<code>name=orig</code>) alınır.</li>
+    <li><strong>Tüm fotoğraflar tek seferde.</strong> Bir gönderinin dört fotoğrafı, alıntılanan gönderinin fotoğrafları; flood ya da X Makalesi’nde ise içindeki her görsel, belge sırasıyla.</li>
+    <li><strong>Metin de dahil.</strong> ZIP’te gönderi metni, yazar, tarih ve kaynak linkini içeren bir Markdown dosyası bulunur; fotoğraflar bağlamını korur.</li>
+    <li><strong>Filigran yok, kayıt yok.</strong> Görsellere hiçbir şey eklenmez ve X’te hiçbir şey paylaşılmaz.</li>
+  </ul>
+  <p>Yalnızca metin mi lazım? Aynı sayfa <a href="/tr/tweet-pdf">PDF</a>, <a href="/tr/x-makale-markdown">Markdown</a>,
+  EPUB ve düz metin olarak da dışa aktarır.</p>
+</section>
+
+<section>
+  <h2>Tweet’ler, flood’lar ve Makaleler</h2>
+  <h3>Tek bir tweet</h3>
+  <p>Gönderinin linkini yapıştırın. ZIP’te o gönderinin fotoğrafları ve alıntıladığı gönderilerin fotoğrafları bulunur.</p>
+  <h3>Bir flood’un tamamı</h3>
+  <p>Flood’daki herhangi bir gönderiyi yapıştırın. Xtracticle yazarın gönderilerini sırayla birleştirir; böylece tek bir ZIP tüm flood’un görsellerini içerir.
+  Önce okumak isterseniz <a href="/tr/twitter-flood-okuma">flood’u tek sayfada okuyun</a>.</p>
+  <h3>Bir X Makalesi</h3>
+  <p>Uzun Makaleler kapak görselini ve metin içindeki her görseli okuma sırasına göre numaralanmış olarak korur. Yazdırılabilir bir kopya için <a href="/tr/x-makale-pdf">X Makalesi PDF</a> sayfasına bakın.</p>
+</section>
+
+<section>
+  <h2>Neleri yapmaz?</h2>
+  <ul>
+    <li><strong>Video dosyası yok.</strong> Video ve GIF’ler Markdown’da bağlantılı bir küçük resim olarak görünür; ZIP’in içinde videonun kendisi yoktur.</li>
+    <li><strong>Yalnızca herkese açık gönderiler.</strong> Korumalı hesaplar okunamaz.</li>
+    <li><strong>Silinmiş gönderi yok.</strong> Bir gönderi silindiğinde X görsellerini sunmayı bırakır. Arşivlenmiş bir kopya aramak için <a href="/tr/silinen-tweetleri-bulma">silinen tweet bulucuyu</a> kullanın.</li>
+    <li><strong>Toplu mod metin kaydeder.</strong> Toplu mod en fazla 20 link alır ve görsel linkleri X’i gösteren Markdown dosyalarından oluşan tek bir ZIP verir. Fotoğrafları yerel olarak almak için her gönderiyi ayrı ayrı kaydedin.</li>
+  </ul>
+  <p>Görseller onları paylaşan kişilere aittir. Kendi kayıtlarınız, araştırmanız veya referansınız için kaydedin; başkasının işini yeniden kullanmadan önce izin isteyin.</p>
+</section>
+
+${shortcuts('tr')}
+
+${privacy('tr')}`,
+  faq: [
+    { q: 'Bir tweet’teki görselleri nasıl indiririm?', a: 'Gönderinin linkini kopyalayın, Xtracticle’a yapıştırın, Çıkar’a basın ve ZIP’e tıklayın. Arşivde gönderinin her fotoğrafı orijinal kalitede ve metin Markdown olarak yer alır.' },
+    { q: 'Görseller orijinal kalitede mi?', a: 'Evet. Fotoğraflar, akıştaki sıkıştırılmış önizleme değil, X’in sakladığı en büyük boyutta (name=orig) alınır.' },
+    { q: 'Bir flood’un tüm görsellerini tek seferde indirebilir miyim?', a: 'Evet. Flood’daki herhangi bir gönderiyi yapıştırın; ZIP’te yazarın o flood’daki tüm gönderilerinin fotoğrafları sırayla yer alır.' },
+    { q: 'Video veya GIF de iniyor mu?', a: 'Hayır. Video ve GIF’ler bağlantılı bir küçük resim olarak listelenir. ZIP’te fotoğraflar ve metin bulunur.' },
+    { q: 'Twitter görsel indirme aracı ücretsiz mi?', a: 'Evet. Ücretsizdir, giriş ya da uygulama gerektirmez ve filigran eklemez.' },
+    { q: 'iPhone ve Android’de çalışır mı?', a: 'Evet. Tarayıcıda çalışır. Telefonda ZIP, İndirilenler ya da Dosyalar uygulamanıza iner.' },
+    { q: 'Gizli bir hesaptaki görselleri indirebilir miyim?', a: 'Hayır. Yalnızca herkese açık gönderiler okunabilir.' },
+  ],
+};
+
+/* ─── Tweet bulucu ─── */
+
+const tweetFinder: SitePage = {
+  id: 'tr-tweet-finder',
+  group: 'tweet-finder',
+  path: '/tr/tweet-bulucu',
+  file: 'tr/tweet-bulucu.html',
+  lang: 'tr',
+  title: 'Tweet Bulucu: Eski Tweetleri Tarihe veya Kelimeye Göre Bul | Xtracticle',
+  description:
+    'Bir hesabın eski tweetlerini bulun: kelime ve tarihle X araması kurun, giriş yapmadan Google’da arayın ya da Wayback Machine’de arşivlenmiş gönderileri listeleyin. Ücretsiz.',
+  h1: 'Tweet Bulucu',
+  sub: 'Herhangi bir herkese açık hesabın eski tweetlerini kelime ve tarihe göre bulun. @kullanıcıadını yazın, sonra nasıl arayacağınızı seçin.',
+  primary: 'md',
+  nav: 'Tweet Bulucu',
+  sections: `
+<section>
+  <p><strong>Xtracticle’ın tweet bulucusu bir hesabın eski gönderilerini aynı anda üç yerde arar:</strong> X’in kendi araması, Google’ın X sayfalarını
+  dizinlemesi ve Wayback Machine. Bir @kullanıcıadı yazın; o hesabın Internet Archive’ın kaydettiği gönderilerini alırsınız.
+  Arama kutusuna kelime ya da tarih aralığı eklerseniz X ve Google için hazır aramalar elde edersiniz. Kurulacak bir şey yok, burada hesap gerekmez.</p>
+  <h2>Eski bir tweet’i üç adımda bulun</h2>
+  ${steps([
+    '<strong>Hesabı girin:</strong> <code>@kullaniciadi</code> yazın ya da profil linkini yapıştırın ve Çıkar’a basarak arşivlenmiş gönderileri, en yeniden eskiye listeleyin.',
+    '<strong>Daraltın:</strong> arama kutusuna bir kelime ya da <code>"tırnak içinde ifade"</code> ile başlangıç/bitiş tarihi ekleyin. Sorgu siz yazdıkça oluşur.',
+    '<strong>Bir arama seçin:</strong> <em>X’te ara</em>, sorguyla X’in aramasını açar; <em>Google’da ara</em> giriş yapmadan çalışır; <em>Arşivlenmiş gönderiler</em> Wayback Machine kopyalarını listeler. Buldunuz mu? PDF veya Markdown olarak kaydetmek için gönderinin linkini <a href="/tr/">ana sayfada</a> yapıştırın.',
+  ])}
+</section>
+
+<section>
+  <h2>Hangi aramayı kullanmalı?</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>X’te ara</th><th>Google’da ara</th><th>Arşivlenmiş gönderiler</th></tr></thead>
+    <tbody>
+      <tr><td>Giriş</td><td>X giriş yapmanızı ister</td><td>Yok</td><td>Yok</td></tr>
+      <tr><td>Kapsam</td><td>Hâlâ yayında olan herkese açık gönderiler için en eksiksizi</td><td>Yalnızca Google’ın dizinlediği gönderiler</td><td>Yalnızca birinin arşivlediği gönderiler</td></tr>
+      <tr><td>Silinen gönderiler</td><td>Hayır</td><td>Nadiren, Google sayfayı düşürene kadar</td><td>Evet, silinmeden önce arşivlendiyse</td></tr>
+      <tr><td>Tarihler</td><td>Kesin (<code>since:</code> / <code>until:</code>)</td><td>Yaklaşık (<code>after:</code> / <code>before:</code>, dizinlenme tarihine göre)</td><td>Her kayıt için ayrıca gösterilir</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Arkasındaki arama operatörleri</h2>
+  <p>Kutu bir X gelişmiş araması kurar. Aynı operatörleri doğrudan X’in arama çubuğuna da yazabilirsiniz:</p>
+  <ul>
+    <li><code>from:username</code> yalnızca o hesabın gönderilerini getirir. <code>to:username</code> ona gönderilen yanıtları bulur.</li>
+    <li><code>since:2021-01-01 until:2021-12-31</code> tarihleri sınırlar. <code>until</code> o günü kapsamaz: gönderi o günden önce olmalıdır.</li>
+    <li><code>"tam ifade"</code> kelimeleri bu sırayla eşleştirir; <code>-kelime</code> bir kelimeyi dışarıda bırakır; <code>OR</code> iki kelimeden birini eşleştirir.</li>
+    <li><code>filter:media</code>, <code>filter:links</code> ve <code>-filter:replies</code> yalnızca medyalı, linkli veya yanıt olmayan gönderileri tutar.</li>
+    <li><code>min_faves:100</code> ve <code>min_retweets:50</code> yalnızca popüler gönderileri tutar.</li>
+  </ul>
+  <p>Örneğin <code>from:NASA "Artemis" since:2022-11-01 until:2022-12-01</code>, NASA’nın Kasım 2022’de Artemis hakkındaki gönderilerini listeler.</p>
+</section>
+
+<section>
+  <h2>Tweet silinmişse</h2>
+  <p>X’in araması silinen gönderileri göstermez, Google da sayfayı yeniden tararken onları düşürür. Bakılacak yer olarak Wayback Machine kalır.
+  <a href="/tr/silinen-tweetleri-bulma">Silinen tweet bulucu</a> bunu ayrıntılı anlatır. Bir hesabın bundan sonra sildiği bir şeyden haberdar olmak için
+  <a href="/tr/silinen-tweet-takibi">silinen tweet takibini</a> kullanın.</p>
+  <p>Kendi eski tweetlerinizi mi arıyorsunuz? X veri arşiviniz (Ayarlar → Hesabınız → Verilerinizin arşivini indirin) silmediğiniz her gönderiyi içerir;
+  <a href="/tr/rehberler/silinen-tweetler-geri-getirilir-mi">geri getirme rehberi</a> içinde neler olduğunu anlatır.</p>
+</section>
+
+${privacy('tr')}`,
+  faq: [
+    { q: 'Birinin eski bir tweet’ini nasıl bulurum?', a: 'Kişinin @kullanıcıadını Xtracticle’ın tweet bulucusuna yazın, kelime ya da tarih aralığı ekleyin ve aramayı X’te veya Google’da açın. Wayback Machine’de arşivlenmiş gönderilerini de listelemek için Çıkar’a basın.' },
+    { q: 'Tweet’leri tarihe göre arayabilir miyim?', a: 'Evet. Başlangıç ve bitiş tarihini seçin: X araması since: ve until: kullanır, bunlar kesindir. Google’ın after: ve before: operatörleri ise Google’ın sayfayı dizinlediği tarihi kullandığı için yaklaşıktır.' },
+    { q: 'X hesabı olmadan tweet arayabilir miyim?', a: 'X’in kendi araması giriş yapmanızı ister. Google’da arama ve arşivlenmiş gönderiler listesi hiç giriş gerektirmez.' },
+    { q: 'Silinen tweet’leri de bulur mu?', a: 'Yalnızca arşivler aracılığıyla. Bir gönderi silinince X ve Google onu göstermeyi bırakır; Wayback Machine listesi, biri önce arşivlediyse gönderiyi gösterir.' },
+    { q: 'Tweet bulucu ücretsiz mi?', a: 'Evet. Ücretsizdir, kayıt gerektirmez ve X girişinizi hiçbir zaman istemez.' },
+    { q: 'Gizli hesaplarda çalışır mı?', a: 'Hayır. Korumalı gönderileri X’te yalnızca onaylı takipçiler görebildiği için hiçbir dış arama onları bulamaz.' },
+  ],
+};
+
+export const TOOLS: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, imageDownloader, tweetFinder, mcp, privacyPage];

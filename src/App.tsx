@@ -19,6 +19,7 @@ import ExtCta, { ExtCtaSlots, ExtHeroCta } from './components/ExtCta';
 import { notifyLangChanged, parseDlHash, type DlFormat } from './lib/ext';
 
 const ArchivePanel = lazy(() => import('./components/ArchivePanel'));
+const TweetSearch = lazy(() => import('./components/TweetSearch'));
 const SavedPage = lazy(() => import('./components/SavedPage'));
 
 /* ─── Page config (injected per page by the build / Worker) ─── */
@@ -41,7 +42,9 @@ declare global {
 }
 const PAGE: PageConfig = (typeof window !== 'undefined' && window.__XT__) || {};
 /** Deleted Tweet Finder and Tracker pages (id `deleted-finder`, `tr-deleted-tracker`, …) ask for an account, not a post. */
-const ACCOUNT_INPUT = /(^|-)deleted-(finder|tracker)$/.test(PAGE.page || '');
+const ACCOUNT_INPUT = /(^|-)(deleted-(finder|tracker)|tweet-finder)$/.test(PAGE.page || '');
+/** Tweet Finder pages (id `tweet-finder`, `tr-tweet-finder`, …) add the old-tweet search builder under the account field. */
+const TWEET_FINDER = /(^|-)tweet-finder$/.test(PAGE.page || '');
 /** /saved and its language versions (id `saved`, `tr-saved`, …): the extension's bookmark copies. */
 const SAVED_PAGE = /(^|-)saved$/.test(PAGE.page || '');
 
@@ -712,6 +715,20 @@ export default function App() {
               </p>
             )}
             <p className="text-center text-xs mb-8 print:hidden" style={{ color: 'var(--text-tertiary)' }}>{t.urlTip}</p>
+            {TWEET_FINDER && (
+              <Suspense fallback={null}>
+                <TweetSearch
+                  lang={lang}
+                  seed={url}
+                  onArchive={handle => {
+                    setUrl(`@${handle}`);
+                    setError(null);
+                    setArchive({ handle, n: Date.now() });
+                    document.getElementById('xt-url')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                />
+              </Suspense>
+            )}
             {ON_HOME_PAGE && <ExtHeroCta lang={lang} />}
 
             {/* History */}

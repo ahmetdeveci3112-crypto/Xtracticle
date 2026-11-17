@@ -216,7 +216,7 @@ function head(page: SitePage): string {
 function shell(page: SitePage): string {
   if (page.group === 'saved') return savedShell(page);
   const { button } = UI[page.lang];
-  const placeholder = page.group === 'deleted-finder' || page.group === 'deleted-tracker' ? PROFILE_PLACEHOLDER[page.lang] : UI[page.lang].placeholder;
+  const placeholder = page.group === 'deleted-finder' || page.group === 'deleted-tracker' || page.group === 'tweet-finder' ? PROFILE_PLACEHOLDER[page.lang] : UI[page.lang].placeholder;
   const home = homeOf(page.lang).path;
   return `<main class="max-w-3xl mx-auto px-5 pt-16 pb-8 md:pt-24">
         <header class="mb-10 text-center">

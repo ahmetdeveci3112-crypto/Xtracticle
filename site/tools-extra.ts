@@ -130,6 +130,8 @@ const tweetpdf: SitePage = {
   ${samplePdfFigure('en')}
   <p>The PDF is image-based, which keeps the layout exact but means the text isn't selectable. If you need to search or copy the
   text, export <a href="/x-article-to-markdown">Markdown</a> or <a href="/x-article-to-epub">EPUB</a> instead.</p>
+  <p>Need the photos themselves rather than a page? The <a href="/twitter-image-downloader">Twitter image downloader</a> saves every
+  photo of the post in original quality, in one ZIP.</p>
 </section>
 
 <section>
@@ -230,6 +232,21 @@ const deletedFinder: SitePage = {
 </section>
 
 <section>
+  <h2>A deleted tweet viewer for the Twitter archive</h2>
+  <p>Each <em>Open snapshot</em> link is a viewer for that deleted tweet: the Wayback Machine page shows the post as it looked on
+  twitter.com or x.com when it was captured, with its text and, often, its images. Posts from before May 2024 open on their
+  twitter.com capture, later ones on x.com, so the same search covers the Twitter and the X years.</p>
+  <ul>
+    <li><strong>Searching the Twitter archive of a deleted account.</strong> A deactivated or suspended account’s profile is gone from X,
+    but its archived posts are not. Type the old @username: the list still comes back if the Wayback Machine captured its posts.</li>
+    <li><strong>Searching by words or dates instead?</strong> The <a href="/tweet-finder">tweet finder</a> builds an X or Google search for
+    an account’s old posts by words and date range, next to the same archive list.</li>
+    <li><strong>The Wayback Machine for X.</strong> This page is a shortcut to it. The archive.org site itself only searches one URL at a time,
+    while this lists every captured post of the account.</li>
+  </ul>
+</section>
+
+<section>
   <h2>Free lookup or paid deleted-tweet tracker?</h2>
   <p>Paid tracker services such as TrackTweets watch an account and keep a copy of every post it deletes from the day you start tracking.
   They answer a different question from this page, and they cost money per account:</p>
@@ -267,6 +284,8 @@ ${privacy('en')}`,
     { q: 'Is the deleted tweet finder free?', a: 'Yes. It is free, needs no login and never asks you to connect your X account.' },
     { q: 'Can I search for one specific deleted post?', a: 'Yes. Paste the post link instead of the profile. If X no longer serves it, Xtracticle offers one-click searches for that post on the Wayback Machine and archive.today.' },
     { q: 'Does it work for private accounts?', a: 'No. Protected posts were never public, so they can’t be read and archives normally don’t have them.' },
+    { q: 'Can I view the deleted tweets of a deleted account?', a: 'Often, yes. Type the old @username: if the Wayback Machine captured the account’s posts before it was deactivated or suspended, they are listed with a link to each snapshot.' },
+    { q: 'Is this the same as the Wayback Machine for Twitter?', a: 'It uses the Wayback Machine’s archive. The difference is that it lists every captured post of an account at once, instead of one URL at a time.' },
   ],
 };
 
@@ -281,7 +300,7 @@ const deletedTracker: SitePage = {
   path: '/deleted-tweet-tracker',
   file: 'deleted-tweet-tracker.html',
   lang: 'en',
-  title: 'Deleted Tweet Tracker: Get Alerts When Tweets Are Deleted | Xtracticle',
+  title: 'Deleted Tweet Tracker & Tweet Alerts for Any X Account | Xtracticle',
   description:
     'Watch a public X account free for 14 days. When it deletes a post, Xtracticle keeps its text and tells you by RSS or e-mail. No card, no X login.',
   h1: 'Deleted Tweet Tracker',
@@ -311,6 +330,18 @@ const deletedTracker: SitePage = {
     <li><strong>Not posts deleted within minutes.</strong> A post that is published and deleted between two hourly checks is never seen.</li>
     <li><strong>Public accounts only.</strong> If an account goes private or is deactivated, the watch pauses and you get one notice saying so.</li>
     <li><strong>New posts, too.</strong> Set a watch to <em>new</em> or <em>both</em> and the same feed tells you when the account posts, without following it.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Tweet alerts for new posts, too</h2>
+  <p>The same watch works as a tweet tracker for an account’s new posts. Set it to <em>new</em> and you get an alert when the account
+  posts, without following it, without an X account and without turning on X’s own notifications. Set it to <em>both</em> to hear about
+  new and deleted posts in one feed.</p>
+  <ul>
+    <li><strong>Where alerts arrive:</strong> a private RSS / JSON feed for any feed reader (or Slack’s RSS app), and a daily e-mail digest.</li>
+    <li><strong>How often:</strong> about once an hour. Watch is a monitoring tool, not a real-time push service.</li>
+    <li><strong>What an alert contains:</strong> the post’s text, date, link and media links, so you can read it without opening X.</li>
   </ul>
 </section>
 
@@ -354,6 +385,7 @@ ${privacy('en')}`,
   faq: [
     { q: 'Can I get notified when someone deletes a tweet?', a: 'Yes. Add the public account to Xtracticle Watch (part of Xtracticle Pro). It checks the account every hour and, when a post it has seen is deleted, adds it to your private RSS feed and your daily e-mail digest with the post’s text.' },
     { q: 'Is there a free trial?', a: 'Yes. Watch one public account free for 14 days: type it above, enter your e-mail address and click the confirmation link we send. No card and no license key are needed, there is one trial per e-mail address, and nothing is charged: when the trial ends, the watch simply stops. To keep watching, or to watch up to 5 accounts, get Xtracticle Pro.' },
+    { q: 'Can I get alerts when an account tweets?', a: 'Yes. Set the watch to new posts (or to both new and deleted posts). Xtracticle checks the account about once an hour and adds each new post to your private feed and daily e-mail digest, without following the account on X.' },
     { q: 'How fast does the tracker notice a deletion?', a: 'Accounts are checked about once an hour. The feed updates on the next check after the deletion; the e-mail digest goes out once a day.' },
     { q: 'Can it show tweets deleted before I started tracking?', a: 'Watch can’t, because it never saw them. Use the free Deleted Tweet Finder, which lists posts the Wayback Machine archived, including ones deleted later.' },
     { q: 'Do I need to log in with my X account?', a: 'No. Xtracticle never asks for your X login. Pro is unlocked with a license key that Gumroad e-mails you after payment.' },
@@ -362,4 +394,160 @@ ${privacy('en')}`,
   ],
 };
 
-export const TOOL_PAGES_EN: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker];
+/**
+ * Twitter Image Downloader: the "tweet / post / image / media downloader" intent (Nov 17 2026 keyword
+ * study). It is the existing single-post ZIP export (Markdown + every photo, original quality via
+ * FxTwitter's ?name=orig URLs), so the hero tool is the normal one with ZIP as the primary button.
+ */
+const imageDownloader: SitePage = {
+  id: 'image-dl',
+  group: 'image-dl',
+  path: '/twitter-image-downloader',
+  file: 'twitter-image-downloader.html',
+  lang: 'en',
+  title: 'Twitter Image Downloader: Save X Photos in Original Size | Xtracticle',
+  description:
+    'Download every photo from a tweet, thread or X Article in original quality, in one ZIP with the post text. Free, no login, no watermark, no app.',
+  h1: 'Twitter Image Downloader',
+  sub: 'Save all the photos of an X (Twitter) post, thread or Article in original quality, with the text, in one ZIP.',
+  primary: 'zip',
+  nav: 'Twitter Image Downloader',
+  sections: `
+<section>
+  <p><strong>Xtracticle is a free Twitter image downloader:</strong> paste the link of a post and download a ZIP with every photo
+  in it, at the original size X stores, next to the post text as Markdown. It works for single tweets, whole threads and long-form
+  X Articles, on desktop and phone, without an account or an app.</p>
+  <h2>Download images from a tweet in three steps</h2>
+  ${steps([
+    '<strong>Copy the post link</strong> (Share → Copy link). Links from x.com, twitter.com, fxtwitter, vxtwitter, nitter and xcancel work, and so does a bare post ID.',
+    '<strong>Paste it above</strong> and press Extract. The post, its photos and the quoted post appear below.',
+    '<strong>Click ZIP</strong>. You get one archive with the photos in an <code>images</code> folder and the text as a Markdown file that points to them.',
+  ])}
+</section>
+
+<section>
+  <h2>What you get</h2>
+  <ul>
+    <li><strong>Original quality.</strong> Photos are fetched at X’s largest stored size (<code>name=orig</code>), not the compressed preview you see in the timeline.</li>
+    <li><strong>Every photo at once.</strong> All four photos of a post, the photos of the quoted post, and for a thread or an X Article every image in it, in document order.</li>
+    <li><strong>The text, too.</strong> The ZIP holds a Markdown file with the post text, author, date and source link, so the photos keep their context.</li>
+    <li><strong>No watermark, no sign-up.</strong> Nothing is added to the images and nothing is posted on X.</li>
+  </ul>
+  <p>Want only the text? The same page also exports <a href="/tweet-to-pdf">PDF</a>, <a href="/x-article-to-markdown">Markdown</a>,
+  EPUB and plain text.</p>
+</section>
+
+<section>
+  <h2>Tweets, threads and Articles</h2>
+  <h3>One tweet</h3>
+  <p>Paste the post link. The ZIP holds that post’s photos and the photos of any post it quotes.</p>
+  <h3>A whole thread</h3>
+  <p>Paste any post of the thread. Xtracticle merges the author’s posts in order, so one ZIP holds the images of the whole thread.
+  To read it first, <a href="/unroll-twitter-thread">unroll the thread</a>.</p>
+  <h3>An X Article</h3>
+  <p>Long-form Articles keep their cover image and every inline image, numbered in reading order. See <a href="/x-article-to-pdf">X Article to PDF</a> for a printable copy.</p>
+</section>
+
+<section>
+  <h2>What it doesn’t do</h2>
+  <ul>
+    <li><strong>No video files.</strong> Videos and GIFs appear as a linked thumbnail in the Markdown; the ZIP doesn’t contain the video itself.</li>
+    <li><strong>Public posts only.</strong> Protected accounts can’t be read.</li>
+    <li><strong>No deleted posts.</strong> Once a post is deleted, X stops serving its images. To look for an archived copy, use the <a href="/deleted-tweet-finder">deleted tweet finder</a>.</li>
+    <li><strong>Batch mode saves text.</strong> Batch mode takes up to 20 links and returns one ZIP of Markdown files whose image links point to X. For local photos, save each post on its own.</li>
+  </ul>
+  <p>Images belong to the people who posted them. Save them for your own records, research or reference, and ask before reusing someone else’s work.</p>
+</section>
+
+${shortcuts('en')}
+
+${privacy('en')}`,
+  faq: [
+    { q: 'How do I download images from a tweet?', a: 'Copy the post link, paste it into Xtracticle, press Extract and click ZIP. The archive holds every photo of the post in original quality plus the text as Markdown.' },
+    { q: 'Are the images in original quality?', a: 'Yes. Photos are fetched at the largest size X stores (name=orig), not the compressed timeline preview.' },
+    { q: 'Can I download all the images of a thread at once?', a: 'Yes. Paste any post of the thread; the ZIP holds the photos of all the author’s posts in that thread, in order.' },
+    { q: 'Does it download videos or GIFs?', a: 'No. Videos and GIFs are listed as a linked thumbnail. The ZIP contains photos and text.' },
+    { q: 'Is the Twitter image downloader free?', a: 'Yes. It is free, needs no login or app, and adds no watermark.' },
+    { q: 'Does it work on iPhone and Android?', a: 'Yes. It runs in the browser. On a phone the ZIP goes to your Downloads or Files app.' },
+    { q: 'Can I download images from a private account?', a: 'No. Only public posts can be read.' },
+  ],
+};
+
+/**
+ * Tweet Finder: the "tweet finder / find old tweets / search tweets by date" intent. The hero takes an
+ * account (archived posts via the Wayback Machine, like the finder page) and TweetSearch
+ * (src/components/TweetSearch.tsx) builds X and Google searches by words and dates under it.
+ */
+const tweetFinder: SitePage = {
+  id: 'tweet-finder',
+  group: 'tweet-finder',
+  path: '/tweet-finder',
+  file: 'tweet-finder.html',
+  lang: 'en',
+  title: 'Tweet Finder: Find Old Tweets by Date or Word, Free | Xtracticle',
+  description:
+    'Find an account’s old tweets: build an X search by words and dates, search Google without logging in, or list archived posts on the Wayback Machine. Free.',
+  h1: 'Tweet Finder',
+  sub: 'Find old tweets from any public account, by words and dates. Type the @username, then pick how to search.',
+  primary: 'md',
+  nav: 'Tweet Finder',
+  sections: `
+<section>
+  <p><strong>Xtracticle’s tweet finder looks for an account’s old posts in three places at once:</strong> X’s own search, Google’s
+  index of X pages, and the Wayback Machine. Type an @username and you get the posts of that account the Internet Archive captured.
+  Add words or a date range in the search box and you get ready-made searches for X and Google. Nothing to install, no account here.</p>
+  <h2>Find an old tweet in three steps</h2>
+  ${steps([
+    '<strong>Enter the account</strong>: type <code>@username</code> or paste the profile link and press Extract to list its archived posts, newest first.',
+    '<strong>Narrow it down</strong>: in the search box, add a word or a <code>"phrase in quotes"</code> and a from/to date. The query appears as you type.',
+    '<strong>Pick a search</strong>: <em>Search on X</em> opens X’s search with the query; <em>Search with Google</em> works without logging in; <em>Archived posts</em> lists Wayback Machine copies. Found it? Paste the post link on the <a href="/">home page</a> to save it as PDF or Markdown.',
+  ])}
+</section>
+
+<section>
+  <h2>Which search to use</h2>
+  <div class="xt-table-wrap"><table>
+    <thead><tr><th></th><th>Search on X</th><th>Search with Google</th><th>Archived posts</th></tr></thead>
+    <tbody>
+      <tr><td>Login</td><td>X asks you to log in</td><td>None</td><td>None</td></tr>
+      <tr><td>Coverage</td><td>Most complete for public posts still online</td><td>Only posts Google has indexed</td><td>Only posts someone archived</td></tr>
+      <tr><td>Deleted posts</td><td>No</td><td>Rarely, until Google drops the page</td><td>Yes, if archived before deletion</td></tr>
+      <tr><td>Dates</td><td>Exact (<code>since:</code> / <code>until:</code>)</td><td>Approximate (<code>after:</code> / <code>before:</code>, by index date)</td><td>Shown per snapshot</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>The search operators behind it</h2>
+  <p>The box builds an X advanced search. You can also type these straight into X’s search bar:</p>
+  <ul>
+    <li><code>from:username</code> only posts by that account. <code>to:username</code> finds replies sent to it.</li>
+    <li><code>since:2021-01-01 until:2021-12-31</code> limits the dates. <code>until</code> is exclusive: the post must be before that day.</li>
+    <li><code>"exact phrase"</code> matches the words in that order; <code>-word</code> leaves a word out; <code>OR</code> matches either word.</li>
+    <li><code>filter:media</code>, <code>filter:links</code> and <code>-filter:replies</code> keep only posts with media, with links, or without replies.</li>
+    <li><code>min_faves:100</code> and <code>min_retweets:50</code> keep only popular posts.</li>
+  </ul>
+  <p>For example, <code>from:NASA "Artemis" since:2022-11-01 until:2022-12-01</code> lists NASA’s posts about Artemis in November 2022.</p>
+</section>
+
+<section>
+  <h2>If the tweet was deleted</h2>
+  <p>X’s search doesn’t show deleted posts, and Google drops them as it recrawls. The Wayback Machine is the place left to look. The
+  <a href="/deleted-tweet-finder">deleted tweet finder</a> covers that in detail. To be told when an account deletes something from now on,
+  use the <a href="/deleted-tweet-tracker">deleted tweet tracker</a>.</p>
+  <p>Looking for your own old tweets? Your X data archive (Settings → Your account → Download an archive of your data) contains every
+  post you haven’t deleted; the <a href="/guides/recover-deleted-tweets">recovery guide</a> explains what it holds.</p>
+</section>
+
+${privacy('en')}`,
+  faq: [
+    { q: 'How do I find an old tweet from someone?', a: 'Type their @username into Xtracticle’s tweet finder, add words or a date range, and open the search on X or Google. Press Extract to also list their posts archived on the Wayback Machine.' },
+    { q: 'Can I search tweets by date?', a: 'Yes. Pick a from and to date: the X search uses since: and until:, which are exact. Google’s after: and before: are approximate because they use the date Google indexed the page.' },
+    { q: 'Can I search tweets without an X account?', a: 'X’s own search asks you to log in. Search with Google and the archived-posts list work without any login.' },
+    { q: 'Does it find deleted tweets?', a: 'Only through archives. X and Google stop showing a post once it is deleted; the Wayback Machine list shows it if someone archived it first.' },
+    { q: 'Is the tweet finder free?', a: 'Yes. It is free, has no sign-up and never asks for your X login.' },
+    { q: 'Does it work for private accounts?', a: 'No. Protected posts are only visible to approved followers on X, so no outside search can find them.' },
+  ],
+};
+
+export const TOOL_PAGES_EN: SitePage[] = [unroll, tweetpdf, deletedFinder, deletedTracker, imageDownloader, tweetFinder];
