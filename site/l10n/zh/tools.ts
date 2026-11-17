@@ -121,6 +121,7 @@ const tweetpdf: SitePage = {
   <p>页面是干净的 A4 版式——没有 X 的侧边栏、按钮、热门话题或回复。</p>
   ${samplePdfFigure('zh')}
   <p>PDF 是按图像渲染的，版式精确，但文字无法选中。如果需要搜索或复制文字，请改为导出 <a href="/zh/x-article-to-markdown">Markdown</a> 或 <a href="/zh/x-article-to-epub">EPUB</a>。</p>
+  <p>需要的是帖子里的照片，而不是一页文档？<a href="/zh/twitter-image-downloader">推特图片下载</a>会把帖子中的所有照片以原图画质保存在一个 ZIP 里。</p>
 </section>
 
 <section>
@@ -370,6 +371,20 @@ const deletedFinder: SitePage = {
 </section>
 
 <section>
+  <h2>推特存档里的已删除推文查看器</h2>
+  <p>每个<em>打开快照</em>链接都是那条已删除推文的查看器：Wayback Machine 页面会按抓取时它在 twitter.com 或 x.com 上的样子显示这条帖子，
+  包含文字，通常还有图片。2024 年 5 月之前的帖子会在其 twitter.com 抓取版本上打开，之后的则在 x.com 上打开，
+  所以同一次搜索既覆盖 Twitter 时期，也覆盖 X 时期。</p>
+  <ul>
+    <li><strong>搜索已删除账号的推特存档。</strong>被停用或被封禁账号的个人主页已从 X 消失，但它被存档的帖子并没有。
+    输入原来的 @用户名：只要 Wayback Machine 抓取过该账号的帖子，列表仍会出现。</li>
+    <li><strong>想按关键词或日期搜索？</strong><a href="/zh/tweet-finder">推文搜索</a>会在同样的存档列表旁，按关键词和日期范围为某个账号的旧帖子生成 X 或 Google 搜索。</li>
+    <li><strong>X 的 Wayback Machine。</strong>本页是通往它的捷径。archive.org 网站本身一次只能搜索一个网址，
+    而本页会列出该账号所有被抓取的帖子。</li>
+  </ul>
+</section>
+
+<section>
   <h2>免费查找，还是付费的删推监控服务？</h2>
   <p>TrackTweets 这类付费服务会监控某个账号，从你开始监控的那天起保存它删除的每一条帖子。它们回答的是另一个问题，而且按账号收费：</p>
   <div class="xt-table-wrap"><table>
@@ -403,6 +418,8 @@ ${privacy('zh')}`,
     { q: '已删除推文查找免费吗？', a: '免费。无需登录，也绝不会要求你关联 X 账号。' },
     { q: '可以只查找某一条已删除的帖子吗？', a: '可以。粘贴帖子链接而不是个人主页链接。如果 X 已无法显示该帖子，Xtracticle 会给出一键在 Wayback Machine 和 archive.today 中搜索它的链接。' },
     { q: '私密账号可以用吗？', a: '不可以。受保护的帖子从未公开，无法读取，存档里通常也没有。' },
+    { q: '能查看已删除账号的已删除推文吗？', a: '通常可以。输入原来的 @用户名：如果 Wayback Machine 在该账号被停用或封禁之前抓取过它的帖子，就会列出这些帖子，并附上每个快照的链接。' },
+    { q: '这和推特的 Wayback Machine 是一回事吗？', a: '它使用的是 Wayback Machine 的存档。区别在于它一次列出账号所有被抓取的帖子，而不是一次查一个网址。' },
   ],
 };
 
@@ -414,7 +431,7 @@ const deletedTracker: SitePage = {
   path: '/zh/deleted-tweet-tracker',
   file: 'zh/deleted-tweet-tracker.html',
   lang: 'zh',
-  title: '删推监控：推文被删后自动保存并提醒 | Xtracticle',
+  title: '删推监控与推文提醒：账号删帖、发新帖都通知你 | Xtracticle',
   description: '免费监控一个公开 X 账号 14 天。帖子一被删除，Xtracticle 就保存原文，并通过 RSS 或邮件通知你。无需绑卡，无需登录 X。',
   h1: '删推监控',
   sub: '监控一个公开的 X（推特）账号，保存它删除的每一条帖子。免费试用 14 天：输入 @用户名，再填写你的邮箱。',
@@ -443,6 +460,17 @@ const deletedTracker: SitePage = {
     <li><strong>几分钟内就被删的帖子不在其内。</strong>在两次每小时检查之间发布又删除的帖子不会被看到。</li>
     <li><strong>仅限公开账号。</strong>如果账号变为私密或被注销，监控会暂停，并向你发送一次通知。</li>
     <li><strong>新帖子也能提醒。</strong>把监控设为<em>新帖</em>或<em>两者</em>，无需关注该账号，同一个订阅源就会在它发帖时通知你。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>新帖也有推文提醒</h2>
+  <p>同一个监控也可以作为账号新帖的推文提醒。把监控设为<em>新帖</em>，账号一发帖你就会收到提醒，无需关注它，无需 X 账号，
+  也无需开启 X 自带的通知。设为<em>两者</em>，就能在同一个订阅源里同时了解新帖和被删的帖子。</p>
+  <ul>
+    <li><strong>提醒发到哪里：</strong>适用于任何订阅阅读器（或 Slack 的 RSS 应用）的专属 RSS / JSON 订阅源，以及每日邮件摘要。</li>
+    <li><strong>多久一次：</strong>大约每小时一次。Watch 是监控工具，不是实时推送服务。</li>
+    <li><strong>提醒包含什么：</strong>帖子的文字、日期、链接和媒体链接，无需打开 X 就能阅读。</li>
   </ul>
 </section>
 
@@ -486,6 +514,7 @@ ${privacy('zh')}`,
   faq: [
     { q: '有人删除推文时，我能收到通知吗？', a: '可以。把这个公开账号添加到 Xtracticle Watch（Xtracticle Pro 的一部分）。它每小时检查一次账号，一旦之前见过的帖子被删除，就会把带有帖子文字的记录加入你的专属 RSS 订阅源和每日邮件摘要。' },
     { q: '有免费试用吗？', a: '有。可免费监控一个公开账号 14 天：在上方输入账号，填写你的邮箱，然后点击我们发给你的确认链接。无需绑卡，也不需要许可证密钥；每个邮箱地址只能试用一次，不会扣任何费用：试用结束后，监控会自动停止。若要继续监控，或同时监控最多 5 个账号，请获取 Xtracticle Pro。' },
+    { q: '账号发推时我能收到提醒吗？', a: '可以。把监控设为新帖（或新帖与删除两者）。Xtracticle 大约每小时检查一次该账号，并把每条新帖加入你的专属订阅源和每日邮件摘要，无需在 X 上关注该账号。' },
     { q: '监控多快能发现删除？', a: '账号大约每小时检查一次。删除之后的下一次检查时订阅源就会更新；邮件摘要每天发送一次。' },
     { q: '能看到开始监控之前被删的推文吗？', a: 'Watch 不能，因为它从没见过那些帖子。请使用免费的已删除推文查找，它会列出 Wayback Machine 存档的帖子，包括之后才被删除的。' },
     { q: '需要用我的 X 账号登录吗？', a: '不需要。Xtracticle 从不索要你的 X 登录信息。付款后，Gumroad 会通过邮件把许可证密钥发给你，用它即可解锁 Pro。' },

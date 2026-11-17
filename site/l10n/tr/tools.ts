@@ -124,6 +124,8 @@ const tweetpdf: SitePage = {
   ${samplePdfFigure('tr')}
   <p>PDF görsel tabanlıdır; bu, sayfa düzenini birebir korur ama metnin seçilemeyeceği anlamına gelir. Metinde arama yapmak veya metni
   kopyalamak istiyorsanız bunun yerine <a href="/tr/x-makale-markdown">Markdown</a> ya da <a href="/tr/x-makale-epub-kindle">EPUB</a> çıktısını alın.</p>
+  <p>Gönderinin fotoğraflarını, sayfa olarak değil de kendi hâliyle mi istiyorsunuz? <a href="/tr/twitter-gorsel-indirme">Twitter görsel indirme</a>
+  aracı gönderideki tüm fotoğrafları orijinal kalitede, tek bir ZIP içinde kaydeder.</p>
 </section>
 
 <section>
@@ -433,6 +435,21 @@ const deletedFinder: SitePage = {
 </section>
 
 <section>
+  <h2>Twitter arşivi için silinen tweet görüntüleyici</h2>
+  <p>Her <em>Arşiv kopyasını aç</em> linki, o silinen tweet için bir görüntüleyicidir: Wayback Machine sayfası gönderiyi, kaydedildiği anda
+  twitter.com ya da x.com’da göründüğü hâliyle, metniyle ve çoğu zaman görselleriyle gösterir. Mayıs 2024’ten önceki gönderiler twitter.com
+  kaydında, sonrakiler x.com’da açılır; böylece aynı arama hem Twitter’ın hem X’in yıllarını kapsar.</p>
+  <ul>
+    <li><strong>Silinmiş bir hesabın Twitter arşivinde arama.</strong> Devre dışı bırakılmış ya da askıya alınmış bir hesabın profili X’ten kalkar,
+    ama arşivlenmiş gönderileri kalkmaz. Eski @kullanıcıadını yazın: Wayback Machine hesabın gönderilerini kaydettiyse liste yine gelir.</li>
+    <li><strong>Kelimeyle ya da tarihle mi arıyorsunuz?</strong> <a href="/tr/tweet-bulucu">Tweet bulucu</a>, aynı arşiv listesinin yanında,
+    bir hesabın eski gönderileri için kelime ve tarih aralığına göre X ya da Google araması hazırlar.</li>
+    <li><strong>X için Wayback Machine.</strong> Bu sayfa ona bir kısayoldur. archive.org sitesinin kendisi aynı anda yalnızca tek bir URL’de arar;
+    bu sayfa ise hesabın yakalanmış tüm gönderilerini listeler.</li>
+  </ul>
+</section>
+
+<section>
   <h2>Ücretsiz arama mı, ücretli silinen tweet takibi mi?</h2>
   <p>TrackTweets gibi ücretli takip servisleri bir hesabı izler ve takibe başladığınız günden itibaren silinen her gönderinin kopyasını saklar.
   Bu sayfadan farklı bir soruya cevap verirler ve hesap başına ücretlidirler:</p>
@@ -470,6 +487,8 @@ ${privacy('tr')}`,
     { q: 'Silinen tweet bulucu ücretsiz mi?', a: 'Evet. Ücretsizdir, giriş gerektirmez ve X hesabınızı bağlamanızı istemez.' },
     { q: 'Belirli bir silinmiş gönderiyi arayabilir miyim?', a: 'Evet. Profil yerine gönderinin linkini yapıştırın. X onu artık göstermiyorsa Xtracticle, o gönderiyi Wayback Machine’de ve archive.today’de tek tıkla arama linkleri sunar.' },
     { q: 'Gizli hesaplarda çalışır mı?', a: 'Hayır. Korumalı gönderiler hiç herkese açık olmadığı için okunamaz ve arşivlerde genelde bulunmaz.' },
+    { q: 'Silinmiş bir hesabın silinen tweetlerini görebilir miyim?', a: 'Çoğu zaman evet. Eski @kullanıcıadını yazın: Wayback Machine hesabın gönderilerini devre dışı bırakılmadan ya da askıya alınmadan önce kaydettiyse, her birinin arşiv kopyası linkiyle listelenir.' },
+    { q: 'Bu, Twitter için Wayback Machine ile aynı şey mi?', a: 'Wayback Machine’in arşivini kullanır. Fark, bir hesabın yakalanmış tüm gönderilerini tek tek URL aramak yerine bir seferde listelemesidir.' },
   ],
 };
 
@@ -481,7 +500,7 @@ const deletedTracker: SitePage = {
   path: '/tr/silinen-tweet-takibi',
   file: 'tr/silinen-tweet-takibi.html',
   lang: 'tr',
-  title: 'Silinen Tweet Takibi: Tweet Silinince Bildirim Al | Xtracticle',
+  title: 'Silinen Tweet Takibi ve Tweet Bildirimleri: Her X Hesabı İçin | Xtracticle',
   description:
     'Herkese açık bir X hesabını 14 gün ücretsiz izleyin. Gönderi silinince Xtracticle metni saklar, RSS veya e-postayla haber verir. Kart yok, X girişi yok.',
   h1: 'Silinen Tweet Takibi',
@@ -511,6 +530,18 @@ const deletedTracker: SitePage = {
     <li><strong>Dakikalar içinde silinenleri değil.</strong> Saatlik iki kontrol arasında yayımlanıp silinen gönderi hiç görülmez.</li>
     <li><strong>Yalnızca herkese açık hesaplar.</strong> Hesap gizliye alınır veya kapatılırsa takip durur ve bunu söyleyen tek bir bildirim gelir.</li>
     <li><strong>Yeni gönderiler de.</strong> Takibi <em>yeni</em> ya da <em>ikisi</em> olarak ayarlarsanız hesabı takip etmeden, hesap paylaşım yaptığında aynı akıştan haberiniz olur.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Yeni gönderiler için tweet bildirimleri de</h2>
+  <p>Aynı takip, bir hesabın yeni gönderileri için tweet takipçisi olarak da çalışır. Takibi <em>yeni</em> olarak ayarlayın: hesabı takip etmeden,
+  X hesabı olmadan ve X’in kendi bildirimlerini açmadan, hesap paylaşım yaptığında bildirim alırsınız. <em>İkisi</em>’ni seçerseniz yeni ve silinen
+  gönderileri tek akışta öğrenirsiniz.</p>
+  <ul>
+    <li><strong>Bildirimler nereye gelir:</strong> herhangi bir akış okuyucu (ya da Slack’in RSS uygulaması) için özel bir RSS / JSON akışı ve günlük e-posta özeti.</li>
+    <li><strong>Ne sıklıkla:</strong> yaklaşık saatte bir. Watch bir izleme aracıdır, gerçek zamanlı bir anlık bildirim servisi değildir.</li>
+    <li><strong>Bildirimde ne var:</strong> gönderinin metni, tarihi, linki ve medya linkleri; X’i açmadan okuyabilirsiniz.</li>
   </ul>
 </section>
 
@@ -554,6 +585,7 @@ ${privacy('tr')}`,
   faq: [
     { q: 'Biri tweet sildiğinde bildirim alabilir miyim?', a: 'Evet. Herkese açık hesabı Xtracticle Watch’a ekleyin (Xtracticle Pro’nun parçası). Hesabı her saat kontrol eder; daha önce gördüğü bir gönderi silindiğinde gönderinin metniyle birlikte özel RSS akışınıza ve günlük e-posta özetinize ekler.' },
     { q: 'Ücretsiz deneme var mı?', a: 'Evet. Herkese açık bir hesabı 14 gün ücretsiz izleyin: hesabı yukarıya yazın, e-posta adresinizi girin ve gönderdiğimiz onay linkine tıklayın. Kart da lisans anahtarı da gerekmez; her e-posta adresine bir deneme hakkı vardır ve hiçbir ücret alınmaz: deneme bitince izleme kendiliğinden durur. İzlemeye devam etmek ya da 5 hesaba kadar izlemek için Xtracticle Pro’yu alın.' },
+    { q: 'Bir hesap tweet attığında bildirim alabilir miyim?', a: 'Evet. Takibi yeni gönderilere (ya da hem yeni hem silinen gönderilere) ayarlayın. Xtracticle hesabı yaklaşık saatte bir kontrol eder ve her yeni gönderiyi, hesabı X’te takip etmenize gerek kalmadan, özel akışınıza ve günlük e-posta özetinize ekler.' },
     { q: 'Takip, silinmeyi ne kadar hızlı fark eder?', a: 'Hesaplar yaklaşık saatte bir kontrol edilir. Akış, silinmeden sonraki ilk kontrolde güncellenir; e-posta özeti günde bir kez gider.' },
     { q: 'Takibe başlamadan önce silinen tweetleri gösterebilir mi?', a: 'Watch gösteremez, çünkü onları hiç görmedi. Wayback Machine’in arşivlediği, sonradan silinenler dahil gönderileri listeleyen ücretsiz Silinen Tweetleri Bulma aracını kullanın.' },
     { q: 'X hesabımla giriş yapmam gerekir mi?', a: 'Hayır. Xtracticle X girişinizi hiç istemez. Pro, ödemeden sonra Gumroad’ın e-postayla gönderdiği lisans anahtarıyla açılır.' },

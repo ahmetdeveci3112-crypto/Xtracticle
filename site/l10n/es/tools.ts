@@ -128,6 +128,8 @@ const tweetpdf: SitePage = {
   ${samplePdfFigure('es')}
   <p>El PDF se genera como imagen: así el diseño queda exacto, pero el texto no se puede seleccionar. Si necesitas buscar o copiar el
   texto, exporta en su lugar <a href="/es/articulo-de-x-a-markdown">Markdown</a> o <a href="/es/articulo-de-x-a-epub-kindle">EPUB</a>.</p>
+  <p>¿Necesitas las fotos del post y no una página? El <a href="/es/descargar-imagenes-de-twitter">descargador de imágenes de Twitter</a> guarda
+  todas las fotos del post en calidad original, en un solo ZIP.</p>
 </section>
 
 <section>
@@ -418,6 +420,21 @@ const deletedFinder: SitePage = {
 </section>
 
 <section>
+  <h2>Un visor de tweets borrados para el archivo de Twitter</h2>
+  <p>Cada enlace <em>Abrir captura</em> es un visor de ese tweet borrado: la página de Wayback Machine muestra el post tal como se veía en
+  twitter.com o x.com cuando se capturó, con su texto y, a menudo, sus imágenes. Los posts anteriores a mayo de 2024 se abren en su captura de
+  twitter.com y los posteriores en x.com, así que la misma búsqueda cubre los años de Twitter y los de X.</p>
+  <ul>
+    <li><strong>Buscar en el archivo de Twitter de una cuenta eliminada.</strong> El perfil de una cuenta desactivada o suspendida desaparece de X,
+    pero sus posts archivados no. Escribe el antiguo @usuario: si Wayback Machine capturó sus posts, la lista sigue apareciendo.</li>
+    <li><strong>¿Prefieres buscar por palabras o fechas?</strong> El <a href="/es/buscador-de-tweets">buscador de tweets</a> prepara una búsqueda en X o
+    en Google de los posts antiguos de una cuenta por palabras y rango de fechas, junto a la misma lista del archivo.</li>
+    <li><strong>Wayback Machine para X.</strong> Esta página es un atajo hacia ella. El sitio archive.org solo busca una URL cada vez,
+    mientras que esta página lista todos los posts capturados de la cuenta.</li>
+  </ul>
+</section>
+
+<section>
   <h2>¿Búsqueda gratuita o rastreador de tweets borrados de pago?</h2>
   <p>Los servicios de pago como TrackTweets vigilan una cuenta y guardan una copia de cada post que borra desde el día en que empiezas a
   seguirla. Responden a otra pregunta distinta a la de esta página y cobran por cuenta:</p>
@@ -455,6 +472,8 @@ ${privacy('es')}`,
     { q: '¿El buscador de tweets borrados es gratis?', a: 'Sí. Es gratis, no pide iniciar sesión y nunca te pide conectar tu cuenta de X.' },
     { q: '¿Puedo buscar un post borrado concreto?', a: 'Sí. Pega el enlace del post en lugar del perfil. Si X ya no lo muestra, Xtracticle te ofrece búsquedas de ese post en Wayback Machine y archive.today con un clic.' },
     { q: '¿Funciona con cuentas privadas?', a: 'No. Los posts protegidos nunca fueron públicos, así que no se pueden leer y los archivos normalmente no los tienen.' },
+    { q: '¿Puedo ver los tweets borrados de una cuenta eliminada?', a: 'A menudo, sí. Escribe el antiguo @usuario: si Wayback Machine capturó los posts de la cuenta antes de que se desactivara o suspendiera, aparecen en una lista con un enlace a cada captura.' },
+    { q: '¿Es lo mismo que Wayback Machine para Twitter?', a: 'Usa el archivo de Wayback Machine. La diferencia es que lista de una vez todos los posts capturados de una cuenta, en lugar de buscar una URL cada vez.' },
   ],
 };
 
@@ -466,7 +485,7 @@ const deletedTracker: SitePage = {
   path: '/es/rastreador-de-tweets-borrados',
   file: 'es/rastreador-de-tweets-borrados.html',
   lang: 'es',
-  title: 'Rastreador de tweets borrados: avisos al borrar | Xtracticle',
+  title: 'Rastreador de tweets borrados y avisos de tweets nuevos | Xtracticle',
   description:
     'Vigila una cuenta pública de X gratis durante 14 días. Si borra un post, Xtracticle guarda su texto y te avisa por RSS o correo. Sin tarjeta ni login en X.',
   h1: 'Rastreador de tweets borrados',
@@ -496,6 +515,18 @@ const deletedTracker: SitePage = {
     <li><strong>No los borrados a los pocos minutos.</strong> Un post que se publica y se borra entre dos comprobaciones horarias no llega a verse.</li>
     <li><strong>Solo cuentas públicas.</strong> Si una cuenta pasa a ser privada o se desactiva, la vigilancia se pausa y recibes un único aviso.</li>
     <li><strong>También posts nuevos.</strong> Configura la vigilancia en <em>nuevos</em> o <em>ambos</em> y el mismo feed te avisa cuando la cuenta publica, sin tener que seguirla.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Avisos de tweets nuevos, también</h2>
+  <p>La misma vigilancia funciona como rastreador de tweets para los posts nuevos de una cuenta. Configúrala en <em>nuevos</em> y recibes un aviso cuando la cuenta
+  publica, sin seguirla, sin una cuenta de X y sin activar las notificaciones de X. Elige <em>ambos</em> para enterarte de los posts nuevos y de los
+  borrados en un mismo feed.</p>
+  <ul>
+    <li><strong>Dónde llegan los avisos:</strong> un feed RSS / JSON privado para cualquier lector de feeds (o la app de RSS de Slack) y un resumen diario por correo.</li>
+    <li><strong>Con qué frecuencia:</strong> cada hora aproximadamente. Watch es una herramienta de vigilancia, no un servicio de notificaciones push en tiempo real.</li>
+    <li><strong>Qué contiene un aviso:</strong> el texto del post, la fecha, el enlace y los enlaces a los archivos multimedia, para que puedas leerlo sin abrir X.</li>
   </ul>
 </section>
 
@@ -539,6 +570,7 @@ ${privacy('es')}`,
   faq: [
     { q: '¿Puedo recibir un aviso cuando alguien borra un tweet?', a: 'Sí. Añade la cuenta pública a Xtracticle Watch (parte de Xtracticle Pro). Revisa la cuenta cada hora y, cuando se borra un post que ya había visto, lo añade a tu feed RSS privado y a tu resumen diario por correo con el texto del post.' },
     { q: '¿Hay prueba gratuita?', a: 'Sí. Vigila una cuenta pública gratis durante 14 días: escríbela arriba, introduce tu correo y haz clic en el enlace de confirmación que te enviamos. No hace falta tarjeta ni clave de licencia, hay una prueba por dirección de correo y no se cobra nada: al terminar la prueba, la vigilancia simplemente se detiene. Para seguir vigilando, o para vigilar hasta 5 cuentas, consigue Xtracticle Pro.' },
+    { q: '¿Puedo recibir avisos cuando una cuenta tuitea?', a: 'Sí. Configura la vigilancia en posts nuevos (o en nuevos y borrados). Xtracticle revisa la cuenta cada hora aproximadamente y añade cada post nuevo a tu feed privado y a tu resumen diario por correo, sin seguir la cuenta en X.' },
     { q: '¿Con qué rapidez detecta el rastreador un borrado?', a: 'Las cuentas se revisan cada hora aproximadamente. El feed se actualiza en la siguiente revisión tras el borrado; el resumen por correo sale una vez al día.' },
     { q: '¿Puede mostrar tweets borrados antes de empezar a rastrear?', a: 'Watch no, porque nunca los vio. Usa el buscador de tweets borrados gratuito, que lista los posts archivados en Wayback Machine, incluidos los que se borraron después.' },
     { q: '¿Tengo que iniciar sesión con mi cuenta de X?', a: 'No. Xtracticle nunca te pide el login de X. Pro se activa con una clave de licencia que Gumroad te envía por correo tras el pago.' },

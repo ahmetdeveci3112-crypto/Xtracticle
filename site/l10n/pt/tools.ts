@@ -131,6 +131,8 @@ const tweetpdf: SitePage = {
   ${samplePdfFigure('pt')}
   <p>O PDF é baseado em imagem, o que mantém o layout exato, mas significa que o texto não pode ser selecionado. Se você precisa pesquisar ou
   copiar o texto, exporte em <a href="/pt/artigo-do-x-para-markdown">Markdown</a> ou <a href="/pt/artigo-do-x-para-epub-kindle">EPUB</a>.</p>
+  <p>Precisa das fotos do post e não de uma página? O <a href="/pt/baixar-imagens-do-twitter">baixador de imagens do Twitter</a> salva
+  todas as fotos do post em qualidade original, em um único ZIP.</p>
 </section>
 
 <section>
@@ -409,6 +411,21 @@ const deletedFinder: SitePage = {
 </section>
 
 <section>
+  <h2>Um visualizador de tweets apagados para o arquivo do Twitter</h2>
+  <p>Cada link <em>Abrir captura</em> é um visualizador daquele tweet apagado: a página da Wayback Machine mostra o post como ele aparecia no
+  twitter.com ou no x.com quando foi capturado, com o texto e, muitas vezes, as imagens. Posts de antes de maio de 2024 abrem na captura do
+  twitter.com e os posteriores no x.com, então a mesma busca cobre os anos do Twitter e os do X.</p>
+  <ul>
+    <li><strong>Buscar no arquivo do Twitter de uma conta excluída.</strong> O perfil de uma conta desativada ou suspensa some do X,
+    mas os posts arquivados não. Digite o antigo @usuário: se a Wayback Machine capturou os posts dela, a lista continua aparecendo.</li>
+    <li><strong>Prefere buscar por palavras ou datas?</strong> O <a href="/pt/buscador-de-tweets">buscador de tweets</a> monta uma busca no X ou no
+    Google pelos posts antigos de uma conta, por palavras e intervalo de datas, ao lado da mesma lista do arquivo.</li>
+    <li><strong>A Wayback Machine para o X.</strong> Esta página é um atalho para ela. O próprio site archive.org só busca uma URL por vez,
+    enquanto esta página lista todos os posts capturados da conta.</li>
+  </ul>
+</section>
+
+<section>
   <h2>Busca grátis ou rastreador pago de tweets apagados?</h2>
   <p>Serviços pagos como o TrackTweets monitoram uma conta e guardam uma cópia de cada post que ela apaga a partir do dia em que você começa o
   monitoramento. Eles respondem a uma pergunta diferente da desta página e cobram por conta:</p>
@@ -446,6 +463,8 @@ ${privacy('pt')}`,
     { q: 'O localizador de tweets apagados é grátis?', a: 'Sim. É grátis, não exige login e nunca pede para conectar sua conta do X.' },
     { q: 'Posso procurar um post apagado específico?', a: 'Sim. Cole o link do post em vez do perfil. Se o X não mostra mais o post, o Xtracticle oferece buscas por ele na Wayback Machine e no archive.today com um clique.' },
     { q: 'Funciona com contas privadas?', a: 'Não. Posts protegidos nunca foram públicos, então não podem ser lidos e os arquivos normalmente não os têm.' },
+    { q: 'Posso ver os tweets apagados de uma conta excluída?', a: 'Muitas vezes, sim. Digite o antigo @usuário: se a Wayback Machine capturou os posts da conta antes de ela ser desativada ou suspensa, eles aparecem numa lista com um link para cada captura.' },
+    { q: 'Isso é o mesmo que a Wayback Machine para o Twitter?', a: 'Usa o arquivo da Wayback Machine. A diferença é que lista de uma vez todos os posts capturados de uma conta, em vez de buscar uma URL por vez.' },
   ],
 };
 
@@ -457,7 +476,7 @@ const deletedTracker: SitePage = {
   path: '/pt/rastreador-de-tweets-apagados',
   file: 'pt/rastreador-de-tweets-apagados.html',
   lang: 'pt',
-  title: 'Rastreador de tweets apagados: aviso quando apagam | Xtracticle',
+  title: 'Rastreador de tweets apagados e alertas de novos tweets | Xtracticle',
   description:
     'Monitore uma conta pública do X grátis por 14 dias. Quando ela apaga um post, o Xtracticle guarda o texto e avisa por RSS ou e-mail. Sem cartão e sem login no X.',
   h1: 'Rastreador de tweets apagados',
@@ -487,6 +506,18 @@ const deletedTracker: SitePage = {
     <li><strong>Não os apagados em poucos minutos.</strong> Um post publicado e apagado entre duas verificações de hora em hora nunca é visto.</li>
     <li><strong>Só contas públicas.</strong> Se uma conta ficar privada ou for desativada, o monitoramento pausa e você recebe um único aviso.</li>
     <li><strong>Posts novos também.</strong> Configure o monitoramento como <em>novos</em> ou <em>ambos</em> e o mesmo feed avisa quando a conta publica, sem precisar segui-la.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Alertas de tweets novos, também</h2>
+  <p>O mesmo monitoramento funciona como rastreador de tweets para os posts novos de uma conta. Configure-o como <em>novos</em> e você recebe um alerta quando a conta
+  publica, sem segui-la, sem uma conta no X e sem ativar as notificações do próprio X. Escolha <em>ambos</em> para saber dos posts novos e dos
+  apagados no mesmo feed.</p>
+  <ul>
+    <li><strong>Onde os alertas chegam:</strong> um feed RSS / JSON privado para qualquer leitor de feeds (ou o app de RSS do Slack) e um resumo diário por e-mail.</li>
+    <li><strong>Com que frequência:</strong> cerca de uma vez por hora. O Watch é uma ferramenta de monitoramento, não um serviço de notificação push em tempo real.</li>
+    <li><strong>O que um alerta contém:</strong> o texto do post, a data, o link e os links de mídia, para você ler sem abrir o X.</li>
   </ul>
 </section>
 
@@ -530,6 +561,7 @@ ${privacy('pt')}`,
   faq: [
     { q: 'Posso ser avisado quando alguém apagar um tweet?', a: 'Sim. Adicione a conta pública ao Xtracticle Watch (parte do Xtracticle Pro). Ele verifica a conta a cada hora e, quando um post que já tinha visto é apagado, o inclui no seu feed RSS privado e no resumo diário por e-mail, com o texto do post.' },
     { q: 'Existe teste grátis?', a: 'Sim. Monitore uma conta pública grátis por 14 dias: digite-a acima, informe seu e-mail e clique no link de confirmação que enviamos. Não é preciso cartão nem chave de licença, há um teste por endereço de e-mail e nada é cobrado: quando o teste termina, o monitoramento simplesmente para. Para continuar monitorando, ou para monitorar até 5 contas, assine o Xtracticle Pro.' },
+    { q: 'Posso receber alertas quando uma conta tuíta?', a: 'Sim. Configure o monitoramento como posts novos (ou novos e apagados). O Xtracticle verifica a conta cerca de uma vez por hora e inclui cada post novo no seu feed privado e no resumo diário por e-mail, sem seguir a conta no X.' },
     { q: 'Com que rapidez o rastreador percebe uma exclusão?', a: 'As contas são verificadas cerca de uma vez por hora. O feed é atualizado na verificação seguinte à exclusão; o resumo por e-mail sai uma vez por dia.' },
     { q: 'Ele mostra tweets apagados antes de eu começar a rastrear?', a: 'O Watch não, porque nunca os viu. Use o localizador de tweets apagados gratuito, que lista os posts arquivados pela Wayback Machine, inclusive os apagados depois.' },
     { q: 'Preciso entrar com minha conta do X?', a: 'Não. O Xtracticle nunca pede seu login do X. O Pro é liberado com uma chave de licença que o Gumroad envia por e-mail depois do pagamento.' },
