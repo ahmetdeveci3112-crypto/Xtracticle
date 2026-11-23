@@ -126,7 +126,7 @@ const en: MailCopy = {
   endedCta: h => `Keep watching ${h} with Xtracticle Pro`,
   endedNote: h => `Events are kept for 90 days after they were detected, so everything above stays visible if you add ${h} with Pro.`,
   proCta: h => `Keep watching ${h} after the trial with Xtracticle Pro`,
-  proPrice: '$36/year (= $3/month) or $5/month',
+  proPrice: '$36/year (= $3/month) or $7/month',
   welcomeSubject: h => `Watch is on for ${h}`,
   welcomeIntro: (h, when) => `Your free Xtracticle Watch trial for ${h} has started. It runs until ${when}.`,
   welcomeBaseline: (h, n) =>
@@ -185,7 +185,7 @@ const tr: MailCopy = {
   endedCta: h => `${h} hesabını Xtracticle Pro ile izlemeye devam edin`,
   endedNote: h => `Olaylar yakalandıktan sonra 90 gün saklanır; ${h} hesabını Pro ile eklerseniz yukarıdakilerin hepsi görünmeye devam eder.`,
   proCta: h => `Deneme bitince ${h} hesabını Xtracticle Pro ile izlemeye devam edin`,
-  proPrice: 'Yılda 36 $ (ayda 3 $’a denk gelir) ya da ayda 5 $',
+  proPrice: 'Yılda 36 $ (ayda 3 $’a denk gelir) ya da ayda 7 $',
   welcomeSubject: h => `${h} için Watch açık`,
   welcomeIntro: (h, when) => `${h} için ücretsiz Xtracticle Watch denemeniz başladı. Deneme ${when} tarihine kadar sürüyor.`,
   welcomeBaseline: (h, n) =>
@@ -244,7 +244,7 @@ const es: MailCopy = {
   endedCta: h => `Sigue vigilando ${h} con Xtracticle Pro`,
   endedNote: h => `Los eventos se guardan 90 días desde que se detectan, así que todo lo anterior seguirá visible si añades ${h} con Pro.`,
   proCta: h => `Sigue vigilando ${h} después de la prueba con Xtracticle Pro`,
-  proPrice: '36 $/año (= 3 $/mes) o 5 $/mes',
+  proPrice: '36 $/año (= 3 $/mes) o 7 $/mes',
   welcomeSubject: h => `Watch ya vigila ${h}`,
   welcomeIntro: (h, when) => `Tu prueba gratuita de Xtracticle Watch para ${h} ha empezado. Dura hasta el ${when}.`,
   welcomeBaseline: (h, n) =>
@@ -303,7 +303,7 @@ const pt: MailCopy = {
   endedCta: h => `Continue acompanhando ${h} com o Xtracticle Pro`,
   endedNote: h => `Os eventos ficam guardados por 90 dias depois de detectados, então tudo acima continua visível se você adicionar ${h} com o Pro.`,
   proCta: h => `Continue acompanhando ${h} depois do teste com o Xtracticle Pro`,
-  proPrice: 'US$ 36/ano (= US$ 3/mês) ou US$ 5/mês',
+  proPrice: 'US$ 36/ano (= US$ 3/mês) ou US$ 7/mês',
   welcomeSubject: h => `O Watch está ativo para ${h}`,
   welcomeIntro: (h, when) => `Seu teste grátis do Xtracticle Watch para ${h} começou. Ele vai até ${when}.`,
   welcomeBaseline: (h, n) =>
@@ -362,7 +362,7 @@ const ja: MailCopy = {
   endedCta: h => `${h} をXtracticle Proでウォッチし続ける`,
   endedNote: h => `イベントは検出から90日間保存されるため、${h} をProで追加すれば、上記はすべて引き続き表示されます。`,
   proCta: h => `お試し後も ${h} をXtracticle Proでウォッチし続ける`,
-  proPrice: '年額36ドル（月あたり3ドル）または月額5ドル',
+  proPrice: '年額36ドル（月あたり3ドル）または月額7ドル',
   welcomeSubject: h => `${h} のウォッチを開始しました`,
   welcomeIntro: (h, when) => `${h} の無料Xtracticle Watchお試しが始まりました。お試し期間は${when}までです。`,
   welcomeBaseline: (h, n) =>
@@ -421,7 +421,7 @@ const zh: MailCopy = {
   endedCta: h => `用 Xtracticle Pro 继续监控 ${h}`,
   endedNote: h => `事件会从检测时起保留 90 天，所以如果你用 Pro 添加 ${h}，上面的内容仍然可见。`,
   proCta: h => `试用结束后，用 Xtracticle Pro 继续监控 ${h}`,
-  proPrice: '每年 36 美元（相当于每月 3 美元）或每月 5 美元',
+  proPrice: '每年 36 美元（相当于每月 3 美元）或每月 7 美元',
   welcomeSubject: h => `Watch 已开始监控 ${h}`,
   welcomeIntro: (h, when) => `你为 ${h} 申请的免费 Xtracticle Watch 试用已经开始，持续到 ${when}。`,
   welcomeBaseline: (h, n) =>
@@ -486,7 +486,7 @@ const ar: MailCopy = {
   endedCta: h => `تابع مراقبة ${h} مع Xtracticle Pro`,
   endedNote: h => `تُحفظ الأحداث 90 يومًا من وقت اكتشافها، لذا يبقى كل ما سبق ظاهرًا إذا أضفت ${h} مع Pro.`,
   proCta: h => `تابع مراقبة ${h} بعد التجربة مع Xtracticle Pro`,
-  proPrice: '36 دولارًا سنويًا (أي 3 دولارات شهريًا) أو 5 دولارات شهريًا',
+  proPrice: '36 دولارًا سنويًا (أي 3 دولارات شهريًا) أو 7 دولارات شهريًا',
   welcomeSubject: h => `بدأ Watch مراقبة ${h}`,
   welcomeIntro: (h, when) => `بدأت تجربة Xtracticle Watch المجانية الخاصة بـ ${h}، وتستمر حتى ${when}.`,
   welcomeBaseline: (h, n) =>

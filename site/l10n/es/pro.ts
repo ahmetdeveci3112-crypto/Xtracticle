@@ -5,7 +5,7 @@ import type { ProCopy } from '../../pro-page';
 export const PRO_ES: ProCopy = {
   title: 'Xtracticle Pro — Archivos completos, CSV, lotes de 200 enlaces, clave de API | Xtracticle',
   description:
-    'Xtracticle Pro: todos los posts archivados de una cuenta con exportación a CSV, lotes de 200 enlaces, una clave personal de MCP/API con más cuota y PDF sin línea de crédito. 5 $/mes, 36 $/año o 59 $ una sola vez.',
+    'Xtracticle Pro: todos los posts archivados de una cuenta con exportación a CSV, lotes de 200 enlaces, una clave personal de MCP/API con más cuota y PDF sin línea de crédito. 7 $/mes, 36 $/año o 59 $ una sola vez.',
   h1: 'Xtracticle Pro',
   sub: 'Todo lo básico sigue siendo gratis. Pro añade las funciones pesadas y paga los servidores: sin cuenta, solo una clave de licencia.',
   nav: 'Pro',
@@ -29,7 +29,7 @@ export const PRO_ES: ProCopy = {
   perYear: '/ año',
   once: 'pago único',
   monthlyNote: 'Cancela cuando quieras.',
-  yearlyNote: 'Sale a 3 $ al mes con pago anual. Ahorras 24 $ al año frente al plan mensual.',
+  yearlyNote: 'Sale a 3 $ al mes con pago anual. Ahorras 48 $ al año frente al plan mensual.',
   bestValue: 'Mejor precio',
   lifetimeNote: 'Precio de lanzamiento para los primeros 100 compradores. Paga una vez y quédatelo para siempre.',
   buy: 'Pasar a Pro',

@@ -550,7 +550,7 @@ const deletedTracker: SitePage = {
   <div class="xt-table-wrap"><table>
     <thead><tr><th></th><th>Xtracticle Pro</th><th>Tipik ücretli takip servisi</th></tr></thead>
     <tbody>
-      <tr><td>Fiyat</td><td>5 hesap için ayda 5 $ veya yılda 36 $ · 2 hesap için tek seferlik 59 $</td><td>Hesap başına ayda yaklaşık 9 $ (TrackTweets, yazının yazıldığı tarihte)</td></tr>
+      <tr><td>Fiyat</td><td>5 hesap için ayda 7 $ veya yılda 36 $ · 2 hesap için tek seferlik 59 $</td><td>Hesap başına ayda yaklaşık 9 $ (TrackTweets, yazının yazıldığı tarihte)</td></tr>
       <tr><td>Ücretsiz deneme</td><td>14 gün, 1 hesap, yalnızca e-posta onayı, kart yok</td><td>Değişir</td></tr>
       <tr><td>Kayıt</td><td>Yok. Bir lisans anahtarı; X girişi yok, bağlanan bir şey yok</td><td>Hesap ve abonelik</td></tr>
       <tr><td>Bildirim</td><td>Özel RSS / JSON akışı, günlük e-posta özeti</td><td>Değişir</td></tr>

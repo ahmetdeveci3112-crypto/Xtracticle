@@ -5,7 +5,7 @@ import type { ProCopy } from '../../pro-page';
 export const PRO_TR: ProCopy = {
   title: 'Xtracticle Pro — Tam Arşiv, CSV, 200 Linklik Toplu İşlem, API Anahtarı | Xtracticle',
   description:
-    'Xtracticle Pro: bir hesabın arşivlenmiş tüm gönderileri ve CSV dışa aktarma, 200 linklik toplu işlemler, daha yüksek kotalı kişisel MCP/API anahtarı ve künye satırı olmayan PDF’ler. Ayda 5 $, yılda 36 $ veya tek seferlik 59 $.',
+    'Xtracticle Pro: bir hesabın arşivlenmiş tüm gönderileri ve CSV dışa aktarma, 200 linklik toplu işlemler, daha yüksek kotalı kişisel MCP/API anahtarı ve künye satırı olmayan PDF’ler. Ayda 7 $, yılda 36 $ veya tek seferlik 59 $.',
   h1: 'Xtracticle Pro',
   sub: 'Temel her şey ücretsiz kalıyor. Pro, ağır özellikleri ekler ve sunucuların masrafını karşılar — hesap yok, yalnızca bir lisans anahtarı.',
   nav: 'Pro',
@@ -29,7 +29,7 @@ export const PRO_TR: ProCopy = {
   perYear: '/ yıl',
   once: 'tek seferlik',
   monthlyNote: 'İstediğiniz zaman iptal edebilirsiniz.',
-  yearlyNote: 'Yıllık ödemeyle ayda 3 $. Aylık plana göre yılda 24 $ tasarruf edersiniz.',
+  yearlyNote: 'Yıllık ödemeyle ayda 3 $. Aylık plana göre yılda 48 $ tasarruf edersiniz.',
   bestValue: 'En avantajlı',
   lifetimeNote: 'İlk 100 alıcı için lansman fiyatı. Bir kez ödeyin, hep sizin olsun.',
   buy: 'Pro’ya geç',

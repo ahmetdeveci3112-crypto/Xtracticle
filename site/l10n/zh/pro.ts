@@ -5,7 +5,7 @@ import type { ProCopy } from '../../pro-page';
 export const PRO_ZH: ProCopy = {
   title: 'Xtracticle Pro — 完整存档、CSV 导出、200 条批量、API 密钥 | Xtracticle',
   description:
-    'Xtracticle Pro：账号的全部已存档帖子并可导出 CSV，一次批量处理 200 条链接，配额更高的个人 MCP/API 密钥，以及不带署名行的 PDF。每月 5 美元、每年 36 美元，或一次性 59 美元。',
+    'Xtracticle Pro：账号的全部已存档帖子并可导出 CSV，一次批量处理 200 条链接，配额更高的个人 MCP/API 密钥，以及不带署名行的 PDF。每月 7 美元、每年 36 美元，或一次性 59 美元。',
   h1: 'Xtracticle Pro',
   sub: '基础功能全部保持免费。Pro 增加重负载功能并分担服务器费用——无需账号，只需一个许可密钥。',
   nav: 'Pro',
@@ -29,7 +29,7 @@ export const PRO_ZH: ProCopy = {
   perYear: '/ 年',
   once: '一次性',
   monthlyNote: '随时可以取消。',
-  yearlyNote: '按年付费，折合每月 3 美元，比月付每年省 24 美元。',
+  yearlyNote: '按年付费，折合每月 3 美元，比月付每年省 48 美元。',
   bestValue: '最划算',
   lifetimeNote: '前 100 位购买者的首发价。付一次，永久使用。',
   buy: '开通 Pro',

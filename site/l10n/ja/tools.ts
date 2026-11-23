@@ -517,7 +517,7 @@ const deletedTracker: SitePage = {
   <div class="xt-table-wrap"><table>
     <thead><tr><th></th><th>Xtracticle Pro</th><th>一般的な有料の監視サービス</th></tr></thead>
     <tbody>
-      <tr><td>料金</td><td>5アカウントで月額5ドルまたは年額36ドル・2アカウントで買い切り59ドル</td><td>1アカウントあたり月額約9ドル（TrackTweets、執筆時点）</td></tr>
+      <tr><td>料金</td><td>5アカウントで月額7ドルまたは年額36ドル・2アカウントで買い切り59ドル</td><td>1アカウントあたり月額約9ドル（TrackTweets、執筆時点）</td></tr>
       <tr><td>無料トライアル</td><td>14日間、1アカウント、メール確認のみ、カード不要</td><td>サービスによる</td></tr>
       <tr><td>登録</td><td>不要。ライセンスキーだけで、Xログインも連携も不要</td><td>アカウント登録とサブスクリプション</td></tr>
       <tr><td>通知</td><td>専用RSS / JSONフィード、毎日のメールまとめ</td><td>サービスによる</td></tr>

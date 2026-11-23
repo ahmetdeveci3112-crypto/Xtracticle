@@ -214,7 +214,7 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const PATHS: Record<Lang, string> = { en: '/pro', tr: '/tr/pro', es: '/es/pro', pt: '/pt/pro', ja: '/ja/pro', zh: '/zh/pro', ar: '/ar/pro' };
 export const proPath = (lang: Lang) => PATHS[lang];
 
-const PRICES = { monthly: 5, yearly: 36, lifetime: 59 };
+const PRICES = { monthly: 7, yearly: 36, lifetime: 59 };
 
 /**
  * Plain ES5, no template strings, ASCII only: it is inlined into every language's page.
@@ -602,7 +602,7 @@ export function proPage(lang: Lang, c: ProCopy): SitePage {
 export const PRO_EN: ProCopy = {
   title: 'Xtracticle Pro — Full Archives, CSV, 200-Link Batches, API Key | Xtracticle',
   description:
-    'Xtracticle Pro: every archived post of an account with CSV export, batches of 200 links, a personal MCP/API key with a higher quota and PDFs without a credit line. $5/month, $36/year or $59 once.',
+    'Xtracticle Pro: every archived post of an account with CSV export, batches of 200 links, a personal MCP/API key with a higher quota and PDFs without a credit line. $7/month, $36/year or $59 once.',
   h1: 'Xtracticle Pro',
   sub: 'Everything basic stays free. Pro adds the heavy features and pays for the servers — no account, just a license key.',
   nav: 'Pro',
@@ -626,7 +626,7 @@ export const PRO_EN: ProCopy = {
   perYear: '/ year',
   once: 'once',
   monthlyNote: 'Cancel anytime.',
-  yearlyNote: '$3 a month, billed yearly. You save $24 compared with monthly.',
+  yearlyNote: '$3 a month, billed yearly. You save $48 compared with monthly.',
   bestValue: 'Best value',
   lifetimeNote: 'Launch price for the first 100 buyers. Pay once, keep it forever.',
   buy: 'Get Pro',

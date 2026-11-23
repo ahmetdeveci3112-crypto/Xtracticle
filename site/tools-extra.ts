@@ -350,7 +350,7 @@ const deletedTracker: SitePage = {
   <div class="xt-table-wrap"><table>
     <thead><tr><th></th><th>Xtracticle Pro</th><th>Typical paid tracker</th></tr></thead>
     <tbody>
-      <tr><td>Price</td><td>$5 a month or $36 a year for 5 accounts · $59 once for 2</td><td>About $9 a month per account (TrackTweets, at the time of writing)</td></tr>
+      <tr><td>Price</td><td>$7 a month or $36 a year for 5 accounts · $59 once for 2</td><td>About $9 a month per account (TrackTweets, at the time of writing)</td></tr>
       <tr><td>Free trial</td><td>14 days, 1 account, e-mail confirmation only, no card</td><td>Varies</td></tr>
       <tr><td>Sign-up</td><td>None. A license key, no X login, nothing connected</td><td>Account and subscription</td></tr>
       <tr><td>Alerts</td><td>Private RSS / JSON feed, daily e-mail digest</td><td>Varies</td></tr>

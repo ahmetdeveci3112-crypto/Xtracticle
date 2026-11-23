@@ -479,7 +479,7 @@ const deletedTracker: SitePage = {
   <div class="xt-table-wrap"><table>
     <thead><tr><th></th><th>Xtracticle Pro</th><th>常见的付费监控服务</th></tr></thead>
     <tbody>
-      <tr><td>价格</td><td>5 个账号：每月 5 美元或每年 36 美元 · 2 个账号：一次性 59 美元</td><td>每个账号每月约 9 美元（TrackTweets，撰写本文时）</td></tr>
+      <tr><td>价格</td><td>5 个账号：每月 7 美元或每年 36 美元 · 2 个账号：一次性 59 美元</td><td>每个账号每月约 9 美元（TrackTweets，撰写本文时）</td></tr>
       <tr><td>免费试用</td><td>14 天，1 个账号，仅需邮箱确认，无需绑卡</td><td>因服务而异</td></tr>
       <tr><td>注册</td><td>无需注册。只需一个许可证密钥，无需登录 X，也不关联任何账号</td><td>需要账号和订阅</td></tr>
       <tr><td>提醒</td><td>专属 RSS / JSON 订阅源，每日邮件摘要</td><td>因服务而异</td></tr>

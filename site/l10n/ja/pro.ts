@@ -5,7 +5,7 @@ import type { ProCopy } from '../../pro-page';
 export const PRO_JA: ProCopy = {
   title: 'Xtracticle Pro — アーカイブ全件・CSV・200件の一括処理・APIキー | Xtracticle',
   description:
-    'Xtracticle Pro：アカウントのアーカイブ済みポスト全件とCSV書き出し、200件までの一括処理、上限が広い個人用MCP/APIキー、クレジット表記なしのPDF。月額5ドル、年額36ドル、または買い切り59ドル。',
+    'Xtracticle Pro：アカウントのアーカイブ済みポスト全件とCSV書き出し、200件までの一括処理、上限が広い個人用MCP/APIキー、クレジット表記なしのPDF。月額7ドル、年額36ドル、または買い切り59ドル。',
   h1: 'Xtracticle Pro',
   sub: '基本機能はすべて無料のままです。Proは負荷の大きい機能を追加し、サーバー費用をまかないます。アカウント不要、ライセンスキーだけです。',
   nav: 'Pro',
@@ -29,7 +29,7 @@ export const PRO_JA: ProCopy = {
   perYear: '/ 年',
   once: '一回払い',
   monthlyNote: 'いつでも解約できます。',
-  yearlyNote: '年払いで月あたり3ドル。月額プランより年24ドルお得です。',
+  yearlyNote: '年払いで月あたり3ドル。月額プランより年48ドルお得です。',
   bestValue: 'いちばんお得',
   lifetimeNote: '先行100名限定の発売記念価格。一度の支払いで永続的に使えます。',
   buy: 'Proにする',
