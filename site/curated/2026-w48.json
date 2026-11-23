@@ -1,0 +1,52 @@
+{
+  "week": "2026-W48",
+  "published": "2026-11-23",
+  "intro": "Five long reads people saved with Xtracticle this week — Harrison Chase on giving agents real company knowledge, a sober look at six weeks of falling AI stocks, a copywriter’s framework for ads to cold audiences, a plain-language primer on automating tasks with Grok Bot, and a solo route to shipping a 3D WeChat mini game with AI.",
+  "items": [
+    {
+      "id": "2124181216719151585",
+      "handle": "hwchase17",
+      "author": "Harrison Chase",
+      "title": "How to build a knowledge factory",
+      "lang": "en",
+      "topic": "AI agents",
+      "summary": "LangChain’s Harrison Chase argues that agents fail at work for lack of company knowledge rather than better models, and describes a “knowledge factory” that collects, curates and updates what experienced staff know so agents can use it."
+    },
+    {
+      "id": "2123789428862660980",
+      "handle": "KobeissiLetter",
+      "author": "The Kobeissi Letter",
+      "title": "-$6 Trillion In 45 Days: Is This A \"Bubble\" Or An Opportunity?",
+      "lang": "",
+      "topic": "Markets",
+      "summary": "The Kobeissi Letter walks through the six weeks since the S&P 500’s last record, from AI spending worries to rate and election news, to ask whether the slide in AI stocks is a burst bubble or a buying opportunity."
+    },
+    {
+      "id": "2123414633935520052",
+      "handle": "DerickCarneiro_",
+      "author": "Derick Carneiro",
+      "title": "how I write ads that make strangers buy",
+      "lang": "en",
+      "topic": "Marketing",
+      "summary": "A young direct-response copywriter explains why ads to people who have never heard of a brand should lead with attention and a new idea rather than price or offer, and breaks the job of such an ad into four smaller sales."
+    },
+    {
+      "id": "2123159537016533493",
+      "handle": "poteto",
+      "author": "lauren",
+      "title": "Automate Anything with Grok Bot",
+      "lang": "en",
+      "topic": "Automation",
+      "summary": "A plain-language introduction to automation as a goal plus a process, with everyday examples, and how to break a task into steps that Grok Bot can then carry out for you."
+    },
+    {
+      "id": "2123725927414972793",
+      "handle": "FiniYang",
+      "author": "Fini.Yang",
+      "title": "不用等版号！一个人靠 AI 搓出 3D 小游戏直接过审上线，从建游到接广告赚钱的全套开源工具全公开",
+      "lang": "zh",
+      "topic": "Indie games",
+      "summary": "A step-by-step account of building a 3D WeChat mini game alone with AI agents and an open-source plugin, fixing the black screens and size limits that break such games on phones, and getting it through review with ad revenue switched on."
+    }
+  ]
+}

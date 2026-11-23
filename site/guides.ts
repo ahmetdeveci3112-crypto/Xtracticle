@@ -489,7 +489,7 @@ const wayback = guide({
   slug: 'find-tweets-on-wayback-machine',
   title: 'Wayback Machine Twitter: Find Archived and Deleted Tweets | Xtracticle',
   description:
-    'Search the Wayback Machine for tweets and X profiles: URL forms that work, a wildcard search for every archived post of an account, archive.today and a one-click lookup.',
+    'Search the Twitter archive on the Wayback Machine: URL forms that work, a wildcard search for every archived post of an account, archive.today, and a free one-click lookup.',
   h1: 'How to Find Tweets on the Wayback Machine',
   sub: 'A precise checklist for searching the Internet Archive for archived X (Twitter) posts and profiles, and an honest look at where it falls short.',
   primary: 'pdf',
@@ -503,6 +503,12 @@ ${takeaways([
 ])}
 
 ${archiveCheck('en')}
+
+<section>
+  <h2>"Twitter archive" can mean two different things</h2>
+  <p><strong>Your own archive.</strong> X lets you download a copy of your own account data, including your posts, under <em>Settings and privacy → Your account → Download an archive of your data</em>, and X notifies you when it is ready. It only covers your own account, and an archive requested after you deleted a post will not contain that post. See <a href="/guides/recover-deleted-tweets">can you recover deleted tweets</a> for what it does and does not keep.</p>
+  <p><strong>A public archive of someone else's posts.</strong> For any other account, the archive is the Internet Archive's Wayback Machine and archive.today. They hold snapshots of public X pages that someone captured. The rest of this guide covers that case. To skip the manual search, paste the account’s profile link (<code>x.com/username</code>) into the box at the top of this page: Xtracticle lists that account’s archived posts on the Wayback Machine in one go.</p>
+</section>
 
 <section>
   <h2>Before you start</h2>
@@ -564,6 +570,7 @@ ${privacy('en')}`,
     { q: 'How do I list all archived tweets of an account?', a: 'Use a wildcard search such as web.archive.org/web/*/twitter.com/username/status/* and repeat it with x.com.' },
     { q: 'Can I use Save Page Now on a tweet?', a: 'You can try, but X often blocks archivers, so the snapshot may show a login screen. It also cannot capture a post that is already deleted.' },
     { q: 'What if the Wayback Machine has nothing?', a: 'Try archive.today and search for screenshots or quotes. If none exist, the post is probably unrecoverable.' },
+    { q: 'Is the Twitter archive the same as the Wayback Machine?', a: 'No. Your Twitter (X) archive is the data file X lets you download for your own account. The Wayback Machine is a public web archive with snapshots of X pages from any account that someone captured.' },
   ],
 });
 
