@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Puzzle } from 'lucide-react';
 import { savedText, type Lang } from '../i18n';
@@ -13,6 +13,7 @@ import {
   extAvailable,
   extCtaAllowed,
   extInstalled,
+  extVersion,
   quietExtCta,
   savedPath,
   storeForNow,
@@ -120,6 +121,60 @@ export default function ExtCta({ lang, spot, className = '' }: { lang: Lang; spo
       >
         {s.ctaNotNow}
       </button>
+    </div>
+  );
+}
+
+/**
+ * May the after-download install row show now? Desktop Chrome/Edge with a store listing, extension not
+ * detected (the bridge marks <html> at document_start, so the sync check is enough after a download),
+ * no "Not now" in the last 180 days, free user. Owner request 24 Nov 2026, instead of a pop-up.
+ */
+export function extDownloadCtaAllowed(pro: boolean): boolean {
+  return !pro && !extVersion() && extCtaAllowed() && !!storeForNow('download');
+}
+
+/** The row under the download buttons, styled like the coffee row it replaces for these visitors. */
+export function ExtDownloadCta({ lang, onHide }: { lang: Lang; onHide: () => void }) {
+  const s = savedText[lang];
+  const store = storeForNow('download');
+  const viewed = useRef(false);
+  useEffect(() => {
+    if (viewed.current || !store) return;
+    viewed.current = true;
+    track('promo_view', { spot: 'ext_download', item: 'extension' });
+  }, [store]);
+  if (!store) return null;
+  const hide = (event: 'promo_click' | 'promo_dismiss') => {
+    quietExtCta();
+    track(event, { spot: 'ext_download', item: 'extension' });
+    onHide();
+  };
+  return (
+    <div
+      className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl px-3.5 py-3 text-sm animate-slide-up"
+      style={{ backgroundColor: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}
+      data-ext-cta="download"
+    >
+      <p className="flex items-start gap-2.5 flex-1 min-w-[14rem]" style={{ color: 'var(--text-secondary)' }}>
+        <Puzzle className="w-5 h-5 shrink-0" aria-hidden="true" />
+        <span className="min-w-0">{s.ctaAfterDownload}</span>
+      </p>
+      <div className="flex items-center gap-3 shrink-0">
+        <a
+          href={store.href}
+          target="_blank"
+          rel="noopener"
+          className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold focus-ring btn-secondary whitespace-nowrap"
+          style={{ border: '1px solid var(--text-primary)', color: 'var(--text-primary)', backgroundColor: 'var(--bg-secondary)' }}
+          onClick={() => hide('promo_click')}
+        >
+          {store.browser === 'edge' ? s.ctaInstallEdge : s.ctaInstall}
+        </a>
+        <button type="button" className="text-xs underline underline-offset-2 rounded focus-ring" style={{ color: 'var(--text-secondary)' }} onClick={() => hide('promo_dismiss')}>
+          {s.ctaNotNow}
+        </button>
+      </div>
     </div>
   );
 }

@@ -15,7 +15,7 @@ import { track } from './lib/analytics';
 import { logout as proLogout, usePro } from './lib/pro';
 import { demoVideo } from './shared/demo';
 import DocPreview from './components/DocPreview';
-import ExtCta, { ExtCtaSlots, ExtHeroCta } from './components/ExtCta';
+import ExtCta, { ExtCtaSlots, ExtDownloadCta, ExtHeroCta, extDownloadCtaAllowed } from './components/ExtCta';
 import { notifyLangChanged, parseDlHash, type DlFormat } from './lib/ext';
 
 const ArchivePanel = lazy(() => import('./components/ArchivePanel'));
@@ -146,6 +146,7 @@ export default function App() {
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
   const [flash, setFlash] = useState<string | null>(null);
   const [tip, setTip] = useState(false);
+  const [extNudge, setExtNudge] = useState(false);
   // "From the maker" card after a download, only when the coffee row is not showing (src/components/PromoCard.tsx).
   const [promo, setPromo] = useState<PromoProduct | null>(null);
   const [busy, setBusy] = useState<ExportKey | null>(null);
@@ -397,7 +398,9 @@ export default function App() {
       }
       track('download_done', { format: key, kind: doc.kind, ms: Math.round(performance.now() - started) });
       // Coffee row after every real save (free users; quiet for 30/90 days after "Not now"/a click).
-      if (tipAllowed(pro.pro)) setTip(true);
+      // Desktop Chrome/Edge without the extension: the install row comes first (one row at a time).
+      if (extNudge || extDownloadCtaAllowed(pro.pro)) setExtNudge(true);
+      else if (tipAllowed(pro.pro)) setTip(true);
       else if (!tip && promoAllowed(pro.pro)) setPromo(p => p || pickAppPromo());
     } catch (err) {
       console.error(err);
@@ -836,12 +839,17 @@ export default function App() {
                       {exportButton('zip', <Archive className="w-3.5 h-3.5" />, t.zip)}
                       {exportButton('txt', <FileText className="w-3.5 h-3.5" />, t.txt)}
                     </div>
-                    {tip && !pro.pro && (
+                    {extNudge && !pro.pro && (
+                      <div className="mt-3" role="status">
+                        <ExtDownloadCta lang={lang} onHide={() => setExtNudge(false)} />
+                      </div>
+                    )}
+                    {!extNudge && tip && !pro.pro && (
                       <div className="mt-3" role="status">
                         <TipRow t={t} place="after_download" onHide={() => setTip(false)} />
                       </div>
                     )}
-                    {!tip && promo && !pro.pro && (
+                    {!extNudge && !tip && promo && !pro.pro && (
                       <div className="mt-3">
                         <PromoCard product={promo} lang={lang} onHide={() => setPromo(null)} />
                       </div>

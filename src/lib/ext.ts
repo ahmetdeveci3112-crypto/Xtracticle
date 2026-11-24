@@ -53,7 +53,7 @@ export const extAvailable = (chrome: string = EXT_STORE_URL, edge: string = EXT_
 /** Where the bookmark export panel opens (the content script watches for this hash). */
 export const BOOKMARKS_EXPORT_URL = 'https://x.com/i/bookmarks#xt-export';
 
-export type CtaSpot = 'home' | 'finder' | 'pro' | 'saved' | 'hero' | 'section' | 'page';
+export type CtaSpot = 'home' | 'finder' | 'pro' | 'saved' | 'hero' | 'section' | 'page' | 'download';
 
 /** The store listing with our UTM tags, or '' while there is no listing. */
 export function storeUrl(spot: CtaSpot, base: string = EXT_STORE_URL): string {

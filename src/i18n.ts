@@ -1677,6 +1677,8 @@ export interface SavedStrings {
   noExtSoon: string;
   noExtBrowser: string;
   ctaText: string;
+  /** One line under the download buttons after a save (desktop Chromium, extension not installed). */
+  ctaAfterDownload: string;
   ctaInstall: string;
   ctaInstallEdge: string;
   ctaNotNow: string;
@@ -1734,6 +1736,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtSoon: 'The extension is coming to the Chrome Web Store soon.',
     noExtBrowser: 'It works in desktop Chrome, Edge, Brave and Opera.',
     ctaText: 'Save posts and export your bookmarks right on X.',
+    ctaAfterDownload: 'Next time, save straight from X: a Save button on every post, and a copy of your bookmarks.',
     ctaInstall: 'Add to Chrome',
     ctaInstallEdge: 'Add to Edge',
     ctaNotNow: 'Not now',
@@ -1789,6 +1792,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtSoon: 'Eklenti yakında Chrome Web Mağazası’nda.',
     noExtBrowser: 'Masaüstünde Chrome, Edge, Brave ve Opera’da çalışır.',
     ctaText: 'Gönderileri kaydedin, yer imlerinizi doğrudan X’te dışa aktarın.',
+    ctaAfterDownload: 'Bir dahakine doğrudan X’ten kaydedin: her gönderide Kaydet düğmesi, yer imlerinizin de bir kopyası.',
     ctaInstall: "Chrome'a ekle",
     ctaInstallEdge: "Edge'e ekle",
     ctaNotNow: 'Şimdi değil',
@@ -1844,6 +1848,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtSoon: 'La extensión llegará pronto a la Chrome Web Store.',
     noExtBrowser: 'Funciona en Chrome, Edge, Brave y Opera de escritorio.',
     ctaText: 'Guarda posts y exporta tus guardados directamente en X.',
+    ctaAfterDownload: 'La próxima vez, guarda directamente desde X: un botón Guardar en cada post y una copia de tus guardados.',
     ctaInstall: 'Añadir a Chrome',
     ctaInstallEdge: 'Añadir a Edge',
     ctaNotNow: 'Ahora no',
@@ -1899,6 +1904,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtSoon: 'A extensão chega em breve à Chrome Web Store.',
     noExtBrowser: 'Funciona no Chrome, Edge, Brave e Opera para computador.',
     ctaText: 'Salve posts e exporte seus itens salvos direto no X.',
+    ctaAfterDownload: 'Da próxima vez, salve direto do X: um botão Salvar em cada post e uma cópia dos seus itens salvos.',
     ctaInstall: 'Adicionar ao Chrome',
     ctaInstallEdge: 'Adicionar ao Edge',
     ctaNotNow: 'Agora não',
@@ -1954,6 +1960,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtSoon: '拡張機能はまもなくChromeウェブストアで公開します。',
     noExtBrowser: 'パソコン版のChrome、Edge、Brave、Operaで使えます。',
     ctaText: 'Xの画面でそのままポストを保存し、ブックマークを書き出せます。',
+    ctaAfterDownload: '次はXの画面から直接保存：すべてのポストに保存ボタン、ブックマークのコピーも残せます。',
     ctaInstall: 'Chromeに追加',
     ctaInstallEdge: 'Edgeに追加',
     ctaNotNow: '今はしない',
@@ -2009,6 +2016,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtSoon: '扩展即将上架 Chrome 网上应用店。',
     noExtBrowser: '支持桌面版 Chrome、Edge、Brave 和 Opera。',
     ctaText: '直接在 X 上保存帖子、导出书签。',
+    ctaAfterDownload: '下次直接在 X 上保存：每条帖子都有保存按钮，还能留一份书签副本。',
     ctaInstall: '添加到 Chrome',
     ctaInstallEdge: '添加到 Edge',
     ctaNotNow: '以后再说',
@@ -2064,6 +2072,7 @@ export const savedText: Record<Lang, SavedStrings> = {
     noExtSoon: 'ستتوفر الإضافة قريبًا في سوق Chrome الإلكتروني.',
     noExtBrowser: 'تعمل على Chrome وEdge وBrave وOpera في الحاسوب.',
     ctaText: 'احفظ المنشورات وصدّر إشاراتك المرجعية مباشرة على X.',
+    ctaAfterDownload: 'في المرة القادمة احفظ مباشرة من X: زر حفظ على كل منشور، ونسخة من إشاراتك المرجعية.',
     ctaInstall: 'أضِف إلى Chrome',
     ctaInstallEdge: 'أضِف إلى Edge',
     ctaNotNow: 'ليس الآن',
