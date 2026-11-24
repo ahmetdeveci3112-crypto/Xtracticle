@@ -434,7 +434,7 @@ const seeDeleted = guide({
   slug: 'como-ver-tweets-borrados',
   title: 'Cómo ver tweets borrados: busca en los archivos con un clic | Xtracticle',
   description:
-    'Ver tweets borrados de otra cuenta: pega el enlace del post y busca a la vez en Wayback Machine y archive.today. Además, citas, capturas y lo que nunca funciona.',
+    '¿Tweet no disponible? Entiende el motivo y ve tweets borrados de otra cuenta: pega el enlace y busca a la vez en Wayback Machine y archive.today.',
   h1: 'Cómo ver tweets borrados',
   sub: 'Ver el post borrado de otra persona solo es posible si alguien hizo una copia antes. Aquí verás dónde suelen existir copias y qué son callejones sin salida.',
   primary: 'pdf',
@@ -448,6 +448,21 @@ ${takeaways([
 ])}
 
 ${archiveCheck('es')}
+
+<section>
+  <h2>Tweet no disponible: por qué aparece “Este post no está disponible”</h2>
+  <p>El aviso no siempre significa que el post se borró. X deja de mostrar un post por varios motivos, y solo en algunos ha desaparecido de verdad:</p>
+  <ul>
+    <li><strong>El autor borró el post.</strong> Ya no está en X. Solo una copia hecha antes, en un archivo web o en una captura de pantalla, puede mostrarlo.</li>
+    <li><strong>La cuenta está protegida.</strong> El post sigue existiendo, pero solo lo ven los seguidores aprobados. Ninguna herramienta fuera de X puede mostrártelo.</li>
+    <li><strong>La cuenta fue suspendida, desactivada o eliminada</strong> (X lo indica con “Este post es de una cuenta que ya no existe” o con un aviso de cuenta suspendida). Todos sus posts quedan ocultos. Si se levanta la suspensión, o si el dueño reactiva la cuenta dentro de los 30 días, los posts vuelven a verse.</li>
+    <li><strong>Restricción por país o por edad, bloqueo o silencio.</strong> Algunos posts se retienen solo en ciertos países por una petición legal, y otros tienen restricción de edad por contenido sensible. En esos casos el post no se borró.</li>
+    <li><strong>X limitó la visibilidad de una respuesta.</strong> Si el aviso aparece solo en respuestas, también puede deberse a un filtro de X o a un fallo temporal.</li>
+  </ul>
+  <p>Para saber cuál es tu caso, abre el perfil del autor. Si el perfil carga y el post no está, lo más probable es que se haya borrado: pega el enlace del post en la búsqueda de arriba para revisar los archivos. Si el perfil aparece suspendido o la cuenta no existe, pega el enlace del perfil (<code>x.com/usuario</code>) para ver los posts que la Wayback Machine guardó cuando eran públicos.</p>
+  <h3>“Esta cuenta no existe”</h3>
+  <p>Este aviso sale en el perfil cuando X no encuentra una cuenta con ese nombre de usuario. Suele significar que la cuenta se desactivó o se eliminó, o que su dueño cambió el @usuario, así que prueba a buscar a la persona por su nombre. Una cuenta suspendida muestra en cambio su propio aviso de suspensión. Si se desactivó, el dueño puede recuperarla en 30 días. Mientras tanto, escribe el @usuario antiguo en el <a href="/es/buscador-de-tweets-borrados">buscador de tweets borrados</a> para ver lo que la Wayback Machine archivó de esa cuenta. Ten en cuenta que otra persona puede registrar después ese mismo nombre de usuario, así que revisa la fecha de cada captura.</p>
+</section>
 
 <section>
   <h2>Tus propios posts borrados frente a los de otra persona</h2>
@@ -503,6 +518,8 @@ ${privacy('es')}`,
     { q: '¿Puedo ver el tweet borrado de otra persona?', a: 'Solo si se hizo una copia antes de que se borrara, por ejemplo una captura de Wayback Machine o archive.today, una captura de pantalla o una noticia que lo citó. X no muestra los posts borrados a nadie.' },
     { q: '¿Hay algún sitio web que muestre cualquier tweet borrado?', a: 'No. Los sitios que lo afirman no pueden leer datos que X ha eliminado. Buscan en los mismos archivos públicos en los que puedes buscar tú, y algunos piden tu inicio de sesión o un pago, así que ten cuidado.' },
     { q: '¿Una cita conserva el texto borrado?', a: 'Normalmente no. X muestra el post citado como no disponible una vez que se borra el original, aunque las palabras del autor que cita se conservan.' },
+    { q: '¿Qué significa “Este post no está disponible”?', a: 'Que X no muestra el post: se borró, la cuenta está protegida, suspendida o desactivada, o el post tiene una restricción por país o por edad. Abre el perfil: si carga y el post no está, probablemente se borró y solo una copia en un archivo puede mostrarlo.' },
+    { q: '¿Qué significa “Esta cuenta no existe” en X?', a: 'Que X no encuentra una cuenta con ese nombre de usuario: se desactivó, se eliminó o cambió de @usuario. Las cuentas suspendidas muestran otro aviso. Si se desactivó, puede volver en 30 días; los posts que eran públicos pueden seguir en la Wayback Machine.' },
     { q: '¿Xtracticle puede mostrar un post borrado?', a: 'No. Xtracticle lee posts públicos que siguen en línea, y un post borrado se reporta como no encontrado.' },
     { q: '¿Cómo me aseguro de poder ver un post más adelante?', a: 'Guárdalo mientras está en línea. Pega el enlace en Xtracticle y descarga un PDF o un ZIP con imágenes.' },
   ],

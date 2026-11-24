@@ -222,7 +222,8 @@ const PRICES = { monthly: 7, yearly: 36, lifetime: 59 };
  */
 const SCRIPT = `(function(){
 var g=function(n,p){try{if(window.gtag)window.gtag('event',n,p||{})}catch(e){}};
-g('pro_view',{lang:document.documentElement.lang});
+var A={e:'',v:''};try{A.e=(localStorage.getItem('xt_entry')||'').replace(/[^a-z0-9-]/gi,'').slice(0,60);A.v=(localStorage.getItem('xt_prev')||'').replace(/[^a-z0-9-]/gi,'').slice(0,60)}catch(e){}
+g('pro_view',{lang:document.documentElement.lang,entry:A.e||void 0,from:A.v||void 0});
 var q=new URLSearchParams(location.search),ok=document.getElementById('xt-pro-success');
 var qh=q.get('handle')||'';if(!/^[A-Za-z0-9_]{1,15}$/.test(qh))qh='';
 if(qh){var qhi=document.querySelector('#xt-trial-start input[name=handle]');if(qhi&&!qhi.value){qhi.value='@'+qh;g('watch_prefill',{via:'query'});}}
@@ -232,7 +233,7 @@ function off(){if(soon){soon.textContent=soon.getAttribute('data-text')||'';soon
 fetch('/api/pro/config').then(function(r){return r.json()}).then(function(c){
 if(!c||!c.available){off();return;}
 btns.forEach(function(b){var p=b.getAttribute('data-plan'),u=c.checkout&&c.checkout[p];
-if(!u){return;}b.href=u;if(!b.parentNode.classList.contains('xt-price-current'))b.removeAttribute('aria-disabled');b.addEventListener('click',function(){g('pro_checkout_click',{plan:p})});});
+if(!u){return;}b.href=u+(u.indexOf('?')<0?'?':'&')+'utm_source=xtracticle&utm_medium='+encodeURIComponent(document.documentElement.lang||'')+'&utm_campaign='+(A.e||'none')+'&utm_content='+p+'&utm_term='+(A.v||'none');if(!b.parentNode.classList.contains('xt-price-current'))b.removeAttribute('aria-disabled');b.addEventListener('click',function(){g('pro_checkout_click',{plan:p,entry:A.e||void 0,from:A.v||void 0})});});
 }).catch(off);
 var wn=document.getElementById('xt-watch-notice'),wv=q.get('watch');
 if(wn&&(wv==='verified'||wv==='verify_failed')){wn.textContent=wn.getAttribute(wv==='verified'?'data-ok':'data-fail');wn.hidden=false;

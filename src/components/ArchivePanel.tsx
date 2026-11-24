@@ -580,6 +580,20 @@ export default function ArchivePanel({
             <p className="mt-1" style={{ color: 'var(--text-secondary)' }}>
               {t.archiveCount.replace('{n}', data.total.toLocaleString(locale))}
               {data.total > data.shown && <> · {t.archiveShowing.replace('{n}', data.shown.toLocaleString(locale))}</>}
+              {/* The offer next to the count, not only after 50 rows (owner request 24 Nov 2026): one link, no pop-up. */}
+              {showTeaser && (
+                <>
+                  {' · '}
+                  <a
+                    href={t.proPath}
+                    className={linkClass}
+                    style={{ color: 'var(--text-primary)' }}
+                    onClick={() => track('archive_pro_teaser', { action: 'top' })}
+                  >
+                    {t.proUnlockCta}
+                  </a>
+                </>
+              )}
             </p>
           )}
         </div>

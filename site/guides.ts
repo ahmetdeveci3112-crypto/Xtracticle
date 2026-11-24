@@ -425,6 +425,19 @@ ${takeaways([
 ${archiveCheck('en')}
 
 <section>
+  <h2>What "This post is unavailable" means</h2>
+  <p>X shows a notice in place of a post it will not display. The exact wording tells you why, and only one of the reasons means the post is really gone:</p>
+  <ul>
+    <li><strong>"This post was deleted by the post author."</strong> The author removed it. Only a copy made earlier, in a web archive or a screenshot, can show it now.</li>
+    <li><strong>"This post is from a suspended account."</strong> X suspended the account, so all of its posts are hidden. If the suspension is lifted, the posts come back.</li>
+    <li><strong>"This post is from an account that no longer exists."</strong> The account was deactivated or deleted. A deactivated account can be restored within 30 days, and its posts reappear.</li>
+    <li><strong>"You're unable to view this post because this account owner limits who can view their posts."</strong> The account is protected. The post still exists, but only approved followers can see it, and nothing outside X can show it to you.</li>
+    <li><strong>"This post is unavailable"</strong> with no reason. Any of the above, or the post is withheld in your country, age-restricted, from an account you blocked or muted, or a reply that X itself has limited.</li>
+  </ul>
+  <p>To tell which case you have, open the author's profile. If the profile loads and the post is missing, it was most likely deleted: paste the post link into the box above to check the archives. If the profile says <em>Account suspended</em> or <em>This account doesn't exist</em>, paste the profile link (<code>x.com/username</code>) instead to list the account's posts that the Wayback Machine captured while they were public. A different notice, <em>Something went wrong. Try reloading.</em>, is a loading error, not a sign the post is gone: reload, or sign in again.</p>
+</section>
+
+<section>
   <h2>Your own deleted posts vs someone else's</h2>
   <p>These are two different problems. For <strong>your own</strong> posts, an older copy of your X data archive may still contain them; that route is covered in <a href="/guides/recover-deleted-tweets">Can you recover deleted tweets?</a>. This guide is about <strong>other people's</strong> posts, where you have no archive of your own and depend on copies made by third parties.</p>
   <p>It helps to be realistic from the start. There is no hidden X page, no special URL and no account setting that reveals a deleted post. If a copy exists, it exists somewhere else.</p>
@@ -478,6 +491,7 @@ ${privacy('en')}`,
     { q: 'Can I see someone else\'s deleted tweet?', a: 'Only if a copy was made before it was deleted, for example a Wayback Machine or archive.today snapshot, a screenshot, or a news article that quoted it. X does not show deleted posts to anyone.' },
     { q: 'Is there a website that shows any deleted tweet?', a: 'No. Sites that claim this cannot read data X has removed. They search the same public archives you can search yourself, and some ask for your login or payment, so be careful.' },
     { q: 'Does a quote post keep the deleted text?', a: 'Normally not. X shows the quoted post as unavailable once the original is deleted, although the quoting author\'s own words remain.' },
+    { q: 'What does "This post is unavailable" mean on X?', a: 'X will not display the post: it was deleted, its account is suspended, deactivated or protected, or it is withheld, age-restricted or from an account you blocked. Open the profile: if it loads and the post is missing, the post was probably deleted, and only an archived copy can show it.' },
     { q: 'Can Xtracticle show a deleted post?', a: 'No. Xtracticle reads public posts that are still online, and a deleted post is reported as not found.' },
     { q: 'How do I make sure I can see a post later?', a: 'Save it while it is live. Paste the link into Xtracticle and download a PDF or a ZIP with images.' },
   ],
