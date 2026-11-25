@@ -1,5 +1,5 @@
 /** Turkish pages. */
-import { samplePdfFigure, EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
+import { CONTACT, samplePdfFigure, EXAMPLE, privacy, shortcuts, steps, type SitePage } from './blocks';
 
 const home: SitePage = {
   id: 'tr-home',
@@ -56,7 +56,7 @@ ${shortcuts('tr')}
 
 ${privacy('tr')}`,
   faq: [
-    { q: 'Xtracticle ücretsiz mi?', a: 'Evet. Ücretsiz ve açık kaynak; hesap, giriş veya kullanım sınırı yok.' },
+    { q: 'Xtracticle ücretsiz mi?', a: 'Evet. Ücretsiz; hesap, giriş veya kullanım sınırı yok.' },
     { q: 'X makalesi PDF olarak nasıl indirilir?', a: 'Gönderi linkini kopyalayıp Xtracticle’a yapıştırın ve PDF’e tıklayın. PDF; başlık, yazar, tarih, kaynak linki, tüm görseller ve sayfa numaralarını içerir.' },
     { q: 'Flood’un tamamını indirebilir miyim?', a: 'Evet. Flood’un herhangi bir tweetinin linkini yapıştırın — ilk, orta veya son. Yazarın o flood’daki tüm tweetleri numaralı tek bir belgede birleştirilir.' },
     { q: 'X makalelerini Obsidian’a veya Notion’a kaydedebilir miyim?', a: 'Evet. Markdown dosyasını indirin veya Obsidian butonuna tıklayın. Notion .md dosyalarını doğrudan içe aktarır.' },
@@ -296,7 +296,7 @@ const obsidian: SitePage = {
   lang: 'tr',
   title: "X Makalelerini ve Flood'ları Obsidian'a Kaydet — Tek Tık | Xtracticle",
   description:
-    "X (Twitter) makalelerini ve flood'ları Obsidian'a yazar, kaynak, tarih ve etiket özellikleriyle temiz Markdown olarak kaydedin. Tek tık, ücretsiz, açık kaynak.",
+    "X (Twitter) makalelerini ve flood'ları Obsidian'a yazar, kaynak, tarih ve etiket özellikleriyle temiz Markdown olarak kaydedin. Tek tık, ücretsiz.",
   h1: "X Makalelerini Obsidian'a Kaydet",
   sub: "X (Twitter) makalelerini ve flood'ları Obsidian kasanıza özellikleriyle birlikte temiz Markdown olarak kaydedin — tek tıkla.",
   primary: 'obsidian',
@@ -378,12 +378,11 @@ const alternative: SitePage = {
       <tr><td>Reklam</td><td>Yok</td><td>Ücretsiz planda var</td></tr>
       <tr><td>Herkese açık paylaşım / bot etiketleme</td><td>Hiç gerekmez</td><td>Bot yönteminde gerekir</td></tr>
       <tr><td>Yazar bildirimleri ve otomatik arşivleme</td><td>❌ Henüz yok</td><td>✅ Premium</td></tr>
-      <tr><td>Açık kaynak</td><td>✅ MIT</td><td>❌</td></tr>
     </tbody>
   </table></div>
   <p><small>Thread Reader App’in <a href="https://threadreaderapp.com/premium" rel="nofollow noopener">Premium</a> ve
   <a href="https://threadreaderapp.com/help" rel="nofollow noopener">Yardım</a> sayfalarıyla Eylül 2026’da karşılaştırıldı. Özellikler değişebilir —
-  güncel olmayan bir bilgi görürseniz <a href="${GITHUB}/issues" rel="noopener">GitHub</a> üzerinden bize bildirin.</small></p>
+  güncel olmayan bir bilgi görürseniz <a href="${CONTACT}" rel="noopener">X</a> üzerinden bize bildirin.</small></p>
 </section>
 
 <section>
@@ -404,7 +403,7 @@ const alternative: SitePage = {
 
 ${shortcuts('tr')}`,
   faq: [
-    { q: 'Xtracticle gerçekten ücretsiz mi?', a: 'Evet. Tüm formatlar — PDF, Markdown, EPUB, ZIP ve metin — ücretsiz; reklam, giriş veya kullanım sınırı yok. Kodu açık kaynak.' },
+    { q: 'Xtracticle gerçekten ücretsiz mi?', a: 'Evet. Tüm formatlar — PDF, Markdown, EPUB, ZIP ve metin — ücretsiz; reklam, giriş veya kullanım sınırı yok.' },
     { q: 'Xtracticle X Makalelerini indirebiliyor mu?', a: 'Evet. Xtracticle, X’in uzun Makalelerini başlıkları, listeleri, linkleri, görselleri ve videolarıyla dönüştürür. Thread Reader App’ten en temel farklarından biri budur.' },
     { q: 'Bir botu etiketlemem gerekiyor mu?', a: 'Hayır. Linki Xtracticle’a yapıştırın; X’te hiçbir şey paylaşılmaz.' },
     { q: 'Thread Reader App arşivimi aktarabilir miyim?', a: 'Doğrudan değil. Orijinal X linklerini yapıştırarak (Toplu mod’da tek seferde 20’ye kadar) bunları Markdown dosyaları olarak yeniden oluşturabilirsiniz.' },

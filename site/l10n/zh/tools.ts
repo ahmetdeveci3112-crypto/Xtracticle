@@ -1,5 +1,5 @@
 /** Simplified Chinese: unroll, tweet to PDF, deleted tweet finder, MCP server and privacy pages. */
-import { GITHUB, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
+import { CONTACT, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
 
 const ENDPOINT = 'https://xtracticle.com/mcp';
 const CURSOR_LINK = `cursor://anysphere.cursor-deeplink/mcp/install?name=xtracticle&config=${btoa(JSON.stringify({ url: ENDPOINT }))}`;
@@ -182,7 +182,7 @@ const mcp: SitePage = {
   <ul>
     <li><strong>端点：</strong><code>${ENDPOINT}</code>（Streamable HTTP，无需认证）</li>
     <li><strong>工具：</strong><code>read_x_post</code>——把一条帖子、整个自串（任意一条帖子即可）或一篇 X 文章读成 Markdown</li>
-    <li><strong>免费且开源</strong>——服务器是 <a href="${GITHUB}" rel="noopener">Xtracticle 代码仓库</a>的一部分</li>
+    <li><strong>免费</strong>——无需 API 密钥或账号</li>
   </ul>
 </section>
 
@@ -252,7 +252,7 @@ curl "https://xtracticle.com/api/markdown/${SAMPLE_ID}?format=text&thread=0&fron
   <p>更想要文件？在上方粘贴链接，即可下载为 <a href="/zh/x-article-to-pdf">PDF</a>、<a href="/zh/x-article-to-markdown">Markdown</a> 或 <a href="/zh/x-article-to-epub">EPUB</a>。</p>
 </section>`,
   faq: [
-    { q: 'Xtracticle 的 MCP 服务器免费吗？', a: '免费，无需 API 密钥或账号，而且是开源的。' },
+    { q: 'Xtracticle 的 MCP 服务器免费吗？', a: '免费，无需 API 密钥或账号。' },
     { q: '它支持哪些 AI 助手？', a: '任何支持 Streamable HTTP 远程 MCP 服务器的客户端，包括 Claude、ChatGPT（开发者模式）、Cursor 和 VS Code。只支持本地服务器的客户端可以通过 mcp-remote 连接。' },
     { q: '能读取整个推文串吗？', a: '能。传入推文串中任意一条帖子的链接，工具就会按顺序返回作者在其中发布的所有帖子。其他人的回复不会收录。' },
     { q: '支持 X 文章吗？', a: '支持。X 的长文会连同标题、列表、链接、引用和图片一起转换。' },
@@ -274,7 +274,7 @@ const privacyPage: SitePage = {
   nav: '隐私',
   sections: `
 <section>
-  <p><em>最后更新：2026 年 10 月 3 日。</em>本政策适用于 xtracticle.com、其 Markdown API（<code>/api/markdown/…</code>）和 MCP 服务器（<code>/mcp</code>）。Xtracticle 是免费的开源项目，<a href="${GITHUB}" rel="noopener">源代码</a>会准确展示它做了什么。</p>
+  <p><em>最后更新：2026 年 10 月 3 日。</em>本政策适用于 xtracticle.com、其 Markdown API（<code>/api/markdown/…</code>）和 MCP 服务器（<code>/mcp</code>）。本页准确说明我们收集哪些信息以及原因。</p>
 </section>
 
 <section>
@@ -316,7 +316,7 @@ const privacyPage: SitePage = {
 
 <section>
   <h2>联系方式</h2>
-  <p>如有疑问或删除请求：请<a href="${GITHUB}/issues" rel="noopener">在 GitHub 上提交 issue</a>。</p>
+  <p>如有疑问或删除请求：请<a href="${CONTACT}" rel="noopener">在 X 上给 @DvciAhmet 发消息</a>。</p>
 </section>`,
   faq: [],
 };

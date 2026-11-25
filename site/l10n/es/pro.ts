@@ -1,4 +1,3 @@
-import { GITHUB } from '../../blocks';
 import type { ProCopy } from '../../pro-page';
 
 /** Spanish copy of the /pro page ("tú"). */
@@ -44,7 +43,7 @@ export const PRO_ES: ProCopy = {
   msgOk: 'Pro está activo en este navegador. ¡A disfrutarlo!',
   msgAlready: 'Pro ya está activo en este navegador.',
   msgInvalid: 'No reconocemos esta clave. Revisa que no haya erratas o si la suscripción ha terminado.',
-  msgLimit: 'Esta clave se ha activado demasiadas veces. Si eres el comprador, escríbenos por GitHub o a @DvciAhmet en X y la restableceremos.',
+  msgLimit: 'Esta clave se ha activado demasiadas veces. Si eres el comprador, escribe a @DvciAhmet en X y la restableceremos.',
   msgUpstream: 'El servidor de licencias no respondió. Inténtalo de nuevo en un minuto.',
   msgUnavailable: 'La activación de Pro no está disponible temporalmente. Inténtalo de nuevo en un rato.',
   msgRate: 'Demasiados intentos. Espera unos segundos y vuelve a intentarlo.',
@@ -182,11 +181,11 @@ export const PRO_ES: ProCopy = {
     { q: '¿Necesito una cuenta?', a: 'No. Xtracticle no tiene cuentas. Lo único que comprobamos es la clave; se guarda cifrada en una cookie de tu dispositivo durante 30 días cada vez y se renueva sola mientras tu plan esté activo.' },
     { q: '¿En cuántos dispositivos funciona una clave?', a: 'En todos los dispositivos que uses: introduce la misma clave en cada navegador. La clave se comprueba una vez al día, así que sigue funcionando mientras tu plan esté activo.' },
     { q: '¿Puedo cancelar?', a: 'Sí, cuando quieras, desde el enlace «Manage membership» (gestionar suscripción) de tu recibo o del correo de suscripción de Gumroad. Pro sigue activo hasta el final del periodo pagado. El plan de por vida es un pago único: no hay nada que cancelar.' },
-    { q: '¿Hay reembolso?', a: 'Sí: 14 días, sin preguntas. Abre un issue en GitHub o escribe a @DvciAhmet en X y te devolvemos el pago.' },
+    { q: '¿Hay reembolso?', a: 'Sí: 14 días, sin preguntas. Escribe a @DvciAhmet en X y te devolvemos el pago.' },
     { q: '¿Cómo detecta Watch un post borrado y con qué rapidez?', a: 'Cada hora, Xtracticle lee los ~40 posts públicos más recientes de cada cuenta seguida y los compara con la revisión anterior. Un post que falta se vuelve a consultar, y solo cuando X confirma que ya no existe se marca como borrado, con el texto guardado antes. Así, un borrado aparece en aproximadamente una hora. No se puede detectar un post publicado y borrado entre dos revisiones, ni uno más antiguo que los ~40 más recientes.' },
     { q: '¿Qué significa «solo cuentas públicas»? ¿Puede el dueño de una cuenta excluirse?', a: 'Watch solo lee lo que cualquiera puede ver en X sin iniciar sesión. No se pueden añadir cuentas protegidas, y si una cuenta seguida pasa a ser protegida, sus revisiones se detienen. El texto guardado de los posts se conserva 90 días. Si eres dueño de una cuenta y no quieres que se siga, escríbenos a través del contacto de la página de privacidad (xtracticle.com/es/privacidad): la cuenta queda bloqueada en Watch y se borra todo lo guardado sobre ella.' },
     { q: '¿Watch está incluido en el plan de por vida?', a: 'Sí. El plan de por vida sigue 2 cuentas; los planes mensual y anual, 5. Puedes cambiar de cuentas cuando quieras.' },
     { q: '¿Pro cambia lo que reciben los usuarios gratuitos?', a: 'No. Los posts sueltos, los hilos, los artículos, todos los formatos de exportación, los primeros 50 posts archivados y los lotes de 20 siguen siendo gratis, sin anuncios y sin iniciar sesión.' },
-    { q: '¿Dónde pregunto mis dudas?', a: `Abre un issue en GitHub (${GITHUB.replace('https://', '')}) o envía un mensaje a @DvciAhmet en X.` },
+    { q: '¿Dónde pregunto mis dudas?', a: `Envía un mensaje a @DvciAhmet en X (x.com/DvciAhmet).` },
   ],
 };

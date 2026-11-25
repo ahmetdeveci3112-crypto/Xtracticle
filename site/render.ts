@@ -1,5 +1,5 @@
 import { coffeeUrl, sponsorsUrl } from '../src/shared/support';
-import { PAGES, SITE, GITHUB_URL, type Lang, type SitePage } from './pages';
+import { PAGES, SITE, type Lang, type SitePage } from './pages';
 import { extCtaSlot, langTag } from './blocks';
 import { latestPicks } from './curated';
 import { homeProBlock } from './home-pro';
@@ -31,7 +31,7 @@ const UI: Record<Lang, { locale: string; placeholder: string; button: string; fa
     placeholder: 'Paste an X post link…',
     button: 'Extract',
     faq: 'Frequently asked questions',
-    tagline: 'Xtracticle — free & open-source downloader for X articles, threads and posts.',
+    tagline: 'Xtracticle — free downloader for X articles, threads and posts.',
     disclaimer: 'Not affiliated with X Corp. Public content only — please respect authors’ rights.',
     built: 'Built by',
   },
@@ -40,7 +40,7 @@ const UI: Record<Lang, { locale: string; placeholder: string; button: string; fa
     placeholder: 'Bir X gönderi linki yapıştırın…',
     button: 'Çıkar',
     faq: 'Sık sorulan sorular',
-    tagline: 'Xtracticle — ücretsiz ve açık kaynak X makale, flood ve gönderi indirici.',
+    tagline: 'Xtracticle — ücretsiz X makale, flood ve gönderi indirici.',
     disclaimer: 'X Corp. ile bağlantılı değildir. Yalnızca herkese açık içerik; lütfen yazarların haklarına saygı gösterin.',
     built: 'Geliştiren:',
   },
@@ -49,7 +49,7 @@ const UI: Record<Lang, { locale: string; placeholder: string; button: string; fa
     placeholder: 'Pega el enlace de un post de X…',
     button: 'Extraer',
     faq: 'Preguntas frecuentes',
-    tagline: 'Xtracticle — descargador gratuito y de código abierto de artículos, hilos y posts de X.',
+    tagline: 'Xtracticle — descargador gratuito de artículos, hilos y posts de X.',
     disclaimer: 'Sin relación con X Corp. Solo contenido público; respeta los derechos de los autores.',
     built: 'Creado por',
   },
@@ -58,7 +58,7 @@ const UI: Record<Lang, { locale: string; placeholder: string; button: string; fa
     placeholder: 'Cole o link de um post do X…',
     button: 'Extrair',
     faq: 'Perguntas frequentes',
-    tagline: 'Xtracticle — baixador gratuito e de código aberto de artigos, threads e posts do X.',
+    tagline: 'Xtracticle — baixador gratuito de artigos, threads e posts do X.',
     disclaimer: 'Sem vínculo com a X Corp. Apenas conteúdo público; respeite os direitos dos autores.',
     built: 'Criado por',
   },
@@ -67,7 +67,7 @@ const UI: Record<Lang, { locale: string; placeholder: string; button: string; fa
     placeholder: 'Xのポストのリンクを貼り付け…',
     button: '取得',
     faq: 'よくある質問',
-    tagline: 'Xtracticle — Xの記事・スレッド・ポストを保存できる無料のオープンソースツール。',
+    tagline: 'Xtracticle — Xの記事・スレッド・ポストを保存できる無料ツール。',
     disclaimer: 'X Corp.とは提携していません。公開コンテンツのみ対象です。著者の権利を尊重してください。',
     built: '開発：',
   },
@@ -76,7 +76,7 @@ const UI: Record<Lang, { locale: string; placeholder: string; button: string; fa
     placeholder: '粘贴 X 帖子链接…',
     button: '提取',
     faq: '常见问题',
-    tagline: 'Xtracticle — 免费开源的 X 文章、长推和帖子下载工具。',
+    tagline: 'Xtracticle — 免费的 X 文章、长推和帖子下载工具。',
     disclaimer: '与 X Corp. 无关联。仅支持公开内容，请尊重作者的权利。',
     built: '开发者：',
   },
@@ -85,7 +85,7 @@ const UI: Record<Lang, { locale: string; placeholder: string; button: string; fa
     placeholder: 'الصق رابط منشور من X…',
     button: 'استخراج',
     faq: 'الأسئلة الشائعة',
-    tagline: 'Xtracticle — أداة مجانية ومفتوحة المصدر لتحميل مقالات X وثريداتها ومنشوراتها.',
+    tagline: 'Xtracticle — أداة مجانية لتحميل مقالات X وثريداتها ومنشوراتها.',
     disclaimer: 'غير تابع لشركة X Corp. المحتوى العام فقط، يرجى احترام حقوق الكتّاب.',
     built: 'تطوير:',
   },
@@ -145,13 +145,13 @@ function jsonLd(page: SitePage): unknown[] {
         'Send to Obsidian with YAML front-matter',
         'Batch download up to 20 posts as a ZIP',
         'Read aloud (text-to-speech)',
-        'No login, free and open source',
+        'No login, free',
       ],
       image: OG_IMAGE,
       screenshot: OG_IMAGE,
       softwareVersion: '3.0',
       creator: { '@type': 'Person', name: 'Ahmet Deveci', url: 'https://x.com/DvciAhmet' },
-      sameAs: [GITHUB_URL, 'https://www.producthunt.com/posts/xtracticle'],
+      sameAs: ['https://x.com/DvciAhmet', 'https://www.producthunt.com/posts/xtracticle'],
     });
   } else if (!page.noindex) {
     blocks.push({
@@ -300,7 +300,7 @@ function footer(page: SitePage): string {
   <nav aria-label="Tools">${tools.join('')}</nav>
   <nav aria-label="Languages">${languages.join('')}</nav>
   <p>${tagline}</p>
-  <p>${built} <a href="https://x.com/DvciAhmet" rel="noopener">@DvciAhmet</a> · <a href="${GITHUB_URL}" rel="noopener">GitHub</a> · <a href="https://www.producthunt.com/posts/xtracticle" rel="noopener">Product Hunt</a> · <a href="/llms.txt">llms.txt</a>${supportLinks(page.lang)}</p>
+  <p>${built} <a href="https://x.com/DvciAhmet" rel="noopener">@DvciAhmet</a> · <a href="https://www.producthunt.com/posts/xtracticle" rel="noopener">Product Hunt</a> · <a href="/llms.txt">llms.txt</a>${supportLinks(page.lang)}</p>
   <p>${disclaimer}</p>
 </footer>`;
 }

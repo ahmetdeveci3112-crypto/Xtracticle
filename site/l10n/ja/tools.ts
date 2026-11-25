@@ -1,5 +1,5 @@
 /** Japanese: unroll, tweet to PDF, deleted tweet finder, MCP server and privacy pages. */
-import { GITHUB, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
+import { CONTACT, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
 
 const unroll: SitePage = {
   id: 'ja-unroll',
@@ -200,7 +200,7 @@ const mcp: SitePage = {
   <ul>
     <li><strong>エンドポイント:</strong> <code>${ENDPOINT}</code>（Streamable HTTP、認証なし）</li>
     <li><strong>ツール:</strong> <code>read_x_post</code> — ポスト、スレッド全体（スレッド内のどのポストからでも）、Xの記事をMarkdownで取得</li>
-    <li><strong>無料・オープンソース</strong> — サーバーは<a href="${GITHUB}" rel="noopener">Xtracticleのリポジトリ</a>に含まれています</li>
+    <li><strong>無料</strong> — APIキーもアカウントも不要</li>
   </ul>
 </section>
 
@@ -273,7 +273,7 @@ curl "https://xtracticle.com/api/markdown/${SAMPLE_ID}?format=text&thread=0&fron
   <a href="/ja/x-kiji-epub-kindle">EPUB</a>でダウンロードできます。</p>
 </section>`,
   faq: [
-    { q: 'XtracticleのMCPサーバーは無料ですか？', a: 'はい。無料で、APIキーもアカウントも不要。オープンソースです。' },
+    { q: 'XtracticleのMCPサーバーは無料ですか？', a: 'はい。無料で、APIキーもアカウントも不要です。' },
     { q: 'どのAIアシスタントで使えますか？', a: 'Streamable HTTPによるリモートMCPサーバーに対応しているクライアントなら使えます。Claude、ChatGPT（開発者モード）、Cursor、VS Codeなどが該当します。ローカルサーバーにしか対応していないクライアントは、mcp-remote経由で接続できます。' },
     { q: 'スレッド全体を読めますか？', a: 'はい。スレッド内のどのポストのリンクを渡しても、投稿者本人が書いたポストを順番にすべて返します。他の人の返信は含まれません。' },
     { q: 'Xの記事にも対応していますか？', a: 'はい。長文のXの記事を、見出し、リスト、リンク、引用、画像を保ったまま変換します。' },
@@ -297,8 +297,7 @@ const privacyPage: SitePage = {
   sections: `
 <section>
   <p><em>最終更新日: 2026年10月3日</em> このポリシーは、xtracticle.com、Markdown API（<code>/api/markdown/…</code>）、
-  MCPサーバー（<code>/mcp</code>）に適用されます。Xtracticleは無料のオープンソースプロジェクトで、
-  <a href="${GITHUB}" rel="noopener">ソースコード</a>で動作を正確に確認できます。</p>
+  MCPサーバー（<code>/mcp</code>）に適用されます。何をなぜ収集するのかを、このページで正確に説明します。</p>
 </section>
 
 <section>
@@ -345,7 +344,7 @@ const privacyPage: SitePage = {
 
 <section>
   <h2>お問い合わせ</h2>
-  <p>ご質問や削除のご依頼は、<a href="${GITHUB}/issues" rel="noopener">GitHubでIssueを作成</a>してください。</p>
+  <p>ご質問や削除のご依頼は、<a href="${CONTACT}" rel="noopener">Xで@DvciAhmetにメッセージ</a>を送ってください。</p>
 </section>`,
   faq: [],
 };

@@ -1,5 +1,5 @@
 import { extProFaq, extProFeature } from './ext-pro';
-import { GITHUB, extCtaSlot, type FAQ, type Lang, type SitePage } from './blocks';
+import { extCtaSlot, type FAQ, type Lang, type SitePage } from './blocks';
 
 /**
  * /pro (and /tr/pro, /es/pro, …): Xtracticle Pro — license-key based paid tier sold through Gumroad.
@@ -642,7 +642,7 @@ export const PRO_EN: ProCopy = {
   msgOk: 'Pro is active in this browser. Enjoy!',
   msgAlready: 'Pro is already active in this browser.',
   msgInvalid: 'This key was not recognized. Check for typos or whether the subscription has ended.',
-  msgLimit: 'This key has been activated too many times. If you are the buyer, contact us via GitHub or @DvciAhmet on X and we’ll reset it.',
+  msgLimit: 'This key has been activated too many times. If you are the buyer, message @DvciAhmet on X and we’ll reset it.',
   msgUpstream: 'The license server did not answer. Please try again in a minute.',
   msgUnavailable: 'Pro activation is temporarily unavailable. Please try again in a little while.',
   msgRate: 'Too many attempts. Please wait a few seconds and try again.',
@@ -792,12 +792,12 @@ export const PRO_EN: ProCopy = {
     { q: 'Do I need an account?', a: 'No. Xtracticle has no accounts. The key is the only thing we check; it is stored encrypted in a cookie on your device for 30 days at a time and renews itself as long as your plan is active.' },
     { q: 'On how many devices does a key work?', a: 'On every device you use: enter the same key in each browser. The key is checked once a day, so it keeps working as long as your plan is active.' },
     { q: 'Can I cancel?', a: 'Yes, anytime, from the “Manage membership” link in your Gumroad receipt or subscription e-mail. Pro stays active until the end of the period you paid for. The lifetime plan is a single payment with nothing to cancel.' },
-    { q: 'Is there a refund?', a: 'Yes: 14 days, no questions asked. Open an issue on GitHub or message @DvciAhmet on X and the payment is refunded.' },
+    { q: 'Is there a refund?', a: 'Yes: 14 days, no questions asked. Message @DvciAhmet on X and the payment is refunded.' },
     { q: 'Is there a free trial?', a: 'Yes, for Watch: one public account for 14 days, free. Enter the account and your e-mail address on this page or under an account’s archived posts in the Deleted Tweet Tracker, then click the confirmation link we send; the 14 days start with that click. No card and no license key are needed, and nothing is charged: when the trial is over the watch simply stops (you get one e-mail two days before and one at the end). There is one trial per e-mail address. To keep watching, or to watch up to 5 accounts, get Pro.' },
     { q: 'How does Watch notice a deleted post, and how quickly?', a: 'Once an hour Xtracticle reads the latest ~40 public posts of each watched account and compares them with the previous check. A post that is missing is looked up again, and only when X confirms it no longer exists is it reported as deleted, with the text saved earlier. So a deletion shows up within about an hour. A post that is published and deleted between two checks, or one older than the latest ~40, cannot be caught.' },
     { q: 'What does “public accounts only” mean? Can an account owner opt out?', a: 'Watch reads only what anyone can see on X without logging in. Protected accounts cannot be added, and if a watched account becomes protected, its checks stop. Saved post text is kept for 90 days. If you own an account and do not want it watched, write to us through the contact on the privacy page (xtracticle.com/privacy): the account is blocked from Watch and everything saved about it is deleted.' },
     { q: 'Is Watch included in the lifetime plan?', a: 'Yes. The lifetime plan watches 2 accounts; the monthly and yearly plans watch 5. You can swap accounts at any time.' },
     { q: 'Does Pro change what free users get?', a: 'No. Single posts, threads, Articles, every export format, the first 50 archived posts and batches of 20 stay free, with no ads and no login.' },
-    { q: 'Where do I ask questions?', a: `Open an issue on GitHub (${GITHUB.replace('https://', '')}) or send a message to @DvciAhmet on X.` },
+    { q: 'Where do I ask questions?', a: `Send a message to @DvciAhmet on X (x.com/DvciAhmet).` },
   ],
 };

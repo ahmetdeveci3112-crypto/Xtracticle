@@ -4,7 +4,7 @@
  * Rendered at build time by site/plugin.ts; nothing here ships to the client.
  */
 
-import { EXAMPLE, GITHUB, SITE, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from './blocks';
+import { CONTACT, EXAMPLE, SITE, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from './blocks';
 import { PAGES_TR } from './pages-tr';
 import { PAGES_ES } from './pages-es';
 import { PAGES_PT } from './pages-pt';
@@ -96,7 +96,6 @@ ${shortcuts('en')}
       <tr><td>Markdown / Obsidian</td><td>✅</td><td>❌</td><td>❌</td></tr>
       <tr><td>EPUB / Kindle</td><td>✅</td><td>❌</td><td>❌</td></tr>
       <tr><td>No mention or login</td><td>✅</td><td>Mention the bot or use the site</td><td>✅</td></tr>
-      <tr><td>Open source</td><td>✅</td><td>❌</td><td>—</td></tr>
     </tbody>
   </table></div>
   <p>Coming from Thread Reader App? See the <a href="/thread-reader-app-alternative">full comparison</a>.</p>
@@ -111,7 +110,7 @@ ${shortcuts('en')}
 
 ${privacy('en')}`,
   faq: [
-    { q: 'Is Xtracticle free?', a: 'Yes. It is free and open source, with no account, no login and no usage limits.' },
+    { q: 'Is Xtracticle free?', a: 'Yes. It is free, with no account, no login and no usage limits.' },
     { q: 'How do I download an X article as PDF?', a: 'Copy the post link, paste it into Xtracticle, and click PDF. The PDF includes the title, author, date, source link, all images and page numbers.' },
     { q: 'Can I download a whole Twitter thread?', a: 'Yes. Paste the link of any post in the thread — first, middle or last. Xtracticle finds every post the author wrote in that thread and merges them into one numbered document.' },
     { q: 'What is the difference between an X Article and a post?', a: 'X Articles are long-form posts with rich formatting (headings, lists, images). Regular posts are short. Xtracticle supports both, plus threads.' },
@@ -361,7 +360,7 @@ const obsidian: SitePage = {
   lang: 'en',
   title: 'Save X (Twitter) Articles & Threads to Obsidian — One Click | Xtracticle',
   description:
-    'Clip X (Twitter) articles and threads into Obsidian as clean Markdown with properties (author, source, date, tags). One click, local images optional, free and open source.',
+    'Clip X (Twitter) articles and threads into Obsidian as clean Markdown with properties (author, source, date, tags). One click, local images optional, free.',
   h1: 'Save X Articles to Obsidian',
   sub: 'Clip X (Twitter) articles and threads into your Obsidian vault as clean Markdown with properties — in one click.',
   primary: 'obsidian',
@@ -492,12 +491,11 @@ const alternative: SitePage = {
       <tr><td>Ads</td><td>None</td><td>On the free plan</td></tr>
       <tr><td>Posting in public / tagging a bot</td><td>Never needed</td><td>For the bot method</td></tr>
       <tr><td>Author alerts & auto-archiving</td><td>❌ Not yet</td><td>✅ Premium</td></tr>
-      <tr><td>Open source</td><td>✅ MIT</td><td>❌</td></tr>
     </tbody>
   </table></div>
   <p><small>Checked against Thread Reader App’s <a href="https://threadreaderapp.com/premium" rel="nofollow noopener">Premium</a> and
   <a href="https://threadreaderapp.com/help" rel="nofollow noopener">Help</a> pages in September 2026. Features change — let us know on
-  <a href="${GITHUB}/issues" rel="noopener">GitHub</a> if something is out of date.</small></p>
+  <a href="${CONTACT}" rel="noopener">X</a> if something is out of date.</small></p>
 </section>
 
 <section>
@@ -518,7 +516,7 @@ const alternative: SitePage = {
 
 ${shortcuts('en')}`,
   faq: [
-    { q: 'Is Xtracticle really free?', a: 'Yes. Every format — PDF, Markdown, EPUB, ZIP and text — is free, with no ads, no login and no usage limits. The code is open source.' },
+    { q: 'Is Xtracticle really free?', a: 'Yes. Every format — PDF, Markdown, EPUB, ZIP and text — is free, with no ads, no login and no usage limits.' },
     { q: 'Can Xtracticle download X Articles?', a: 'Yes. Xtracticle converts X’s long-form Articles with their headings, lists, links, images and videos. This is one of the main differences from Thread Reader App.' },
     { q: 'Do I need to tag a bot?', a: 'No. Paste the link on Xtracticle; nothing is posted on X.' },
     { q: 'Can I import my Thread Reader App archive?', a: 'Not directly. You can paste the original X links (up to 20 at a time in Batch mode) to rebuild them as Markdown files.' },
@@ -555,4 +553,3 @@ export function pageForPath(pathname: string): SitePage {
   return PAGES.find(p => p.path === clean || (p.path.endsWith('/') && p.path === clean + '/')) || home;
 }
 
-export const GITHUB_URL = GITHUB;

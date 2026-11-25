@@ -1,5 +1,5 @@
 /** Japanese pages. */
-import { samplePdfFigure, EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
+import { CONTACT, samplePdfFigure, EXAMPLE, privacy, shortcuts, steps, type SitePage } from './blocks';
 
 const home: SitePage = {
   id: 'ja-home',
@@ -56,7 +56,7 @@ ${shortcuts('ja')}
 
 ${privacy('ja')}`,
   faq: [
-    { q: 'Xtracticleは無料ですか？', a: 'はい。無料のオープンソースツールで、アカウント登録・ログイン・利用回数の制限はありません。' },
+    { q: 'Xtracticleは無料ですか？', a: 'はい。無料のツールで、アカウント登録・ログイン・利用回数の制限はありません。' },
     { q: 'Xの記事をPDFで保存するには？', a: 'ポストのリンクをコピーしてXtracticleに貼り付け、「PDF」を押すだけです。タイトル、著者、日付、出典リンク、すべての画像とページ番号が含まれます。' },
     { q: 'スレッドをまとめて保存できますか？', a: 'はい。スレッド内のどのポスト（最初・途中・最後）のリンクでも構いません。投稿者本人のポストをすべて集め、番号付きの1つのドキュメントにします。' },
     { q: 'Xの記事をObsidianやNotionに保存できますか？', a: 'はい。Markdownをダウンロードするか、「Obsidian」ボタンで記事をコピーして新しいノートを開けます。Notionは.mdファイルをそのままインポートできます。' },
@@ -295,7 +295,7 @@ const obsidian: SitePage = {
   lang: 'ja',
   title: 'X記事・スレッドをObsidianに保存｜ワンクリックでノート化 | Xtracticle',
   description:
-    'X（旧Twitter）の記事やスレッドを、著者・出典・日付・タグのプロパティ付きのきれいなMarkdownとしてObsidianにワンクリックで保存。画像のローカル保存も可能で、無料・オープンソースです。',
+    'X（旧Twitter）の記事やスレッドを、著者・出典・日付・タグのプロパティ付きのきれいなMarkdownとしてObsidianにワンクリックで保存。画像のローカル保存も可能で、無料です。',
   h1: 'X記事をObsidianに保存',
   sub: 'X（旧Twitter）の記事やスレッドを、プロパティ付きのきれいなMarkdownとしてObsidianの保管庫へ。ワンクリックで完了します。',
   primary: 'obsidian',
@@ -377,12 +377,11 @@ const alternative: SitePage = {
       <tr><td>広告</td><td>なし</td><td>無料プランで表示</td></tr>
       <tr><td>公開の場での投稿・botのタグ付け</td><td>一切不要</td><td>bot方式の場合は必要</td></tr>
       <tr><td>著者の新着通知・自動アーカイブ</td><td>❌ 未対応</td><td>✅ Premium</td></tr>
-      <tr><td>オープンソース</td><td>✅ MIT</td><td>❌</td></tr>
     </tbody>
   </table></div>
   <p><small>2026年9月時点で、Thread Reader Appの<a href="https://threadreaderapp.com/premium" rel="nofollow noopener">Premium</a>ページと
   <a href="https://threadreaderapp.com/help" rel="nofollow noopener">Help</a>ページをもとに確認しています。機能は変わることがあります。情報が古くなっていたら
-  <a href="${GITHUB}/issues" rel="noopener">GitHub</a>でお知らせください。</small></p>
+  <a href="${CONTACT}" rel="noopener">X</a>でお知らせください。</small></p>
 </section>
 
 <section>

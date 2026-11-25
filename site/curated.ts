@@ -6,7 +6,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { GITHUB, type SitePage } from './blocks';
+import { CONTACT, type SitePage } from './blocks';
 
 interface CuratedItem {
   id: string;
@@ -93,7 +93,7 @@ const ABOUT = `
   <h2>How we pick</h2>
   <p>Every week we look at the X Articles readers saved with Xtracticle and pick the ones worth your time, by hand. We show only the
   title, the author and a one-line summary in our own words, and link to the original on X — the writing belongs to its authors.
-  Know a great X Article? <a href="${GITHUB}/issues/new?title=Article+suggestion" rel="noopener">Suggest it on GitHub</a>.</p>
+  Know a great X Article? <a href="${CONTACT}" rel="noopener">Suggest it to @DvciAhmet on X</a>.</p>
 </section>`;
 
 /** Top picks of the newest issue, for the teaser on every home page. */

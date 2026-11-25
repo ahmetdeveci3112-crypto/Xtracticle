@@ -1,5 +1,5 @@
 /** Arabic (MSA) versions of the extra tool pages: unroll, tweet to PDF, deleted tweet finder, MCP server, privacy policy. */
-import { GITHUB, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
+import { CONTACT, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
 
 /* ─── unroll ─── */
 
@@ -204,7 +204,7 @@ const mcp: SitePage = {
   <ul>
     <li><strong>نقطة الاتصال:</strong> <code>${ENDPOINT}</code> (Streamable HTTP، بلا مصادقة)</li>
     <li><strong>الأداة:</strong> <code>read_x_post</code>: منشور، أو ثريد كامل للكاتب (من أي منشور فيه)، أو مقالة X بصيغة Markdown</li>
-    <li><strong>مجاني ومفتوح المصدر</strong>: الخادم جزء من <a href="${GITHUB}" rel="noopener">مستودع Xtracticle</a></li>
+    <li><strong>مجاني</strong>: بلا مفتاح API وبلا حساب</li>
   </ul>
 </section>
 
@@ -278,7 +278,7 @@ curl "https://xtracticle.com/api/markdown/${SAMPLE_ID}?format=text&thread=0&fron
   أو <a href="/ar/x-article-to-epub">EPUB</a>.</p>
 </section>`,
   faq: [
-    { q: 'هل خادم MCP من Xtracticle مجاني؟', a: 'نعم. هو مجاني، ولا يحتاج إلى مفتاح API ولا حساب، ومفتوح المصدر.' },
+    { q: 'هل خادم MCP من Xtracticle مجاني؟', a: 'نعم. هو مجاني، ولا يحتاج إلى مفتاح API ولا حساب.' },
     { q: 'مع أي المساعدات الذكية يعمل؟', a: 'مع أي عميل يدعم خوادم MCP البعيدة عبر Streamable HTTP، ومنها Claude وChatGPT (وضع المطوّر) وCursor وVS Code. ويمكن للعملاء التي تدعم الخوادم المحلية فقط الاتصال عبر mcp-remote.' },
     { q: 'هل يستطيع قراءة ثريدات كاملة؟', a: 'نعم. مرّر رابط أي منشور في الثريد فتعيد الأداة كل ما كتبه الكاتب فيه بالترتيب. وتُستبعد ردود الآخرين.' },
     { q: 'هل يعمل مع مقالات X؟', a: 'نعم. تُحوَّل مقالات X الطويلة مع عناوينها وقوائمها وروابطها واقتباساتها وصورها.' },
@@ -304,8 +304,7 @@ const privacyPage: SitePage = {
   sections: `
 <section>
   <p><em>آخر تحديث: 3 أكتوبر 2026.</em> تغطي هذه السياسة موقع xtracticle.com وواجهة Markdown البرمجية (<code>/api/markdown/…</code>)
-  وخادم MCP (<code>/mcp</code>). Xtracticle مشروع مجاني ومفتوح المصدر، و<a href="${GITHUB}" rel="noopener">الشيفرة المصدرية</a>
-  توضح بالضبط ما يفعله.</p>
+  وخادم MCP (<code>/mcp</code>). وتوضح هذه الصفحة بالضبط ما نجمعه ولماذا.</p>
 </section>
 
 <section>
@@ -356,7 +355,7 @@ const privacyPage: SitePage = {
 
 <section>
   <h2>التواصل</h2>
-  <p>للأسئلة أو طلبات الإزالة: <a href="${GITHUB}/issues" rel="noopener">افتح مشكلة (issue) على GitHub</a>.</p>
+  <p>للأسئلة أو طلبات الإزالة: <a href="${CONTACT}" rel="noopener">راسل @DvciAhmet على X</a>.</p>
 </section>`,
   faq: [],
 };

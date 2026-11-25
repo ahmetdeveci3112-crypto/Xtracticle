@@ -1,9 +1,8 @@
 # Xtracticle — Complete Documentation
 
-> Free, open-source web tool to download X (formerly Twitter) Articles, threads and posts as PDF, Markdown, EPUB (Kindle), plain text or a ZIP with images. No login, no account, no API key.
+> Free web tool to download X (formerly Twitter) Articles, threads and posts as PDF, Markdown, EPUB (Kindle), plain text or a ZIP with images. No login, no account, no API key.
 
 Website: https://xtracticle.com
-Source: https://github.com/ahmetdeveci3112-crypto/Xtracticle (MIT)
 Author: Ahmet Deveci (https://x.com/DvciAhmet)
 
 ## Overview
@@ -76,7 +75,6 @@ Full page: https://xtracticle.com/thread-reader-app-alternative (checked Septemb
 | Markdown / Obsidian | Yes | No |
 | EPUB / Kindle | Yes | No |
 | Works without tagging a bot | Yes | Bot mention or website |
-| Open source | Yes (MIT) | No |
 
 ## API
 
@@ -121,6 +119,6 @@ The public JSON API used by the web app (please be gentle; responses are cached 
 - Anonymous usage statistics via Google Analytics (page views, extractions, downloads)
 - History, theme and language preferences are stored only in your browser's localStorage
 
-## License
+## Contact
 
-MIT — contributions welcome at https://github.com/ahmetdeveci3112-crypto/Xtracticle
+Questions, feedback and removal requests: @DvciAhmet on X (https://x.com/DvciAhmet)

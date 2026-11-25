@@ -1,5 +1,5 @@
 /** Páginas em português do Brasil: desenrolar thread, tweet para PDF, localizador de tweets apagados, servidor MCP e privacidade. */
-import { GITHUB, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
+import { CONTACT, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
 
 const ENDPOINT = 'https://xtracticle.com/mcp';
 const CURSOR_LINK = `cursor://anysphere.cursor-deeplink/mcp/install?name=xtracticle&config=${btoa(JSON.stringify({ url: ENDPOINT }))}`;
@@ -200,7 +200,7 @@ const mcp: SitePage = {
   <ul>
     <li><strong>Endpoint:</strong> <code>${ENDPOINT}</code> (Streamable HTTP, sem autenticação)</li>
     <li><strong>Ferramenta:</strong> <code>read_x_post</code> — um post, uma thread inteira do autor (a partir de qualquer post dela) ou um Artigo do X em Markdown</li>
-    <li><strong>Grátis e de código aberto</strong> — o servidor faz parte do <a href="${GITHUB}" rel="noopener">repositório do Xtracticle</a></li>
+    <li><strong>Grátis</strong> — sem chave de API e sem conta</li>
   </ul>
 </section>
 
@@ -274,7 +274,7 @@ curl "https://xtracticle.com/api/markdown/${SAMPLE_ID}?format=text&thread=0&fron
   ou <a href="/pt/artigo-do-x-para-epub-kindle">EPUB</a>.</p>
 </section>`,
   faq: [
-    { q: 'O servidor MCP do Xtracticle é grátis?', a: 'Sim. É grátis, não precisa de chave de API nem de conta, e é de código aberto.' },
+    { q: 'O servidor MCP do Xtracticle é grátis?', a: 'Sim. É grátis, e não precisa de chave de API nem de conta.' },
     { q: 'Com quais assistentes de IA ele funciona?', a: 'Com qualquer cliente que aceite servidores MCP remotos via Streamable HTTP, incluindo Claude, ChatGPT (modo desenvolvedor), Cursor e VS Code. Clientes que só aceitam servidores locais podem se conectar pelo mcp-remote.' },
     { q: 'Ele consegue ler threads inteiras?', a: 'Sim. Passe o link de qualquer post de uma thread e a ferramenta devolve todos os posts que o autor escreveu nela, na ordem. Respostas de outras pessoas ficam de fora.' },
     { q: 'Funciona com Artigos do X?', a: 'Sim. Os Artigos longos do X são convertidos com títulos, listas, links, citações e imagens.' },
@@ -298,8 +298,7 @@ const privacyPt: SitePage = {
   sections: `
 <section>
   <p><em>Última atualização: 3 de outubro de 2026.</em> Esta política vale para xtracticle.com, sua API de Markdown (<code>/api/markdown/…</code>)
-  e seu servidor MCP (<code>/mcp</code>). O Xtracticle é um projeto grátis e de código aberto; o
-  <a href="${GITHUB}" rel="noopener">código-fonte</a> mostra exatamente o que ele faz.</p>
+  e seu servidor MCP (<code>/mcp</code>). Esta página explica exatamente o que coletamos e por quê.</p>
 </section>
 
 <section>
@@ -351,7 +350,7 @@ const privacyPt: SitePage = {
 
 <section>
   <h2>Contato</h2>
-  <p>Dúvidas ou pedidos de remoção: <a href="${GITHUB}/issues" rel="noopener">abra uma issue no GitHub</a>.</p>
+  <p>Dúvidas ou pedidos de remoção: <a href="${CONTACT}" rel="noopener">mande uma mensagem para @DvciAhmet no X</a>.</p>
 </section>`,
   faq: [],
 };

@@ -1,4 +1,4 @@
-import { GITHUB, type SitePage } from './blocks';
+import { type SitePage } from './blocks';
 
 /** /mcp-server — setup guide for the remote MCP server (src/shared/mcp.ts) and the Markdown API. */
 
@@ -28,7 +28,7 @@ export const mcpPage: SitePage = {
   <ul>
     <li><strong>Endpoint:</strong> <code>${ENDPOINT}</code> (Streamable HTTP, no authentication)</li>
     <li><strong>Tool:</strong> <code>read_x_post</code> — a post, a whole self-thread (from any of its posts) or an X Article as Markdown</li>
-    <li><strong>Free and open source</strong> — the server is part of the <a href="${GITHUB}" rel="noopener">Xtracticle repository</a></li>
+    <li><strong>Free</strong> — no API key, no account</li>
   </ul>
 </section>
 
@@ -103,7 +103,7 @@ curl "https://xtracticle.com/api/markdown/${SAMPLE_ID}?format=text&thread=0&fron
   or <a href="/x-article-to-epub">EPUB</a>.</p>
 </section>`,
   faq: [
-    { q: 'Is the Xtracticle MCP server free?', a: 'Yes. It is free, needs no API key or account, and is open source.' },
+    { q: 'Is the Xtracticle MCP server free?', a: 'Yes. It is free, and needs no API key or account.' },
     { q: 'Which AI assistants does it work with?', a: 'Any client that supports remote MCP servers over Streamable HTTP, including Claude, ChatGPT (developer mode), Cursor and VS Code. Clients that only support local servers can connect through mcp-remote.' },
     { q: 'Can it read whole threads?', a: 'Yes. Pass the link of any post in a thread and the tool returns every post the author wrote in it, in order. Replies from other people are left out.' },
     { q: 'Does it work with X Articles?', a: 'Yes. Long-form X Articles are converted with their headings, lists, links, quotes and images.' },

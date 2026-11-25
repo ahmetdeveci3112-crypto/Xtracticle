@@ -1,5 +1,5 @@
 /** Turkish: unroll, tweet-to-PDF, deleted tweet finder, MCP server and privacy pages. */
-import { GITHUB, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
+import { CONTACT, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
 
 const unroll: SitePage = {
   id: 'tr-unroll',
@@ -199,7 +199,7 @@ const mcp: SitePage = {
   <ul>
     <li><strong>Endpoint:</strong> <code>${ENDPOINT}</code> (Streamable HTTP, kimlik doğrulama yok)</li>
     <li><strong>Araç:</strong> <code>read_x_post</code> — bir gönderiyi, yazarın flood’unun tamamını (herhangi bir gönderisinden) ya da bir X Makalesini Markdown olarak verir</li>
-    <li><strong>Ücretsiz ve açık kaynak</strong> — sunucu <a href="${GITHUB}" rel="noopener">Xtracticle deposunun</a> bir parçasıdır</li>
+    <li><strong>Ücretsiz</strong> — API anahtarı ve hesap gerekmez</li>
   </ul>
 </section>
 
@@ -273,7 +273,7 @@ curl "https://xtracticle.com/api/markdown/${SAMPLE_ID}?format=text&thread=0&fron
   veya <a href="/tr/x-makale-epub-kindle">EPUB</a> olarak indirin.</p>
 </section>`,
   faq: [
-    { q: 'Xtracticle MCP sunucusu ücretsiz mi?', a: 'Evet. Ücretsiz, API anahtarı veya hesap gerektirmez ve açık kaynaktır.' },
+    { q: 'Xtracticle MCP sunucusu ücretsiz mi?', a: 'Evet. Ücretsizdir ve API anahtarı veya hesap gerektirmez.' },
     { q: 'Hangi yapay zekâ asistanlarıyla çalışır?', a: 'Streamable HTTP üzerinden uzak MCP sunucularını destekleyen her istemciyle; Claude, ChatGPT (geliştirici modu), Cursor ve VS Code dahil. Yalnızca yerel sunucuları destekleyen istemciler mcp-remote ile bağlanabilir.' },
     { q: 'Flood’un tamamını okuyabilir mi?', a: 'Evet. Flood’daki herhangi bir gönderinin linkini verin; araç yazarın o flood’da yazdığı tüm gönderileri sırasıyla döndürür. Başkalarının yanıtları dahil edilmez.' },
     { q: 'X Makaleleriyle çalışıyor mu?', a: 'Evet. Uzun X Makaleleri başlıkları, listeleri, linkleri, alıntıları ve görselleriyle dönüştürülür.' },
@@ -297,8 +297,7 @@ const privacyPage: SitePage = {
   sections: `
 <section>
   <p><em>Son güncelleme: 9 Kasım 2026.</em> Bu politika xtracticle.com'u, Markdown API’sini (<code>/api/markdown/…</code>)
-  ve MCP sunucusunu (<code>/mcp</code>) kapsar. Xtracticle ücretsiz, açık kaynaklı bir projedir;
-  <a href="${GITHUB}" rel="noopener">kaynak kodu</a> tam olarak ne yaptığını gösterir.</p>
+  ve MCP sunucusunu (<code>/mcp</code>) kapsar. Bu sayfa neyi neden topladığımızı tam olarak açıklar.</p>
 </section>
 
 <section>
@@ -353,8 +352,7 @@ const privacyPage: SitePage = {
     <li><strong>Ücretsiz deneme:</strong> deneme, lisans olmadan tek bir hesabı 14 gün izler. Onayladığınız e-posta adresini deneme
     sürdüğü sürece saklarız (deneme bitince silinir; abonelikten çıkarsanız hemen silinir); adresin tek yönlü özetini ise her adresin
     bir deneme başlatabilmesi için tutarız.</li>
-    <li><strong>İzlenmek istemiyorsanız:</strong> hesap adını yazarak <a href="${GITHUB}/issues" rel="noopener">GitHub'da bir issue açın</a>
-    ya da X'te @DvciAhmet'e mesaj gönderin. Hesabı engel listesine ekler, saklanan gönderilerini siler ve 7 gün içinde tüm izleme
+    <li><strong>İzlenmek istemiyorsanız:</strong> hesap adını yazarak <a href="${CONTACT}" rel="noopener">X'te @DvciAhmet'e mesaj gönderin</a>. Hesabı engel listesine ekler, saklanan gönderilerini siler ve 7 gün içinde tüm izleme
     listelerinden çıkarırız.</li>
     <li><strong>İzlemelerinizi silmek:</strong> Pro sayfasında bir hesabı listeden kaldırmak o izlemeyi hemen siler; her e-postada
     tek tıkla abonelikten çıkma bağlantısı vardır.</li>
@@ -375,7 +373,7 @@ const privacyPage: SitePage = {
 
 <section>
   <h2>İletişim</h2>
-  <p>Sorularınız veya kaldırma talepleriniz için: <a href="${GITHUB}/issues" rel="noopener">GitHub’da bir issue açın</a>.</p>
+  <p>Sorularınız veya kaldırma talepleriniz için: <a href="${CONTACT}" rel="noopener">X’te @DvciAhmet’e mesaj gönderin</a>.</p>
 </section>`,
   faq: [],
 };

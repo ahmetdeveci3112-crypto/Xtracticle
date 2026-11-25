@@ -1,6 +1,6 @@
 # Xtracticle
 
-> Xtracticle is a free, open-source web tool that downloads X (formerly Twitter) Articles, threads and posts as PDF, Markdown, EPUB (Kindle), plain text, or a ZIP archive with images. No login, no account, no API key.
+> Xtracticle is a free web tool that downloads X (formerly Twitter) Articles, threads and posts as PDF, Markdown, EPUB (Kindle), plain text, or a ZIP archive with images. No login, no account, no API key.
 
 ## Tools
 
@@ -27,7 +27,6 @@
 ## Docs
 
 - [Full documentation](https://xtracticle.com/llms-full.txt): Features, API, limits, privacy
-- [GitHub repository](https://github.com/ahmetdeveci3112-crypto/Xtracticle): Source code (MIT)
 
 ## Quick facts
 

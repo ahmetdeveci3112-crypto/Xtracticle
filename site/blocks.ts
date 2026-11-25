@@ -37,7 +37,8 @@ export interface SitePage {
 }
 
 export const SITE = 'https://xtracticle.com';
-export const GITHUB = 'https://github.com/ahmetdeveci3112-crypto/Xtracticle';
+/** Where people reach us (questions, removal and opt-out requests). */
+export const CONTACT = 'https://x.com/DvciAhmet';
 export const EXAMPLE = '/Write/status/1765884209527394325';
 
 const BOOKMARKLET =
@@ -165,31 +166,31 @@ const FX = '<a href="https://github.com/FixTweet/FxTwitter" rel="noopener">FxTwi
 const PRIVACY: Record<Lang, { h2: string; p: string }> = {
   en: {
     h2: 'Privacy',
-    p: `No account, no login, no upload. Xtracticle fetches the public post on demand through the open-source ${FX} API and builds your file in your browser. We don't store the posts you extract. We use Google Analytics to count anonymous visits and downloads so we know which features matter. The <a href="${GITHUB}" rel="noopener">source code is on GitHub</a>.`,
+    p: `No account, no login, no upload. Xtracticle fetches the public post on demand through the open-source ${FX} API and builds your file in your browser. We don't store the posts you extract. We use Google Analytics to count anonymous visits and downloads so we know which features matter.`,
   },
   tr: {
     h2: 'Gizlilik',
-    p: `Hesap yok, giriş yok, yükleme yok. Xtracticle herkese açık gönderiyi açık kaynak ${FX} API'si üzerinden anlık olarak alır ve dosyanızı tarayıcınızda oluşturur. Çıkardığınız gönderileri saklamayız. Hangi özelliklerin kullanıldığını anlamak için anonim ziyaret ve indirme sayılarını Google Analytics ile ölçeriz. <a href="${GITHUB}" rel="noopener">Kaynak kodu GitHub'da</a>.`,
+    p: `Hesap yok, giriş yok, yükleme yok. Xtracticle herkese açık gönderiyi açık kaynak ${FX} API'si üzerinden anlık olarak alır ve dosyanızı tarayıcınızda oluşturur. Çıkardığınız gönderileri saklamayız. Hangi özelliklerin kullanıldığını anlamak için anonim ziyaret ve indirme sayılarını Google Analytics ile ölçeriz.`,
   },
   es: {
     h2: 'Privacidad',
-    p: `Sin cuenta, sin inicio de sesión y sin subir nada. Xtracticle obtiene el post público al momento mediante la API de código abierto ${FX} y crea tu archivo en tu navegador. No guardamos los posts que extraes. Usamos Google Analytics para contar visitas y descargas anónimas y saber qué funciones son útiles. El <a href="${GITHUB}" rel="noopener">código fuente está en GitHub</a>.`,
+    p: `Sin cuenta, sin inicio de sesión y sin subir nada. Xtracticle obtiene el post público al momento mediante la API de código abierto ${FX} y crea tu archivo en tu navegador. No guardamos los posts que extraes. Usamos Google Analytics para contar visitas y descargas anónimas y saber qué funciones son útiles.`,
   },
   pt: {
     h2: 'Privacidade',
-    p: `Sem conta, sem login e sem upload. O Xtracticle busca o post público na hora pela API de código aberto ${FX} e gera o seu arquivo no navegador. Não armazenamos os posts que você extrai. Usamos o Google Analytics para contar visitas e downloads anônimos e entender quais recursos são úteis. O <a href="${GITHUB}" rel="noopener">código-fonte está no GitHub</a>.`,
+    p: `Sem conta, sem login e sem upload. O Xtracticle busca o post público na hora pela API de código aberto ${FX} e gera o seu arquivo no navegador. Não armazenamos os posts que você extrai. Usamos o Google Analytics para contar visitas e downloads anônimos e entender quais recursos são úteis.`,
   },
   ja: {
     h2: 'プライバシー',
-    p: `アカウント登録・ログイン・アップロードは不要です。Xtracticleはオープンソースの${FX} APIを通じて公開ポストをその都度取得し、ファイルはお使いのブラウザ内で作成されます。取得したポストを保存することはありません。どの機能が使われているかを把握するため、Google Analyticsで匿名の訪問数とダウンロード数のみ計測しています。<a href="${GITHUB}" rel="noopener">ソースコードはGitHubで公開</a>しています。`,
+    p: `アカウント登録・ログイン・アップロードは不要です。Xtracticleはオープンソースの${FX} APIを通じて公開ポストをその都度取得し、ファイルはお使いのブラウザ内で作成されます。取得したポストを保存することはありません。どの機能が使われているかを把握するため、Google Analyticsで匿名の訪問数とダウンロード数のみ計測しています。`,
   },
   zh: {
     h2: '隐私',
-    p: `无需注册、无需登录、无需上传。Xtracticle 通过开源的 ${FX} API 按需获取公开帖子，文件在你的浏览器中生成。我们不会保存你提取的帖子。我们使用 Google Analytics 统计匿名访问和下载次数，以了解哪些功能最有用。<a href="${GITHUB}" rel="noopener">源代码已在 GitHub 公开</a>。`,
+    p: `无需注册、无需登录、无需上传。Xtracticle 通过开源的 ${FX} API 按需获取公开帖子，文件在你的浏览器中生成。我们不会保存你提取的帖子。我们使用 Google Analytics 统计匿名访问和下载次数，以了解哪些功能最有用。`,
   },
   ar: {
     h2: 'الخصوصية',
-    p: `بلا حساب ولا تسجيل دخول ولا رفع ملفات. يجلب Xtracticle المنشور العام عند الطلب عبر واجهة ${FX} مفتوحة المصدر، ويُنشئ ملفك داخل متصفحك. لا نخزّن المنشورات التي تستخرجها. نستخدم Google Analytics لإحصاء الزيارات والتنزيلات بشكل مجهول الهوية لنعرف أي الميزات مهمة. <a href="${GITHUB}" rel="noopener">الشيفرة المصدرية متاحة على GitHub</a>.`,
+    p: `بلا حساب ولا تسجيل دخول ولا رفع ملفات. يجلب Xtracticle المنشور العام عند الطلب عبر واجهة ${FX} مفتوحة المصدر، ويُنشئ ملفك داخل متصفحك. لا نخزّن المنشورات التي تستخرجها. نستخدم Google Analytics لإحصاء الزيارات والتنزيلات بشكل مجهول الهوية لنعرف أي الميزات مهمة.`,
   },
 };
 

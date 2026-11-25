@@ -2,7 +2,7 @@
   <img width="80" height="80" src="public/icon-192.png" alt="Xtracticle Logo"/>
   <h1>Xtracticle</h1>
   <p><strong>Download X (Twitter) Articles, threads & posts as PDF, Markdown, EPUB/Kindle, text or a ZIP with images.</strong></p>
-  <p>Free, open source, no login required.</p>
+  <p>Free, no login required.</p>
 
   <p>
     <a href="https://www.producthunt.com/posts/xtracticle" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=xtracticle&theme=light" alt="Xtracticle - Download X articles & threads as Markdown, Text or PDF | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>

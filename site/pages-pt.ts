@@ -1,5 +1,5 @@
 /** Brazilian Portuguese pages. */
-import { samplePdfFigure, EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
+import { CONTACT, samplePdfFigure, EXAMPLE, privacy, shortcuts, steps, type SitePage } from './blocks';
 
 const home: SitePage = {
   id: 'pt-home',
@@ -57,7 +57,7 @@ ${shortcuts('pt')}
 
 ${privacy('pt')}`,
   faq: [
-    { q: 'O Xtracticle é grátis?', a: 'Sim. É gratuito e de código aberto: sem conta, sem login e sem limite de uso.' },
+    { q: 'O Xtracticle é grátis?', a: 'Sim. É gratuito: sem conta, sem login e sem limite de uso.' },
     { q: 'Como baixo um artigo do X em PDF?', a: 'Copie o link do post, cole no Xtracticle e clique em PDF. O arquivo traz título, autor, data, link da fonte, todas as imagens e números de página.' },
     { q: 'Dá para baixar uma thread inteira do Twitter?', a: 'Sim. Cole o link de qualquer post da thread (o primeiro, um do meio ou o último). O Xtracticle reúne todos os posts do autor em um único documento numerado.' },
     { q: 'Posso salvar artigos do X no Obsidian ou no Notion?', a: 'Sim. Baixe o arquivo Markdown ou clique no botão Obsidian, que copia o artigo e abre uma nova nota. O Notion importa arquivos .md diretamente.' },
@@ -296,7 +296,7 @@ const obsidian: SitePage = {
   lang: 'pt',
   title: 'Salvar artigos e threads do X no Obsidian em um clique | Xtracticle',
   description:
-    'Salve artigos e threads do X no Obsidian em Markdown, com propriedades (autor, fonte, data, tags). Um clique, imagens locais opcionais, grátis e open source.',
+    'Salve artigos e threads do X no Obsidian em Markdown, com propriedades (autor, fonte, data, tags). Um clique, imagens locais opcionais, grátis.',
   h1: 'Salvar artigos do X no Obsidian',
   sub: 'Salve artigos e threads do X (Twitter) no seu cofre do Obsidian em Markdown limpo, com propriedades — em um clique.',
   primary: 'obsidian',
@@ -378,12 +378,11 @@ const alternative: SitePage = {
       <tr><td>Anúncios</td><td>Nenhum</td><td>No plano grátis</td></tr>
       <tr><td>Postar em público / marcar um bot</td><td>Nunca é preciso</td><td>No método do bot</td></tr>
       <tr><td>Alertas de autores e arquivamento automático</td><td>❌ Ainda não</td><td>✅ Premium</td></tr>
-      <tr><td>Código aberto</td><td>✅ MIT</td><td>❌</td></tr>
     </tbody>
   </table></div>
   <p><small>Conferido nas páginas <a href="https://threadreaderapp.com/premium" rel="nofollow noopener">Premium</a> e
   <a href="https://threadreaderapp.com/help" rel="nofollow noopener">Help</a> do Thread Reader App em setembro de 2026. Os recursos mudam — avise a gente no
-  <a href="${GITHUB}/issues" rel="noopener">GitHub</a> se algo estiver desatualizado.</small></p>
+  <a href="${CONTACT}" rel="noopener">X</a> se algo estiver desatualizado.</small></p>
 </section>
 
 <section>

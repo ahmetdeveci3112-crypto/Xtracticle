@@ -1,4 +1,4 @@
-import { GITHUB, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
+import { CONTACT, privacy, samplePdfFigure, shortcuts, steps, type SitePage } from '../../blocks';
 
 /* ─── Desenrollar hilo de Twitter ─── */
 
@@ -206,7 +206,7 @@ const mcp: SitePage = {
   <ul>
     <li><strong>Endpoint:</strong> <code>${ENDPOINT}</code> (Streamable HTTP, sin autenticación)</li>
     <li><strong>Herramienta:</strong> <code>read_x_post</code>, que devuelve en Markdown un post, un hilo completo del autor (desde cualquiera de sus posts) o un artículo de X</li>
-    <li><strong>Gratis y de código abierto</strong>: el servidor forma parte del <a href="${GITHUB}" rel="noopener">repositorio de Xtracticle</a></li>
+    <li><strong>Gratis</strong>: sin API key y sin cuenta</li>
   </ul>
 </section>
 
@@ -280,7 +280,7 @@ curl "https://xtracticle.com/api/markdown/${SAMPLE_ID}?format=text&thread=0&fron
   o <a href="/es/articulo-de-x-a-epub-kindle">EPUB</a>.</p>
 </section>`,
   faq: [
-    { q: '¿El servidor MCP de Xtracticle es gratis?', a: 'Sí. Es gratuito, no requiere API key ni cuenta y es de código abierto.' },
+    { q: '¿El servidor MCP de Xtracticle es gratis?', a: 'Sí. Es gratuito, y no requiere API key ni cuenta.' },
     { q: '¿Con qué asistentes de IA funciona?', a: 'Con cualquier cliente que admita servidores MCP remotos mediante Streamable HTTP, incluidos Claude, ChatGPT (modo desarrollador), Cursor y VS Code. Los clientes que solo admiten servidores locales pueden conectarse mediante mcp-remote.' },
     { q: '¿Puede leer hilos completos?', a: 'Sí. Pasa el enlace de cualquier post del hilo y la herramienta devuelve, en orden, todos los posts que escribió el autor. Las respuestas de otras personas no se incluyen.' },
     { q: '¿Funciona con artículos de X?', a: 'Sí. Los artículos largos de X se convierten con sus títulos, listas, enlaces, citas e imágenes.' },
@@ -306,8 +306,7 @@ const privacyPage: SitePage = {
   sections: `
 <section>
   <p><em>Última actualización: 3 de octubre de 2026.</em> Esta política abarca xtracticle.com, su API de Markdown (<code>/api/markdown/…</code>)
-  y su servidor MCP (<code>/mcp</code>). Xtracticle es un proyecto gratuito y de código abierto; el
-  <a href="${GITHUB}" rel="noopener">código fuente</a> muestra exactamente qué hace.</p>
+  y su servidor MCP (<code>/mcp</code>). Esta página explica exactamente qué recopilamos y por qué.</p>
 </section>
 
 <section>
@@ -360,7 +359,7 @@ const privacyPage: SitePage = {
 
 <section>
   <h2>Contacto</h2>
-  <p>Preguntas o solicitudes de eliminación: <a href="${GITHUB}/issues" rel="noopener">abre un issue en GitHub</a>.</p>
+  <p>Preguntas o solicitudes de eliminación: <a href="${CONTACT}" rel="noopener">escribe a @DvciAhmet en X</a>.</p>
 </section>`,
   faq: [],
 };

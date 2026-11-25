@@ -1,5 +1,5 @@
 /** Spanish pages. */
-import { samplePdfFigure, EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
+import { CONTACT, samplePdfFigure, EXAMPLE, privacy, shortcuts, steps, type SitePage } from './blocks';
 
 const home: SitePage = {
   id: 'es-home',
@@ -57,7 +57,7 @@ ${shortcuts('es')}
 
 ${privacy('es')}`,
   faq: [
-    { q: '¿Xtracticle es gratis?', a: 'Sí. Es gratuito y de código abierto: sin cuenta, sin inicio de sesión y sin límites de uso.' },
+    { q: '¿Xtracticle es gratis?', a: 'Sí. Es gratuito: sin cuenta, sin inicio de sesión y sin límites de uso.' },
     { q: '¿Cómo descargo un artículo de X en PDF?', a: 'Copia el enlace del post, pégalo en Xtracticle y pulsa PDF. El archivo incluye título, autor, fecha, enlace a la fuente, todas las imágenes y números de página.' },
     { q: '¿Puedo descargar un hilo completo de Twitter?', a: 'Sí. Pega el enlace de cualquier post del hilo (el primero, uno intermedio o el último). Xtracticle reúne todos los posts del autor en un único documento numerado.' },
     { q: '¿Puedo guardar artículos de X en Obsidian o Notion?', a: 'Sí. Descarga el archivo Markdown o pulsa el botón Obsidian, que copia el artículo y abre una nota nueva. Notion importa archivos .md directamente.' },
@@ -298,7 +298,7 @@ const obsidian: SitePage = {
   lang: 'es',
   title: 'Guardar artículos e hilos de X en Obsidian con un clic | Xtracticle',
   description:
-    'Guarda artículos e hilos de X (Twitter) en Obsidian como Markdown limpio con propiedades: autor, fuente, fecha y etiquetas. Un clic, gratis y de código abierto.',
+    'Guarda artículos e hilos de X (Twitter) en Obsidian como Markdown limpio con propiedades: autor, fuente, fecha y etiquetas. Un clic y gratis.',
   h1: 'Guardar artículos de X en Obsidian',
   sub: 'Guarda artículos e hilos de X (Twitter) en tu bóveda de Obsidian como Markdown limpio con propiedades — con un solo clic.',
   primary: 'obsidian',
@@ -380,12 +380,11 @@ const alternative: SitePage = {
       <tr><td>Anuncios</td><td>Ninguno</td><td>En el plan gratuito</td></tr>
       <tr><td>Publicar en abierto / etiquetar a un bot</td><td>Nunca hace falta</td><td>Con el método del bot</td></tr>
       <tr><td>Alertas de autores y archivado automático</td><td>❌ Todavía no</td><td>✅ Premium</td></tr>
-      <tr><td>Código abierto</td><td>✅ MIT</td><td>❌</td></tr>
     </tbody>
   </table></div>
   <p><small>Comprobado con las páginas <a href="https://threadreaderapp.com/premium" rel="nofollow noopener">Premium</a> y
   <a href="https://threadreaderapp.com/help" rel="nofollow noopener">Help</a> de Thread Reader App en septiembre de 2026. Las funciones cambian: avísanos en
-  <a href="${GITHUB}/issues" rel="noopener">GitHub</a> si algo está desactualizado.</small></p>
+  <a href="${CONTACT}" rel="noopener">X</a> si algo está desactualizado.</small></p>
 </section>
 
 <section>

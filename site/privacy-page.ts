@@ -1,4 +1,4 @@
-import { GITHUB, type SitePage } from './blocks';
+import { CONTACT, type SitePage } from './blocks';
 
 /** /privacy — privacy policy for the web app, the Markdown API and the MCP server. */
 export const privacyPage: SitePage = {
@@ -17,8 +17,7 @@ export const privacyPage: SitePage = {
   sections: `
 <section>
   <p><em>Last updated: November 15, 2026.</em> This policy covers xtracticle.com, its Markdown API (<code>/api/markdown/…</code>),
-  its MCP server (<code>/mcp</code>) and its browser extension. Xtracticle is a free, open-source project; the
-  <a href="${GITHUB}" rel="noopener">source code</a> shows exactly what it does.</p>
+  its MCP server (<code>/mcp</code>) and its browser extension. This page explains exactly what we collect and why.</p>
 </section>
 
 <section>
@@ -85,7 +84,7 @@ export const privacyPage: SitePage = {
     <li><strong>Archive links:</strong> on a post that cannot be opened, the extension shows links to the Wayback Machine,
     archive.today and our deleted-tweet finder. Nothing is sent to them until you click a link, and then their own policies apply.</li>
     <li><strong>No ads, no selling:</strong> we don’t sell or share this data, use it for advertising, or use it for anything unrelated to saving
-    and backing up posts. The extension loads no remote code, and its <a href="${GITHUB}" rel="noopener">source code</a> is open.</li>
+    and backing up posts. The extension loads no remote code.</li>
     <li><strong>Permissions:</strong> the extension uses the <code>storage</code> permission and access to x.com, twitter.com and
     xtracticle.com. It is not affiliated with X Corp.</li>
   </ul>
@@ -107,8 +106,7 @@ export const privacyPage: SitePage = {
     <li><strong>Free trial:</strong> a trial watches one account for 14 days without a license. We store the e-mail address you
     confirm for as long as the trial runs (it is deleted when the trial ends, or at once if you unsubscribe) and a one-way hash
     of that address, which we keep so that each address can start one trial.</li>
-    <li><strong>Opting out:</strong> if your account is being watched and you want it to stop, <a href="${GITHUB}/issues" rel="noopener">open an
-    issue on GitHub</a> or message @DvciAhmet on X with the account name. We add it to a blocklist, delete its stored posts and remove
+    <li><strong>Opting out:</strong> if your account is being watched and you want it to stop, <a href="${CONTACT}" rel="noopener">message @DvciAhmet on X</a> with the account name. We add it to a blocklist, delete its stored posts and remove
     it from all watch lists within 7 days.</li>
     <li><strong>Deleting your watches:</strong> removing an account from your list on the Pro page deletes that watch right away;
     every e-mail has a one-click unsubscribe link.</li>
@@ -129,7 +127,7 @@ export const privacyPage: SitePage = {
 
 <section>
   <h2>Contact</h2>
-  <p>Questions or removal requests: <a href="${GITHUB}/issues" rel="noopener">open an issue on GitHub</a>.</p>
+  <p>Questions or removal requests: <a href="${CONTACT}" rel="noopener">message @DvciAhmet on X</a>.</p>
 </section>`,
   faq: [],
 };

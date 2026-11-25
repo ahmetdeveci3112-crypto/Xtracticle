@@ -1,4 +1,3 @@
-import { GITHUB } from '../../blocks';
 import type { ProCopy } from '../../pro-page';
 
 /** Turkish copy of the /pro page (formal "siz"). */
@@ -44,7 +43,7 @@ export const PRO_TR: ProCopy = {
   msgOk: 'Pro bu tarayıcıda etkin. İyi kullanımlar!',
   msgAlready: 'Pro bu tarayıcıda zaten etkin.',
   msgInvalid: 'Bu anahtar tanınmadı. Yazım hatası olup olmadığını veya aboneliğin sona erip ermediğini kontrol edin.',
-  msgLimit: 'Bu anahtar çok fazla kez etkinleştirildi. Anahtarı siz satın aldıysanız GitHub’dan ya da X’te @DvciAhmet üzerinden bize ulaşın, sayacı sıfırlayalım.',
+  msgLimit: 'Bu anahtar çok fazla kez etkinleştirildi. Anahtarı siz satın aldıysanız X’te @DvciAhmet üzerinden bize ulaşın, sayacı sıfırlayalım.',
   msgUpstream: 'Lisans sunucusu yanıt vermedi. Lütfen bir dakika sonra tekrar deneyin.',
   msgUnavailable: 'Pro etkinleştirme şu anda geçici olarak kullanılamıyor. Lütfen biraz sonra tekrar deneyin.',
   msgRate: 'Çok fazla deneme yapıldı. Birkaç saniye bekleyip tekrar deneyin.',
@@ -182,12 +181,12 @@ export const PRO_TR: ProCopy = {
     { q: 'Hesap açmam gerekiyor mu?', a: 'Hayır. Xtracticle’da hesap yoktur. Kontrol ettiğimiz tek şey anahtardır; cihazınızda şifrelenmiş bir çerezde 30 günlük dönemlerle saklanır ve planınız etkin olduğu sürece kendini yeniler.' },
     { q: 'Anahtar kaç cihazda çalışır?', a: 'Kullandığınız her cihazda: her tarayıcıya aynı anahtarı girin. Anahtar günde bir kez kontrol edilir; planınız etkin olduğu sürece çalışmaya devam eder.' },
     { q: 'İptal edebilir miyim?', a: 'Evet, istediğiniz zaman; Gumroad fişinizdeki ya da abonelik e-postanızdaki “Manage membership” (üyeliği yönet) linkinden. Pro, ödediğiniz dönemin sonuna kadar etkin kalır. Ömür boyu plan tek ödemedir, iptal edilecek bir şey yoktur.' },
-    { q: 'Para iadesi var mı?', a: 'Evet: 14 gün içinde, soru sorulmadan. GitHub’da bir konu açın ya da X’te @DvciAhmet’e yazın, ödeme iade edilir.' },
+    { q: 'Para iadesi var mı?', a: 'Evet: 14 gün içinde, soru sorulmadan. X’te @DvciAhmet’e yazın, ödeme iade edilir.' },
     { q: 'Ücretsiz deneme var mı?', a: 'Evet, Watch için: herkese açık bir hesap, 14 gün, ücretsiz. Hesabı ve e-posta adresinizi bu sayfaya ya da Silinen Tweet Takibi sayfasında bir hesabın arşivlenmiş gönderilerinin altına girin, ardından gönderdiğimiz onay linkine tıklayın; 14 gün o tıklamayla başlar. Kart da lisans anahtarı da gerekmez ve hiçbir ücret alınmaz: deneme bitince izleme kendiliğinden durur (bitmeden iki gün önce ve bittiğinde birer e-posta alırsınız). Her e-posta adresine bir deneme hakkı vardır. İzlemeye devam etmek ya da 5 hesaba kadar izlemek için Pro’yu alın.' },
     { q: 'Watch silinen bir gönderiyi nasıl ve ne kadar hızlı fark eder?', a: 'Xtracticle her saat izlenen her hesabın herkese açık son ~40 gönderisini okur ve önceki kontrolle karşılaştırır. Eksik bir gönderi bir kez daha sorgulanır; yalnızca X gönderinin artık var olmadığını doğrularsa, önceden kaydedilen metniyle birlikte silindi olarak bildirilir. Yani bir silme yaklaşık bir saat içinde görünür. İki kontrol arasında yayımlanıp silinen ya da son ~40 gönderiden daha eski bir gönderi yakalanamaz.' },
     { q: '“Yalnızca herkese açık hesaplar” ne demek? Hesap sahibi izlenmeyi reddedebilir mi?', a: 'Watch yalnızca X’te giriş yapmadan herkesin görebildiklerini okur. Korumalı hesaplar eklenemez; izlenen bir hesap korumalı hâle gelirse kontrolleri durur. Kaydedilen gönderi metni 90 gün saklanır. Bir hesabın sahibiyseniz ve izlenmesini istemiyorsanız gizlilik sayfasındaki iletişim yolundan (xtracticle.com/tr/gizlilik) bize yazın: hesap Watch’a kapatılır ve onunla ilgili kaydedilen her şey silinir.' },
     { q: 'Watch ömür boyu plana dahil mi?', a: 'Evet. Ömür boyu plan 2 hesabı, aylık ve yıllık planlar 5 hesabı izler. Hesapları istediğiniz zaman değiştirebilirsiniz.' },
     { q: 'Pro, ücretsiz kullanıcıların aldıklarını değiştiriyor mu?', a: 'Hayır. Tekil gönderiler, flood’lar, makaleler, tüm dışa aktarma biçimleri, ilk 50 arşivlenmiş gönderi ve 20 linklik toplu işlemler ücretsiz kalır; reklam ve giriş yok.' },
-    { q: 'Sorularımı nereye iletebilirim?', a: `GitHub’da bir konu açın (${GITHUB.replace('https://', '')}) ya da X’te @DvciAhmet’e mesaj gönderin.` },
+    { q: 'Sorularımı nereye iletebilirim?', a: `X’te @DvciAhmet’e mesaj gönderin (x.com/DvciAhmet).` },
   ],
 };

@@ -1,5 +1,5 @@
 /** Simplified Chinese pages. */
-import { samplePdfFigure, EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
+import { CONTACT, samplePdfFigure, EXAMPLE, privacy, shortcuts, steps, type SitePage } from './blocks';
 
 const home: SitePage = {
   id: 'zh-home',
@@ -10,7 +10,7 @@ const home: SitePage = {
   isHome: true,
   title: 'X 文章下载器：推特长文、推文串保存为 PDF 和 Markdown | Xtracticle',
   description:
-    '免费下载 X（推特）文章、推文串和帖子，支持导出 PDF、Markdown、EPUB/Kindle 和纯文本。粘贴链接即可获得带图片的干净文件，无需登录，开源。',
+    '免费下载 X（推特）文章、推文串和帖子，支持导出 PDF、Markdown、EPUB/Kindle 和纯文本。粘贴链接即可获得带图片的干净文件，无需登录。',
   h1: 'X 文章下载器',
   sub: '下载 X（推特）文章、推文串和帖子，支持 PDF、Markdown、EPUB 和纯文本——免费，无需登录。',
   primary: 'md',
@@ -60,7 +60,6 @@ ${shortcuts('zh')}
       <tr><td>Markdown / Obsidian</td><td>✅</td><td>❌</td><td>❌</td></tr>
       <tr><td>EPUB / Kindle</td><td>✅</td><td>❌</td><td>❌</td></tr>
       <tr><td>无需 @ 机器人或登录</td><td>✅</td><td>需要 @ 机器人，或使用其网站</td><td>✅</td></tr>
-      <tr><td>开源</td><td>✅</td><td>❌</td><td>—</td></tr>
     </tbody>
   </table></div>
   <p>正在使用 Thread Reader App？查看<a href="/zh/thread-reader-app-alternative">完整对比</a>。</p>
@@ -68,7 +67,7 @@ ${shortcuts('zh')}
 
 ${privacy('zh')}`,
   faq: [
-    { q: 'Xtracticle 免费吗？', a: '免费。它是开源项目，无需注册、无需登录，也没有使用次数限制。' },
+    { q: 'Xtracticle 免费吗？', a: '免费。无需注册、无需登录，也没有使用次数限制。' },
     { q: '如何把 X 文章下载为 PDF？', a: '复制帖子链接，粘贴到 Xtracticle，然后点击 PDF。PDF 包含标题、作者、日期、来源链接、所有图片和页码。' },
     { q: '可以下载完整的推特推文串吗？', a: '可以。粘贴推文串中任意一条帖子的链接——第一条、中间或最后一条都行。Xtracticle 会找到作者在该推文串中发布的所有帖子，并合并成一份带编号的文档。' },
     { q: 'X 文章和普通帖子有什么区别？', a: 'X 文章是带富文本格式（标题、列表、图片）的长文帖子，普通帖子则很短。Xtracticle 两者都支持，也支持推文串。' },
@@ -304,7 +303,7 @@ const obsidian: SitePage = {
   lang: 'zh',
   title: '一键把 X（推特）文章和推文串保存到 Obsidian | Xtracticle',
   description:
-    '把 X（推特）文章和推文串剪藏到 Obsidian，生成带属性（作者、来源、日期、标签）的干净 Markdown。一键完成，可选本地图片，免费开源。',
+    '把 X（推特）文章和推文串剪藏到 Obsidian，生成带属性（作者、来源、日期、标签）的干净 Markdown。一键完成，可选本地图片，完全免费。',
   h1: '把 X 文章保存到 Obsidian',
   sub: '一键把 X（推特）文章和推文串剪藏到你的 Obsidian 知识库，生成带属性的干净 Markdown。',
   primary: 'obsidian',
@@ -384,12 +383,11 @@ const alternative: SitePage = {
       <tr><td>广告</td><td>无</td><td>免费版有</td></tr>
       <tr><td>公开发帖 / @ 机器人</td><td>从不需要</td><td>使用机器人方式时需要</td></tr>
       <tr><td>作者提醒与自动存档</td><td>❌ 暂不支持</td><td>✅ Premium</td></tr>
-      <tr><td>开源</td><td>✅ MIT</td><td>❌</td></tr>
     </tbody>
   </table></div>
   <p><small>对比依据为 2026 年 9 月查阅的 Thread Reader App <a href="https://threadreaderapp.com/premium" rel="nofollow noopener">Premium</a> 和
   <a href="https://threadreaderapp.com/help" rel="nofollow noopener">帮助</a>页面。功能可能会变化——如有过时之处，请到
-  <a href="${GITHUB}/issues" rel="noopener">GitHub</a> 告诉我们。</small></p>
+  <a href="${CONTACT}" rel="noopener">X</a> 告诉我们。</small></p>
 </section>
 
 <section>
@@ -408,7 +406,7 @@ const alternative: SitePage = {
 
 ${shortcuts('zh')}`,
   faq: [
-    { q: 'Xtracticle 真的免费吗？', a: '是的。所有格式——PDF、Markdown、EPUB、ZIP 和文本——都免费，没有广告，无需登录，也没有使用次数限制。代码是开源的。' },
+    { q: 'Xtracticle 真的免费吗？', a: '是的。所有格式——PDF、Markdown、EPUB、ZIP 和文本——都免费，没有广告，无需登录，也没有使用次数限制。' },
     { q: 'Xtracticle 能下载 X 文章吗？', a: '能。Xtracticle 可以转换 X 的长文（Articles），并保留标题、列表、链接、图片和视频。这是它与 Thread Reader App 的主要区别之一。' },
     { q: '需要 @ 机器人吗？', a: '不需要。在 Xtracticle 上粘贴链接即可，不会在 X 上发布任何内容。' },
     { q: '可以导入我在 Thread Reader App 的存档吗？', a: '不能直接导入。你可以粘贴原始的 X 链接（批量模式下每次最多 20 个），重新生成 Markdown 文件。' },

@@ -1,5 +1,5 @@
 /** Arabic (Modern Standard Arabic) pages. */
-import { samplePdfFigure, EXAMPLE, GITHUB, privacy, shortcuts, steps, type SitePage } from './blocks';
+import { CONTACT, samplePdfFigure, EXAMPLE, privacy, shortcuts, steps, type SitePage } from './blocks';
 
 const home: SitePage = {
   id: 'ar-home',
@@ -60,7 +60,6 @@ ${shortcuts('ar')}
       <tr><td>Markdown / Obsidian</td><td>✅</td><td>❌</td><td>❌</td></tr>
       <tr><td>EPUB / Kindle</td><td>✅</td><td>❌</td><td>❌</td></tr>
       <tr><td>بلا بوت @ ولا تسجيل دخول</td><td>✅</td><td>يحتاج بوت @ أو موقعه</td><td>✅</td></tr>
-      <tr><td>مفتوح المصدر</td><td>✅</td><td>❌</td><td>—</td></tr>
     </tbody>
   </table></div>
   <p>هل تستخدم Thread Reader App؟ اطلع على <a href="/ar/thread-reader-app-alternative">المقارنة الكاملة</a>.</p>
@@ -68,7 +67,7 @@ ${shortcuts('ar')}
 
 ${privacy('ar')}`,
   faq: [
-    { q: 'هل Xtracticle مجاني؟', a: 'نعم، مجاني. المشروع مفتوح المصدر، ولا يحتاج إلى تسجيل أو دخول، وليس له حد للاستخدام.' },
+    { q: 'هل Xtracticle مجاني؟', a: 'نعم، مجاني. لا يحتاج إلى تسجيل أو دخول، وليس له حد للاستخدام.' },
     { q: 'كيف أحمّل مقالة من X بصيغة PDF؟', a: 'انسخ رابط المنشور، والصقه في Xtracticle، ثم اضغط PDF. يتضمن الملف العنوان والكاتب والتاريخ ورابط المصدر وكل الصور وأرقام الصفحات.' },
     { q: 'هل يمكنني تحميل ثريد تويتر كاملًا؟', a: 'نعم. الصق رابط أي منشور من الثريد، الأول أو الأوسط أو الأخير. يجد Xtracticle كل منشورات الكاتب في الثريد ويجمعها في مستند واحد مرقّم.' },
     { q: 'ما الفرق بين مقالة X والمنشور العادي؟', a: 'مقالة X منشور طويل بتنسيق غني (عناوين وقوائم وصور)، أما المنشور العادي فقصير. يدعم Xtracticle النوعين، ويدعم الثريدات أيضًا.' },
@@ -304,7 +303,7 @@ const obsidian: SitePage = {
   lang: 'ar',
   title: 'حفظ مقالات X وثريدات تويتر في Obsidian بنقرة | Xtracticle',
   description:
-    'احفظ مقالات X (تويتر) والثريدات في Obsidian كـ Markdown نظيف بخصائص (الكاتب، المصدر، التاريخ، الوسوم). بنقرة واحدة، مع صور محلية اختيارية، مجانًا ومفتوح المصدر.',
+    'احفظ مقالات X (تويتر) والثريدات في Obsidian كـ Markdown نظيف بخصائص (الكاتب، المصدر، التاريخ، الوسوم). بنقرة واحدة، مع صور محلية اختيارية، مجانًا.',
   h1: 'حفظ مقالات X في Obsidian',
   sub: 'احفظ مقالات X (تويتر) والثريدات في مخزن Obsidian بنقرة واحدة، كـ Markdown نظيف مع الخصائص.',
   primary: 'obsidian',
@@ -384,12 +383,11 @@ const alternative: SitePage = {
       <tr><td>الإعلانات</td><td>لا توجد</td><td>في الإصدار المجاني</td></tr>
       <tr><td>نشر علني / بوت @</td><td>غير مطلوب أبدًا</td><td>مطلوب عند استخدام البوت</td></tr>
       <tr><td>تنبيهات الكتّاب والأرشفة التلقائية</td><td>❌ ليست متاحة حاليًا</td><td>✅ Premium</td></tr>
-      <tr><td>مفتوح المصدر</td><td>✅ MIT</td><td>❌</td></tr>
     </tbody>
   </table></div>
   <p><small>تستند المقارنة إلى صفحتي <a href="https://threadreaderapp.com/premium" rel="nofollow noopener">Premium</a> و
   <a href="https://threadreaderapp.com/help" rel="nofollow noopener">المساعدة</a> في Thread Reader App كما اطلعنا عليهما في سبتمبر 2026. قد تتغير الميزات، فإن وجدت معلومة قديمة فأخبرنا على
-  <a href="${GITHUB}/issues" rel="noopener">GitHub</a>.</small></p>
+  <a href="${CONTACT}" rel="noopener">X</a>.</small></p>
 </section>
 
 <section>
@@ -408,7 +406,7 @@ const alternative: SitePage = {
 
 ${shortcuts('ar')}`,
   faq: [
-    { q: 'هل Xtracticle مجاني فعلًا؟', a: 'نعم. كل الصيغ (PDF وMarkdown وEPUB وZIP والنص) مجانية، بلا إعلانات ولا تسجيل دخول ولا حد للاستخدام. والشيفرة مفتوحة المصدر.' },
+    { q: 'هل Xtracticle مجاني فعلًا؟', a: 'نعم. كل الصيغ (PDF وMarkdown وEPUB وZIP والنص) مجانية، بلا إعلانات ولا تسجيل دخول ولا حد للاستخدام.' },
     { q: 'هل يستطيع Xtracticle تحميل مقالات X؟', a: 'نعم. يحوّل Xtracticle المنشورات الطويلة (Articles) في X مع الحفاظ على العناوين والقوائم والروابط والصور والفيديو. وهذا من أهم الفروق عن Thread Reader App.' },
     { q: 'هل أحتاج إلى بوت @؟', a: 'لا. يكفي أن تلصق الرابط في Xtracticle، ولا يُنشر شيء على X.' },
     { q: 'هل يمكنني استيراد أرشيفي من Thread Reader App؟', a: 'ليس مباشرة. يمكنك لصق روابط X الأصلية (حتى 20 رابطًا في كل مرة في الوضع المجمّع) لإعادة إنشاء ملفات Markdown.' },
