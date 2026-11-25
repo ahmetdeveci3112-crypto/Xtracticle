@@ -2,7 +2,7 @@
  * "From the maker of Xtracticle": a few of the owner's own Gumroad products, shown in quiet,
  * clearly labelled spots. Never to Pro users, never as a pop-up or banner.
  *
- *   site/promo-block.ts         strip of 3 cards above the FAQ on home + deleted-tweet pages
+ *   site/promo-block.ts         strip of 3 cards above the FAQ on home, tool, guide and deleted-tweet pages
  *   src/components/PromoCard.tsx one card after a download, only when the tip row is not showing
  *
  * Set PROMO_ENABLED to false to remove every spot at the next build.
@@ -11,8 +11,8 @@
 export const PROMO_ENABLED = true;
 
 export type PromoLang = 'en' | 'tr' | 'es' | 'pt' | 'ja' | 'zh' | 'ar';
-/** home = home pages, deleted = deleted-tweet pages, app = after a download. */
-export type PromoContext = 'home' | 'deleted' | 'app';
+/** home = home pages, deleted = deleted-tweet pages, tool = tool and guide pages, app = after a download. */
+export type PromoContext = 'home' | 'deleted' | 'tool' | 'app';
 
 export interface PromoProduct {
   id: string;
@@ -232,7 +232,7 @@ export const PROMO_COPY: Record<PromoLang, PromoCopy> = {
 
 export const promoLang = (lang: string): PromoLang => (lang in PROMO_COPY ? (lang as PromoLang) : 'en');
 
-/** Gumroad link with campaign tags; `spot` says where it was clicked (home, deleted, app). */
+/** Gumroad link with campaign tags; `spot` says where it was clicked (home, deleted, tool, app). */
 export const promoUrl = (p: PromoProduct, spot: PromoContext) =>
   `${STORE}${p.slug}?utm_source=xtracticle&utm_medium=${spot}&utm_campaign=maker`;
 
@@ -242,7 +242,25 @@ export const promoPrice = (p: PromoProduct, lang: PromoLang) => (p.price ? `$${p
 
 export const promoCta = (p: PromoProduct, lang: PromoLang) => (p.price ? PROMO_COPY[lang].view : PROMO_COPY[lang].getFree);
 
-export const productsFor = (where: PromoContext) => PRODUCTS.filter(p => p.where.includes(where));
+/** Tool and guide pages show the home pool (their visitors are the same people); only the utm tag differs. */
+export const productsFor = (where: PromoContext) => {
+  const pool: PromoContext = where === 'tool' ? 'home' : where;
+  return PRODUCTS.filter(p => p.where.includes(pool));
+};
+
+/** The whole Gumroad store, for the footer link. */
+export const storeUrl = (spot: string) => `https://ahmetdeveci.gumroad.com/?utm_source=xtracticle&utm_medium=${spot}&utm_campaign=maker`;
+
+/** Footer link to the store. */
+export const STORE_LABEL: Record<PromoLang, string> = {
+  en: 'Free AI kits',
+  tr: 'Ücretsiz yapay zekâ kitleri',
+  es: 'Kits de IA gratis',
+  pt: 'Kits de IA grátis',
+  ja: '無料の AI キット',
+  zh: '免费 AI 工具包',
+  ar: 'حِزم ذكاء اصطناعي مجانية',
+};
 
 /** Weighted random order (each product drawn once). */
 export function weightedShuffle<T extends { weight: number }>(items: T[], rnd: () => number = Math.random): T[] {

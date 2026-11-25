@@ -13,7 +13,7 @@ import {
 
 /**
  * "From the maker of Xtracticle" strip (products in src/shared/promo.ts), placed by site/render.ts
- * just above the FAQ on home pages and deleted-tweet pages. Three cards, one quiet section.
+ * just above the FAQ on home, tool, guide and deleted-tweet pages. Three cards, one quiet section.
  *
  * - Hidden for Pro users (`html.xt-has-pro`, set before first paint by the config script).
  * - The static HTML lists the whole pool; the small script below keeps 3 in a weighted random order
@@ -30,10 +30,27 @@ const DELETED_GROUPS = new Set([
   'guide-find-tweets-on-wayback-machine',
 ]);
 
+/** Tool and guide pages (not Pro, privacy, saved, the extension page or the picks). */
+const TOOL_GROUPS = new Set([
+  'pdf',
+  'markdown',
+  'thread',
+  'unroll',
+  'tra',
+  'epub',
+  'obsidian',
+  'tweetpdf',
+  'image-dl',
+  'tweet-finder',
+  'mcp',
+  'guides',
+]);
+
 export function promoSpot(page: SitePage): PromoContext | null {
   if (!PROMO_ENABLED || page.noindex) return null;
   if (page.isHome) return 'home';
   if (DELETED_GROUPS.has(page.group)) return 'deleted';
+  if (TOOL_GROUPS.has(page.group)) return 'tool';
   return null;
 }
 

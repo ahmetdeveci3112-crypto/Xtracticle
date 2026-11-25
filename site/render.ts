@@ -4,6 +4,7 @@ import { extCtaSlot, langTag } from './blocks';
 import { latestPicks } from './curated';
 import { homeProBlock } from './home-pro';
 import { promoBlock } from './promo-block';
+import { PROMO_ENABLED, STORE_LABEL, promoLang, storeUrl } from '../src/shared/promo';
 import { EXT_HERO_SCRIPT, extHeroShell, extHomeBlock } from './ext-home';
 import { translations } from '../src/i18n';
 import { extAvailable } from '../src/lib/ext';
@@ -278,6 +279,7 @@ function supportLinks(lang: Lang): string {
   const coffee = coffeeUrl('footer');
   const sponsors = sponsorsUrl();
   return (
+    (PROMO_ENABLED ? `<span class="xt-promo-link"> · <a href="${storeUrl('footer')}" rel="noopener" data-track="promo_click" data-track-item="store" data-track-spot="footer">${STORE_LABEL[promoLang(lang)]}</a></span>` : '') +
     (coffee ? ` · <a href="${coffee}" rel="noopener">${COFFEE_ICON}${SUPPORT_LABEL[lang]}</a>` : '') +
     (sponsors ? ` · <a href="${sponsors}" rel="noopener">GitHub Sponsors</a>` : '')
   );
@@ -336,8 +338,8 @@ function picksTeaser(page: SitePage): string {
  *   2. How to download → Every format → Articles, threads and posts: what the free tool does;
  *   3. Pro, then this week's picks: offers come after the free value, never before it;
  *   4. the rest of the page's own sections (shortcuts, comparison, AI, privacy);
- *   5. FAQ, then "From the maker" last, so other products never sit between a visitor and the answers.
- * Other pages keep their own order, with the "From the maker" strip (deleted-tweet pages) above the FAQ.
+ *   5. "From the maker", then the FAQ.
+ * Other pages keep their own order, with the "From the maker" strip (tool, guide, deleted-tweet pages) above the FAQ.
  */
 function content(page: SitePage): string {
   let sections = page.sections;
@@ -353,8 +355,8 @@ function content(page: SitePage): string {
     const cut = after >= 0 ? after + 10 : sections.indexOf('</section>') + 10;
     sections = extHomeBlock(page.lang) + sections.slice(0, cut) + extra + sections.slice(cut);
   }
-  // "From the maker" strip (site/promo-block.ts): after the FAQ on home pages, above it elsewhere.
-  const body = page.isHome ? sections + faqHtml(page) + promoBlock(page) : sections + promoBlock(page) + faqHtml(page);
+  // "From the maker" strip (site/promo-block.ts) sits just above the FAQ.
+  const body = sections + promoBlock(page) + faqHtml(page);
   return (body.trim() ? `<div class="xt-content">${body}</div>\n` : '') + footer(page);
 }
 

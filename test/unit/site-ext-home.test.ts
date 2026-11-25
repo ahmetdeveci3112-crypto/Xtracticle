@@ -105,7 +105,7 @@ describe('home page order (all seven languages)', () => {
       expect(grid).toBeLessThan(pro);
       expect(pro).toBeLessThan(faq);
       const promo = html.indexOf('class="xt-promo"');
-      if (promo > -1) expect(promo).toBeGreaterThan(faq);
+      if (promo > -1) expect(promo).toBeLessThan(faq);
       expect(faq).toBeLessThan(footer);
     });
   }

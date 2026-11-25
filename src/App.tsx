@@ -147,7 +147,7 @@ export default function App() {
   const [flash, setFlash] = useState<string | null>(null);
   const [tip, setTip] = useState(false);
   const [extNudge, setExtNudge] = useState(false);
-  // "From the maker" card after a download, only when the coffee row is not showing (src/components/PromoCard.tsx).
+  // "From the maker" card after a download, at most once a day, before the coffee row (src/components/PromoCard.tsx).
   const [promo, setPromo] = useState<PromoProduct | null>(null);
   const [busy, setBusy] = useState<ExportKey | null>(null);
   const [progress, setProgress] = useState<string | null>(null);
@@ -397,11 +397,13 @@ export default function App() {
           ex.saveBlob(await ex.buildPdf(doc, el, (done, total) => total > 2 && setProgress(`${done}/${total}`), { credit: !pro.pro }), `${base}.pdf`);
       }
       track('download_done', { format: key, kind: doc.kind, ms: Math.round(performance.now() - started) });
-      // Coffee row after every real save (free users; quiet for 30/90 days after "Not now"/a click).
-      // Desktop Chrome/Edge without the extension: the install row comes first (one row at a time).
+      // One row under the buttons after a real save (free users only), first match wins:
+      //   1. desktop Chrome/Edge without the extension: the install row;
+      //   2. the "From the maker" card, at most once a day (30 days quiet after "Not now"/a click);
+      //   3. the coffee row (quiet for 30/90 days after "Not now"/a click).
       if (extNudge || extDownloadCtaAllowed(pro.pro)) setExtNudge(true);
+      else if (!tip && (promo || promoAllowed(pro.pro))) setPromo(p => p || pickAppPromo());
       else if (tipAllowed(pro.pro)) setTip(true);
-      else if (!tip && promoAllowed(pro.pro)) setPromo(p => p || pickAppPromo());
     } catch (err) {
       console.error(err);
       const message = String((err as Error)?.message || err).slice(0, 100);

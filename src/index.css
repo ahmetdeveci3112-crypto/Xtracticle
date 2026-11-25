@@ -702,7 +702,8 @@ html.xt-ext-on .xt-ext-hero { display: flex; }
   .xt-promo-pitch { padding: 0; font-size: 0.8rem; }
   .xt-promo-foot { padding: 0.4rem 0 0; }
 }
-.xt-has-pro .xt-promo { display: none; }
+.xt-has-pro .xt-promo,
+.xt-has-pro .xt-promo-link { display: none; }
 
 /* ─── /pro page: price cards and the license-key form (site/pro-page.ts) ─── */
 .xt-pricing {

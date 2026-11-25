@@ -15,8 +15,8 @@ import {
 
 /**
  * One "From the maker of Xtracticle" card after a download (products in src/shared/promo.ts).
- * Free users only, and only when the coffee row is not showing, so there is never more than one
- * extra line under the download buttons. Seen at most once a day; "Not now" or a click: 30 days.
+ * Free users only. It takes the coffee row's place on the first download of the day (never both, so
+ * there is only one extra line under the download buttons). "Not now" or a click: 30 days.
  */
 
 const QUIET_KEY = 'xtracticle_promo_until';
