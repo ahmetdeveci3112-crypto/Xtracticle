@@ -591,3 +591,33 @@ export async function activeTrialsByWatch(db: D1Database, now = Date.now()): Pro
   ).results;
   return new Map(rows.map(r => [r.watch_id, { daysLeft: daysLeft(r.expires_at, now) ?? 0, manageToken: r.manage_token, lang: r.lang }]));
 }
+
+/* ─── Conversion (trial → Pro) ─── */
+
+/**
+ * Called after a Gumroad license verifies (activation or daily recheck, src/shared/pro.ts onVerified):
+ * if the buyer's address started a trial, the trial is marked converted once. Only the HMAC of the
+ * address is compared; the address is neither stored nor logged. Never throws.
+ */
+export async function markTrialConverted(
+  db: D1Database,
+  secret: string,
+  v: { email: string; plan: string; purchasedAt?: string },
+  now = new Date(),
+): Promise<boolean> {
+  try {
+    const emailHash = await hashTrialEmail(v.email, secret);
+    const purchasedAt = v.purchasedAt && !Number.isNaN(Date.parse(v.purchasedAt)) ? new Date(v.purchasedAt).toISOString() : null;
+    const row = await db
+      .prepare('UPDATE trials SET converted_at = ?, converted_plan = ?, purchased_at = ? WHERE email_hash = ? AND converted_at IS NULL RETURNING status, created_at, ended_at')
+      .bind(now.toISOString(), v.plan, purchasedAt, emailHash)
+      .first<{ status: string; created_at: string; ended_at: string | null }>();
+    if (!row) return false;
+    const after = !purchasedAt ? 'unknown' : row.ended_at && purchasedAt >= row.ended_at ? 'after_end' : purchasedAt >= row.created_at ? 'during' : 'before';
+    console.log(JSON.stringify({ watch: 'trial_converted', plan: v.plan, status: row.status, purchase: after }));
+    return true;
+  } catch (err) {
+    console.log(JSON.stringify({ watch: 'trial_converted', error: err instanceof Error ? err.message : String(err) }));
+    return false;
+  }
+}

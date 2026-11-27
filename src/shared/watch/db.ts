@@ -135,6 +135,10 @@ export interface TrialRow {
   verify_sent_at: string | null;
   /** Verification e-mails sent for this request (1 after start; POST /api/watch/trial/resend adds one, up to 3). */
   verify_sends: number;
+  /** Trial → Pro match (migrations/0006): set once when a valid license with the same address is verified. */
+  converted_at?: string | null;
+  converted_plan?: string | null;
+  purchased_at?: string | null;
 }
 
 export const HANDLE_RE = /^[A-Za-z0-9_]{1,15}$/;

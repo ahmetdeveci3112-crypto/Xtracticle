@@ -9,6 +9,7 @@ import type { FxTweet } from './shared/fx';
 import { titleFromText } from './shared/text';
 import { handleWatch } from './shared/watch/api';
 import { runWatchCron } from './shared/watch/cron';
+import { markTrialConverted } from './shared/watch/trial';
 import type { WatchEnv } from './shared/watch/db';
 
 /** WatchEnv carries ProEnv, FxEnv (FX_BASE_URL) and the Watch bindings/vars (src/shared/watch/db.ts). */
@@ -68,7 +69,11 @@ export default {
       if (!isMarkdownApi && (await rateLimited(request, env))) return tooManyRequests();
       const waitUntil = (p: Promise<unknown>) => ctx.waitUntil(p);
       const res =
-        (await handlePro(request, env)) ??
+        (await handlePro(
+          request,
+          env,
+          env.WATCH_DB && env.PRO_COOKIE_SECRET ? v => waitUntil(markTrialConverted(env.WATCH_DB!, env.PRO_COOKIE_SECRET!, v)) : undefined,
+        )) ??
         (await handleWatch(request, env, waitUntil)) ??
         (await handleExt(request, env)) ??
         (await handleArchive(request, waitUntil, env, url.pathname.startsWith('/api/archive/') ? (await proFromRequest(request, env)).pro : false)) ??

@@ -221,6 +221,9 @@ function cookieHeaders(request: Request, value: string | null): Headers {
 /** The subset of `purchase` from /v2/licenses/verify that decides access. */
 interface Purchase {
   product_id?: string;
+  /** Buyer's address: only handed to the onVerified hook (trial conversion match), never stored or logged. */
+  email?: string;
+  sale_timestamp?: string;
   recurrence?: string;
   refunded?: boolean;
   chargebacked?: boolean;
@@ -420,7 +423,25 @@ export async function proKeyFromRequest(request: Request, env: ProEnv): Promise<
 
 /* ─── Handler ─── */
 
-export async function handlePro(request: Request, env: ProEnv): Promise<Response | null> {
+/** A license just verified OK against Gumroad (activation or daily recheck). Used to mark Watch trials converted. */
+export interface ProVerified {
+  email: string;
+  plan: ProPlan;
+  purchasedAt?: string;
+}
+export type ProVerifiedHook = (v: ProVerified) => void;
+
+function notify(hook: ProVerifiedHook | undefined, v: Verification): void {
+  const email = v.purchase?.email;
+  if (!hook || !v.ok || typeof email !== 'string' || !email.includes('@')) return;
+  try {
+    hook({ email, plan: v.plan || 'pro', purchasedAt: typeof v.purchase?.sale_timestamp === 'string' ? v.purchase.sale_timestamp : undefined });
+  } catch {
+    // Measurement only: never let it break activation.
+  }
+}
+
+export async function handlePro(request: Request, env: ProEnv, onVerified?: ProVerifiedHook): Promise<Response | null> {
   const url = new URL(request.url);
   const m = url.pathname.match(/^\/api\/pro\/(config|activate|me|logout)\/?$/);
   if (!m) return null;
@@ -480,6 +501,7 @@ export async function handlePro(request: Request, env: ProEnv): Promise<Response
     const nowSec = Math.floor(Date.now() / 1000);
     const payload: Payload = { k: await encryptKey(key, secret), p: v.plan || 'pro', exp: cookieExp(v.purchase, nowSec), chk: nowSec };
     console.log(JSON.stringify({ pro: 'activate', ok: true, plan: payload.p, uses: v.uses, ms: Date.now() - started }));
+    notify(onVerified, v);
     return withCookie(request, await signPayload(payload, secret), stateOf(payload));
   }
 
@@ -503,6 +525,7 @@ export async function handlePro(request: Request, env: ProEnv): Promise<Response
   if (v.ok) {
     const fresh: Payload = { ...payload, p: v.plan || 'pro', exp: cookieExp(v.purchase, nowSec), chk: nowSec };
     console.log(JSON.stringify({ pro: 'recheck', ok: true, plan: fresh.p }));
+    notify(onVerified, v);
     return withCookie(request, await signPayload(fresh, secret), stateOf(fresh));
   }
   if (v.reason === 'invalid') {
